@@ -76,6 +76,8 @@
                     <url>http://localhost:8080/manager/html</url>
                     <server>sandbox</server>
                     <path>/subrosa</path>
+                    <username>tomcat</username>
+                    <password>tomcat</password>
                 </configuration>
             </plugin>
         </plugins>
