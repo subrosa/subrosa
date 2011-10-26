@@ -3,8 +3,8 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <display-name>Subrosa Gaming Platform</display-name>
-    <description>Web interface for games on the Subrosa platform.</description>
+    <display-name>SubRosa Gaming Platform</display-name>
+    <description>Web interface for games on the SubRosa platform.</description>
 
     <!--<listener>-->
     <!--<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>-->

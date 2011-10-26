@@ -13,7 +13,7 @@
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
 
-    <mvc:resources mapping="/static/**" location="/static/" cache-period="31556926"/>
+    <!--<mvc:resources mapping="/static/**" location="/static/" cache-period="31556926"/>-->
 
     <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/templates/"/>
