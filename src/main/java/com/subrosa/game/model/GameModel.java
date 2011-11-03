@@ -1,12 +1,12 @@
 package com.subrosa.game.model;
 
-import com.subrosa.game.GameImage;
-import com.subrosa.game.GameType;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import com.subrosa.game.GameImage;
+import com.subrosa.game.GameType;
 
 /**
  * Represents a generic game.

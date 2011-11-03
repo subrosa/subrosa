@@ -1,15 +1,14 @@
 package com.subrosa.game.model;
 
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Table;
+
+import org.springframework.stereotype.Repository;
 
 /**
  * Provides CRUD functionality for a base game.
  */
-@Entity
-@Table(name = "game")
+@Repository
 public class GameDao {
 
     @PersistenceContext
