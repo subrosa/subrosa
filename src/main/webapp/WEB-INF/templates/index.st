@@ -1,1 +1,0 @@
-$layout/layout(body="<p>Body of the page!</p>")$
