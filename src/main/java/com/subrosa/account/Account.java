@@ -1,12 +1,17 @@
 package com.subrosa.account;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Table;
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Represent an account in the SubRosa application.
@@ -37,9 +42,11 @@ public class Account {
     @Column
     private String name;
 
-    @OneToMany
-    private AccountRole accountRole;
-
+    @ElementCollection(targetClass = AccountRole.class)
+    @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
+    @Column(name = "account_role_id", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<AccountRole> accountRole;
 
     public int getId() {
         return id;

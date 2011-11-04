@@ -1,5 +1,7 @@
 package com.subrosa.game;
 
+import com.subrosa.image.Image;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +27,7 @@ public interface Game {
 
     String getTimezone();
 
-    GameImage getImage();
+    Image getImage();
 
     List<? extends com.subrosa.event.GameEvent> getEvents();
 

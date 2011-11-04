@@ -1,30 +1,52 @@
 package com.subrosa.game.model;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import com.subrosa.game.GameType;
+import com.subrosa.image.Image;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-
-import com.subrosa.game.GameImage;
-import com.subrosa.game.GameType;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Represents a generic game.
  */
 @Entity
+@Table(name = "game")
 public class GameModel {
 
     @Id
     private int id;
+
+    @Column
     private String name;
+
+    @Column
     private String description;
+
+    @Column
     private GameType gameType;
+
+    @Column
     private BigDecimal price;
+
+    @Column
     private Date startTime;
+
+    @Column
     private Date endTime;
+
+    @Column
     private String timezone;
+
+    @Column
     private String password;
-    private GameImage image;
+
+    @OneToOne
+    private Image image;
 
     public int getId() {
         return id;
@@ -98,11 +120,11 @@ public class GameModel {
         this.password = password;
     }
 
-    public GameImage getImage() {
+    public Image getImage() {
         return image;
     }
 
-    public void setImage(GameImage image) {
+    public void setImage(Image image) {
         this.image = image;
     }
 

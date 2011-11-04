@@ -1,1 +1,0 @@
-$layout/layout(body="<p>Game name: " + game.name + "</p>")$
