@@ -21,7 +21,7 @@
     <bean id="viewResolver" class="org.springframework.web.servlet.view.mustache.MustacheViewResolver">
         <property name="cache" value="true"/>
         <property name="prefix" value="/WEB-INF/templates/"/>
-        <property name="suffix" value=".html"/>
+        <property name="suffix" value=".mustache"/>
         <property name="templateLoader">
             <bean class="org.springframework.web.servlet.view.mustache.MustacheTemplateLoader"/>
         </property>
