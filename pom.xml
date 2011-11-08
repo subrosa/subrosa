@@ -8,7 +8,7 @@
     <packaging>war</packaging>
     <name>subrosa</name>
     <description>
-        Subrosa
+        Sub Rosa gaming platform.
     </description>
 
     <!--<url>${urlRoot}/subrosa</url>-->
