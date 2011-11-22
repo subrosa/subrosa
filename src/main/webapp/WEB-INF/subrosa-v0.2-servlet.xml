@@ -20,7 +20,7 @@
         <property name="basename" value="Messages"/>
     </bean>
 
-    <bean id="viewResolver" class="org.springframework.web.servlet.view.mustache.MustacheViewResolver">
+    <bean id="viewResolver" class="com.subrosa.web.view.mustache.MustacheViewResolver">
         <property name="cache" value="true"/>
         <property name="prefix" value="/WEB-INF/templates/"/>
         <property name="suffix" value=".mustache"/>
