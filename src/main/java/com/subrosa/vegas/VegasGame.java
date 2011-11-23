@@ -7,6 +7,7 @@ import com.subrosa.game.Participant;
 import com.subrosa.game.Player;
 import com.subrosa.game.model.GameDao;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 
 public class VegasGame extends AbstractGame {
 
+    @Autowired
     private GameDao gameDao;
 
     public VegasGame() {
@@ -53,5 +55,9 @@ public class VegasGame extends AbstractGame {
         Participant player2 = new Player();
         player1.setName("player2");
         return Arrays.asList(player1, player2);
+    }
+
+    public void setGameDao(GameDao gameDao) {
+        this.gameDao = gameDao;
     }
 }

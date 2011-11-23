@@ -5,9 +5,9 @@
        ">
 
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
-        <property name="driverClass" value="org.h2.Driver"/>
-        <property name="jdbcUrl" value="jdbc:h2:mem:subrosa"/>
-        <property name="user" value="subrosa"/>
+        <property name="driverClass" value="org.postgresql.Driver"/>
+        <property name="jdbcUrl" value="jdbc:postgresql://localhost:5432/engine"/>
+        <property name="user" value="engine"/>
         <property name="password" value=""/>
         <property name="idleConnectionTestPeriod" value="60"/>
     </bean>
@@ -16,12 +16,13 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="jpaProperties">
             <props>
-                <prop key="hibernate.dialect">org.hibernate.dialect.H2Dialect</prop>
-                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
             </props>
         </property>
     </bean>
 
     <bean id="gameDao" class="com.subrosa.game.model.GameDao"/>
+    <bean id="gameService" class="com.subrosa.game.GameService"/>
 
 </beans>

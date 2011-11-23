@@ -3,10 +3,17 @@ package com.subrosa.game.model;
 import com.subrosa.game.GameType;
 import com.subrosa.image.Image;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,6 +26,9 @@ import java.util.Date;
 public class GameModel {
 
     @Id
+    @SequenceGenerator(name = "gameSeq", sequenceName="game_game_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gameSeq")
+    @Column(name = "game_id")
     private int id;
 
     @Column
@@ -27,16 +37,17 @@ public class GameModel {
     @Column
     private String description;
 
-    @Column
+    @Column(name = "game_type_id")
+    @Enumerated(EnumType.ORDINAL)
     private GameType gameType;
 
     @Column
     private BigDecimal price;
 
-    @Column
+    @Column(name = "start_time")
     private Date startTime;
 
-    @Column
+    @Column(name = "end_time")
     private Date endTime;
 
     @Column
@@ -45,8 +56,13 @@ public class GameModel {
     @Column
     private String password;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
     private Image image;
+
+    // TODO move this out of the base model class
+    @Column(name = "min_age")
+    private Integer minimumAge;
 
     public int getId() {
         return id;
@@ -128,4 +144,11 @@ public class GameModel {
         this.image = image;
     }
 
+    public Integer getMinimumAge() {
+        return minimumAge;
+    }
+
+    public void setMinimumAge(Integer minimumAge) {
+        this.minimumAge = minimumAge;
+    }
 }

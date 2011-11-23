@@ -1,13 +1,16 @@
 package com.subrosa.image;
 
-import org.hibernate.type.ImageType;
+import com.subrosa.db.UriUserType;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import java.net.URI;
 
 /**
@@ -17,15 +20,17 @@ import java.net.URI;
 public class Image {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "imageSeq", sequenceName="image_image_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "imageSeq")
     @Column(name = "image_id")
     private Integer id;
 
-    @Column
-    @Enumerated(EnumType.STRING)
+    @Column(name = "image_type_id")
+    @Enumerated(EnumType.ORDINAL)
     private ImageType imageType;
 
     @Column
+    @Type(type = UriUserType.HIBERNATE_TYPE_NAME)
     private URI uri;
 
     public Integer getId() {

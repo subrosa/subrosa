@@ -6,10 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.Set;
 
@@ -21,7 +25,9 @@ import java.util.Set;
 public class Account {
 
     @Id
-    @GeneratedValue
+    @SequenceGenerator(name = "accountSeq", sequenceName="account_account_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
+    @Column(name = "account_id")
     private int id;
 
     @Column
@@ -31,21 +37,22 @@ public class Account {
     private String username;
 
     @Column
+    private String name;
+
+    @Column
     private String email;
 
-    @Column
+    @Column(name = "cell_phone")
     private String cellPhone;
 
-    @Column
+    @Column(name = "dob")
+    @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
-
-    @Column
-    private String name;
 
     @ElementCollection(targetClass = AccountRole.class)
     @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "account_role_id", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Set<AccountRole> accountRole;
 
     public int getId() {
@@ -72,6 +79,14 @@ public class Account {
         this.username = username;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -96,11 +111,12 @@ public class Account {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getName() {
-        return name;
+
+    public Set<AccountRole> getAccountRole() {
+        return accountRole;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAccountRole(Set<AccountRole> accountRole) {
+        this.accountRole = accountRole;
     }
 }

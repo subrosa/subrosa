@@ -30,6 +30,9 @@ public class SubrosaController {
     @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private GameService gameService;
+
     @RequestMapping("/index")
     public String index() {
         return "index";
@@ -38,24 +41,23 @@ public class SubrosaController {
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     public Map<String, Object> listGames() {
         LOG.debug("Handling game request.");
-
-        VegasGame game = new VegasGame();
-        game.setStartTime(new Date());
-        game.setEndTime(new Date());
         Map<String, Object> model = new HashMap<String, Object>();
-        model.put("games", Arrays.asList(game));
+        model.put("games", gameService.getGames());
         return model;
+    }
+
+    @RequestMapping(value = "/game")
+    public Map<String, Object> createGameForm() {
+        return null;
     }
 
     @RequestMapping(value = "/game/{gameId}", method = RequestMethod.GET)
     public Game getGame(@PathVariable("gameId") String gameId) {
-        GameService gameService = new GameService();
         return gameService.getGame(Integer.valueOf(gameId));
     }
 
     @RequestMapping(value = "/game/{gameId}", method = RequestMethod.POST)
     public Game saveGame(@PathVariable("gameId") String gameId) {
-        GameService gameService = new GameService();
         return gameService.getGame(Integer.valueOf(gameId));
     }
 
