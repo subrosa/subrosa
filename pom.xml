@@ -116,8 +116,8 @@
                     <url>http://localhost:8080/manager/html</url>
                     <server>sandbox</server>
                     <path>/subrosa</path>
-                    <username>manager</username>
-                    <password>manager</password>
+                    <username>tomcat</username>
+                    <password>tomcat</password>
                 </configuration>
             </plugin>
             <plugin>
