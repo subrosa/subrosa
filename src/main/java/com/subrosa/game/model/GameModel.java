@@ -26,7 +26,7 @@ import java.util.Date;
 public class GameModel {
 
     @Id
-    @SequenceGenerator(name = "gameSeq", sequenceName="game_game_id_seq")
+    @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gameSeq")
     @Column(name = "game_id")
     private int id;
@@ -37,8 +37,8 @@ public class GameModel {
     @Column
     private String description;
 
-    @Column(name = "game_type_id")
-    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "game_type")
+    @Enumerated(EnumType.STRING)
     private GameType gameType;
 
     @Column
