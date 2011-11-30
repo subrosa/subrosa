@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import org.springframework.web.servlet.view.mustache.MustacheTemplateLoader;
+import com.subrosa.web.view.mustache.MustacheTemplateLoader;
 
 public class MustacheViewResolver extends AbstractTemplateViewResolver implements ViewResolver, InitializingBean {
 
@@ -34,18 +34,18 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver implement
     private boolean escapeHTML = true;
 
     public MustacheViewResolver() {
-        setViewClass(org.springframework.web.servlet.view.mustache.MustacheView.class);
+        setViewClass(com.subrosa.web.view.mustache.MustacheView.class);
     }
 
     @Override
     protected Class<?> requiredViewClass() {
-        return org.springframework.web.servlet.view.mustache.MustacheView.class;
+        return com.subrosa.web.view.mustache.MustacheView.class;
     }
 
     @Override
     protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 
-        final org.springframework.web.servlet.view.mustache.MustacheView view = (org.springframework.web.servlet.view.mustache.MustacheView) super.buildView(viewName);
+        final com.subrosa.web.view.mustache.MustacheView view = (com.subrosa.web.view.mustache.MustacheView) super.buildView(viewName);
 
         Template template = compiler.compile(templateLoader.getTemplate(view.getUrl()));
         view.setTemplate(template);

@@ -15,18 +15,40 @@
  */
 package com.subrosa.web.view.mustache;
 
+import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class MustacheView extends org.springframework.web.servlet.view.mustache.MustacheView {
+import org.springframework.web.servlet.view.AbstractTemplateView;
+
+import com.samskivert.mustache.Template;
+
+public class MustacheView extends AbstractTemplateView {
+
+    private Template template;
 
     @Override
     protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        //@TODO: add resources to template model
-        super.renderMergedTemplateModel(model, request, response);
+        //@TODO add js and css resources dynamically
+
+        response.setContentType(getContentType());
+        final Writer writer = response.getWriter();
+        try {
+            template.execute(model, writer);
+        } finally {
+            writer.flush();
+        }
+    }
+
+    public void setTemplate(Template template) {
+        this.template = template;
+    }
+
+    public Template getTemplate() {
+        return template;
     }
 }

@@ -25,7 +25,7 @@
         <property name="prefix" value="/WEB-INF/templates/"/>
         <property name="suffix" value=".mustache"/>
         <property name="templateLoader">
-            <bean class="org.springframework.web.servlet.view.mustache.MustacheTemplateLoader"/>
+            <bean class="com.subrosa.web.view.mustache.MustacheTemplateLoader"/>
         </property>
     </bean>
 
