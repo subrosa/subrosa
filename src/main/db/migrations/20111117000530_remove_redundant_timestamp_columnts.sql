@@ -1,0 +1,10 @@
+ALTER TABLE account_token DROP COLUMN creation_date;
+ALTER TABLE checkin DROP COLUMN timestamp;
+ALTER TABLE comment DROP COLUMN timestamp;
+ALTER TABLE dispute DROP COLUMN timestamp;
+ALTER TABLE dispute_comment DROP COLUMN timestamp;
+ALTER TABLE history DROP COLUMN timestamp;
+ALTER TABLE message DROP COLUMN timestamp;
+ALTER TABLE player_location DROP COLUMN timestamp;
+ALTER TABLE post DROP COLUMN timestamp;
+ALTER TABLE transaction DROP COLUMN timestamp;
