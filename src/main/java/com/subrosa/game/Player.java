@@ -1,7 +1,7 @@
 package com.subrosa.game;
 
 /**
- * TODO description.
+ * Model for Players.
  */
 public class Player implements Participant {
 

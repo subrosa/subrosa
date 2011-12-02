@@ -1,9 +1,9 @@
 package com.subrosa.account;
 
 /**
- * TODO description.
+ * Used to represent roles an account can have.
+ * Note that these are different from PlayerRole and GameRole.
  */
 public enum AccountRole {
-    ACCOUNT,
     ADMIN
 }

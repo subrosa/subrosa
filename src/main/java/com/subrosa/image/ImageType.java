@@ -1,7 +1,7 @@
 package com.subrosa.image;
 
 /**
- * TODO description.
+ * Used to represent various types of images.
  */
 public enum ImageType {
     GAME_BADGE,

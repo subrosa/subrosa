@@ -25,8 +25,8 @@ public class Image {
     @Column(name = "image_id")
     private Integer id;
 
-    @Column(name = "image_type_id")
-    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "image_type")
+    @Enumerated(EnumType.STRING)
     private ImageType imageType;
 
     @Column

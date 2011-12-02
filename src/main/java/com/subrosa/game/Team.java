@@ -3,7 +3,7 @@ package com.subrosa.game;
 import java.util.List;
 
 /**
- * TODO description.
+ * Model for Teams.
  */
 public class Team implements Participant {
 

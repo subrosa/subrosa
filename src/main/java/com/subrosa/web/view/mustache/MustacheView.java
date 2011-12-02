@@ -35,6 +35,8 @@ public class MustacheView extends AbstractTemplateView {
 
         //@TODO add js and css resources dynamically
 
+        model.put("js", "subrosa/static/js/ga,jquery.min.js");
+        model.put("css", "subrosa/static/css/style,960-grid.css");
         response.setContentType(getContentType());
         final Writer writer = response.getWriter();
         try {

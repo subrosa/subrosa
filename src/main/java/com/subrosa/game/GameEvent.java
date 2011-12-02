@@ -1,8 +1,9 @@
 package com.subrosa.game;
 
 /**
- * TODO description.
+ * Model for game events.
+ * Examples of game events include assignments and assignment type changes.
  */
 public class GameEvent {
-    // TODO
+    // TODO: Implement me.
 }

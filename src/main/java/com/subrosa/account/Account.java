@@ -51,8 +51,8 @@ public class Account {
 
     @ElementCollection(targetClass = AccountRole.class)
     @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
-    @Column(name = "account_role_id", nullable = false)
-    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private Set<AccountRole> accountRole;
 
     public int getId() {

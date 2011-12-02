@@ -1,7 +1,7 @@
 package com.subrosa.account;
 
 /**
- * TODO description.
+ * Used to represent an accounts addresses.
  */
 public class Address {
 }
