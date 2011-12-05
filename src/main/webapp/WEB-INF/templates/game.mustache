@@ -2,6 +2,9 @@
 <html>
 <head>
     <title>Games in your area</title>
+    {{#css}}
+        <link rel="StyleSheet" href="{{css}}"/>
+    {{/css}}
 </head>
 
 <body>
@@ -11,6 +14,8 @@
     <li>{{name}}</li>
     {{/games}}
 </ul>
+    {{#js}}
+        <script src="{{js}}"></script>
+    {{/js}}
 </body>
-
 </html>

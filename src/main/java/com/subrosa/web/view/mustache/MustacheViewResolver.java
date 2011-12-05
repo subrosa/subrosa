@@ -15,12 +15,15 @@
  */
 package com.subrosa.web.view.mustache;
 
-
+import org.springframework.web.servlet.view.AbstractUrlBasedView;
 
 public class MustacheViewResolver extends org.springframework.web.servlet.view.mustache.MustacheViewResolver {
 
     @Override
-    protected Class getViewClass() {
-        return com.subrosa.web.view.mustache.MustacheView.class;
+    protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+        //@TODO determine view class from name
+        this.setViewClass(TestMustacheView.class);
+        return super.buildView(viewName);
     }
+
 }
