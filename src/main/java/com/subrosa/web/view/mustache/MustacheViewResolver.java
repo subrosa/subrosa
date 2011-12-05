@@ -15,73 +15,12 @@
  */
 package com.subrosa.web.view.mustache;
 
-import com.samskivert.mustache.Mustache;
-import com.samskivert.mustache.Mustache.Compiler;
-import com.samskivert.mustache.Template;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
-import com.subrosa.web.view.mustache.MustacheTemplateLoader;
 
-public class MustacheViewResolver extends AbstractTemplateViewResolver implements ViewResolver, InitializingBean {
 
-    private MustacheTemplateLoader templateLoader;
-    private Compiler compiler;
-
-    private boolean standardsMode = false;
-    private boolean escapeHTML = true;
-
-    public MustacheViewResolver() {
-        setViewClass(com.subrosa.web.view.mustache.MustacheView.class);
-    }
+public class MustacheViewResolver extends org.springframework.web.servlet.view.mustache.MustacheViewResolver {
 
     @Override
-    protected Class<?> requiredViewClass() {
+    protected Class getViewClass() {
         return com.subrosa.web.view.mustache.MustacheView.class;
     }
-
-    @Override
-    protected AbstractUrlBasedView buildView(String viewName) throws Exception {
-
-        final com.subrosa.web.view.mustache.MustacheView view = (com.subrosa.web.view.mustache.MustacheView) super.buildView(viewName);
-
-        Template template = compiler.compile(templateLoader.getTemplate(view.getUrl()));
-        view.setTemplate(template);
-
-        return view;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        compiler = Mustache.compiler()
-                .escapeHTML(escapeHTML)
-                .standardsMode(standardsMode)
-                .withLoader(templateLoader);
-    }
-
-    @Required
-    public void setTemplateLoader(MustacheTemplateLoader templateLoader) {
-        this.templateLoader = templateLoader;
-    }
-
-    /**
-     * Whether or not standards mode is enabled.
-     * <p/>
-     * disabled by default.
-     */
-    public void setStandardsMode(boolean standardsMode) {
-        this.standardsMode = standardsMode;
-    }
-
-    /**
-     * Whether or not HTML entities are escaped by default.
-     * <p/>
-     * default is true.
-     */
-    public void setEscapeHTML(boolean escapeHTML) {
-        this.escapeHTML = escapeHTML;
-    }
-
 }
