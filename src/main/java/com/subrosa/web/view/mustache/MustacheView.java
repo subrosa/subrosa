@@ -3,17 +3,21 @@ package com.subrosa.web.view.mustache;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 
 public class MustacheView extends org.springframework.web.servlet.view.mustache.MustacheView {
-
     private static final String CSS_RESOURCE_PATH = "subrosa/static/css/";
     private static final String JS_RESOURCE_PATH = "subrosa/static/js/";
 
-    private ArrayList<String> cssRequirements = new ArrayList<String>();
-    private ArrayList<String> jsRequirements = new  ArrayList<String>();
+    //@TODO: add header, footer, and other partials to instance variables?
+    private List<String> cssRequirements = new ArrayList<String>();
+    private List<String> jsRequirements = new  ArrayList<String>();
 
     public MustacheView() {
         //@TODO: update these with actual "base" CSS/JSS requirements.
@@ -21,7 +25,7 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
         this.jsRequirements.add("jquery.min.js");
     }
 
-    protected MustacheView(ArrayList<String> cssRequirements, ArrayList<String> jsRequirements) {
+    protected MustacheView(List<String> cssRequirements, List<String> jsRequirements) {
         this.cssRequirements = cssRequirements;
         this.jsRequirements = jsRequirements;
     }
@@ -32,31 +36,21 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
 
         model.put("js", this.getJsRequirementsString());
         model.put("css", this.getCssRequirementsString());
-
         super.renderMergedTemplateModel(model, request, response);
     }
 
-    protected String buildRequirementString(ArrayList<String> requirementArray) {
+    protected String buildRequirementString(List<String> requirementArray) {
         StringBuilder sb = new StringBuilder();
-        for (int i=0; i<requirementArray.size(); i++) {
-            String requirement = requirementArray.get(i);
-            if (i != requirementArray.size()-1) {
-                requirement = FilenameUtils.removeExtension(requirement);
+        int end = requirementArray.size() - 1;
+        sb.append(StringUtils.join(Collections2.transform(requirementArray.subList(0, end), new Function<String, String>() {
+            @Override
+            public String apply(String from) {
+                return FilenameUtils.removeExtension(from);
             }
-            if (i != 0) {
-                sb.append(",");
-            }
-            sb.append(requirement);
-        }
+        }), ","));
+        sb.append(",");
+        sb.append(requirementArray.get(end));
         return sb.toString();
-    }
-
-    public String getCssRequirementsString() {
-        return CSS_RESOURCE_PATH + buildRequirementString(getCssRequirements());
-    }
-
-    public ArrayList getCssRequirements() {
-        return cssRequirements;
     }
 
     public void addCssRequirement(String requirement) {
@@ -67,7 +61,15 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
         this.jsRequirements.add(requirement);
     }
 
-    public void setCssRequirements(ArrayList<String> cssRequirements) {
+    public String getCssRequirementsString() {
+        return CSS_RESOURCE_PATH + buildRequirementString(getCssRequirements());
+    }
+
+    protected List<String> getCssRequirements() {
+        return cssRequirements;
+    }
+
+    public void setCssRequirements(List<String> cssRequirements) {
         this.cssRequirements = cssRequirements;
     }
 
@@ -75,11 +77,11 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
         return JS_RESOURCE_PATH + buildRequirementString(getJsRequirements());
     }
 
-    public ArrayList getJsRequirements() {
+    protected List<String> getJsRequirements() {
         return jsRequirements;
     }
 
-    protected void setJsRequirements(ArrayList<String> jsRequirements) {
+    public void setJsRequirements(List<String> jsRequirements) {
         this.jsRequirements = jsRequirements;
     }
 }

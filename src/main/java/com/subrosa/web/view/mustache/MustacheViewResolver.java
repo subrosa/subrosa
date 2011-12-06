@@ -22,7 +22,7 @@ public class MustacheViewResolver extends org.springframework.web.servlet.view.m
     @Override
     protected AbstractUrlBasedView buildView(String viewName) throws Exception {
         //@TODO determine view class from name
-        this.setViewClass(TestMustacheView.class);
+        this.setViewClass(GameMustacheView.class);
         return super.buildView(viewName);
     }
 
