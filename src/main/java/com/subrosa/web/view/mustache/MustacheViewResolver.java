@@ -15,15 +15,75 @@
  */
 package com.subrosa.web.view.mustache;
 
-import org.springframework.web.servlet.view.AbstractUrlBasedView;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 
-public class MustacheViewResolver extends org.springframework.web.servlet.view.mustache.MustacheViewResolver {
+import org.springframework.context.MessageSource;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
+
+import com.sampullara.mustache.Mustache;
+import com.sampullara.mustache.MustacheBuilder;
+
+
+/**
+ * View resolver for mustache templates.
+ */
+public class MustacheViewResolver extends AbstractTemplateViewResolver implements ViewResolver, ResourceLoaderAware {
+
+    private ResourceLoader resourceLoader;
+    private MessageSource messageSource;
+
+    /**
+     * Creates a new mustache view resolver.
+     */
+    public MustacheViewResolver() {
+        setViewClass(MustacheView.class);
+    }
 
     @Override
-    protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+    protected Class<?> requiredViewClass() {
+        return MustacheView.class;
+    }
+
+    @Override
+    protected MustacheView buildView(String viewName) throws Exception {
         //@TODO determine view class from name
         this.setViewClass(GameMustacheView.class);
-        return super.buildView(viewName);
+
+        MustacheView view = (MustacheView) super.buildView(viewName);
+        view.setMessageSource(messageSource);
+        Resource resource = resourceLoader.getResource(view.getUrl());
+        MustacheBuilder compiler = new MustacheBuilder(resource.getFile().getParentFile());
+        compiler.setSuperclass(MustacheTemplate.class.getName());
+
+        if (resource.exists()) {
+            String templateName = resource.getFile().getParentFile().getPath();
+            Mustache template = compiler.build(new BufferedReader(new InputStreamReader(resource.getInputStream())), templateName);
+            template.setRoot(resource.getFile().getParentFile());
+            view.setTemplate(template);
+        } else {
+            throw new FileNotFoundException(viewName);
+        }
+
+        return view;
+    }
+
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
+    public MessageSource getMessageSource() {
+        return messageSource;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
     }
 
 }

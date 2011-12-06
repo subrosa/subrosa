@@ -24,9 +24,6 @@
         <property name="cache" value="true"/>
         <property name="prefix" value="/WEB-INF/templates/"/>
         <property name="suffix" value=".mustache"/>
-        <property name="templateLoader">
-            <bean class="org.springframework.web.servlet.view.mustache.MustacheTemplateLoader"/>
-        </property>
     </bean>
 
     <import resource="classpath:subrosa-beans.xml"/>

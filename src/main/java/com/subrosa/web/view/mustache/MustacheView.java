@@ -4,16 +4,27 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.sampullara.mustache.Mustache;
+import com.sampullara.util.TemplateFunction;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.context.MessageSource;
+import org.springframework.web.servlet.view.AbstractTemplateView;
 
-public class MustacheView extends org.springframework.web.servlet.view.mustache.MustacheView {
+import com.subrosa.web.view.il8n.LocaleDetectionFilter;
+
+
+public class MustacheView extends AbstractTemplateView {
     private static final String CSS_RESOURCE_PATH = "subrosa/static/css/";
     private static final String JS_RESOURCE_PATH = "subrosa/static/js/";
+
+    private Mustache template;
+    private MessageSource messageSource;
 
     //@TODO: add header, footer, and other partials to instance variables?
     private List<String> cssRequirements = new ArrayList<String>();
@@ -25,18 +36,25 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
         this.jsRequirements.add("jquery.min.js");
     }
 
-    protected MustacheView(List<String> cssRequirements, List<String> jsRequirements) {
-        this.cssRequirements = cssRequirements;
-        this.jsRequirements = jsRequirements;
-    }
-
     @Override
-    protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
+    protected void renderMergedTemplateModel(Map<String, Object> model, final HttpServletRequest request,
                                              HttpServletResponse response) throws Exception {
+
+        TemplateFunction translate = new TemplateFunction() {
+            @Override
+            public String apply(String input) {
+                Locale locale = (Locale) request.getAttribute(LocaleDetectionFilter.REQUEST_LOCALE_ATTRIBUTE);
+                return messageSource.getMessage(input, null, locale);
+            }
+        };
+        model.put("i18n", translate);
 
         model.put("js", this.getJsRequirementsString());
         model.put("css", this.getCssRequirementsString());
-        super.renderMergedTemplateModel(model, request, response);
+
+        response.setContentType(getContentType());
+        template.execute(response.getWriter(), model);
+
     }
 
     protected String buildRequirementString(List<String> requirementArray) {
@@ -57,31 +75,34 @@ public class MustacheView extends org.springframework.web.servlet.view.mustache.
         this.cssRequirements.add(requirement);
     }
 
-    public void addJsRequirement(String requirement) {
-        this.jsRequirements.add(requirement);
-    }
-
     public String getCssRequirementsString() {
         return CSS_RESOURCE_PATH + buildRequirementString(getCssRequirements());
     }
-
-    protected List<String> getCssRequirements() {
-        return cssRequirements;
-    }
-
-    public void setCssRequirements(List<String> cssRequirements) {
-        this.cssRequirements = cssRequirements;
+    public void addJsRequirement(String requirement) {
+        this.jsRequirements.add(requirement);
     }
 
     public String getJsRequirementsString() {
         return JS_RESOURCE_PATH + buildRequirementString(getJsRequirements());
     }
 
-    protected List<String> getJsRequirements() {
-        return jsRequirements;
+    public void setTemplate(Mustache template) {
+        this.template = template;
     }
 
-    public void setJsRequirements(List<String> jsRequirements) {
-        this.jsRequirements = jsRequirements;
+    public Mustache getTemplate() {
+        return template;
+    }
+
+    public void setMessageSource(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
+    protected List<String> getCssRequirements() {
+        return cssRequirements;
+    }
+
+    protected List<String> getJsRequirements() {
+        return jsRequirements;
     }
 }

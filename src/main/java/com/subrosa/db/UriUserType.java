@@ -24,9 +24,7 @@ import org.slf4j.LoggerFactory;
  * <p/>
  * In package-info.java:<br/>
  * &#64;TypeDef(name = UriUserType.HIBERNATE_TYPE_NAME, typeClass = UriUserType.class)<br/>
- * package com.lulu.project.domain<br/>
  * import org.hibernate.annotations.TypeDef;<br/>
- * import com.lulu.db.UriUserType;<br/>
  * <p/>
  * You can then annotation your field in the domain object.
  * <p/>

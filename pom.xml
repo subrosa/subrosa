@@ -97,14 +97,31 @@
             <version>2.6</version>
         </dependency>
         <dependency>
-            <groupId>com.github.sps.mustache</groupId>
-            <artifactId>mustache-spring-view</artifactId>
-            <version>1.0</version>
-        </dependency>
+             <groupId>com.github.spullara.mustache.java</groupId>
+             <artifactId>core</artifactId>
+             <version>0.6</version>
+         </dependency>
+         <dependency>
+             <groupId>com.github.spullara.mustache.java</groupId>
+             <artifactId>builder</artifactId>
+             <version>0.6</version>
+         </dependency>
         <dependency>
             <groupId>com.googlecode.webutilities</groupId>
             <artifactId>webutilities</artifactId>
             <version>0.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.9.0-rc1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
