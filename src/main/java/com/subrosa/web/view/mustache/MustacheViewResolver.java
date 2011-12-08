@@ -29,7 +29,6 @@ import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 import com.sampullara.mustache.Mustache;
 import com.sampullara.mustache.MustacheBuilder;
 
-
 /**
  * View resolver for mustache templates.
  */

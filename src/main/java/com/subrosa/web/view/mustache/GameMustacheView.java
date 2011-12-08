@@ -7,7 +7,7 @@ public class GameMustacheView extends MustacheView {
 
     public GameMustacheView() {
         //@TODO: update this with actual requirements
-        this.addCssRequirement("960-grid.css");
-        this.addJsRequirement("ga.js");
+        addCssRequirement("960-grid.css");
+        addJsRequirement("ga.js");
     }
 }

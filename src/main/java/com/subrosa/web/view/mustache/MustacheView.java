@@ -2,6 +2,7 @@ package com.subrosa.web.view.mustache;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -18,7 +19,6 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
 
 import com.subrosa.web.view.il8n.LocaleDetectionFilter;
 
-
 public class MustacheView extends AbstractTemplateView {
     private static final String CSS_RESOURCE_PATH = "subrosa/static/css/";
     private static final String JS_RESOURCE_PATH = "subrosa/static/js/";
@@ -32,8 +32,8 @@ public class MustacheView extends AbstractTemplateView {
 
     public MustacheView() {
         //@TODO: update these with actual "base" CSS/JSS requirements.
-        this.cssRequirements.add("style.css");
-        this.jsRequirements.add("jquery.min.js");
+        cssRequirements.add("style.css");
+        jsRequirements.add("jquery.min.js");
     }
 
     @Override
@@ -48,13 +48,11 @@ public class MustacheView extends AbstractTemplateView {
             }
         };
         model.put("i18n", translate);
-
-        model.put("js", this.getJsRequirementsString());
-        model.put("css", this.getCssRequirementsString());
+        model.put("js", getJsRequirements());
+        model.put("css", getCssRequirements());
 
         response.setContentType(getContentType());
         template.execute(response.getWriter(), model);
-
     }
 
     protected String buildRequirementString(List<String> requirementArray) {
@@ -72,18 +70,18 @@ public class MustacheView extends AbstractTemplateView {
     }
 
     public void addCssRequirement(String requirement) {
-        this.cssRequirements.add(requirement);
+        cssRequirements.add(requirement);
     }
 
-    public String getCssRequirementsString() {
-        return CSS_RESOURCE_PATH + buildRequirementString(getCssRequirements());
+    public String getCssRequirements() {
+        return CSS_RESOURCE_PATH + buildRequirementString(cssRequirements);
     }
     public void addJsRequirement(String requirement) {
-        this.jsRequirements.add(requirement);
+        jsRequirements.add(requirement);
     }
 
-    public String getJsRequirementsString() {
-        return JS_RESOURCE_PATH + buildRequirementString(getJsRequirements());
+    public String getJsRequirements() {
+        return JS_RESOURCE_PATH + buildRequirementString(jsRequirements);
     }
 
     public void setTemplate(Mustache template) {
@@ -96,13 +94,5 @@ public class MustacheView extends AbstractTemplateView {
 
     public void setMessageSource(MessageSource messageSource) {
         this.messageSource = messageSource;
-    }
-
-    protected List<String> getCssRequirements() {
-        return cssRequirements;
-    }
-
-    protected List<String> getJsRequirements() {
-        return jsRequirements;
     }
 }
