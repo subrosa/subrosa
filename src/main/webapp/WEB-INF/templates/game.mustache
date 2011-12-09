@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Games in your area</title>
-    {{#css}}
-        <link rel="StyleSheet" href="{{css}}"/>
-    {{/css}}
-</head>
+{{#addCss}}style.css, 960-grid.css{{/addCss}}
+{{#addJs}}jquery.min.js{{/addJs}}
+{{#addClientTemplate}}blah, blah2{{/addClientTemplate}}
+{{#addClientTemplate}}blah3, blah4{{/addClientTemplate}}
+{{#setTitle}}Games in your area{{/setTitle}}
 
-<body>
+{{>header.mustache}}
 <h1>Games</h1>
 <ul>
     {{#games}}
     <li>{{name}}</li>
     {{/games}}
 </ul>
-    {{#js}}
-        <script src="{{js}}"></script>
-    {{/js}}
-</body>
-</html>
+{{>footer.mustache}}

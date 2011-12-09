@@ -51,8 +51,7 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver implement
 
     @Override
     protected MustacheView buildView(String viewName) throws Exception {
-        //@TODO determine view class from name
-        this.setViewClass(GameMustacheView.class);
+        setViewClass(MustacheView.class);
 
         MustacheView view = (MustacheView) super.buildView(viewName);
         view.setMessageSource(messageSource);
@@ -62,7 +61,8 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver implement
 
         if (resource.exists()) {
             String templateName = resource.getFile().getParentFile().getPath();
-            Mustache template = compiler.build(new BufferedReader(new InputStreamReader(resource.getInputStream())), templateName);
+            Mustache template = compiler.build(new BufferedReader(new InputStreamReader(resource.getInputStream())),
+                    templateName);
             template.setRoot(resource.getFile().getParentFile());
             view.setTemplate(template);
         } else {

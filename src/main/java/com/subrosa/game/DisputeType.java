@@ -2,7 +2,6 @@ package com.subrosa.game;
 
 /**
  * The different types of disputes that can occur in a game.
- * @TODO we need some way to translate strings like these.
  */
 public enum DisputeType {
     BAD_PHOTO ("Misleading or invalid photo",
