@@ -13,8 +13,8 @@
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
 
-    <mvc:annotation-driven></mvc:annotation-driven>
-    <mvc:resources mapping="/static/**" location="/, classpath:/META-INF/static/" cache-period="31556926"/>
+    <mvc:annotation-driven />
+    <mvc:resources mapping="/static/**" location="/static/, classpath:/META-INF/static/" cache-period="31556926"/>
 
     <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
         <property name="basename" value="Messages"/>
@@ -22,7 +22,7 @@
 
     <bean id="viewResolver" class="com.subrosa.web.view.mustache.MustacheViewResolver">
         <property name="cache" value="true"/>
-        <property name="prefix" value="/WEB-INF/templates/"/>
+        <property name="prefix" value="/templates/"/>
         <property name="suffix" value=".mustache"/>
     </bean>
 

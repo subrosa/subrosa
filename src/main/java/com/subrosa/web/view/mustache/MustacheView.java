@@ -16,8 +16,8 @@ import org.springframework.web.servlet.view.AbstractTemplateView;
 import com.subrosa.web.view.il8n.LocaleDetectionFilter;
 
 public class MustacheView extends AbstractTemplateView {
-    private static final String CSS_RESOURCE_PATH = "subrosa/static/css/";
-    private static final String JS_RESOURCE_PATH = "subrosa/static/js/";
+    private static final String CSS_RESOURCE_PATH = "static/css/";
+    private static final String JS_RESOURCE_PATH = "static/js/";
     private static final String MUSTACHE_PATH = "";
 
     private Mustache template;
