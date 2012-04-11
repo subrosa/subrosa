@@ -11,9 +11,6 @@
         Sub Rosa gaming platform.
     </description>
 
-    <!--<url>${urlRoot}/subrosa</url>-->
-    <!--<scm>-->
-
     <properties>
         <org.slf4j.version>1.6.1</org.slf4j.version>
         <org.springframework.version>3.0.5.RELEASE</org.springframework.version>
