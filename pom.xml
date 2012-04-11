@@ -8,7 +8,7 @@
     <packaging>war</packaging>
     <name>subrosa</name>
     <description>
-        Sub Rosa gaming platform.
+        Sub Rosa API.
     </description>
 
     <properties>
