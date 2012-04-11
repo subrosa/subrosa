@@ -125,7 +125,7 @@
                 <configuration>
                     <url>http://localhost:8080/manager/html</url>
                     <server>sandbox</server>
-                    <path>/subrosa</path>
+                    <path>/${build.finalName}</path>
                     <username>tomcat</username>
                     <password>tomcat</password>
                 </configuration>
@@ -158,11 +158,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>c5-public-repository</id>
-            <url>http://mvn.carbonfive.com/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>
