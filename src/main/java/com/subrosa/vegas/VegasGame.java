@@ -1,28 +1,23 @@
 package com.subrosa.vegas;
 
 import com.subrosa.event.GameEvent;
-import com.subrosa.game.AbstractGame;
-import com.subrosa.game.GameRule;
-import com.subrosa.game.Participant;
-import com.subrosa.game.Player;
+import com.subrosa.game.*;
 import com.subrosa.game.model.GameDao;
+import com.subrosa.game.model.GameModel;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
-
 public class VegasGame extends AbstractGame {
-
-    @Autowired
-    private GameDao gameDao;
 
     public VegasGame() {
     }
 
-    public VegasGame(int id) {
-        BeanUtils.copyProperties(gameDao.getGame(id), this);
+    public VegasGame(Game gameModel) {
+        BeanUtils.copyProperties(gameModel, this);
     }
 
     @Override
@@ -57,7 +52,4 @@ public class VegasGame extends AbstractGame {
         return Arrays.asList(player1, player2);
     }
 
-    public void setGameDao(GameDao gameDao) {
-        this.gameDao = gameDao;
-    }
 }

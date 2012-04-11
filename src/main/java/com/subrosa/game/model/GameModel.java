@@ -1,7 +1,12 @@
 package com.subrosa.game.model;
 
+import com.subrosa.event.GameEvent;
+import com.subrosa.game.Game;
+import com.subrosa.game.GameRule;
 import com.subrosa.game.GameType;
+import com.subrosa.game.Participant;
 import com.subrosa.image.Image;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,13 +22,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a generic game.
  */
 @Entity
 @Table(name = "game")
-public class GameModel {
+public class GameModel implements Game {
 
     @Id
     @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
@@ -150,5 +156,20 @@ public class GameModel {
 
     public void setMinimumAge(Integer minimumAge) {
         this.minimumAge = minimumAge;
+    }
+
+    @Override
+    public List<? extends GameEvent> getEvents() {
+        throw new NotImplementedException("Attempted to get events for a non-specific game");
+    }
+
+    @Override
+    public List<? extends GameRule> getRules() {
+        throw new NotImplementedException("Attempted to get rules for a non-specific game");
+    }
+
+    @Override
+    public List<? extends Participant> getPlayers() {
+        throw new NotImplementedException("Attempted to get players for a non-specific game");
     }
 }

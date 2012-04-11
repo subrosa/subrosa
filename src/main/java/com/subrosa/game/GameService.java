@@ -16,17 +16,16 @@ import java.util.List;
 @Service
 public class GameService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GameService.class); // NOPMD
+    private static final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
     @Autowired
     private GameDao gameDao;
 
-    public List<? extends Game> getGames() {
-        return gameDao.getGames();
+    public List<Game> getGames(int limit, int offset) {
+        return gameDao.getGames(limit, offset);
     }
 
     public Game getGame(int gameId) {
-        GameModel gameModel = gameDao.getGame(gameId);
-        return new VegasGame();
+        return new VegasGame(gameDao.getGame(gameId));
     }
 }

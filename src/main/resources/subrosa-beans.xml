@@ -22,7 +22,9 @@
         </property>
     </bean>
 
+
     <bean id="gameDao" class="com.subrosa.game.model.GameDao"/>
     <bean id="gameService" class="com.subrosa.game.GameService"/>
+    <bean id="vegasGame" class="com.subrosa.vegas.VegasGame"/>
 
 </beans>

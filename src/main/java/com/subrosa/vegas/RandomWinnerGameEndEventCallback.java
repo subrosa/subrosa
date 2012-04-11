@@ -11,7 +11,5 @@ public class RandomWinnerGameEndEventCallback implements EventCallback {
     @Override
     public void handle(File propertiesFile) {
         Properties properties = new Properties();
-
-
     }
 }

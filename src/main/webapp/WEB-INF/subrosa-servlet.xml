@@ -9,7 +9,25 @@
         http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
         ">
 
-    <!-- resources exclusions from servlet mapping -->
-    <mvc:resources mapping="/static/**" location="/static/" />
+    <mvc:annotation-driven/>
+
+    <context:component-scan base-package="com.subrosa.web" use-default-filters="false">
+        <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+    </context:component-scan>
+
+    <bean id="contentNegotiatingViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
+        <property name="mediaTypes">
+            <map>
+                <entry key="json" value="application/json" />
+            </map>
+        </property>
+        <property name="defaultViews">
+            <list>
+                <bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>
+            </list>
+        </property>
+    </bean>
+
+    <import resource="classpath:subrosa-beans.xml" />
 
 </beans>

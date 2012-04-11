@@ -1,6 +1,7 @@
 package com.subrosa.vegas;
 
 import com.subrosa.game.Game;
+import com.subrosa.game.model.GameDao;
 
 import java.util.Random;
 
@@ -16,7 +17,7 @@ public class GameWinnerPicker {
     }
 
     public void pickWinner() {
-        Game game = new VegasGame(gameId);
+        Game game = new VegasGame(new GameDao().getGame(gameId));
         System.out.println("winner: " + game.getPlayers().get(new Random().nextInt(2)).getName());
     }
 }

@@ -2,6 +2,7 @@ package com.subrosa.game.model;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import com.subrosa.game.Game;
 import org.springframework.stereotype.Repository;
@@ -23,11 +24,14 @@ public class GameDao {
      * @param id game id
      * @return game
      */
-    public GameModel getGame(int id) {
+    public Game getGame(int id) {
         return entityManager.find(GameModel.class, id);
     }
 
-    public List<? extends Game> getGames() {
-        return entityManager.createQuery("SELECT g FROM GameModel g").getResultList();
+    public List<Game> getGames(int limit, int offset) {
+        Query query = entityManager.createQuery("SELECT g FROM GameModel g");
+        query.setMaxResults(limit);
+        query.setFirstResult(offset);
+        return query.getResultList();
     }
 }
