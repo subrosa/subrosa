@@ -14,6 +14,7 @@
               classpath:subrosa-app.properties,
               file:${external.config.directory:/opt/subrosa/etc}/environment.properties,
               file:${external.config.directory:/opt/subrosa/etc}/secure.properties,
+              file:${external.config.directory:/opt/subrosa/etc}/subrosa/subrosa-env.properties,
               file:${external.config.directory:/opt/subrosa/etc}/host.properties"
             />
 
