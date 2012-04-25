@@ -8,8 +8,14 @@
     <packaging>war</packaging>
     <name>subrosa</name>
     <description>
-        Sub Rosa gaming platform.
+        Sub Rosa API.
     </description>
+
+    <scm>
+        <connection>scm:hg:https://hg.subrosagames.com/subrosa</connection>
+        <developerConnection>scm:hg:https://hg.subrosagames.com/subrosa</developerConnection>
+        <url>https://hg.subrosagames.com/subrosa</url>
+    </scm>
 
     <properties>
         <org.slf4j.version>1.6.1</org.slf4j.version>
@@ -100,7 +106,6 @@
             <artifactId>jpa-api</artifactId>
             <version>2.0-cr-1</version>
         </dependency>
-
         <dependency>
             <groupId>c3p0</groupId>
             <artifactId>c3p0</artifactId>
@@ -127,11 +132,6 @@
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.0-801.jdbc4</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -181,7 +181,7 @@
                 <configuration>
                     <url>http://localhost:8080/manager/html</url>
                     <server>sandbox</server>
-                    <path>/subrosa</path>
+                    <path>/${build.finalName}</path>
                     <username>tomcat</username>
                     <password>tomcat</password>
                 </configuration>
@@ -214,12 +214,4 @@
             </plugin>
         </plugins>
     </build>
-
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>c5-public-repository</id>
-            <url>http://mvn.carbonfive.com/public</url>
-        </pluginRepository>
-    </pluginRepositories>
 </project>

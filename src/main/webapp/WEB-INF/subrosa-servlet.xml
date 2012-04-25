@@ -11,11 +11,11 @@
         http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
             ">
 
-    <mvc:annotation-driven/>
-
     <context:component-scan base-package="com.subrosa.web" use-default-filters="false">
         <context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
     </context:component-scan>
+
+    <mvc:annotation-driven/>
 
     <bean id="contentNegotiatingViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">
         <property name="mediaTypes">
