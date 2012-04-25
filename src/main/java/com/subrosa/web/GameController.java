@@ -27,12 +27,6 @@ public class GameController {
     @Autowired
     private GameService gameService;
 
-    @RequestMapping("/index")
-    @ResponseBody
-    public String index() {
-        return "index";
-    }
-
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Game> listGames(@RequestParam("limit") int limit,

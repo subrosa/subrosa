@@ -1,10 +1,13 @@
 package com.subrosa.account;
 
+import org.hibernate.annotations.Proxy;
+
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,6 +24,7 @@ import java.util.Set;
  * Represent an account in the SubRosa application.
  */
 @Entity
+@Proxy(lazy = false)
 @Table(name = "account")
 public class Account {
 
@@ -49,11 +53,14 @@ public class Account {
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
-    @ElementCollection(targetClass = AccountRole.class)
+    @ElementCollection(targetClass = AccountRole.class, fetch = FetchType.EAGER)
     @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Set<AccountRole> accountRole;
+    private Set<AccountRole> accountRoles;
+
+    @Column
+    private String password;
 
     public int getId() {
         return id;
@@ -112,11 +119,20 @@ public class Account {
     }
 
 
-    public Set<AccountRole> getAccountRole() {
-        return accountRole;
+    public Set<AccountRole> getAccountRoles() {
+        return accountRoles;
     }
 
-    public void setAccountRole(Set<AccountRole> accountRole) {
-        this.accountRole = accountRole;
+    public void setAccountRoles(Set<AccountRole> accountRoles) {
+        this.accountRoles = accountRoles;
     }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
 }
