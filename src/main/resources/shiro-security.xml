@@ -8,8 +8,8 @@
         <property name="filterChainDefinitions">
             <value>
                 /admin/** = ssl[8443],authcBasic,roles[ADMIN]
-                /account/** = ssl[8443],authcBasic,roles[ADMIN]
-                /** = authcBasic
+                <!--/account/** = ssl[8443],authcBasic,roles[ADMIN]-->
+                <!--/** = authcBasic-->
             </value>
         </property>
     </bean>
@@ -31,9 +31,9 @@
 
     <!-- Define the Shiro Realm implementation you want to use to connect to your back-end -->
     <!-- security datasource: -->
-    <bean id="subrosaRealm" class="com.subrosa.security.SubrosaSignInAuthorizingRealm">
+    <bean id="subrosaRealm" class="com.subrosagames.subrosa.security.SubrosaSignInAuthorizingRealm">
         <property name="credentialsMatcher">
-            <bean class="com.subrosa.security.SubrosaCredentialsMatcher">
+            <bean class="com.subrosagames.subrosa.security.SubrosaCredentialsMatcher">
                 <property name="hashAlgorithmName" value="SHA-512"/>
             </bean>
         </property>

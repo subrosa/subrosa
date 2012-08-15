@@ -9,7 +9,7 @@
                       http://www.subrosa.com/schema/context http://www.subrosa.com/schema/context/subrosa-context-1.0.xsd
                       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
-    <subrosa-context:property-placeholder name="propertyPlaceholderConfigurer" ignore-resource-not-found="true"
+    <context:property-placeholder ignore-resource-not-found="true"
       location="classpath:etc/build.properties,
                 classpath:subrosa-app.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/environment.properties,
@@ -18,8 +18,9 @@
                 file:${external.config.directory:/opt/subrosa/etc}/host.properties"
     />
 
-    <context:component-scan base-package="com.subrosa"/>
+    <context:component-scan base-package="com.subrosagames.subrosa"/>
 
-    <import resource="subrosa-beans.xml" />
-    <import resource="shiro-security.xml" />
+    <import resource="subrosa-beans.xml"/>
+    <import resource="subrosa-persistence.xml"/>
+    <import resource="shiro-security.xml"/>
 </beans>
