@@ -20,7 +20,7 @@ public class VegasGame extends AbstractGame {
 
     @Override
     public String getName() {
-        return "Vegas Game";
+        return "Vegas AssassinsGame";
     }
 
     @Override

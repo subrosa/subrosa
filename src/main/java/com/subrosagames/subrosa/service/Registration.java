@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.service;
 
 import com.subrosagames.subrosa.domain.account.Account;
 

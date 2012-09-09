@@ -1,10 +1,8 @@
 package com.subrosagames.subrosa.domain.payment;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import org.joda.money.Money;
-
-import java.util.Currency;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,18 +13,18 @@ import java.util.Currency;
  */
 public class Transaction {
 
-    private Game game;
+    private AssassinsGame game;
     private Account account;
     private TransactionType type;
     private Money amount;
     private String paypalTransactionId;
     private Money paypalFee;
 
-    public Game getGame() {
+    public AssassinsGame getGame() {
         return game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(AssassinsGame game) {
         this.game = game;
     }
 

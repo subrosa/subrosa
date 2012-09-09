@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.message;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 
 import java.util.Date;
@@ -16,18 +16,18 @@ import java.util.List;
  */
 public class Post {
 
-    private Game game;
+    private AssassinsGame game;
     private Account account;
     private GameEvent event;
     private String body;
     private List<Comment> comments;
     private Date timestamp;
 
-    public Game getGame() {
+    public AssassinsGame getGame() {
         return game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(AssassinsGame game) {
         this.game = game;
     }
 

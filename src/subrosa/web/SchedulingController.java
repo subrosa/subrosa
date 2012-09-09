@@ -3,7 +3,7 @@ package com.subrosa.web;
 import com.subrosa.event.EventCallback;
 import com.subrosa.event.GameEvent;
 import com.subrosa.event.TaskScheduler;
-import com.subrosagames.subrosa.api.GameController;
+import com.subrosagames.subrosa.service.GameController;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

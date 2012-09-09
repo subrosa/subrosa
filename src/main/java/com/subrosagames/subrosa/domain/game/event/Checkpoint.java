@@ -1,6 +1,6 @@
 package com.subrosagames.subrosa.domain.game.event;
 
-import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.AssassinsGame;
 
 import java.util.Date;
 
@@ -13,17 +13,17 @@ import java.util.Date;
  */
 public class Checkpoint {
 
-    private Game game;
+    private AssassinsGame game;
     private Date startTime;
     private Date endTime;
     private String secret;
     private String message;
 
-    public Game getGame() {
+    public AssassinsGame getGame() {
         return game;
     }
 
-    public void setGame(Game game) {
+    public void setGame(AssassinsGame game) {
         this.game = game;
     }
 

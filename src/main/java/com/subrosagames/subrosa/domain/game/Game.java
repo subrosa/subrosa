@@ -3,72 +3,69 @@ package com.subrosagames.subrosa.domain.game;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.image.Image;
 import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Represents a generic game.
+ * Interface describing the base level of functionality a game implementation must provide.
  */
-@Entity
-@Table(name = "game")
-public class Game implements com.subrosagames.subrosa.domain.game.IGame {
+public class Game {
 
-    public void startGame() { }
-    public void makeAssignments() { }
-    public void endGame() { }
-
-    @Id
-    @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gameSeq")
-    @Column(name = "game_id")
     private int id;
-
-    @Column
+    @NotEmpty
     private String name;
-
-    @Column
+    @NotEmpty
     private String description;
-
-    @Column(name = "game_type")
-    @Enumerated(EnumType.STRING)
     private GameType gameType;
-
-    @Column
+    @NotNull
     private BigDecimal price;
-
-    @Column(name = "start_time")
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date startTime;
-
-    @Column(name = "end_time")
+    @NotNull
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date endTime;
-
-    @Column
+    @NotNull
     private String timezone;
-
-    @Column
+    private Integer maximumTeamSize;
     private String password;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
     private Image image;
-
-    // TODO move this out of the base model class
-    @Column(name = "min_age")
     private Integer minimumAge;
+
+    public void startGame() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public void makeAssignments() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public void endGame() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public List<? extends GameEvent> getEvents() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public List<? extends GameRule> getRules() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public List<? extends Participant> getPlayers() {
+        throw new NotImplementedException("Must be implemented by a child class");
+    }
 
     public int getId() {
         return id;
@@ -158,18 +155,11 @@ public class Game implements com.subrosagames.subrosa.domain.game.IGame {
         this.minimumAge = minimumAge;
     }
 
-    @Override
-    public List<? extends GameEvent> getEvents() {
-        throw new NotImplementedException("Attempted to get events for a non-specific game");
+    public Integer getMaximumTeamSize() {
+        return maximumTeamSize;
     }
 
-    @Override
-    public List<? extends GameRule> getRules() {
-        throw new NotImplementedException("Attempted to get rules for a non-specific game");
-    }
-
-    @Override
-    public List<? extends Participant> getPlayers() {
-        throw new NotImplementedException("Attempted to get players for a non-specific game");
+    public void setMaximumTeamSize(Integer maximumTeamSize) {
+        this.maximumTeamSize = maximumTeamSize;
     }
 }
