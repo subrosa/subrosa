@@ -19,5 +19,4 @@
 
     <import resource="subrosa-beans.xml"/>
     <import resource="subrosa-persistence.xml"/>
-    <!--<import resource="shiro-security.xml"/>-->
 </beans>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:mvc="http://www.springframework.org/schema/mvc"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
+                        ">
+
+    <!--<debug/>-->
+
+    <global-method-security pre-post-annotations="enabled"/>
+
+    <http auto-config="true" use-expressions="true">
+        <!--<intercept-url pattern="/static" access="permitAll"/>-->
+        <!--<intercept-url pattern="/account" access="isAuthenticated()" requires-channel="https"/>-->
+        <!--<intercept-url pattern="/sign-in" access="isAnonymous()" requires-channel="https"/>-->
+        <!--<intercept-url pattern="/**" access="isAnonymous()"/>-->
+        <form-login
+                login-page="/sign-in"
+                login-processing-url="/process-sign-in"
+                username-parameter="email"
+                password-parameter="password"
+                authentication-success-handler-ref="authenticationSuccessHandler"
+                authentication-failure-url="/sign-in?failure=true"/>
+    </http>
+    <beans:bean id="authenticationSuccessHandler" class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+        <beans:property name="defaultTargetUrl" value="/account"/>
+    </beans:bean>
+
+    <beans:bean id="userDetailsService" class="com.subrosagames.subrosa.security.SubrosaUserDetailsService"/>
+    <beans:bean id="passwordEncoder" class="com.subrosagames.subrosa.security.SubrosaSha512PasswordEncoder"/>
+    <beans:bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+        <beans:property name="userPropertyToUse" value="salt"/>
+    </beans:bean>
+    <authentication-manager>
+        <authentication-provider user-service-ref="userDetailsService">
+            <password-encoder ref="passwordEncoder">
+                <salt-source ref="saltSource"/>
+            </password-encoder>
+        </authentication-provider>
+    </authentication-manager>
+
+    <mvc:default-servlet-handler/>
+
+</beans:beans>
