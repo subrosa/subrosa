@@ -223,4 +223,11 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+      <site>
+        <id>subrosa-site</id>
+        <name>Subrosa Maven Docs</name>
+        <url>${siteDeployRoot}/cms</url>
+      </site>
+    </distributionManagement>
 </project>
