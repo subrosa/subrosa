@@ -1,9 +1,9 @@
 package com.subrosagames.subrosa.security;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.shiro.codec.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;
@@ -35,10 +35,10 @@ public class PasswordUtility {
         }
 
         // encrypt salt + plaintext
-        byte[] salt = Hex.encodeToString(generateSalt()).getBytes();
-        digest.update(salt);
+        char[] salt = Hex.encode(generateSalt());
+        digest.update(new String(salt).getBytes());
         digest.update(plaintext.getBytes());
-        return new String(salt) + Hex.encodeToString(digest.digest());
+        return new String(salt) + new String(Hex.encode(digest.digest()));
     }
 
     private byte[] generateSalt() {
