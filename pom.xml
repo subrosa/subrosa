@@ -227,7 +227,7 @@
       <site>
         <id>subrosa-site</id>
         <name>Subrosa Maven Docs</name>
-        <url>${siteDeployRoot}/cms</url>
+        <url>${siteDeployRoot}/subrosa</url>
       </site>
     </distributionManagement>
 </project>
