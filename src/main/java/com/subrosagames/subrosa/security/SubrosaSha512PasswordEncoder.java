@@ -3,14 +3,14 @@ package com.subrosagames.subrosa.security;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 8/28/12
- * Time: 2:36 午後
- * To change this template use File | Settings | File Templates.
+ * Encode passwords with salted SHA-512.
  */
 public class SubrosaSha512PasswordEncoder extends MessageDigestPasswordEncoder {
 
+    /**
+     * Encode a password in SHA-512.
+     * @throws IllegalArgumentException for illegal arguments to super().
+     */
     public SubrosaSha512PasswordEncoder() throws IllegalArgumentException {
         super("SHA-512", false);
     }
