@@ -4,6 +4,7 @@ package com.subrosagames.subrosa.domain.game.dispute;
  * The different types of disputes that can occur in a game.
  */
 public enum DisputeType {
+    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 12 LINES
     BAD_PHOTO ("Misleading or invalid photo",
             "The target's photo ID is either obscured or is not an actual photo of his or herself."),
     BAD_ACCOUNT_INFO ("Misleading or incorrect account information",

@@ -4,6 +4,9 @@ import java.util.Date;
 
 import com.subrosagames.subrosa.domain.account.Account;
 
+/**
+ * Represents a comment on a {@link Post}.
+ */
 public class Comment {
 
     private Account account;

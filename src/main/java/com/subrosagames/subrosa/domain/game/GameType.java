@@ -5,5 +5,5 @@ package com.subrosagames.subrosa.domain.game;
  * In the future we hope to add humans vs. zombies, paparazzi, etc.
  */
 public enum GameType {
-    ASSASSIN
+    ASSASSIN    //SUPPRESS CHECKSTYLE JavadocVariable
 }

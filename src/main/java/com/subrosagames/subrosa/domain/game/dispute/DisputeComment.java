@@ -3,6 +3,9 @@ package com.subrosagames.subrosa.domain.game.dispute;
 import java.util.Date;
 import com.subrosagames.subrosa.domain.game.Player;
 
+/**
+ * Represents a comment on a {@link Dispute}.
+ */
 public class DisputeComment {
 
     private Player author;

@@ -6,13 +6,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import com.subrosagames.subrosa.domain.account.Account;
 
-/**
-* Created with IntelliJ IDEA.
-* User: jgore
-* Date: 8/28/12
-* Time: 2:29 午後
-* To change this template use File | Settings | File Templates.
-*/
 public class SubrosaUser extends User {
 
     private Account account;
@@ -26,11 +19,19 @@ public class SubrosaUser extends User {
         return account;
     }
 
+    /**
+     * Get a user's unsalted password.
+     * @return String password.
+     */
     public String getPassword() {
         String password = super.getPassword();
         return password.substring(128);
     }
 
+    /**
+     * Get the salt used to create the password.
+     * @return String salt.
+     */
     public String getSalt() {
         String password = super.getPassword();
         return password.substring(0, 128);

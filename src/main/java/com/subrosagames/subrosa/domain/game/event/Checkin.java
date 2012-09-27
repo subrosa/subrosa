@@ -4,6 +4,9 @@ import java.util.Date;
 
 import com.subrosagames.subrosa.domain.game.Player;
 
+/**
+ * Represents a player checking in to a {@link Checkpoint}.
+ */
 public class Checkin {
 
     private Player player;

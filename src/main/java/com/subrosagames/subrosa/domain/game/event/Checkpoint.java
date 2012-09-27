@@ -4,6 +4,9 @@ import java.util.Date;
 
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 
+/**
+ * Used to represent checkpoints which require players to register a {@link Checkin} in time.
+ */
 public class Checkpoint {
 
     private AssassinsGame game;

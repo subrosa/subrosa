@@ -5,6 +5,9 @@ import java.util.List;
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.Player;
 
+/**
+ * Represents a dispute between two {@link Player}s.
+ */
 public class Dispute {
 
     private AssassinsGame game;

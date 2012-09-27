@@ -22,7 +22,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 /**
- * Represent an account in the SubRosa application.
+ * Represents an account in the Subrosa application.
  */
 @Entity
 @Table(name = "account")

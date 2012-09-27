@@ -1,7 +1,11 @@
 package com.subrosagames.subrosa.domain.account;
 
+/**
+ *  Enum for the various types of {@link Accolade}s.
+ */
 public enum AccoladeType {
 
+    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 10 LINES
     FIRST_BLOOD,
     FIRST_DEATH,
     KILLING_SPREE,
