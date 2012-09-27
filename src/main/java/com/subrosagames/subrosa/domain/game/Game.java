@@ -1,21 +1,15 @@
 package com.subrosagames.subrosa.domain.game;
 
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.image.Image;
-import org.apache.commons.lang.NotImplementedException;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.domain.image.Image;
 
 /**
  * Interface describing the base level of functionality a game implementation must provide.
@@ -32,7 +26,7 @@ public class Game {
     private BigDecimal price;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date startTime;
+    private Date registrationEndTime;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date endTime;
@@ -107,12 +101,12 @@ public class Game {
         this.price = price;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getRegistrationEndTime() {
+        return registrationEndTime;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setRegistrationEndTime(Date registrationEndTime) {
+        this.registrationEndTime = registrationEndTime;
     }
 
     public Date getEndTime() {

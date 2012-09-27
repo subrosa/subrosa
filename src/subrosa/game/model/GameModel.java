@@ -50,8 +50,8 @@ public class GameModel implements Game {
     @Column
     private BigDecimal price;
 
-    @Column(name = "start_time")
-    private Date startTime;
+    @Column(name = "registration_end_time")
+    private Date registrationEndTime;
 
     @Column(name = "end_time")
     private Date endTime;
@@ -110,12 +110,12 @@ public class GameModel implements Game {
         this.price = price;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getRegistrationEndTime() {
+        return registrationEndTime;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setRegistrationEndTime(Date registrationEndTime) {
+        this.registrationEndTime = registrationEndTime;
     }
 
     public Date getEndTime() {

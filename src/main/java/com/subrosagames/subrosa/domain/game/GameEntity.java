@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
-import com.subrosagames.subrosa.domain.image.Image;
-
+import java.math.BigDecimal;
+import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,8 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.math.BigDecimal;
-import java.util.Date;
+
+import com.subrosagames.subrosa.domain.image.Image;
 
 /**
  * Persisted entity for a game.
@@ -43,8 +43,8 @@ public class GameEntity {
     @Column
     private BigDecimal price;
 
-    @Column(name = "start_time")
-    private Date startTime;
+    @Column(name = "registration_end_time")
+    private Date registrationEndTime;
 
     @Column(name = "end_time")
     private Date endTime;
@@ -106,12 +106,12 @@ public class GameEntity {
         this.price = price;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getRegistrationEndTime() {
+        return registrationEndTime;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setRegistrationEndTime(Date registrationEndTime) {
+        this.registrationEndTime = registrationEndTime;
     }
 
     public Date getEndTime() {
