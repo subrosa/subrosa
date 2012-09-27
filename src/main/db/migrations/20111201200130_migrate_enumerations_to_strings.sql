@@ -146,6 +146,7 @@ ALTER TABLE dispute RENAME COLUMN modified2 to modified;
 ALTER TABLE event ADD COLUMN event_type VARCHAR(64);
 
 UPDATE event SET event_type = 'ASSIGN' WHERE event_type_id = 1;
+UPDATE event SET event_type = 'CAMPER_ELIMINATION' WHERE event_type_id = 2;
 
 ALTER TABLE event ALTER COLUMN event_type SET NOT NULL;
 ALTER TABLE event DROP COLUMN event_type_id;
@@ -196,8 +197,9 @@ ALTER TABLE history ADD COLUMN history_type VARCHAR(64);
 
 UPDATE history SET history_type = 'KILL' WHERE history_type_id = 1;
 UPDATE history SET history_type = 'DEFENSIVE_KILL' WHERE history_type_id = 2;
-UPDATE history SET history_type = 'ADMIN_ELIMINATION' WHERE history_type_id = 3;
+UPDATE history SET history_type = 'ADMIN_ELIMINATION' WHERE history_type_id = 3 ;
 UPDATE history SET history_type = 'MISSED_CHECKPOINT' WHERE history_type_id = 4 OR obituary LIKE '%Yikes, % did not make it to the checkpoint in time%';
+UPDATE history SET history_type = 'ZERO_KILLS' WHERE history_type_id = 5;
 
 ALTER TABLE history ALTER COLUMN history_type SET NOT NULL;
 ALTER TABLE history DROP COLUMN history_type_id;
@@ -225,7 +227,8 @@ UPDATE image SET image_type = 'ACCOLADE' WHERE image_type_id = 5;
 UPDATE image SET image_type = 'POST_ATTACHMENT' WHERE image_type_id = 6;
 UPDATE image SET image_type = 'THUMBNAIL' WHERE image_type_id = 7;
 UPDATE image SET image_type = 'ICON' WHERE image_type_id = 8;
-UPDATE image SET image_type = 'TEAM BADGE' WHERE image_type_id = 9;
+UPDATE image SET image_type = 'TEAM_BADGE' WHERE image_type_id = 9;
+UPDATE image SET image_type = 'SPONSOR_IMAGE' WHERE image_type_id = 10;
 
 ALTER TABLE image ALTER COLUMN image_type SET NOT NULL;
 ALTER TABLE image DROP COLUMN image_type_id;
@@ -288,13 +291,14 @@ DROP TABLE post_type;
 -- rule_type
 ALTER TABLE rule ADD COLUMN rule_type VARCHAR(64);
 
-UPDATE rule SET rule_type = 'OVERARCHING' WHERE rule_type_id = 1;
+UPDATE rule SET rule_type = 'ALL_GAMES' WHERE rule_type_id = 1;
 UPDATE rule SET rule_type = 'LOCATION_RESTRICTION' WHERE rule_type_id = 2;
 UPDATE rule SET rule_type = 'SAFE_ZONES' WHERE rule_type_id = 3;
-UPDATE rule SET rule_type = 'ORDNANCE_RESTRICTION' WHERE rule_type_id = 4;
-UPDATE rule SET rule_type = 'ASSIGNMENT_METHOD_SPECIFIC' WHERE rule_type_id = 5;
-UPDATE rule SET rule_type = 'ASSASSINS_CREED' WHERE rule_type_id = 6;
-UPDATE rule SET rule_type = 'MISCELLANEOUS' WHERE rule_type_id = 7;
+UPDATE rule SET rule_type = 'WATER_WEAPONS' WHERE rule_type_id = 4;
+UPDATE rule SET rule_type = 'ROUND_ROBIN' WHERE rule_type_id = 5;
+UPDATE rule SET rule_type = 'ASSASSIN' WHERE rule_type_id = 6;
+UPDATE rule SET rule_type = 'NERF_WEAPONS' WHERE rule_type_id = 7;
+UPDATE rule SET rule_type = 'SPOONS_AND_SOCKS' WHERE rule_type_id = 8;
 
 ALTER TABLE rule ALTER COLUMN rule_type SET NOT NULL;
 ALTER TABLE rule DROP COLUMN rule_type_id;
