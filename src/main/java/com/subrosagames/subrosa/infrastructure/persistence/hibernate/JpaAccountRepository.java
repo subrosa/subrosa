@@ -1,14 +1,14 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.security.PasswordUtility;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.security.PasswordUtility;
 
 /**
  * JPA-based implementation of CRUD functionality for accounts.

@@ -1,15 +1,14 @@
 package com.subrosagames.subrosa.security;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.codec.Hex;
-import org.springframework.stereotype.Component;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.codec.Hex;
+import org.springframework.stereotype.Component;
 
 /**
  * Provides functionality related to the handling of passwords.

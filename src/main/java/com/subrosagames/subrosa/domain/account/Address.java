@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import java.util.Date;
 
 /**
  * Used to represent an accounts addresses.
@@ -17,7 +17,7 @@ import java.util.Date;
 public class Address {
 
     @Id
-    @SequenceGenerator(name = "addressSeq", sequenceName="address_address_id_seq")
+    @SequenceGenerator(name = "addressSeq", sequenceName = "address_address_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressSeq")
     @Column(name = "address_id")
     private int id;

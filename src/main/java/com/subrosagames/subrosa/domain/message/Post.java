@@ -1,11 +1,11 @@
 package com.subrosagames.subrosa.domain.message;
 
+import java.util.Date;
+import java.util.List;
+
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
-
-import java.util.Date;
-import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.

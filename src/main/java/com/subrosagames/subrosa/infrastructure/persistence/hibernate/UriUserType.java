@@ -77,7 +77,8 @@ public class UriUserType implements UserType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor) throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor)
+            throws HibernateException, SQLException {
         StandardBasicTypes.STRING.nullSafeSet(preparedStatement, (o != null) ? o.toString() : null, i, sessionImplementor);
     }
 

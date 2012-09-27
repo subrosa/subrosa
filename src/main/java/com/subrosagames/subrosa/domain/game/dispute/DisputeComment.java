@@ -1,16 +1,8 @@
 package com.subrosagames.subrosa.domain.game.dispute;
 
+import java.util.Date;
 import com.subrosagames.subrosa.domain.game.Player;
 
-import java.util.Date;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 7/17/12
- * Time: 8:00 午後
- * To change this template use File | Settings | File Templates.
- */
 public class DisputeComment {
 
     private Player author;

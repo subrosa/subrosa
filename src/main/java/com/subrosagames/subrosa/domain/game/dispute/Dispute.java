@@ -1,17 +1,10 @@
 package com.subrosagames.subrosa.domain.game.dispute;
 
+import java.util.List;
+
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.Player;
 
-import java.util.List;
-
-/**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 7/17/12
- * Time: 7:46 午後
- * To change this template use File | Settings | File Templates.
- */
 public class Dispute {
 
     private AssassinsGame game;

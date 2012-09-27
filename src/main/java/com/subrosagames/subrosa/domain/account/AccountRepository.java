@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.domain.account;
 
-import java.util.List;
-
 /**
  * Provides CRUD functionality for accounts and their subordinate entities.
  */

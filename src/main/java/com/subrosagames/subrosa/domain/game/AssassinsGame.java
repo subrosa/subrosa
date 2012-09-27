@@ -1,14 +1,9 @@
 package com.subrosagames.subrosa.domain.game;
 
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.image.Image;
-import org.apache.commons.lang.NotImplementedException;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang.NotImplementedException;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 
 /**
  * Represents a generic game.

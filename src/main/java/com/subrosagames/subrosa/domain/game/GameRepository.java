@@ -1,9 +1,9 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.message.Post;
-
-import java.util.List;
 
 /**
  * Repository for retrieval of game information.

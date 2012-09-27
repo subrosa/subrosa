@@ -1,7 +1,9 @@
 package com.subrosagames.subrosa.domain.account;
 
-import com.subrosagames.subrosa.domain.account.entity.AccountEntity;
-
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -18,10 +20,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Represent an account in the SubRosa application.
@@ -30,12 +28,8 @@ import java.util.Set;
 @Table(name = "account")
 public class Account {
 
-    public List<Accolade> getAccolades() {
-        return new ArrayList<Accolade>();
-    }
-
     @Id
-    @SequenceGenerator(name = "accountSeq", sequenceName="account_account_id_seq")
+    @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
     @Column(name = "account_id")
     private int id;
@@ -157,4 +151,7 @@ public class Account {
         this.addresses = addresses;
     }
 
+    public List<Accolade> getAccolades() {
+        return new ArrayList<Accolade>();
+    }
 }

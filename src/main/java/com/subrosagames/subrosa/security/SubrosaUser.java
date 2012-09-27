@@ -1,10 +1,10 @@
 package com.subrosagames.subrosa.security;
 
-import com.subrosagames.subrosa.domain.account.Account;
+import java.util.HashSet;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-
-import java.util.HashSet;
+import com.subrosagames.subrosa.domain.account.Account;
 
 /**
 * Created with IntelliJ IDEA.

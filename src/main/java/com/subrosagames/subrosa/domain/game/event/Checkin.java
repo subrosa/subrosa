@@ -1,16 +1,9 @@
 package com.subrosagames.subrosa.domain.game.event;
 
-import com.subrosagames.subrosa.domain.game.Player;
-
 import java.util.Date;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 7/17/12
- * Time: 7:47 午後
- * To change this template use File | Settings | File Templates.
- */
+import com.subrosagames.subrosa.domain.game.Player;
+
 public class Checkin {
 
     private Player player;

@@ -1,8 +1,6 @@
 package com.subrosagames.subrosa.domain.image;
 
-import com.subrosagames.subrosa.infrastructure.persistence.hibernate.UriUserType;
-import org.hibernate.annotations.Type;
-
+import java.net.URI;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,7 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import java.net.URI;
+
+import org.hibernate.annotations.Type;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.UriUserType;
 
 /**
  * Model class for images.
@@ -20,7 +20,7 @@ import java.net.URI;
 public class Image {
 
     @Id
-    @SequenceGenerator(name = "imageSeq", sequenceName="image_image_id_seq")
+    @SequenceGenerator(name = "imageSeq", sequenceName = "image_image_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "imageSeq")
     @Column(name = "image_id")
     private Integer id;

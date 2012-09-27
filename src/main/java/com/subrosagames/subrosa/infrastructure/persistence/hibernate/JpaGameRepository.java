@@ -1,5 +1,18 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.List;
+import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+import org.apache.commons.lang.NotImplementedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.game.Game;
@@ -8,24 +21,7 @@ import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.message.Post;
-import org.apache.commons.lang.NotImplementedException;
-import org.codehaus.jackson.map.util.BeanUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import java.util.List;
-
-/**
- *
- */
 @Repository
 @Transactional
 public class JpaGameRepository implements GameRepository {
