@@ -1,5 +1,4 @@
 INSERT INTO post SELECT nextval('post_post_id_seq'), p.account_id, null, null,
-regexp_replace(regexp_replace(concat(substring(m.message from 1 for 124), ' ...'), '(.{0,120}) \.\.\.', '\1'), '(.{124})', '\1 ...'),
 m.message, null, game_id, 'TEXT', m.created, m.modified
     FROM message m
     JOIN player p using (player_id);
@@ -8,7 +7,6 @@ ALTER TABLE comment DROP CONSTRAINT comment_post_id_fkey;
 DROP SEQUENCE post_post_id_seq CASCADE;
 ALTER TABLE post DROP CONSTRAINT post_pkey;
 ALTER TABLE post RENAME TO post_old;
-DROP INDEX post_title;
 
  -- Recreate table
 
@@ -19,8 +17,7 @@ DROP INDEX post_title;
 CREATE TABLE post (
      post_id integer NOT NULL,
      post_type character varying(64) NOT NULL,
-     title character varying(128) NOT NULL,
-     body text NOT NULL,
+     content text NOT NULL,
      account_id integer NOT NULL,
      history_id integer,
      accolade_id integer,
@@ -66,13 +63,6 @@ CREATE TABLE post (
 
  ALTER TABLE ONLY post
      ADD CONSTRAINT post_pkey PRIMARY KEY (post_id);
-
-
- --
- -- Name: post_title; Type: INDEX; Schema: public; Owner: engine; Tablespace:
- --
-
- CREATE INDEX post_title ON post USING btree (title);
 
 
  --
@@ -129,11 +119,12 @@ CREATE TABLE post (
  --
 
 
-INSERT INTO post (title, body, post_type, game_id, account_id, image_id, history_id, accolade_id, created, modified)
-    SELECT title, body, post_type, game_id, account_id, image_id, history_id, accolade_id, created, modified from post_old
+INSERT INTO post (content, post_type, game_id, account_id, image_id, history_id, accolade_id, created, modified)
+    SELECT content, post_type, game_id, account_id, image_id, history_id, accolade_id, created, modified from post_old
     ORDER BY created;
 
 
 DROP TABLE post_old;
-
 ALTER TABLE comment ADD CONSTRAINT comment_post_id_fkey FOREIGN KEY (post_id) REFERENCES post (post_id);
+
+DROP TABLE message;
