@@ -7,19 +7,12 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 
-/**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 7/17/12
- * Time: 8:55 午後
- * To change this template use File | Settings | File Templates.
- */
 public class Post {
 
     private AssassinsGame game;
     private Account account;
     private GameEvent event;
-    private String body;
+    private String content;
     private List<Comment> comments;
     private Date timestamp;
 
@@ -47,12 +40,12 @@ public class Post {
         this.event = event;
     }
 
-    public String getBody() {
-        return body;
+    public String getContent() {
+        return content;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public List<Comment> getComments() {
