@@ -1,12 +1,14 @@
 package com.subrosagames.subrosa.domain.account;
 
 /**
- * Used to represent address types.
+ * Enumeration of possible address types.
  */
 public enum AddressType {
-    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 4 LINES
+
+    // CHECKSTYLE-OFF: JavadocVariable
     HOME,
     WORK,
     SCHOOL,
     OTHER
+    // CHECKSTYLE-ON: JavadocVariable
 }

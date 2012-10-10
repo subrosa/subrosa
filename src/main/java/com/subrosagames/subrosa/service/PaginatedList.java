@@ -2,6 +2,10 @@ package com.subrosagames.subrosa.service;
 
 import java.util.List;
 
+/**
+ * Wrapper for a paginated list of objects as a result of some query.
+ * @param <T> object type
+ */
 public class PaginatedList<T> {
 
     private int limit;
@@ -9,6 +13,13 @@ public class PaginatedList<T> {
     private int resultCount;
     private List<T> results;
 
+    /**
+     * Construct with provided results list and pagination parameters.
+     * @param results results list
+     * @param resultCount total results
+     * @param limit number returned
+     * @param offset offset into total
+     */
     public PaginatedList(List<T> results, int resultCount, int limit, int offset) {
         this.results = results;
         this.resultCount = resultCount;

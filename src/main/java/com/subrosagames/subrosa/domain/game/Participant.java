@@ -1,12 +1,13 @@
 package com.subrosagames.subrosa.domain.game;
 
 /**
- * Interface for game participants.
+ * Represents a participant in a game.
  */
 public interface Participant {
+
     /**
-     * Get the name of the participant.
-     * @return String name.
+     * Participant's name.
+     * @return name
      */
     String getName();
 }

@@ -5,7 +5,7 @@ package com.subrosagames.subrosa.domain.account;
  */
 public enum AccoladeType {
 
-    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 10 LINES
+    // CHECKSTYLE-OFF: JavadocVariable
     FIRST_BLOOD,
     FIRST_DEATH,
     KILLING_SPREE,
@@ -16,6 +16,7 @@ public enum AccoladeType {
     SECOND_MOST_KILLS,
     FIRST_MOST_KILLS,
     ULTIMATE_ASSASSIN;
+    // CHECKSTYLE-ON: JavadocVariable
 
     private static final int KILLING_SPREE_NUMBER_OF_KILLS = 3;
     private static final int RAMPAGE_NUMBER_OF_KILLS = 5;

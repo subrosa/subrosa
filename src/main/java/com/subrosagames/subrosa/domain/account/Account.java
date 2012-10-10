@@ -70,6 +70,14 @@ public class Account {
     )
     private Set<Address> addresses;
 
+    /**
+     * Get accolades for this account.
+     * @return list of accolades
+     */
+    public List<Accolade> getAccolades() {
+        return new ArrayList<Accolade>();
+    }
+
     public int getId() {
         return id;
     }
@@ -151,7 +159,4 @@ public class Account {
         this.addresses = addresses;
     }
 
-    public List<Accolade> getAccolades() {
-        return new ArrayList<Accolade>();
-    }
 }

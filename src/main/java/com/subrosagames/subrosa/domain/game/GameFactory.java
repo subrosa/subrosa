@@ -6,9 +6,9 @@ package com.subrosagames.subrosa.domain.game;
 public interface GameFactory {
 
     /**
-     * Get the game for the game entity.
-     * @param gameEntity the {@link GameEntity}
-     * @return Game {@link Game}
+     * Create a game domain object for the given stored game entity.
+     * @param gameEntity game entity
+     * @return game domain object
      */
     Game getGameForEntity(GameEntity gameEntity);
 

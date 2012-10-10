@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameEntity;
 import com.subrosagames.subrosa.domain.game.GameFactory;
@@ -35,7 +36,7 @@ public class JpaGameRepository implements GameRepository {
     private GameFactory gameFactory;
 
     @Override
-    public Game createGame(Game game) {
+    public Game createGame(Game game, Account gameMaster) {
         GameEntity gameEntity = new GameEntity();
         BeanUtils.copyProperties(game, gameEntity);
         entityManager.persist(gameEntity);

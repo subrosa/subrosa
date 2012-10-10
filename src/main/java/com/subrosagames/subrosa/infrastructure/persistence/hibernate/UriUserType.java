@@ -16,7 +16,6 @@ import org.hibernate.usertype.UserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Custom Hibernate type for storing a {@link URI} as a string in the database.
  *
@@ -67,7 +66,7 @@ public class UriUserType implements UserType {
     }
 
     @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o) throws HibernateException, SQLException {
+    public Object nullSafeGet(ResultSet resultSet, String[] strings, SessionImplementor sessionImplementor, Object o) throws SQLException {
         String value = (String) StandardBasicTypes.STRING.nullSafeGet(resultSet, strings[0], sessionImplementor, o);
         try {
             return ((value != null) ? new URI(value) : null);

@@ -22,6 +22,7 @@ public class PasswordUtility {
 
     /**
      * Encrypt the provided password using base64-encoded salted SHA-512.
+     *
      * @param plaintext plaintext password
      * @return encrypted password
      */

@@ -13,7 +13,6 @@ public class Player implements Participant {
     }
 
     public void setName(String name) {
-
         this.name = name;
     }
 }

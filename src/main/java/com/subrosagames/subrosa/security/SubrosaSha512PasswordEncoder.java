@@ -3,15 +3,14 @@ package com.subrosagames.subrosa.security;
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
 /**
- * Encode passwords with salted SHA-512.
+ * Overrides the default spring security salted password encoder to manipulate salt handling.
  */
 public class SubrosaSha512PasswordEncoder extends MessageDigestPasswordEncoder {
 
     /**
-     * Encode a password in SHA-512.
-     * @throws IllegalArgumentException for illegal arguments to super().
+     * Constructs as a SHA-512 message digest encoder.
      */
-    public SubrosaSha512PasswordEncoder() throws IllegalArgumentException {
+    public SubrosaSha512PasswordEncoder() {
         super("SHA-512", false);
     }
 

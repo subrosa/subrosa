@@ -14,7 +14,7 @@ public class Team implements Participant {
         return members;
     }
 
-    public void setMembers(List<? extends Player> members) {
+    public void setMembers(List<Player> members) {
         this.members = members;
     }
 

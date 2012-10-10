@@ -4,7 +4,8 @@ package com.subrosagames.subrosa.domain.image;
  * Used to represent various types of images.
  */
 public enum ImageType {
-    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 9 LINES
+
+    // CHECKSTYLE-OFF: JavadocVariable
     GAME_BADGE,
     PHOTO_ID,
     AVATAR,
@@ -14,4 +15,5 @@ public enum ImageType {
     THUMBNAIL,
     ICON,
     TEAM_BADGE
+    // CHECKSTYLE-ON: JavadocVariable
 }

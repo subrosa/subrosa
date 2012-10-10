@@ -7,6 +7,9 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 
+/**
+ * Encapsulates a user post in a game.
+ */
 public class Post {
 
     private AssassinsGame game;

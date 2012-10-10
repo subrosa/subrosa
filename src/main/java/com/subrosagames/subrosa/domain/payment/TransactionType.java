@@ -4,8 +4,10 @@ package com.subrosagames.subrosa.domain.payment;
  * Used to represent transaction types.
  */
 public enum TransactionType {
-    // SUPPRESS CHECKSTYLE JavadocVariable NEXT 3 LINES
+
+    // CHECKSTYLE-OFF: JavadocVariable
     PAYMENT,
     REFUND,
     FAILED
+    // CHECKSTYLE-ON: JavadocVariable
 }

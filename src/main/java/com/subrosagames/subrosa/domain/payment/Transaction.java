@@ -5,11 +5,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.AssassinsGame;
 
 /**
- * Created with IntelliJ IDEA.
- * User: jgore
- * Date: 7/17/12
- * Time: 8:07 午後
- * To change this template use File | Settings | File Templates.
+ * Encapsulates a single financial transaction.
  */
 public class Transaction {
 

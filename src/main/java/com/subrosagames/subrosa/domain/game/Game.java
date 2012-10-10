@@ -16,6 +16,8 @@ import com.subrosagames.subrosa.domain.image.Image;
  */
 public class Game {
 
+    private GameRuleSet ruleSet;
+
     private int id;
     @NotEmpty
     private String name;
@@ -26,7 +28,7 @@ public class Game {
     private BigDecimal price;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Date registrationEndTime;
+    private Date startTime;
     @NotNull
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Date endTime;
@@ -37,49 +39,38 @@ public class Game {
     private Image image;
     private Integer minimumAge;
 
-    /**
-     * Start the game.
-     */
+    public Game() { }
+
     public void startGame() {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    /**
-     * Make assignments in the game.
-     */
     public void makeAssignments() {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    /**
-     * End the game.
-     */
     public void endGame() {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    /**
-     * Get the game's events.
-     * @return List of {@link GameEvent}s.
-     */
     public List<? extends GameEvent> getEvents() {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    /**
-     * Get the game's rules.
-     * @return List of {@link GameRule}s.
-     */
     public List<? extends GameRule> getRules() {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    /**
-     * Get the game's participants.
-     * @return List of {@link Participant}s.
-     */
     public List<? extends Participant> getPlayers() {
         throw new NotImplementedException("Must be implemented by a child class");
+    }
+
+    public GameRuleSet getRuleSet() {
+        return ruleSet;
+    }
+
+    public void setRuleSet(GameRuleSet ruleSet) {
+        this.ruleSet = ruleSet;
     }
 
     public int getId() {
@@ -122,12 +113,12 @@ public class Game {
         this.price = price;
     }
 
-    public Date getRegistrationEndTime() {
-        return registrationEndTime;
+    public Date getStartTime() {
+        return startTime;
     }
 
-    public void setRegistrationEndTime(Date registrationEndTime) {
-        this.registrationEndTime = registrationEndTime;
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     public Date getEndTime() {

@@ -9,9 +9,9 @@ public class GameRule {
     private String description;
 
     /**
-     * Constructor for a GameRule.
-     * @param name the name of the rule.
-     * @param description the description of the rule.
+     * Construct a rule with the given name and description.
+     * @param name name
+     * @param description description
      */
     public GameRule(String name, String description) {
         this.name = name;
