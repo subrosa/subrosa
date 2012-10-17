@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
+import com.subrosagames.subrosa.domain.game.post.PostEntity;
+import com.subrosagames.subrosa.domain.message.Post;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,5 +21,13 @@ public class GameFactoryImpl implements GameFactory {
         BeanUtils.copyProperties(gameEntity, game);
         return game;
     }
+
+    @Override
+    public Post getPostForEntity(PostEntity postEntity) {
+        Post post = new Post();
+        BeanUtils.copyProperties(postEntity, post);
+        return post;
+    }
+
 
 }

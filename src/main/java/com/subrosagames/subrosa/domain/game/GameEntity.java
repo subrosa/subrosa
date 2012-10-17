@@ -2,19 +2,23 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 
 /**
@@ -59,12 +63,16 @@ public class GameEntity {
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "image_id")
     private Image image;
 
     // TODO move this out of the base model class
     @Column(name = "min_age")
     private Integer minimumAge;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    private List<PostEntity> posts;
 
     public int getId() {
         return id;
@@ -160,5 +168,13 @@ public class GameEntity {
 
     public void setMaximumTeamSize(Integer maximumTeamSize) {
         this.maximumTeamSize = maximumTeamSize;
+    }
+
+    public List<PostEntity> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<PostEntity> posts) {
+        this.posts = posts;
     }
 }

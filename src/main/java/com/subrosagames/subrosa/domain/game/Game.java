@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
+import com.subrosagames.subrosa.domain.message.Post;
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,30 +1,36 @@
-package com.subrosagames.subrosa.domain.message;
-
-import java.util.Date;
-import java.util.List;
-
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
+package com.subrosagames.subrosa.domain.game.post;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
 
 /**
- * Encapsulates a user post in a game.
  */
-public class Post {
+@Entity
+@Table(name = "post")
+public class PostEntity {
 
+    @Id
+    @Column(name = "post_id")
     private Integer postId;
+
+    @Column(name = "game_id")
     private Integer gameId;
+
+    @Column(name = "account_id")
     private Integer accountId;
+
+    @Column
     private String content;
+
+    @Column(name = "history_id")
     private Integer historyId;
+
+    @Column(name = "accolade_id")
     private Integer accoladeId;
+
+    @Column(name = "image_id")
     private Integer imageId;
 
     public Integer getPostId() {

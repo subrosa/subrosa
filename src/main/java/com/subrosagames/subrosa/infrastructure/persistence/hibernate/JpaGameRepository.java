@@ -6,6 +6,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +47,11 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public Game getGame(int gameId) {
         LOG.debug("Retrieving game with id {} from the database", gameId);
-        GameEntity gameEntity = entityManager.find(GameEntity.class, gameId);
-        return gameFactory.getGameForEntity(gameEntity);
+        return gameFactory.getGameForEntity(findGameEntity(gameId));
+    }
+
+    private GameEntity findGameEntity(int gameId) {
+        return entityManager.find(GameEntity.class, gameId);
     }
 
     @Override
@@ -93,17 +97,25 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public List<Post> getPosts(int gameId, int limit, int offset) {
-        TypedQuery<Post> query = entityManager.createQuery("SELECT p FROM Post p WHERE p.gameId = :gameId", Post.class);
-        query.setParameter("gameId", gameId);
-        query.setMaxResults(limit);
-        query.setFirstResult(offset);
-        return query.getResultList();
+        List<PostEntity> posts = findGameEntity(gameId).getPosts();
+        return Lists.transform(posts, new Function<PostEntity, Post>() {
+            @Override
+            public Post apply(@Nullable PostEntity postEntity) {
+                return gameFactory.getPostForEntity(postEntity);
+            }
+        });
+//        TypedQuery<Post> query = entityManager.createQuery("SELECT p FROM Post p WHERE p.gameId = :gameId", Post.class);
+//        query.setParameter("gameId", gameId);
+//        query.setMaxResults(limit);
+//        query.setFirstResult(offset);
+//        return query.getResultList();
     }
 
     @Override
     public int getPostCount(int gameId) {
-        TypedQuery<Integer> query = entityManager.createQuery("SELECT COUNT(1) FROM Post p WHERE p.gameId = :gameId", Integer.class);
-        query.setParameter("gameId", gameId);
-        return query.getSingleResult();
+        return findGameEntity(gameId).getPosts().size();
+//        TypedQuery<Integer> query = entityManager.createQuery("SELECT COUNT(1) FROM Post p WHERE p.gameId = :gameId", Integer.class);
+//        query.setParameter("gameId", gameId);
+//        return query.getSingleResult();
     }
 }
