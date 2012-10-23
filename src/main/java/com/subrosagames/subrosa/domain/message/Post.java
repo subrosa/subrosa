@@ -1,18 +1,7 @@
 package com.subrosagames.subrosa.domain.message;
 
-import java.util.Date;
-import java.util.List;
-
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
+import com.subrosagames.subrosa.domain.image.Image;
 
 /**
  * Encapsulates a user post in a game.
@@ -21,11 +10,11 @@ public class Post {
 
     private Integer postId;
     private Integer gameId;
-    private Integer accountId;
+    private Account account;
     private String content;
     private Integer historyId;
     private Integer accoladeId;
-    private Integer imageId;
+    private Image image;
 
     public Integer getPostId() {
         return postId;
@@ -43,12 +32,12 @@ public class Post {
         this.gameId = gameId;
     }
 
-    public Integer getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String getContent() {
@@ -75,11 +64,11 @@ public class Post {
         this.accoladeId = accoladeId;
     }
 
-    public Integer getImageId() {
-        return imageId;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImageId(Integer imageId) {
-        this.imageId = imageId;
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

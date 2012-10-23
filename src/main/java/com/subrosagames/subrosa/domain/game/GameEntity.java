@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -72,6 +73,7 @@ public class GameEntity {
 
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
+    @OrderBy("created desc")
     private List<PostEntity> posts;
 
     public int getId() {

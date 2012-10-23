@@ -1,9 +1,17 @@
 package com.subrosagames.subrosa.domain.game.post;
 
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.image.Image;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  */
@@ -18,8 +26,9 @@ public class PostEntity {
     @Column(name = "game_id")
     private Integer gameId;
 
-    @Column(name = "account_id")
-    private Integer accountId;
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Column
     private String content;
@@ -30,8 +39,15 @@ public class PostEntity {
     @Column(name = "accolade_id")
     private Integer accoladeId;
 
-    @Column(name = "image_id")
-    private Integer imageId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id")
+    private Image image;
+
+    @Column
+    private Date created;
+
+    @Column
+    private Date modified;
 
     public Integer getPostId() {
         return postId;
@@ -49,12 +65,12 @@ public class PostEntity {
         this.gameId = gameId;
     }
 
-    public Integer getAccountId() {
-        return accountId;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setAccountId(Integer accountId) {
-        this.accountId = accountId;
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String getContent() {
@@ -81,11 +97,27 @@ public class PostEntity {
         this.accoladeId = accoladeId;
     }
 
-    public Integer getImageId() {
-        return imageId;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImageId(Integer imageId) {
-        this.imageId = imageId;
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
     }
 }
