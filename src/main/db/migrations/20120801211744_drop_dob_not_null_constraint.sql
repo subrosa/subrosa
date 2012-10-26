@@ -1,1 +1,0 @@
-ALTER TABLE account ALTER dob DROP NOT NULL;
