@@ -45,9 +45,10 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public Game getGame(int gameId) {
+    public GameEntity getGame(int gameId) {
         LOG.debug("Retrieving game with id {} from the database", gameId);
-        return gameFactory.getGameForEntity(findGameEntity(gameId));
+//        return gameFactory.getGameForEntity(findGameEntity(gameId));
+        return findGameEntity(gameId);
     }
 
     private GameEntity findGameEntity(int gameId) {

@@ -17,9 +17,10 @@ public class GameFactoryImpl implements GameFactory {
 
     @Override
     public Game getGameForEntity(GameEntity gameEntity) {
-        Game game = new AssassinsGame();
-        BeanUtils.copyProperties(gameEntity, game);
-        return game;
+//        Game game = new AssassinsGame();
+//        BeanUtils.copyProperties(gameEntity, game);
+//        return game;
+        return null;
     }
 
     @Override
@@ -27,6 +28,13 @@ public class GameFactoryImpl implements GameFactory {
         Post post = new Post();
         BeanUtils.copyProperties(postEntity, post);
         return post;
+    }
+
+    @Override
+    public Game getGameForId(int gameId) {
+        Game game = new AssassinsGame(gameId);
+        game.setGameRepository(gameRepository);
+        return game;
     }
 
 

@@ -17,4 +17,5 @@ public interface GameFactory {
 
     Post getPostForEntity(PostEntity postEntity);
 
+    Game getGameForId(int gameId);
 }

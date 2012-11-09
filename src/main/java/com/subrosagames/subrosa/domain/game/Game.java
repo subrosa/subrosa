@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import com.subrosagames.subrosa.domain.message.Post;
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.format.annotation.DateTimeFormat;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -15,9 +17,19 @@ import com.subrosagames.subrosa.domain.image.Image;
 /**
  * Interface describing the base level of functionality a game implementation must provide.
  */
+@Configurable
 public class Game {
 
-    private GameRuleSet ruleSet;
+    private GameRepository gameRepository;
+
+    private GameEntity gameEntity;
+
+    public GameEntity getGameEntity() {
+        if (gameEntity == null) {
+            gameEntity = gameRepository.getGame(id);
+        }
+        return gameEntity;
+    }
 
     private int id;
     @NotEmpty
@@ -40,7 +52,9 @@ public class Game {
     private Image image;
     private Integer minimumAge;
 
-    public Game() { }
+    public Game(int id) {
+        this.id = id;
+    }
 
     public void startGame() {
         throw new NotImplementedException("Must be implemented by a child class");
@@ -66,12 +80,8 @@ public class Game {
         throw new NotImplementedException("Must be implemented by a child class");
     }
 
-    public GameRuleSet getRuleSet() {
-        return ruleSet;
-    }
-
-    public void setRuleSet(GameRuleSet ruleSet) {
-        this.ruleSet = ruleSet;
+    public List<Post> getPosts() {
+        return getGameEntity().getPosts();
     }
 
     public int getId() {
@@ -83,7 +93,8 @@ public class Game {
     }
 
     public String getName() {
-        return name;
+//        return name;
+        return getGameEntity().getName();
     }
 
     public void setName(String name) {
@@ -169,4 +180,10 @@ public class Game {
     public void setMaximumTeamSize(Integer maximumTeamSize) {
         this.maximumTeamSize = maximumTeamSize;
     }
+
+    public void setGameRepository(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
+    }
+
+
 }

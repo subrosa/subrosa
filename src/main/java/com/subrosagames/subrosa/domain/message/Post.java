@@ -6,69 +6,20 @@ import com.subrosagames.subrosa.domain.image.Image;
 /**
  * Encapsulates a user post in a game.
  */
-public class Post {
+public interface Post {
 
-    private Integer postId;
-    private Integer gameId;
-    private Account account;
-    private String content;
-    private Integer historyId;
-    private Integer accoladeId;
-    private Image image;
+    public Integer getPostId();
 
-    public Integer getPostId() {
-        return postId;
-    }
+    public Integer getGameId();
 
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
+    public Account getAccount();
 
-    public Integer getGameId() {
-        return gameId;
-    }
+    public String getContent();
 
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
+    public Integer getHistoryId();
 
-    public Account getAccount() {
-        return account;
-    }
+    public Integer getAccoladeId();
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
+    public Image getImage();
 
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Integer getHistoryId() {
-        return historyId;
-    }
-
-    public void setHistoryId(Integer historyId) {
-        this.historyId = historyId;
-    }
-
-    public Integer getAccoladeId() {
-        return accoladeId;
-    }
-
-    public void setAccoladeId(Integer accoladeId) {
-        this.accoladeId = accoladeId;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
 }

@@ -21,6 +21,7 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.message.Post;
 
 /**
  * Persisted entity for a game.
@@ -71,10 +72,10 @@ public class GameEntity {
     @Column(name = "min_age")
     private Integer minimumAge;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = PostEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created desc")
-    private List<PostEntity> posts;
+    private List<Post> posts;
 
     public int getId() {
         return id;
@@ -172,11 +173,11 @@ public class GameEntity {
         this.maximumTeamSize = maximumTeamSize;
     }
 
-    public List<PostEntity> getPosts() {
+    public List<Post> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<PostEntity> posts) {
+    public void setPosts(List<Post> posts) {
         this.posts = posts;
     }
 }

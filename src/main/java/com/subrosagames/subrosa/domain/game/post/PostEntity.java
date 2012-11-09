@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game.post;
 
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.message.Post;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "post")
-public class PostEntity {
+public class PostEntity implements Post {
 
     @Id
     @Column(name = "post_id")

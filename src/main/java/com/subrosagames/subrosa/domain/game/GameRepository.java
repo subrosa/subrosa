@@ -49,10 +49,11 @@ public interface GameRepository {
 
     /**
      * Retrieve the specified game by id.
+     *
      * @param gameId game id
      * @return game
      */
-    Game getGame(int gameId);
+    GameEntity getGame(int gameId);
 
     /**
      * Get a list of posts for the specified game.

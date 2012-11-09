@@ -11,6 +11,10 @@ import com.subrosagames.subrosa.domain.game.event.GameEvent;
  */
 public class AssassinsGame extends Game {
 
+    public AssassinsGame(int id) {
+        super(id);
+    }
+
     @Override
     public void startGame() {
     }
