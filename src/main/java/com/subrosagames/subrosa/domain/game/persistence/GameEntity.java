@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -19,6 +19,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
@@ -48,12 +49,6 @@ public class GameEntity {
 
     @Column
     private BigDecimal price;
-
-    @Column(name = "registration_end_time")
-    private Date registrationEndTime;
-
-    @Column(name = "end_time")
-    private Date endTime;
 
     @Column
     private String timezone;
@@ -115,22 +110,6 @@ public class GameEntity {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public Date getRegistrationEndTime() {
-        return registrationEndTime;
-    }
-
-    public void setRegistrationEndTime(Date registrationEndTime) {
-        this.registrationEndTime = registrationEndTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
     }
 
     public String getTimezone() {

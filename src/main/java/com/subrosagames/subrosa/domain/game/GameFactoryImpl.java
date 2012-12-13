@@ -1,10 +1,15 @@
 package com.subrosagames.subrosa.domain.game;
 
-import com.subrosagames.subrosa.domain.game.post.PostEntity;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.message.Post;
-import org.springframework.beans.BeanUtils;
+import com.subrosagames.subrosa.service.PaginatedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Factory class for generating game domain objects.
@@ -17,25 +22,40 @@ public class GameFactoryImpl implements GameFactory {
 
     @Override
     public Game getGameForEntity(GameEntity gameEntity) {
-//        Game game = new AssassinsGame();
-//        BeanUtils.copyProperties(gameEntity, game);
-//        return game;
-        return null;
-    }
-
-    @Override
-    public Post getPostForEntity(PostEntity postEntity) {
-        Post post = new Post();
-        BeanUtils.copyProperties(postEntity, post);
-        return post;
+        return new AssassinsGame(gameEntity);
     }
 
     @Override
     public Game getGameForId(int gameId) {
-        Game game = new AssassinsGame(gameId);
+        AbstractGame game = new AssassinsGame(gameId);
         game.setGameRepository(gameRepository);
         return game;
     }
 
+    @Override
+    public Game createGame(GameEntity gameEntity, Lifecycle lifecycle) throws GameValidationException {
+        AbstractGame game = new AssassinsGame(gameEntity, lifecycle);
+        game.setGameRepository(gameRepository);
+        game.validate();
+        game.create();
+        return game;
+    }
 
+    @Override
+    public PaginatedList<Game> getGames(Integer limit, Integer offset) {
+        return new PaginatedList<Game>(
+                gameRepository.getGames(limit, offset),
+                gameRepository.getGameCount(),
+                limit, offset);
+    }
+
+    @Override
+    public PaginatedList<Post> getPostsForGame(int gameId, int limit, int offset) {
+        List<Post> posts = getGameForId(gameId).getPosts();
+        return new PaginatedList<Post>(
+                posts,
+                posts.size(),
+                limit, offset);
+
+    }
 }

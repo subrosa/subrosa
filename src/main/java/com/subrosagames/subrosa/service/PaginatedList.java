@@ -11,7 +11,7 @@ public class PaginatedList<T> {
     private int limit;
     private int offset;
     private int resultCount;
-    private List<T> results;
+    private List<? extends T> results;
 
     /**
      * Construct with provided results list and pagination parameters.
@@ -20,7 +20,7 @@ public class PaginatedList<T> {
      * @param limit number returned
      * @param offset offset into total
      */
-    public PaginatedList(List<T> results, int resultCount, int limit, int offset) {
+    public PaginatedList(List<? extends T> results, int resultCount, int limit, int offset) {
         this.results = results;
         this.resultCount = resultCount;
         this.limit = limit;
@@ -39,7 +39,7 @@ public class PaginatedList<T> {
         return resultCount;
     }
 
-    public List<T> getResults() {
+    public List<? extends T> getResults() {
         return results;
     }
 

@@ -2,7 +2,7 @@ package com.subrosagames.subrosa.domain.game.event;
 
 import java.util.Date;
 
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 
 /**
  * Used to represent checkpoints which require players to register a {@link Checkin} in time.

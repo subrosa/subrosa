@@ -2,7 +2,7 @@ package com.subrosagames.subrosa.domain.payment;
 
 import org.joda.money.Money;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 
 /**
  * Encapsulates a single financial transaction.

@@ -13,6 +13,8 @@ import java.util.HashSet;
  */
 public class SubrosaUser extends User {
 
+    private static final long serialVersionUID = 5565905400673524447L;
+
     private Account account;
 
     /**

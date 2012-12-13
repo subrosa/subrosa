@@ -2,7 +2,7 @@ package com.subrosagames.subrosa.domain.game.dispute;
 
 import java.util.List;
 
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.Player;
 
 /**

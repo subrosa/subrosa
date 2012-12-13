@@ -2,22 +2,16 @@ package com.subrosagames.subrosa.service;
 
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.domain.game.AssassinsGame;
-import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameRuleSet;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.Participant;
-import com.subrosagames.subrosa.domain.game.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.util.List;
 
 /**
  * Test {@link GameService}.
@@ -58,7 +52,7 @@ public class GameServiceTest {
         // game master creates an assassins game
         GameRuleSet ruleSet = GameType.ASSASSIN.getGameRuleSetBuilder()
                 .build();
-//        Game game = gameFactory.gameForRuleset(ruleSet);
+//        AbstractGame game = gameFactory.gameForRuleset(ruleSet);
 //        game = gameService.createGame(gameMaster, game);
 
         // 1st game player registers

@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
+import com.subrosagames.subrosa.event.Event;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jgore
@@ -9,5 +11,7 @@ package com.subrosagames.subrosa.domain.game;
  */
 public interface GameRuleSetBuilder {
 
+    GameRuleSetBuilder setProperty(String key, String value);
+    GameRuleSetBuilder addEvent(Event event);
     GameRuleSet build();
 }
