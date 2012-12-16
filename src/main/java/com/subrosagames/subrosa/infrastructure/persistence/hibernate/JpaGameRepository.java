@@ -33,9 +33,6 @@ public class JpaGameRepository implements GameRepository {
     @Autowired
     private GameFactory gameFactory;
 
-    @Autowired
-    private EventScheduler eventScheduler;
-
     @Override
     public AbstractGame createGame(AbstractGame game) throws GameValidationException {
         GameEntity gameEntity = game.getGameEntity();
@@ -49,11 +46,6 @@ public class JpaGameRepository implements GameRepository {
         gameLifecycle.setLifecycle(lifecycle);
         entityManager.persist(gameLifecycle);
 
-        try {
-            eventScheduler.scheduleEvents(game.getGameLifecycle().getScheduledEvents(), game.getId());
-        } catch (EventException e) {
-            throw new GameValidationException("Failed to schedule game events for game " + gameEntity.getId(), e);
-        }
         return game;
     }
 

@@ -1,17 +1,11 @@
 package com.subrosagames.subrosa.event.message;
 
+import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
+
 /**
  *
  */
-public class StartGameMessage {
+public class StartGameMessage extends AbstractMessage {
 
-    private Integer gameId;
-
-    public Integer getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
+    private static final long serialVersionUID = -4930630221041029996L;
 }

@@ -3,6 +3,8 @@ package com.subrosagames.subrosa.domain.game.persistence;
 import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
 import com.subrosagames.subrosa.event.message.MessageQueueFactory;
 import com.subrosagames.subrosa.event.ScheduledEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.jms.core.JmsTemplate;
@@ -20,13 +22,7 @@ import java.util.Date;
 @Configurable
 public class ScheduledEventEntity extends EventEntity implements ScheduledEvent {
 
-    @Transient
-    @Autowired
-    private MessageQueueFactory messageQueueFactory;
-
-    @Transient
-    @Autowired
-    private JmsTemplate jmsTemplate;
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduledEventEntity.class);
 
     @Column(name = "event_date")
     private Timestamp eventDate;
@@ -41,9 +37,5 @@ public class ScheduledEventEntity extends EventEntity implements ScheduledEvent 
 
     @Override
     public void fire(int gameId) {
-        String queueForName = messageQueueFactory.getQueueForName(getEventClass());
-        AbstractMessage messageForName = messageQueueFactory.getMessageForName(getEventClass());
-        messageForName.setGameId(gameId);
-        jmsTemplate.convertAndSend(queueForName, messageForName);
     }
 }

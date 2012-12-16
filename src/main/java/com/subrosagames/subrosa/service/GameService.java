@@ -10,7 +10,7 @@ import com.subrosagames.subrosa.domain.game.Team;
  */
 public interface GameService {
 
-    AbstractGame createGame(Account gameMaster, AbstractGame game);
     Player enrollInTeam(Account account, Team team, String teamPassword);
+
     Player enrollInGame(Account account, AbstractGame game);
 }

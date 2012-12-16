@@ -12,10 +12,6 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class GameServiceImpl implements GameService {
-    @Override
-    public AbstractGame createGame(Account gameMaster, AbstractGame game) {
-        return null;
-    }
 
     @Override
     public Player enrollInTeam(Account account, Team team, String teamPassword) {

@@ -8,5 +8,6 @@
 
     <!-- then override with test-specific bean definitions -->
     <import resource="test-persistence-context.xml"/>
+    <import resource="test-message-context.xml"/>
 
 </beans>

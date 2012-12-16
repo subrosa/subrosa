@@ -10,7 +10,7 @@
     <bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">
         <property name="connectionFactory">
             <bean class="org.apache.activemq.ActiveMQConnectionFactory">
-                <property name="brokerURL" value="failover:(tcp://localhost:61616,tcp://localhost:61616)?jms.prefetchPolicy.queuePrefetch=1&amp;randomize=false"/>
+                <property name="brokerURL" value="${jms.broker.url}"/>
             </bean>
         </property>
     </bean>
@@ -38,10 +38,10 @@
             container-type="simple"
             connection-factory="jmsConnectionFactory"
             acknowledge="transacted"
-            concurrency="5">
+            concurrency="${jms.concurrency}">
 
         <jms:listener destination="subrosa.game.start"
-                      ref="startGameMessageHandler" method="process" />
+                      ref="startGameMessageHandler" method="process"/>
         <jms:listener destination="subrosa.game.end"
                       ref="endGameMessageHandler" method="process"/>
 

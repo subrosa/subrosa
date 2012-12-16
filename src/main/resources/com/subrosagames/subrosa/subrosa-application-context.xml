@@ -8,7 +8,7 @@
 
     <context:property-placeholder ignore-resource-not-found="true"
       location="classpath:etc/build.properties,
-                classpath:subrosa-app.properties,
+                classpath:com/subrosagames/subrosa/subrosa.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/environment.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/secure.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/subrosa/subrosa-env.properties,
@@ -20,4 +20,5 @@
     <import resource="subrosa-persistence.xml"/>
     <import resource="subrosa-scheduling.xml"/>
     <import resource="subrosa-messaging.xml"/>
+    <import resource="subrosa-android.xml"/>
 </beans>
