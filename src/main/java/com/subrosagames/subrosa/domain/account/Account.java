@@ -127,11 +127,11 @@ public class Account {
     }
 
     public Date getDateOfBirth() {
-        return dateOfBirth;
+        return dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+        this.dateOfBirth = dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
     }
 
 

@@ -1,11 +1,13 @@
 package com.subrosagames.subrosa.event.message;
 
-import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import org.springframework.stereotype.Component;
 
+import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
+
 /**
+ * Provides queues and messages based on the {@link EventMessage} enumeration of supported event types.
  *
+ * @see EventMessage
  */
 @Component
 public class MessageQueueFactoryImpl implements MessageQueueFactory {
@@ -16,7 +18,7 @@ public class MessageQueueFactoryImpl implements MessageQueueFactory {
     }
 
     @Override
-    public AbstractMessage getMessageForName(String eventClass) {
+    public AbstractMessage getMessageForName(String eventClass) { // SUPPRESS CHECKSTYLE IllegalType
         return EventMessage.valueOf(eventClass).getMessage();
     }
 }

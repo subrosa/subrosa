@@ -7,14 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-
 import org.apache.commons.lang.ObjectUtils;
-import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.StandardBasicTypes;
 import org.hibernate.usertype.UserType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Custom Hibernate type for storing a {@link URI} as a string in the database.
@@ -37,8 +33,6 @@ public class UriUserType implements UserType {
      * Defines the type name as registered with Hibernate.
      */
     public static final String HIBERNATE_TYPE_NAME = "UriUserType";
-
-    private static final Logger LOG = LoggerFactory.getLogger(UriUserType.class); // NOPMD
 
     @Override
     public Object assemble(Serializable cached, Object owner) {
@@ -76,8 +70,7 @@ public class UriUserType implements UserType {
     }
 
     @Override
-    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor)
-            throws HibernateException, SQLException {
+    public void nullSafeSet(PreparedStatement preparedStatement, Object o, int i, SessionImplementor sessionImplementor) throws SQLException {
         StandardBasicTypes.STRING.nullSafeSet(preparedStatement, (o != null) ? o.toString() : null, i, sessionImplementor);
     }
 

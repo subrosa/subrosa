@@ -1,14 +1,23 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
+import java.sql.Timestamp;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import com.google.common.collect.Lists;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
 /**
+ * Persists a game lifecycle.
  *
+ * Consists of registration times, game start and end, and scheduled and triggered events.
  */
 @Entity
 @Table(name = "lifecycle")
@@ -49,35 +58,35 @@ public class Lifecycle {
     }
 
     public Timestamp getRegistrationStart() {
-        return registrationStart;
+        return registrationStart == null ? null : new Timestamp(registrationStart.getTime());
     }
 
     public void setRegistrationStart(Timestamp registrationStart) {
-        this.registrationStart = registrationStart;
+        this.registrationStart = registrationStart == null ? null : new Timestamp(registrationStart.getTime());
     }
 
     public Timestamp getRegistrationEnd() {
-        return registrationEnd;
+        return registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
     }
 
     public void setRegistrationEnd(Timestamp registrationEnd) {
-        this.registrationEnd = registrationEnd;
+        this.registrationEnd = registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
     }
 
     public Timestamp getGameStart() {
-        return gameStart;
+        return gameStart == null ? null : new Timestamp(gameStart.getTime());
     }
 
     public void setGameStart(Timestamp gameStart) {
-        this.gameStart = gameStart;
+        this.gameStart = gameStart == null ? null : new Timestamp(gameStart.getTime());
     }
 
     public Timestamp getGameEnd() {
-        return gameEnd;
+        return gameEnd == null ? null : new Timestamp(gameEnd.getTime());
     }
 
     public void setGameEnd(Timestamp gameEnd) {
-        this.gameEnd = gameEnd;
+        this.gameEnd = gameEnd == null ? null : new Timestamp(gameEnd.getTime());
     }
 
     public List<ScheduledEventEntity> getScheduledEvents() {

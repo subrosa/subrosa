@@ -1,12 +1,11 @@
 package com.subrosagames.subrosa.security;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Component;
 
@@ -15,8 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PasswordUtility {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PasswordUtility.class);
 
     private static final int SALT_LENGTH = 64;
 
@@ -36,8 +33,12 @@ public class PasswordUtility {
 
         // encrypt salt + plaintext
         char[] salt = Hex.encode(generateSalt());
-        digest.update(new String(salt).getBytes());
-        digest.update(plaintext.getBytes());
+        try {
+            digest.update(new String(salt).getBytes("UTF-8"));
+            digest.update(plaintext.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Could not encrypt password using UTF-8 encoding.", e);
+        }
         return new String(salt) + new String(Hex.encode(digest.digest()));
     }
 

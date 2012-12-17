@@ -1,9 +1,6 @@
 package com.subrosagames.subrosa.domain.game.post;
 
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.message.Post;
-
+import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,9 +9,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.Date;
+
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.message.Post;
 
 /**
+ * Persisted post.
  */
 @Entity
 @Table(name = "post")
@@ -106,19 +107,20 @@ public class PostEntity implements Post {
         this.image = image;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
     public Date getModified() {
-        return modified;
+        return modified == null ? null : new Date(modified.getTime());
     }
 
     public void setModified(Date modified) {
-        this.modified = modified;
+        this.modified = modified == null ? null : new Date(modified.getTime());
     }
+
+    public Date getCreated() {
+        return created == null ? null : new Date(created.getTime());
+    }
+
+    public void setCreated(Date created) {
+        this.created = created == null ? null : new Date(created.getTime());
+    }
+
 }

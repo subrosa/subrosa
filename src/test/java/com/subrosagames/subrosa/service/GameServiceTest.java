@@ -1,17 +1,18 @@
 package com.subrosagames.subrosa.service;
 
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.domain.game.GameFactory;
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameRuleSet;
-import com.subrosagames.subrosa.domain.game.GameType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 
 /**
  * Test {@link GameService}.
@@ -42,7 +43,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void createNewGameAndTestWorkflow() {
+    public void createNewGameAndTestWorkflow() throws GameValidationException {
 
         // game master registers an account
         Account gameMaster = new Account();
@@ -50,10 +51,9 @@ public class GameServiceTest {
         gameMaster = accountRepository.create(gameMaster, "gamemaster");
 
         // game master creates an assassins game
-        GameRuleSet ruleSet = GameType.ASSASSIN.getGameRuleSetBuilder()
-                .build();
-//        AbstractGame game = gameFactory.gameForRuleset(ruleSet);
-//        game = gameService.createGame(gameMaster, game);
+        GameEntity gameEntity = new GameEntity();
+        Lifecycle gameLifecycle = new Lifecycle();
+//        Game game = gameFactory.createGame(gameEntity, gameLifecycle);
 
         // 1st game player registers
         // and attempts to join - failure

@@ -3,7 +3,7 @@ package com.subrosagames.subrosa.event.message;
 import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
 
 /**
- *
+ * JMS Message signifying the end of a game.
  */
 public class EndGameMessage extends AbstractMessage {
 

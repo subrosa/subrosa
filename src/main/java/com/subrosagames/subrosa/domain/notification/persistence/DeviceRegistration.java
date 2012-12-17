@@ -1,11 +1,16 @@
 package com.subrosagames.subrosa.domain.notification.persistence;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import com.subrosagames.subrosa.domain.notification.DeviceType;
 
-import javax.persistence.*;
-
 /**
- *
+ * Persists an identifier for a device to which notifications can be sent.
  */
 @Entity
 @Table(name = "device_registration")

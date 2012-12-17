@@ -1,11 +1,10 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.location.Coordinates;
-
-import java.util.List;
 
 /**
  * Repository for retrieval of game information.
@@ -18,7 +17,7 @@ public interface GameRepository {
      * @param game game information
      * @return created game
      */
-    AbstractGame createGame(AbstractGame game) throws GameValidationException;
+    AbstractGame createGame(AbstractGame game) throws GameValidationException; // SUPPRESS CHECKSTYLE IllegalType
 
     /**
      * Get a list of games, sorted by start date, with the provided limit and offset.

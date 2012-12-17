@@ -1,13 +1,20 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import com.google.common.collect.Lists;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 
 /**
+ * Persists a lifecycle for a specific game.
  *
+ * Links a game id to a lifecycle id.
  */
 @Entity
 @Table(name = "game_lifecycle")

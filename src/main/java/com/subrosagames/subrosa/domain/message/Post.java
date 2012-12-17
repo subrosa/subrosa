@@ -8,18 +8,46 @@ import com.subrosagames.subrosa.domain.image.Image;
  */
 public interface Post {
 
-    public Integer getPostId();
+    /**
+     * Get post id.
+     * @return post id
+     */
+    Integer getPostId();
 
-    public Integer getGameId();
+    /**
+     * Get game id.
+     * @return game id
+     */
+    Integer getGameId();
 
-    public Account getAccount();
+    /**
+     * Get account that created the post.
+     * @return owning account
+     */
+    Account getAccount();
 
-    public String getContent();
+    /**
+     * Get post content.
+     * @return post content
+     */
+    String getContent();
 
-    public Integer getHistoryId();
+    /**
+     * Get id to historical event.
+     * @return history id
+     */
+    Integer getHistoryId();
 
-    public Integer getAccoladeId();
+    /**
+     * Get id of associated accolade.
+     * @return accolade id
+     */
+    Integer getAccoladeId();
 
-    public Image getImage();
+    /**
+     * Get associated image.
+     * @return image
+     */
+    Image getImage();
 
 }

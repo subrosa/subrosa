@@ -67,19 +67,19 @@ public class Address {
     }
 
     public Date getCreated() {
-        return created;
+        return created == null ? null : new Date(created.getTime());
     }
 
     public void setCreated(Date created) {
-        this.created = created;
+        this.created = created == null ? null : new Date(created.getTime());
     }
 
     public Date getModified() {
-        return modified;
+        return modified == null ? null : new Date(modified.getTime());
     }
 
     public void setModified(Date modified) {
-        this.modified = modified;
+        this.modified = modified == null ? null : new Date(modified.getTime());
     }
 
     public String getStreetAddress() {

@@ -24,19 +24,19 @@ public class Checkpoint {
     }
 
     public Date getStartTime() {
-        return startTime;
+        return startTime == null ? null : new Date(startTime.getTime());
     }
 
     public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+        this.startTime = startTime == null ? null : new Date(startTime.getTime());
     }
 
     public Date getEndTime() {
-        return endTime;
+        return endTime == null ? null : new Date(endTime.getTime());
     }
 
     public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+        this.endTime = endTime == null ? null : new Date(endTime.getTime());
     }
 
     public String getSecret() {

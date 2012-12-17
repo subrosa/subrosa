@@ -5,11 +5,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import com.subrosagames.subrosa.domain.game.*;
-import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
-import com.subrosagames.subrosa.event.EventException;
-import com.subrosagames.subrosa.event.EventScheduler;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +13,19 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.domain.game.AbstractGame;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 
+/**
+ * JPA-based implementation of the {@link GameRepository}.
+ */
 @Repository
 @Transactional
 public class JpaGameRepository implements GameRepository {
@@ -34,7 +39,7 @@ public class JpaGameRepository implements GameRepository {
     private GameFactory gameFactory;
 
     @Override
-    public AbstractGame createGame(AbstractGame game) throws GameValidationException {
+    public AbstractGame createGame(AbstractGame game) throws GameValidationException { // SUPPRESS CHECKSTYLE IllegalType
         GameEntity gameEntity = game.getGameEntity();
         entityManager.persist(gameEntity);
 

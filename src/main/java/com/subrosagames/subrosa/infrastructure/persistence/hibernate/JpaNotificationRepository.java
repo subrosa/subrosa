@@ -1,21 +1,21 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.List;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.notification.DeviceType;
 import com.subrosagames.subrosa.domain.notification.NotificationRepository;
 import com.subrosagames.subrosa.domain.notification.persistence.DeviceRegistration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
 
 /**
- *
+ * JPA-based implementation of {@link NotificationRepository}.
  */
 @Repository
 @Transactional

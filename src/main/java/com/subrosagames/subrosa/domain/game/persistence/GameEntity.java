@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

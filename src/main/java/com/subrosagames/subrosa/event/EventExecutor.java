@@ -1,22 +1,25 @@
 package com.subrosagames.subrosa.event;
 
-import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
-import com.subrosagames.subrosa.event.message.MessageQueueFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
+import com.subrosagames.subrosa.event.message.MessageQueueFactory;
 
 /**
- *
+ * Executes a game event for an event identifier.
  */
 @Component
 public class EventExecutor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventExecutor.class);
-
+    /**
+     * The method to be called to execute an event.
+     */
     public static final String EXECUTE_METHOD = "execute";
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventExecutor.class);
 
     @Autowired
     private MessageQueueFactory messageQueueFactory;
@@ -24,12 +27,17 @@ public class EventExecutor {
     @Autowired
     private JmsTemplate jmsTemplate;
 
+    /**
+     * Execute the event of the specified type for the specified game.
+     * @param eventClass event identifier
+     * @param gameId game id
+     */
     public void execute(String eventClass, int gameId) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Firing event {} for game {}", eventClass, gameId);
         }
         String queueForName = messageQueueFactory.getQueueForName(eventClass);
-        AbstractMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
+        AbstractMessage messageForName = messageQueueFactory.getMessageForName(eventClass); // SUPPRESS CHECKSTYLE IllegalType
         messageForName.setGameId(gameId);
         jmsTemplate.convertAndSend(queueForName, messageForName);
     }

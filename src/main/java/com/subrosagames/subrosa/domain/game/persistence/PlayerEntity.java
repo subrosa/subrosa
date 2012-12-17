@@ -1,9 +1,14 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
- *
+ * Persists a player.
  */
 @Entity
 @Table(name = "player")

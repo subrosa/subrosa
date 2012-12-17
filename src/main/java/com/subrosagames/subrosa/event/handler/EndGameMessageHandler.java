@@ -1,15 +1,15 @@
 package com.subrosagames.subrosa.event.handler;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.subrosagames.subrosa.domain.notification.NotificationCode;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;
 import com.subrosagames.subrosa.domain.notification.Notifier;
 import com.subrosagames.subrosa.event.message.EndGameMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * Handler for {@link EndGameMessage}s.
  */
 public class EndGameMessageHandler {
 
@@ -18,6 +18,11 @@ public class EndGameMessageHandler {
     @Autowired
     private Notifier notifier;
 
+    /**
+     * Handle the given end game message.
+     * @param endGameMessage end game message
+     * @throws Exception if message cannot be handled
+     */
     public void process(EndGameMessage endGameMessage) throws Exception {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Handling game end message for game {}", endGameMessage.getGameId());

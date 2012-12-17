@@ -1,19 +1,23 @@
 package com.subrosagames.subrosa.infrastructure.android.gcm;
 
-import com.google.android.gcm.server.*;
-import com.subrosagames.subrosa.domain.notification.NotificationDetails;
-import com.subrosagames.subrosa.domain.notification.NotificationRepository;
-import com.subrosagames.subrosa.domain.notification.Notifier;
+import java.io.IOException;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
+import com.google.android.gcm.server.Constants;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.MulticastResult;
+import com.google.android.gcm.server.Result;
+import com.google.android.gcm.server.Sender;
+import com.subrosagames.subrosa.domain.notification.NotificationDetails;
+import com.subrosagames.subrosa.domain.notification.NotificationRepository;
+import com.subrosagames.subrosa.domain.notification.Notifier;
 
 /**
- *
+ * Notification mechanism using Google Cloud Messaging.
  */
 @Component
 public class GCMNotifier implements Notifier {
@@ -47,12 +51,12 @@ public class GCMNotifier implements Notifier {
             if (result.getMessageId() != null) {
                 String canonicalRegId = result.getCanonicalRegistrationId();
                 if (canonicalRegId != null) {
-                    // same device has more than on registration ID: update database
+                    LOG.debug("Received null canonical registration id - updating database with new id");
                 }
             } else {
                 String error = result.getErrorCodeName();
                 if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
-                    // application has been removed from device - unregister database
+                    LOG.debug("Application has been removed from device - unregistering device");
                 }
             }
         }

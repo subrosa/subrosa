@@ -30,10 +30,10 @@ public class Checkin {
     }
 
     public Date getTimestamp() {
-        return timestamp;
+        return timestamp == null ? null : new Date(timestamp.getTime());
     }
 
     public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
+        this.timestamp = timestamp == null ? null : new Date(timestamp.getTime());
     }
 }

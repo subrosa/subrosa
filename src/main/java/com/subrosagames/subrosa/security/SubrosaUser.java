@@ -1,12 +1,10 @@
 package com.subrosagames.subrosa.security;
 
 import java.util.HashSet;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import com.subrosagames.subrosa.domain.account.Account;
 
-import java.util.HashSet;
+import com.subrosagames.subrosa.domain.account.Account;
 
 /**
  * Overrides default spring security user to manipulate salted passwords handling.
@@ -15,7 +13,7 @@ public class SubrosaUser extends User {
 
     private static final long serialVersionUID = 5565905400673524447L;
 
-    private Account account;
+    private transient Account account;
 
     /**
      * Construct with given subrosa account.
@@ -46,5 +44,16 @@ public class SubrosaUser extends User {
 
     public Account getAccount() {
         return account;
+    }
+
+    @Override
+    public boolean equals(Object rhs) {
+        return rhs instanceof SubrosaUser
+                && super.equals(rhs);
+    }
+
+    @Override
+    public int hashCode() {
+        return getUsername().hashCode();
     }
 }

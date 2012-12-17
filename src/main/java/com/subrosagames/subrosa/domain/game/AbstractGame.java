@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
-import com.subrosagames.subrosa.domain.message.Post;
-import org.apache.commons.lang.NotImplementedException;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.message.Post;
 
 /**
  * Interface describing the base level of functionality a game implementation must provide.
@@ -24,21 +23,34 @@ public abstract class AbstractGame implements Game {
     @JsonIgnore
     private Lifecycle gameLifecycle;
 
-
+    /**
+     * Construct with given game id.
+     * @param id game id
+     */
     public AbstractGame(int id) {
         this.id = id;
     }
 
-    public AbstractGame(GameEntity gameEntity) {
-        this(gameEntity.getId());
-        this.gameEntity = gameEntity;
-    }
-
+    /**
+     * Construct with given game information and lifecycle.
+     * @param gameEntity game entity
+     * @param gameLifecycle game lifecycle
+     */
     public AbstractGame(GameEntity gameEntity, Lifecycle gameLifecycle) {
-        this(gameEntity);
+        this.gameEntity = gameEntity;
         this.gameLifecycle = gameLifecycle;
     }
 
+    /**
+     * Get the events that must exist for this to be a valid game.
+     * @return array of events
+     */
+    protected abstract String[] getRequiredEvents();
+
+    /**
+     * Get game entity.
+     * @return game entity
+     */
     public GameEntity getGameEntity() {
         if (gameEntity == null) {
             gameEntity = gameRepository.getGameEntity(id);
@@ -46,6 +58,10 @@ public abstract class AbstractGame implements Game {
         return gameEntity;
     }
 
+    /**
+     * Get game lifecycle.
+     * @return game lifecycle
+     */
     public Lifecycle getGameLifecycle() {
         if (gameLifecycle == null) {
             gameLifecycle = gameRepository.getGameLifecycle(id);
@@ -53,24 +69,19 @@ public abstract class AbstractGame implements Game {
         return gameLifecycle;
     }
 
-    public void startGame() {
-        throw new NotImplementedException("Must be implemented by a child class");
+    /**
+     * Validate that this is a valid game.
+     * @throws GameValidationException if the game is invalid
+     */
+    public void validate() throws GameValidationException {
     }
 
-    public void makeAssignments() {
-        throw new NotImplementedException("Must be implemented by a child class");
-    }
-
-    public void endGame() {
-        throw new NotImplementedException("Must be implemented by a child class");
-    }
-
-    public List<? extends GameRule> getRules() {
-        throw new NotImplementedException("Must be implemented by a child class");
-    }
-
-    public List<? extends Participant> getPlayers() {
-        throw new NotImplementedException("Must be implemented by a child class");
+    /**
+     * Persist this game data as a new game.
+     * @throws GameValidationException if the game is invalid
+     */
+    public void create() throws GameValidationException {
+        gameRepository.createGame(this);
     }
 
     @JsonIgnore
@@ -138,12 +149,4 @@ public abstract class AbstractGame implements Game {
         this.gameRepository = gameRepository;
     }
 
-    abstract protected String[] getRequiredEvents();
-
-    public void validate() throws GameValidationException {
-    }
-
-    public void create() throws GameValidationException {
-        gameRepository.createGame(this);
-    }
 }

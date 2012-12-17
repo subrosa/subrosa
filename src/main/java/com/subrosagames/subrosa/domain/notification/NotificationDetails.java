@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.notification;
 
 /**
- *
+ * Specifies the details for notification.
  */
 public class NotificationDetails {
 

@@ -1,7 +1,9 @@
 package com.subrosagames.subrosa.infrastructure.scheduling.quartz;
 
-import com.subrosagames.subrosa.event.*;
-import com.subrosagames.subrosa.event.message.EventMessage;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
@@ -11,12 +13,18 @@ import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerBean;
 import org.springframework.stereotype.Component;
-
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
+import com.subrosagames.subrosa.event.EventException;
+import com.subrosagames.subrosa.event.EventExecutor;
+import com.subrosagames.subrosa.event.EventScheduler;
+import com.subrosagames.subrosa.event.ScheduledEvent;
+import com.subrosagames.subrosa.event.TriggeredEvent;
+import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
+ * Schedules game events using Quartz.
+ *
+ * {@link ScheduledEvent}s and {@link TriggeredEvent}s are scheduled using
+ * Quartz's {@link SchedulerFactoryBean}.
  */
 @Component
 public class QuartzEventScheduler implements EventScheduler {
@@ -31,7 +39,7 @@ public class QuartzEventScheduler implements EventScheduler {
 
     @Override
     public void triggerEvent(TriggeredEvent event, int gameId) throws EventException {
-        JobDetail jobDetail = createJobDetail(event, gameId);
+        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEventClass()), gameId);
         try {
             schedulerFactoryBean.getScheduler().triggerJob(jobDetail.getName(), jobDetail.getGroup());
         } catch (SchedulerException e) {
@@ -58,29 +66,12 @@ public class QuartzEventScheduler implements EventScheduler {
         }
     }
 
-    private JobDetail createJobDetail(EventMessage eventMessage, int gameId) {
-        MethodInvokingJobDetailFactoryBean jobDetailFactory = new MethodInvokingJobDetailFactoryBean();
-        jobDetailFactory.setName("event-" + gameId + "-" + eventMessage);
-        jobDetailFactory.setTargetObject(eventExecutor);
-        jobDetailFactory.setTargetMethod(EventExecutor.EXECUTE_METHOD);
-        jobDetailFactory.setArguments(new Object[]{ eventMessage.name(), gameId });
-        jobDetailFactory.setConcurrent(false);
-        try {
-            jobDetailFactory.afterPropertiesSet();
-        } catch (ClassNotFoundException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException e) {
-            throw new IllegalStateException(e);
-        }
-        return jobDetailFactory.getObject();
-    }
-
     @Override
     public void scheduleEvent(ScheduledEvent event, int gameId) throws EventException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Scheduling event type {} for game {} at date {}", new Object[] { event.getClass(), gameId, event.getEventDate() });
         }
-        JobDetail jobDetail = createJobDetail(event, gameId);
+        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEventClass()), gameId);
         SimpleTriggerBean trigger = createTrigger(jobDetail, event.getEventDate());
         try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
@@ -89,12 +80,12 @@ public class QuartzEventScheduler implements EventScheduler {
         }
     }
 
-    private JobDetail createJobDetail(Event event, int gameId) {
+    private JobDetail createJobDetail(EventMessage eventMessage, int gameId) {
         MethodInvokingJobDetailFactoryBean jobDetailFactory = new MethodInvokingJobDetailFactoryBean();
-        jobDetailFactory.setName("event");
-        jobDetailFactory.setTargetObject(event);
-        jobDetailFactory.setTargetMethod(Event.FIRE_METHOD);
-        jobDetailFactory.setArguments(new Integer[] { gameId });
+        jobDetailFactory.setName("event-" + gameId + "-" + eventMessage);
+        jobDetailFactory.setTargetObject(eventExecutor);
+        jobDetailFactory.setTargetMethod(EventExecutor.EXECUTE_METHOD);
+        jobDetailFactory.setArguments(new Object[]{ eventMessage.name(), gameId });
         jobDetailFactory.setConcurrent(false);
         try {
             jobDetailFactory.afterPropertiesSet();

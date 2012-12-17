@@ -2,8 +2,8 @@ package com.subrosagames.subrosa.domain.game.dispute;
 
 import java.util.List;
 
-import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.Player;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 
 /**
  * Represents a dispute between two {@link Player}s.
@@ -66,4 +66,11 @@ public class Dispute {
         this.complaint = complaint;
     }
 
+    public List<DisputeComment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<DisputeComment> comments) {
+        this.comments = comments;
+    }
 }

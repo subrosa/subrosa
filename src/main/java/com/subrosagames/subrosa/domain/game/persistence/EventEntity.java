@@ -1,9 +1,17 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
- *
+ * Persists events. Parent class for {@link ScheduledEventEntity}s and {@link TriggeredEventEntity}s.
  */
 @Entity
 @Table(name = "lifecycle_event")

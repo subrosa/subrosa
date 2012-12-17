@@ -7,17 +7,9 @@ package com.subrosagames.subrosa.domain.game;
 public enum GameType {
 
     // CHECKSTYLE-OFF: JavadocVariable
-    ASSASSIN(new AssassinGameRuleSetBuilder())
-    ;
+    ASSASSINS,
+    PAPARAZZI,
+    SCAVENGER
     // CHECKSTYLE-ON: JavadocVariable
 
-    private GameRuleSetBuilder gameRuleSetBuilder;
-
-    GameType(GameRuleSetBuilder gameRuleSetBuilder) {
-        this.gameRuleSetBuilder = gameRuleSetBuilder;
-    }
-
-    public GameRuleSetBuilder getGameRuleSetBuilder() {
-        return gameRuleSetBuilder;
-    }
 }
