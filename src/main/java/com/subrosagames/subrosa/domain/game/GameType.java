@@ -7,7 +7,7 @@ package com.subrosagames.subrosa.domain.game;
 public enum GameType {
 
     // CHECKSTYLE-OFF: JavadocVariable
-    ASSASSINS,
+    ASSASSIN,
     PAPARAZZI,
     SCAVENGER
     // CHECKSTYLE-ON: JavadocVariable

@@ -36,14 +36,22 @@ public class GCMNotifier implements Notifier {
         LOG.debug("Sending notifications for game {}", gameId);
         List<String> devices = notificationRepository.getDevicesForGame(gameId);
         Sender sender = new Sender(gcmApiKey);
-        Message message = new Message.Builder()
+        Message.Builder builder = new Message.Builder()
                 .collapseKey("1")
                 .timeToLive(3)
                 .delayWhileIdle(true)
-                .addData("code", notificationDetails.getCode())
-                .addData("title", "The Game Has Begun!")
-                .addData("text", "Find out who your target is.")
-                .build();
+                .addData("code", notificationDetails.getCode().name());
+        switch (notificationDetails.getCode()) {
+            case GAME_START:
+                builder.addData("title", "The Game Has Begun!")
+                        .addData("text", "Find out who your target is.");
+                break;
+            case GAME_END:
+                builder.addData("title", "The Game Is OVER!")
+                        .addData("text", "You lost. You're a loser.");
+                break;
+        }
+        Message message = builder.build();
         MulticastResult multicastResult = sender.send(message, devices, 5);
         List<Result> results = multicastResult.getResults();
 

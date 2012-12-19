@@ -29,7 +29,7 @@ public class EndGameMessageHandler {
         }
         NotificationDetails notificationDetails = new NotificationDetails();
         notificationDetails.setGameId(endGameMessage.getGameId());
-        notificationDetails.setCode(NotificationCode.GAME_END.name());
+        notificationDetails.setCode(NotificationCode.GAME_END);
         notifier.sendNotification(notificationDetails);
     }
 }

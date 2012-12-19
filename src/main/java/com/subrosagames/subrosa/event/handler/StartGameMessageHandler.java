@@ -29,7 +29,7 @@ public class StartGameMessageHandler {
         }
         NotificationDetails notificationDetails = new NotificationDetails();
         notificationDetails.setGameId(startGameMessage.getGameId());
-        notificationDetails.setCode(NotificationCode.GAME_START.name());
+        notificationDetails.setCode(NotificationCode.GAME_START);
         notifier.sendNotification(notificationDetails);
     }
 
