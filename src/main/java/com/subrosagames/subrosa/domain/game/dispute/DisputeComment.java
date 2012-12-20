@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.game.dispute;
 
 import java.util.Date;
-import com.subrosagames.subrosa.domain.game.Player;
+import com.subrosagames.subrosa.domain.player.Player;
 
 /**
  * Represents a comment on a {@link Dispute}.

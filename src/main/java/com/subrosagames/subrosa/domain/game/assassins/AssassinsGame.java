@@ -21,14 +21,6 @@ public class AssassinsGame extends AbstractGame {
         super(gameEntity, lifecycle);
     }
 
-    /**
-     * Construct with the given game id.
-     * @param id game id
-     */
-    public AssassinsGame(int id) {
-        super(id);
-    }
-
     @Override
     protected String[] getRequiredEvents() {
         return requiredEvents;

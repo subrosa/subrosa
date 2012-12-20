@@ -3,7 +3,7 @@ package com.subrosa.vegas;
 import com.subrosa.event.GameEvent;
 import com.subrosa.game.*;
 import com.subrosagames.subrosa.domain.game.Participant;
-import com.subrosagames.subrosa.domain.game.Player;
+import com.subrosagames.subrosa.domain.player.Player;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Arrays;

@@ -12,10 +12,12 @@ public interface GameFactory {
 
     /**
      * Get the game for the given id.
+     *
      * @param gameId game id
      * @return game
+     * @throws GameNotFoundException if no game exists for that id
      */
-    Game getGameForId(int gameId);
+    Game getGameForId(int gameId) throws GameNotFoundException;
 
     /**
      * Create a game with the given game info and lifecycle.
@@ -34,12 +36,4 @@ public interface GameFactory {
      */
     PaginatedList<Game> getGames(Integer limit, Integer offset);
 
-    /**
-     * Get a paginated list of the posts for a given game.
-     * @param gameId game id
-     * @param limit number of posts to return
-     * @param offset offset into the posts
-     * @return paginated list of posts
-     */
-    PaginatedList<Post> getPostsForGame(int gameId, int limit, int offset);
 }

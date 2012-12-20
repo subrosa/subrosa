@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.domain.game;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +7,7 @@ import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
-import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventException;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.event.message.EventMessage;
@@ -29,10 +27,16 @@ public class GameFactoryImpl implements GameFactory {
     @Autowired
     private EventScheduler eventScheduler;
 
+    @Autowired
+    private PlayerFactory playerFactory;
+
     @Override
-    public Game getGameForId(int gameId) {
-        AssassinsGame game = new AssassinsGame(gameId); //
+    public Game getGameForId(int gameId) throws GameNotFoundException {
+        GameEntity gameEntity = gameRepository.getGameEntity(gameId);
+        Lifecycle lifecycle = gameRepository.getGameLifecycle(gameId);
+        AssassinsGame game = new AssassinsGame(gameEntity, lifecycle);
         game.setGameRepository(gameRepository);
+        game.setPlayerFactory(playerFactory);
         return game;
     }
 
@@ -63,13 +67,4 @@ public class GameFactoryImpl implements GameFactory {
                 limit, offset);
     }
 
-    @Override
-    public PaginatedList<Post> getPostsForGame(int gameId, int limit, int offset) {
-        List<Post> posts = getGameForId(gameId).getPosts();
-        return new PaginatedList<Post>(
-                posts.subList(offset, offset + limit),
-                posts.size(),
-                limit, offset);
-
-    }
 }

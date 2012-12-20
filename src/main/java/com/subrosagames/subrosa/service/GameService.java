@@ -2,8 +2,8 @@ package com.subrosagames.subrosa.service;
 
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.Player;
-import com.subrosagames.subrosa.domain.game.Team;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.Team;
 
 /**
  * Handles interactions between players and games.

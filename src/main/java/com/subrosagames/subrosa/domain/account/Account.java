@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.domain.account;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -15,11 +16,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKey;
+import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageType;
 
 /**
  * Represents an account in the Subrosa application.
@@ -68,7 +74,19 @@ public class Account {
             joinColumns = @JoinColumn(name = "account_id"),
             inverseJoinColumns = @JoinColumn(name = "address_id")
     )
-    private Set<Address> addresses;
+    @MapKey(name = "addressType")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<AddressType, Address> addresses;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "account_image",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "image_id")
+    )
+    @MapKey(name = "imageType")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<ImageType, Image> images;
 
     /**
      * Get accolades for this account.
@@ -151,12 +169,27 @@ public class Account {
         this.password = password;
     }
 
-    public Set<Address> getAddresses() {
+    public Map<AddressType, Address> getAddresses() {
         return addresses;
     }
 
-    public void setAddresses(Set<Address> addresses) {
+    public void setAddresses(Map<AddressType, Address> addresses) {
         this.addresses = addresses;
     }
 
+    public Map<ImageType, Image> getImages() {
+        return images;
+    }
+
+    public void setImages(Map<ImageType, Image> images) {
+        this.images = images;
+    }
+
+    public Image getImage(ImageType imageType) {
+        return images.get(imageType);
+    }
+
+    public Address getAddress(AddressType addressType) {
+        return addresses.get(addressType);
+    }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.Player;
 
 /**
  * The minimum information shared by all games.
@@ -17,7 +18,6 @@ public interface Game {
      * Posts in the game feed.
      * @return list of posts
      */
-    @JsonIgnore
     List<Post> getPosts();
 
     /**
@@ -104,4 +104,10 @@ public interface Game {
      */
     Integer getMaximumTeamSize();
 
+    /**
+     * Get the player associated with the provided account id.
+     * @param accountId account id
+     * @return player
+     */
+    Player getPlayer(int accountId);
 }

@@ -1,6 +1,8 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,6 +18,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "lifecycle_event")
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "event_type", discriminatorType = DiscriminatorType.STRING)
 public class EventEntity {
 
     @Id

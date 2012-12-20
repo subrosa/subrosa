@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
 /**
  * Represents a participant in a game.
  */
@@ -10,4 +12,6 @@ public interface Participant {
      * @return name
      */
     String getName();
+
+    List<? extends Target> getTargets();
 }

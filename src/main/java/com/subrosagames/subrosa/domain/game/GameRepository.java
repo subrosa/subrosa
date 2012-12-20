@@ -5,6 +5,7 @@ import java.util.List;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.location.Coordinates;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * Repository for retrieval of game information.
@@ -52,7 +53,7 @@ public interface GameRepository {
      * @param gameId game id
      * @return game
      */
-    GameEntity getGameEntity(int gameId);
+    GameEntity getGameEntity(int gameId) throws GameNotFoundException;
 
     /**
      * Retrieve the lifecycle for the given game id.
@@ -60,4 +61,12 @@ public interface GameRepository {
      * @return game lifecycle
      */
     Lifecycle getGameLifecycle(int gameId);
+
+    /**
+     * Load the player of a game for the given user.
+     * @param accountId account id
+     * @param gameId game id
+     * @return player entity
+     */
+    PlayerEntity getPlayerForUserAndGame(int accountId, int gameId);
 }

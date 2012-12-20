@@ -2,7 +2,7 @@ package com.subrosagames.subrosa.domain.game.event;
 
 import java.util.Date;
 
-import com.subrosagames.subrosa.domain.game.Player;
+import com.subrosagames.subrosa.domain.player.Player;
 
 /**
  * Represents a player checking in to a {@link Checkpoint}.

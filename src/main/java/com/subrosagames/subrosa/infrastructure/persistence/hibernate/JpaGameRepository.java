@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -16,12 +17,14 @@ import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.game.AbstractGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.location.Coordinates;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * JPA-based implementation of the {@link GameRepository}.
@@ -55,9 +58,13 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity getGameEntity(int gameId) {
+    public GameEntity getGameEntity(int gameId) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
-        return entityManager.find(GameEntity.class, gameId);
+        GameEntity gameEntity = entityManager.find(GameEntity.class, gameId);
+        if (gameEntity == null) {
+            throw new GameNotFoundException("Game for id " + gameId + " not found");
+        }
+        return gameEntity;
     }
 
     @Override
@@ -74,7 +81,12 @@ public class JpaGameRepository implements GameRepository {
         return Lists.transform(query.getResultList(), new Function<GameEntity, Game>() {
             @Override
             public Game apply(GameEntity gameEntity) {
-                return gameFactory.getGameForId(gameEntity.getId());
+                try {
+                    return gameFactory.getGameForId(gameEntity.getId());
+                } catch (GameNotFoundException e) {
+                    LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
+                    return null;
+                }
             }
         });
     }
@@ -91,7 +103,12 @@ public class JpaGameRepository implements GameRepository {
         return Lists.transform(query.getResultList(), new Function<Integer, Game>() {
             @Override
             public Game apply(Integer gameId) {
-                return gameFactory.getGameForId(gameId);
+                try {
+                    return gameFactory.getGameForId(gameId);
+                } catch (GameNotFoundException e) {
+                    LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
+                    return null;
+                }
             }
         });
     }
@@ -109,4 +126,22 @@ public class JpaGameRepository implements GameRepository {
         return count;
     }
 
+    @Override
+    public PlayerEntity getPlayerForUserAndGame(int accountId, int gameId) {
+
+        String jpql = "SELECT p "
+                + " FROM PlayerEntity p "
+                + "     JOIN p.team t "
+                + "     JOIN t.game g "
+                + " WHERE g.id = :gameId AND p.account.id = :accountId";
+        try {
+            return entityManager.createQuery(jpql, PlayerEntity.class)
+                    .setParameter("gameId", gameId)
+                    .setParameter("accountId", accountId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            LOG.warn("Attempted to find non-existing player - account {} game {}", accountId, gameId);
+            return null;
+        }
+    }
 }

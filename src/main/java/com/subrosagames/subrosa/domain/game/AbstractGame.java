@@ -5,10 +5,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerFactory;
 
 /**
  * Interface describing the base level of functionality a game implementation must provide.
@@ -16,20 +19,12 @@ import com.subrosagames.subrosa.domain.message.Post;
 public abstract class AbstractGame implements Game {
 
     private GameRepository gameRepository;
+    private PlayerFactory playerFactory;
 
-    private int id;
     @JsonIgnore
     private GameEntity gameEntity;
     @JsonIgnore
     private Lifecycle gameLifecycle;
-
-    /**
-     * Construct with given game id.
-     * @param id game id
-     */
-    public AbstractGame(int id) {
-        this.id = id;
-    }
 
     /**
      * Construct with given game information and lifecycle.
@@ -52,9 +47,6 @@ public abstract class AbstractGame implements Game {
      * @return game entity
      */
     public GameEntity getGameEntity() {
-        if (gameEntity == null) {
-            gameEntity = gameRepository.getGameEntity(id);
-        }
         return gameEntity;
     }
 
@@ -63,9 +55,6 @@ public abstract class AbstractGame implements Game {
      * @return game lifecycle
      */
     public Lifecycle getGameLifecycle() {
-        if (gameLifecycle == null) {
-            gameLifecycle = gameRepository.getGameLifecycle(id);
-        }
         return gameLifecycle;
     }
 
@@ -82,6 +71,11 @@ public abstract class AbstractGame implements Game {
      */
     public void create() throws GameValidationException {
         gameRepository.createGame(this);
+    }
+
+    @Override
+    public Player getPlayer(int accountId) {
+        return new Player(gameRepository.getPlayerForUserAndGame(accountId, this.getId()));
     }
 
     @JsonIgnore
@@ -149,4 +143,7 @@ public abstract class AbstractGame implements Game {
         this.gameRepository = gameRepository;
     }
 
+    public void setPlayerFactory(PlayerFactory playerFactory) {
+        this.playerFactory = playerFactory;
+    }
 }

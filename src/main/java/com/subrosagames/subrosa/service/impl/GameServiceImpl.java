@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.Player;
-import com.subrosagames.subrosa.domain.game.Team;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.service.GameService;
 
 /**
