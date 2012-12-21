@@ -19,7 +19,7 @@ public class TokenFactoryImpl implements TokenFactory {
     private SecureRandom secureRandom = new SecureRandom();
 
     @Override
-    public String generateNewToken(TokenType tokenType, int accountId) {
+    public String generateNewToken(int accountId, TokenType tokenType) {
         String token = new BigInteger(130, secureRandom).toString(32);
         TokenEntity tokenEntity = new TokenEntity();
         tokenEntity.setAccountId(accountId);
@@ -27,5 +27,14 @@ public class TokenFactoryImpl implements TokenFactory {
         tokenEntity.setToken(token);
         tokenRepository.storeToken(tokenEntity);
         return token;
+    }
+
+    @Override
+    public Token getToken(String token, TokenType tokenType) {
+        TokenEntity tokenEntity = tokenRepository.findToken(token);
+        if (tokenType.equals(tokenEntity.getTokenType())) {
+            return tokenEntity;
+        }
+        return null;
     }
 }

@@ -23,6 +23,6 @@ public class SetCookieAuthenticationSuccessHandler implements AuthenticationSucc
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         int accountId = ((SubrosaUser) authentication.getPrincipal()).getAccount().getId();
-        response.addCookie(new Cookie("subrosa_auth_token", tokenFactory.generateNewToken(TokenType.DEVICE_AUTH, accountId)));
+        response.addCookie(new Cookie("subrosa_auth_token", tokenFactory.generateNewToken(accountId, TokenType.DEVICE_AUTH)));
     }
 }

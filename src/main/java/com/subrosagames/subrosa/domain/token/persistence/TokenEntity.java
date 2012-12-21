@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenType;
 
 /**
@@ -17,7 +18,7 @@ import com.subrosagames.subrosa.domain.token.TokenType;
  */
 @Entity
 @Table(name = "token")
-public class TokenEntity {
+public class TokenEntity implements Token {
 
     @Id
     @SequenceGenerator(name = "tokenSeq", sequenceName = "token_token_id_seq")
@@ -65,5 +66,20 @@ public class TokenEntity {
 
     public void setTokenType(TokenType tokenType) {
         this.tokenType = tokenType;
+    }
+
+    @Override
+    public int getOwner() {
+        return accountId;
+    }
+
+    @Override
+    public String getValue() {
+        return token;
+    }
+
+    @Override
+    public TokenType getType() {
+        return tokenType;
     }
 }
