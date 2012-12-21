@@ -16,7 +16,8 @@ public enum EventMessage {
     /**
      * Triggered at the end of a game.
      */
-    GAME_END("subrosa.game.end", EndGameMessage.class);
+    GAME_END("subrosa.game.end", EndGameMessage.class),
+    TARGET_ACHIEVED("subrosa.game.target.achieved", TargetAchievedMessage.class);
 
     private final String queue;
     private final Class<? extends AbstractMessage> messageClass;

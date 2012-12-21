@@ -14,4 +14,6 @@ public interface Participant {
     String getName();
 
     List<? extends Target> getTargets();
+
+    Target getTarget(int targetId) throws TargetNotFoundException;
 }

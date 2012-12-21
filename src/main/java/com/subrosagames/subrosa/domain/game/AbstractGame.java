@@ -1,17 +1,21 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.event.EventExecutor;
+import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
  * Interface describing the base level of functionality a game implementation must provide.
@@ -19,7 +23,9 @@ import com.subrosagames.subrosa.domain.player.PlayerFactory;
 public abstract class AbstractGame implements Game {
 
     private GameRepository gameRepository;
-    private PlayerFactory playerFactory;
+
+    private EventExecutor eventExecutor;
+
 
     @JsonIgnore
     private GameEntity gameEntity;
@@ -76,6 +82,17 @@ public abstract class AbstractGame implements Game {
     @Override
     public Player getPlayer(int accountId) {
         return new Player(gameRepository.getPlayerForUserAndGame(accountId, this.getId()));
+    }
+
+    @Override
+    public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
+        Target target = player.getTarget(targetId);
+
+        Map<String, Serializable> properties = Maps.newHashMap();
+        properties.put("playerId", player.getId());
+        properties.put("targetId", targetId);
+        eventExecutor.execute(EventMessage.TARGET_ACHIEVED.name(), getId(), properties);
+        return true;
     }
 
     @JsonIgnore
@@ -144,6 +161,5 @@ public abstract class AbstractGame implements Game {
     }
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
-        this.playerFactory = playerFactory;
     }
 }

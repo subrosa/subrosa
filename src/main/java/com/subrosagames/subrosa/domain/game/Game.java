@@ -110,4 +110,14 @@ public interface Game {
      * @return player
      */
     Player getPlayer(int accountId);
+
+    /**
+     * Handle a player's achievement of one of their targets.
+     * @param player player
+     * @param targetId target id
+     * @param code achievement code
+     * @return whether achievement succeeded
+     * @throws TargetNotFoundException if the player does not have the specified target
+     */
+    boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException;
 }
