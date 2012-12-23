@@ -25,6 +25,9 @@ public class GameFactoryImpl implements GameFactory {
     private GameRepository gameRepository;
 
     @Autowired
+    private RuleRepository ruleRepository;
+
+    @Autowired
     private EventScheduler eventScheduler;
 
     @Autowired
@@ -36,6 +39,7 @@ public class GameFactoryImpl implements GameFactory {
         Lifecycle lifecycle = gameRepository.getGameLifecycle(gameId);
         AssassinsGame game = new AssassinsGame(gameEntity, lifecycle);
         game.setGameRepository(gameRepository);
+        game.setRuleRepository(ruleRepository);
         game.setPlayerFactory(playerFactory);
         return game;
     }
@@ -44,6 +48,7 @@ public class GameFactoryImpl implements GameFactory {
     public Game createGame(GameEntity gameEntity, Lifecycle lifecycle) throws GameValidationException {
         final AssassinsGame game = new AssassinsGame(gameEntity, lifecycle);
         game.setGameRepository(gameRepository);
+        game.setRuleRepository(ruleRepository);
         game.validate();
         game.create();
 

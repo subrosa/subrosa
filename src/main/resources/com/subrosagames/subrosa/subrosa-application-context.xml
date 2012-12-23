@@ -18,6 +18,7 @@
     <context:component-scan base-package="com.subrosagames.subrosa"/>
 
     <import resource="subrosa-persistence.xml"/>
+    <!--<import resource="subrosa-caching.xml"/>-->
     <import resource="subrosa-scheduling.xml"/>
     <import resource="subrosa-messaging.xml"/>
     <import resource="subrosa-android.xml"/>

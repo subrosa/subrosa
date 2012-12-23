@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -19,6 +20,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
@@ -66,10 +68,18 @@ public class GameEntity {
     @Column(name = "min_age")
     private Integer minimumAge;
 
-    @OneToMany(fetch = FetchType.EAGER, targetEntity = PostEntity.class)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = PostEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created desc")
     private List<Post> posts;
+
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RuleEntity.class)
+    @JoinTable(
+            name = "game_rule",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "rule_id")
+    )
+    private List<Rule> rules;
 
     public int getId() {
         return id;
@@ -157,5 +167,13 @@ public class GameEntity {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public List<Rule> getRules() {
+        return rules;
+    }
+
+    public void setRules(List<Rule> rules) {
+        this.rules = rules;
     }
 }

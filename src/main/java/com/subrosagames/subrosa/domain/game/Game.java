@@ -3,8 +3,8 @@ package com.subrosagames.subrosa.domain.game;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -19,6 +19,12 @@ public interface Game {
      * @return list of posts
      */
     List<Post> getPosts();
+
+    /**
+     * Get the game rules.
+     * @return a categorized list of rules
+     */
+    Map<RuleType, List<String>> getRules();
 
     /**
      * Game id.

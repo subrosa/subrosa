@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
@@ -23,6 +25,7 @@ import com.subrosagames.subrosa.event.message.EventMessage;
 public abstract class AbstractGame implements Game {
 
     private GameRepository gameRepository;
+    private RuleRepository ruleRepository;
 
     private EventExecutor eventExecutor;
 
@@ -31,6 +34,7 @@ public abstract class AbstractGame implements Game {
     private GameEntity gameEntity;
     @JsonIgnore
     private Lifecycle gameLifecycle;
+
 
     /**
      * Construct with given game information and lifecycle.
@@ -100,6 +104,21 @@ public abstract class AbstractGame implements Game {
         return getGameEntity().getPosts();
     }
 
+    public Map<RuleType, List<String>> getRules() {
+        List<Rule> gameRules = getGameEntity().getRules();
+        Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
+        rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
+        rules.put(RuleType.GAME_SPECIFIC, Lists.transform(gameRules, extractRules));
+        return rules;
+    }
+
+    protected Function<Rule, String> extractRules = new Function<Rule, String>() {
+        @Override
+        public String apply(Rule input) {
+            return input.getDescription();
+        }
+    };
+
     public int getId() {
         return getGameEntity().getId();
     }
@@ -161,5 +180,9 @@ public abstract class AbstractGame implements Game {
     }
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
+    }
+
+    public void setRuleRepository(RuleRepository ruleRepository) {
+        this.ruleRepository = ruleRepository;
     }
 }
