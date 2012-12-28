@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.domain.player;
 
 /**
  *

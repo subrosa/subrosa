@@ -69,4 +69,8 @@ public interface GameRepository {
      * @return player entity
      */
     PlayerEntity getPlayerForUserAndGame(int accountId, int gameId);
+
+    List<PlayerEntity> getPlayersForGame(int gameId);
+
+    void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 }

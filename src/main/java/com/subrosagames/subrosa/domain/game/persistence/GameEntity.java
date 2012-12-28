@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -80,6 +82,10 @@ public class GameEntity {
             inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
     private List<Rule> rules;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
+    @MapKey(name = "primaryKey.attributeType")
+    private Map<String, GameAttributeEntity> attributes;
 
     public int getId() {
         return id;
@@ -175,5 +181,13 @@ public class GameEntity {
 
     public void setRules(List<Rule> rules) {
         this.rules = rules;
+    }
+
+    public Map<String, GameAttributeEntity> getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(Map<String, GameAttributeEntity> attributes) {
+        this.attributes = attributes;
     }
 }

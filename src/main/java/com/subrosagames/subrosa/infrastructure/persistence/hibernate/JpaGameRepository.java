@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -16,10 +17,14 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.game.AbstractGame;
 import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameAttributeType;
+import com.subrosagames.subrosa.domain.game.GameAttributeValue;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
@@ -128,7 +133,6 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public PlayerEntity getPlayerForUserAndGame(int accountId, int gameId) {
-
         String jpql = "SELECT p "
                 + " FROM PlayerEntity p "
                 + "     JOIN p.team t "
@@ -143,5 +147,30 @@ public class JpaGameRepository implements GameRepository {
             LOG.warn("Attempted to find non-existing player - account {} game {}", accountId, gameId);
             return null;
         }
+    }
+
+    @Override
+    public List<PlayerEntity> getPlayersForGame(int gameId) {
+        String jpql = "SELECT p "
+                + " FROM PlayerEntity p "
+                + "     JOIN p.team t "
+                + "     JOIN t.game g "
+                + " WHERE g.id = :gameId";
+        return entityManager.createQuery(jpql, PlayerEntity.class)
+                .setParameter("gameId", gameId)
+                .getResultList();
+    }
+
+    @Override
+    public void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
+        GameAttributeEntity attributeEntity = entityManager.find(GameAttributeEntity.class, new GameAttributePk(gameEntity.getId(), attributeType.name()));
+        if (attributeEntity == null) {
+            LOG.debug("Did not find attribute of type {} for game {}. Creating.", attributeType, gameEntity.getId());
+            attributeEntity = new GameAttributeEntity(gameEntity, attributeType.name(), attributeValue.name());
+        } else {
+            LOG.debug("Found attribute of type {} for game {}. Updating.", attributeType, gameEntity.getId());
+            attributeEntity.setValue(attributeValue.name());
+        }
+        entityManager.merge(attributeEntity);
     }
 }

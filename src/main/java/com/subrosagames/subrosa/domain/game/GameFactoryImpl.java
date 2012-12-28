@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.assassins.AssignmentType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
@@ -38,17 +39,14 @@ public class GameFactoryImpl implements GameFactory {
         GameEntity gameEntity = gameRepository.getGameEntity(gameId);
         Lifecycle lifecycle = gameRepository.getGameLifecycle(gameId);
         AssassinsGame game = new AssassinsGame(gameEntity, lifecycle);
-        game.setGameRepository(gameRepository);
-        game.setRuleRepository(ruleRepository);
-        game.setPlayerFactory(playerFactory);
+        injectDependencies(game);
         return game;
     }
 
     @Override
     public Game createGame(GameEntity gameEntity, Lifecycle lifecycle) throws GameValidationException {
         final AssassinsGame game = new AssassinsGame(gameEntity, lifecycle);
-        game.setGameRepository(gameRepository);
-        game.setRuleRepository(ruleRepository);
+        injectDependencies(game);
         game.validate();
         game.create();
 
@@ -62,6 +60,12 @@ public class GameFactoryImpl implements GameFactory {
         }
 
         return game;
+    }
+
+    private void injectDependencies(AbstractGame game) {
+        game.setGameRepository(gameRepository);
+        game.setRuleRepository(ruleRepository);
+        game.setPlayerFactory(playerFactory);
     }
 
     @Override

@@ -5,14 +5,59 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinGameAttributeType;
+import com.subrosagames.subrosa.domain.game.assassins.OrdnanceType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 
 /**
  * The minimum information shared by all games.
  */
 public interface Game {
+
+    /**
+     * Handle a player's achievement of one of their targets.
+     * @param player player
+     * @param targetId target id
+     * @param code achievement code
+     * @return whether achievement succeeded
+     * @throws TargetNotFoundException if the player does not have the specified target
+     */
+    boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException;
+
+    /**
+     * Perform actions that occur at the start of a game (assignments, for example).
+     */
+    void startGame();
+
+    /**
+     * Add the provided account as a player in this game.
+     * @param account account
+     */
+    void addUserAsPlayer(Account account);
+
+    /**
+     * Get the player associated with the provided account id.
+     * @param accountId account id
+     * @return player
+     */
+    Player getPlayer(int accountId);
+
+    /**
+     * Get all of the players enrolled in the game.
+     * @return set of players in the game
+     */
+    List<Player> getPlayers();
+
+    /**
+     * Set a game attribute on this game.
+     * @param attributeType attribute type
+     * @param attributeValue attribute value
+     */
+    void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
     /**
      * Posts in the game feed.
@@ -110,20 +155,4 @@ public interface Game {
      */
     Integer getMaximumTeamSize();
 
-    /**
-     * Get the player associated with the provided account id.
-     * @param accountId account id
-     * @return player
-     */
-    Player getPlayer(int accountId);
-
-    /**
-     * Handle a player's achievement of one of their targets.
-     * @param player player
-     * @param targetId target id
-     * @param code achievement code
-     * @return whether achievement succeeded
-     * @throws TargetNotFoundException if the player does not have the specified target
-     */
-    boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException;
 }

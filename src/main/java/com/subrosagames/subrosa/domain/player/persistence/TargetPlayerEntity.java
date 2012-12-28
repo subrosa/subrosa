@@ -1,6 +1,5 @@
-package com.subrosagames.subrosa.domain.game.persistence;
+package com.subrosagames.subrosa.domain.player.persistence;
 
-import java.util.Map;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,10 +10,9 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.AddressType;
-import com.subrosagames.subrosa.domain.game.TargetPlayer;
+import com.subrosagames.subrosa.domain.player.TargetPlayer;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  *

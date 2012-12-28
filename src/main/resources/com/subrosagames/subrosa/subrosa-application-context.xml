@@ -22,4 +22,6 @@
     <import resource="subrosa-scheduling.xml"/>
     <import resource="subrosa-messaging.xml"/>
     <import resource="subrosa-android.xml"/>
+
+    <!--<import resource="subrosa-monitoring.xml"/>-->
 </beans>

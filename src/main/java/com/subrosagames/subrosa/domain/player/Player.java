@@ -6,16 +6,18 @@ import java.util.List;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Participant;
-import com.subrosagames.subrosa.domain.game.Target;
-import com.subrosagames.subrosa.domain.game.TargetNotFoundException;
-import com.subrosagames.subrosa.domain.game.persistence.TargetEntity;
+import com.subrosagames.subrosa.domain.location.Location;
+import com.subrosagames.subrosa.domain.player.persistence.TargetPlayerEntity;
+import com.subrosagames.subrosa.domain.player.persistence.TargetTeamEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.domain.player.persistence.TargetPhysicalEntity;
 
 /**
  * Model for Players.
  */
 public class Player implements Participant {
+
+    private PlayerRepository playerRepository;
 
     private final PlayerEntity playerEntity;
 
@@ -52,5 +54,32 @@ public class Player implements Participant {
             return filtered.iterator().next();
         }
         throw new TargetNotFoundException("Target with id " + targetId + " not found for player id " + getId());
+    }
+
+    @Override
+    public void addTarget(Player target) {
+        TargetPlayerEntity entity = new TargetPlayerEntity();
+        entity.setPlayer(playerEntity);
+        entity.setTargetType(TargetType.PLAYER);
+        entity.setTarget(playerRepository.getPlayer(target.getId()));
+        playerRepository.createTarget(entity);
+
+    }
+
+    @Override
+    public void addTarget(Team target) {
+        TargetTeamEntity entity = new TargetTeamEntity();
+        entity.setPlayer(playerEntity);
+        entity.setTargetType(TargetType.TEAM);
+        entity.setTarget(playerRepository.getTeam(target.getId()));
+        playerRepository.createTarget(entity);
+    }
+
+    @Override
+    public void addTarget(Location target) {
+    }
+
+    public void setPlayerRepository(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
     }
 }

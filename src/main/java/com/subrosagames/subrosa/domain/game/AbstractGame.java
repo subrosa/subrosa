@@ -6,16 +6,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.event.EventExecutor;
 import com.subrosagames.subrosa.event.message.EventMessage;
 
@@ -24,11 +33,13 @@ import com.subrosagames.subrosa.event.message.EventMessage;
  */
 public abstract class AbstractGame implements Game {
 
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractGame.class);
+
     private GameRepository gameRepository;
     private RuleRepository ruleRepository;
+    private PlayerFactory playerFactory;
 
     private EventExecutor eventExecutor;
-
 
     @JsonIgnore
     private GameEntity gameEntity;
@@ -89,6 +100,17 @@ public abstract class AbstractGame implements Game {
     }
 
     @Override
+    public List<Player> getPlayers() {
+        List<PlayerEntity> playerEntities = gameRepository.getPlayersForGame(getId());
+        return Lists.transform(playerEntities, new Function<PlayerEntity, Player>() {
+            @Override
+            public Player apply(@Nullable PlayerEntity input) {
+                return playerFactory.getPlayerForEntity(input);
+            }
+        });
+    }
+
+    @Override
     public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
         Target target = player.getTarget(targetId);
 
@@ -97,6 +119,19 @@ public abstract class AbstractGame implements Game {
         properties.put("targetId", targetId);
         eventExecutor.execute(EventMessage.TARGET_ACHIEVED.name(), getId(), properties);
         return true;
+    }
+
+    @Transactional
+    @Override
+    public void addUserAsPlayer(Account account) {
+        playerFactory.createPlayerForGame(this, account);
+    }
+
+    @Transactional
+    @Override
+    public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
+        LOG.debug("Setting attribute {} to {} for game {}", new Object[] { attributeType, attributeValue, getId() });
+        gameRepository.setGameAttribute(getGameEntity(), attributeType, attributeValue);
     }
 
     @JsonIgnore
@@ -180,6 +215,7 @@ public abstract class AbstractGame implements Game {
     }
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
+        this.playerFactory = playerFactory;
     }
 
     public void setRuleRepository(RuleRepository ruleRepository) {

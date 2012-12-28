@@ -7,6 +7,8 @@ import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
  */
 public class TargetAchievedMessage extends AbstractMessage {
 
+    private static final long serialVersionUID = 2841997830080180681L;
+
     private int playerId;
     private int targetId;
 

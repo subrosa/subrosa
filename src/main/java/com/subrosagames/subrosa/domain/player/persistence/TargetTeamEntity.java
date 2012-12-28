@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game.persistence;
+package com.subrosagames.subrosa.domain.player.persistence;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -8,9 +8,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.subrosagames.subrosa.domain.game.TargetTeam;
+import com.subrosagames.subrosa.domain.player.TargetTeam;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**
  *

@@ -1,25 +1,24 @@
 package com.subrosagames.subrosa.domain.player.persistence;
 
-import java.util.Collection;
 import java.util.List;
-import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Target;
-import com.subrosagames.subrosa.domain.game.persistence.TargetEntity;
+import com.subrosagames.subrosa.domain.player.GameRole;
 
 /**
  * Persists a player.
@@ -29,10 +28,12 @@ import com.subrosagames.subrosa.domain.game.persistence.TargetEntity;
 public class PlayerEntity {
 
     @Id
+    @SequenceGenerator(name = "playerSeq", sequenceName = "player_player_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "playerSeq")
     @Column(name = "player_id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private TeamEntity team;
 
@@ -42,6 +43,10 @@ public class PlayerEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "game_role")
+    private GameRole gameRole;
 
     @OneToMany(mappedBy = "player")
     @LazyCollection(LazyCollectionOption.FALSE)
@@ -87,4 +92,11 @@ public class PlayerEntity {
         this.targets = targets;
     }
 
+    public GameRole getGameRole() {
+        return gameRole;
+    }
+
+    public void setGameRole(GameRole gameRole) {
+        this.gameRole = gameRole;
+    }
 }

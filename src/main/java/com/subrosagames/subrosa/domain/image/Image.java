@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.domain.image;
 
-import java.net.URI;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -30,8 +29,8 @@ public class Image {
     private ImageType imageType;
 
     @Column
-    @Type(type = UriUserType.HIBERNATE_TYPE_NAME)
-    private URI uri;
+//    @Type(type = UriUserType.HIBERNATE_TYPE_NAME)
+    private String uri;
 
     public Integer getId() {
         return id;
@@ -49,11 +48,11 @@ public class Image {
         this.imageType = imageType;
     }
 
-    public URI getUri() {
+    public String getUri() {
         return uri;
     }
 
-    public void setUri(URI uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 }

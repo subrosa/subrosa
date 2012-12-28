@@ -1,6 +1,8 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.domain.player;
 
 import java.util.List;
+
+import com.subrosagames.subrosa.domain.location.Location;
 
 /**
  * Represents a participant in a game.
@@ -16,4 +18,8 @@ public interface Participant {
     List<? extends Target> getTargets();
 
     Target getTarget(int targetId) throws TargetNotFoundException;
+
+    void addTarget(Player target);
+    void addTarget(Team target);
+    void addTarget(Location target);
 }

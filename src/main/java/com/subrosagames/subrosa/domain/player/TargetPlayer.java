@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.domain.player;
 
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.image.Image;

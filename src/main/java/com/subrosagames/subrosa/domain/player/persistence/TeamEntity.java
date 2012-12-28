@@ -4,18 +4,20 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
-import com.subrosagames.subrosa.domain.game.Target;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.TargetEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 
 /**
@@ -26,16 +28,19 @@ import com.subrosagames.subrosa.domain.image.Image;
 public class TeamEntity {
 
     @Id
+    @SequenceGenerator(name = "teamSeq", sequenceName = "team_team_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teamSeq")
     @Column(name = "team_id")
     private Integer id;
 
-    @JsonIgnore
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id")
+    @JoinColumn(name = "game_id", insertable = false, updatable = false)
     private GameEntity game;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
+    @Column(name = "game_id")
+    private Integer gameId;
+
+    @OneToMany(mappedBy = "team")
     private List<PlayerEntity> players;
 
     @OneToOne
@@ -106,5 +111,13 @@ public class TeamEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(Integer gameId) {
+        this.gameId = gameId;
     }
 }

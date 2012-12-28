@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game.persistence;
+package com.subrosagames.subrosa.domain.player.persistence;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -16,8 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.subrosagames.subrosa.domain.game.Target;
-import com.subrosagames.subrosa.domain.game.TargetType;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.TargetType;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**

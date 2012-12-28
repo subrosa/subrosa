@@ -70,7 +70,7 @@ ALTER TABLE game_attribute ADD PRIMARY KEY (game_id, attribute_type);
 
 ALTER TABLE game_attribute DROP COLUMN value;
 ALTER TABLE game_attribute ADD COLUMN value TEXT;
-UPDATE game_attribute SET value = 'Water Weapons (see rules)';
+UPDATE game_attribute SET value = 'WATER_WEAPONS';
 ALTER TABLE game_attribute ALTER COLUMN value SET NOT NULL;
 
 ALTER TABLE game_attribute ADD COLUMN created2 TIMESTAMP NOT NULL DEFAULT NOW();
