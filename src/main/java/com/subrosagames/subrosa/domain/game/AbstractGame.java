@@ -187,6 +187,10 @@ public abstract class AbstractGame implements Game {
         return getGameEntity().getName();
     }
 
+    public String getUrl() {
+        return getGameEntity().getUrl();
+    }
+
     public String getDescription() {
         return getGameEntity().getDescription();
     }

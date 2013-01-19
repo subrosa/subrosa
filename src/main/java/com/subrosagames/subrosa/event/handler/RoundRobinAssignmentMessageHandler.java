@@ -13,7 +13,6 @@ import com.subrosagames.subrosa.domain.game.assassins.TargetAssigner;
 /**
  *
  */
-@Component
 public class RoundRobinAssignmentMessageHandler extends AbstractMessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoundRobinAssignmentMessageHandler.class);

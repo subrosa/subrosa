@@ -19,7 +19,6 @@ import com.subrosagames.subrosa.event.message.EventMessage;
 /**
  * Handler for starting a game.
  */
-@Component
 public class GameStartMessageHandler extends AbstractMessageHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(GameStartMessageHandler.class);

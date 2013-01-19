@@ -86,6 +86,12 @@ public interface Game {
     String getName();
 
     /**
+     * Game url.
+     * @return game url
+     */
+    String getUrl();
+
+    /**
      * Game description.
      * @return game description
      */

@@ -46,6 +46,9 @@ public class GameEntity {
     private String name;
 
     @Column
+    private String url;
+
+    @Column
     private String description;
 
     @Column(name = "game_type")
@@ -192,5 +195,13 @@ public class GameEntity {
 
     public void setAttributes(Map<String, GameAttributeEntity> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
