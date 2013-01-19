@@ -27,7 +27,7 @@ public class GameLifecycle {
 
     @OneToOne
     @JoinColumn(name = "lifecycle_id")
-    private Lifecycle lifecycle;
+    private LifecycleEntity lifecycleEntity;
 
     public Integer getGameId() {
         return gameId;
@@ -37,36 +37,36 @@ public class GameLifecycle {
         this.gameId = gameId;
     }
 
-    public Lifecycle getLifecycle() {
-        return lifecycle;
+    public LifecycleEntity getLifecycleEntity() {
+        return lifecycleEntity;
     }
 
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
+    public void setLifecycleEntity(LifecycleEntity lifecycleEntity) {
+        this.lifecycleEntity = lifecycleEntity;
     }
 
     public Timestamp getRegistrationStart() {
-        return lifecycle.getRegistrationStart();
+        return lifecycleEntity.getRegistrationStart();
     }
 
     public Timestamp getRegistrationEnd() {
-        return lifecycle.getRegistrationEnd();
+        return lifecycleEntity.getRegistrationEnd();
     }
 
     public Timestamp getGameStart() {
-        return lifecycle.getGameStart();
+        return lifecycleEntity.getGameStart();
     }
 
     public Timestamp getGameEnd() {
-        return lifecycle.getGameEnd();
+        return lifecycleEntity.getGameEnd();
     }
 
     public List<ScheduledEventEntity> getScheduledEvents() {
-        return lifecycle.getScheduledEvents();
+        return lifecycleEntity.getScheduledEvents();
     }
 
     public List<TriggeredEventEntity> getTriggeredEvents() {
-        return lifecycle.getTriggeredEvents();
+        return lifecycleEntity.getTriggeredEvents();
     }
 
 }

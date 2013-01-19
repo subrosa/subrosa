@@ -1,34 +1,35 @@
 package com.subrosagames.subrosa.event.handler;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.notification.NotificationCode;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;
 import com.subrosagames.subrosa.domain.notification.Notifier;
-import com.subrosagames.subrosa.event.message.EndGameMessage;
 
 /**
- * Handler for {@link EndGameMessage}s.
+ * Handler for ending games.
  */
-public class EndGameMessageHandler {
+@Component
+public class GameEndMessageHandler extends AbstractMessageHandler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EndGameMessageHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GameEndMessageHandler.class);
 
     @Autowired
     private Notifier notifier;
 
-    /**
-     * Handle the given end game message.
-     * @param endGameMessage end game message
-     * @throws Exception if message cannot be handled
-     */
-    public void process(EndGameMessage endGameMessage) throws Exception {
+    @Override
+    public void process(Game game, Map<String, Serializable> properties) throws Exception {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Handling game end message for game {}", endGameMessage.getGameId());
+            LOG.debug("Handling game end message for game {}", game.getId());
         }
         NotificationDetails notificationDetails = new NotificationDetails();
-        notificationDetails.setGameId(endGameMessage.getGameId());
+        notificationDetails.setGameId(game.getId());
         notificationDetails.setCode(NotificationCode.GAME_END);
         notifier.sendNotification(notificationDetails);
     }

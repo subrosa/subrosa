@@ -1,8 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
-import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -22,11 +21,11 @@ public interface GameFactory {
     /**
      * Create a game with the given game info and lifecycle.
      * @param gameEntity game entity
-     * @param lifecycle game lifecycle
+     * @param lifecycleEntity game lifecycle
      * @return created game
      * @throws GameValidationException if game information is invalid or incomplete
      */
-    Game createGame(GameEntity gameEntity, Lifecycle lifecycle) throws GameValidationException;
+    Game createGame(GameEntity gameEntity, LifecycleEntity lifecycleEntity) throws GameValidationException;
 
     /**
      * Get a paginated list of games.

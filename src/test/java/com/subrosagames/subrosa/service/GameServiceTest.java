@@ -12,7 +12,7 @@ import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 
 /**
  * Test {@link GameService}.
@@ -52,7 +52,7 @@ public class GameServiceTest {
 
         // game master creates an assassins game
         GameEntity gameEntity = new GameEntity();
-        Lifecycle gameLifecycle = new Lifecycle();
+        LifecycleEntity lifecycleEntity = new LifecycleEntity();
 //        Game game = gameFactory.createGame(gameEntity, gameLifecycle);
 
         // 1st game player registers

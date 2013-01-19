@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Base class for game event messages.
  */
-public abstract class AbstractMessage implements Serializable {
+public class GameEventMessage implements Serializable {
 
     private static final long serialVersionUID = -623557190936708194L;
 

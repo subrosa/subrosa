@@ -1,35 +1,49 @@
 package com.subrosagames.subrosa.event.message;
 
-import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
+import com.subrosagames.subrosa.event.Event;
+import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
+import com.subrosagames.subrosa.event.handler.GameEndMessageHandler;
+import com.subrosagames.subrosa.event.handler.GameStartMessageHandler;
+import com.subrosagames.subrosa.event.handler.MutualInterestAssignmentMessageHandler;
+import com.subrosagames.subrosa.event.handler.RoundRobinAssignmentMessageHandler;
+import com.subrosagames.subrosa.infrastructure.spring.ApplicationContextProvider;
 
 /**
  * Enumeration of supported event-based JMS messages.
  *
  * Each supported event has an associated message queue name and type of message expected to be sent on it.
  */
-public enum EventMessage {
+public enum EventMessage implements Event {
 
     /**
      * Triggered upon the start of a game.
      */
-    GAME_START("subrosa.game.start", StartGameMessage.class),
+    GAME_START("subrosa.game.start", GameEventMessage.class, GameStartMessageHandler.class),
     /**
      * Triggered at the end of a game.
      */
-    GAME_END("subrosa.game.end", EndGameMessage.class),
-    TARGET_ACHIEVED("subrosa.game.target.achieved", TargetAchievedMessage.class);
+    GAME_END("subrosa.game.end", GameEventMessage.class, GameEndMessageHandler.class),
+    TARGET_ACHIEVED("subrosa.game.target.achieved", GameEventMessage.class, null),
+    ROUND_ROBIN_ASSIGNMENT(null, GameEventMessage.class, RoundRobinAssignmentMessageHandler.class),
+    MUTUAL_INTEREST_ASSIGNMENT(null, GameEventMessage.class, MutualInterestAssignmentMessageHandler.class);
 
     private final String queue;
-    private final Class<? extends AbstractMessage> messageClass;
+    private final Class<? extends GameEventMessage> messageClass;
+    private final Class<? extends AbstractMessageHandler> handlerClass;
 
     /**
      * Construct with queue and message class.
      * @param queue message queue
      * @param messageClass type of message to be sent
+     * @param handlerClass type of handler for event
      */
-    EventMessage(String queue, Class<? extends AbstractMessage> messageClass) {
+    EventMessage(String queue, Class<? extends GameEventMessage> messageClass, Class<? extends AbstractMessageHandler> handlerClass) {
         this.queue = queue;
         this.messageClass = messageClass;
+        this.handlerClass = handlerClass;
     }
 
     /**
@@ -44,7 +58,7 @@ public enum EventMessage {
      * Get an message instance to be sent on the message queue.
      * @return instantiated message
      */
-    public AbstractMessage getMessage() { // SUPPRESS CHECKSTYLE IllegalType
+    public GameEventMessage getMessage() { // SUPPRESS CHECKSTYLE IllegalType
         try {
             return messageClass.newInstance();
         } catch (InstantiationException e) {
@@ -53,4 +67,15 @@ public enum EventMessage {
             throw new IllegalStateException("Uninstantiable game event message " + messageClass + " encountered", e);
         }
     }
+
+    public AbstractMessageHandler getHandler() {
+        ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
+        return applicationContext.getBean(handlerClass);
+    }
+
+    @Override
+    public String getEventClass() {
+        return name();
+    }
+
 }

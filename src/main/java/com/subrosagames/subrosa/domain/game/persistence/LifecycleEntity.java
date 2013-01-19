@@ -13,6 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
  * Persists a game lifecycle.
@@ -21,7 +22,7 @@ import com.google.common.collect.Lists;
  */
 @Entity
 @Table(name = "lifecycle")
-public class Lifecycle {
+public class LifecycleEntity {
 
     @Id
     @SequenceGenerator(name = "lifecycleSeq", sequenceName = "lifecycle_lifecycle_id_seq")
@@ -103,5 +104,18 @@ public class Lifecycle {
 
     public void setTriggeredEvents(List<TriggeredEventEntity> triggeredEvents) {
         this.triggeredEvents = triggeredEvents;
+    }
+
+    public void addTriggeredEvent(TriggeredEventEntity triggeredEventEntity) {
+        triggeredEvents.add(triggeredEventEntity);
+    }
+
+    public void addScheduledEvent(EventMessage event, Timestamp time) {
+        ScheduledEventEntity scheduledEventEntity = new ScheduledEventEntity();
+        scheduledEventEntity.setEventClass(event.getEventClass());
+        scheduledEventEntity.setEventType(ScheduledEventEntity.EVENT_TYPE_SCHEDULED);
+        scheduledEventEntity.setLifecycle(this);
+        scheduledEventEntity.setEventDate(time);
+        scheduledEvents.add(scheduledEventEntity);
     }
 }

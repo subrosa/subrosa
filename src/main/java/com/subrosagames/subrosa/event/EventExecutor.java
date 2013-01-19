@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
-import com.subrosagames.subrosa.domain.game.event.AbstractMessage;
+import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
+import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
 import com.subrosagames.subrosa.event.message.MessageQueueFactory;
 
 /**
@@ -49,10 +50,25 @@ public class EventExecutor {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Firing event {} for game {}", eventClass, gameId);
         }
+        GameEventMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
+        messageForName.setGameId(gameId);
+        messageForName.setProperties(properties);
+        AbstractMessageHandler handler = messageQueueFactory.getHandlerForName(eventClass);
+        try {
+            handler.process(messageForName);
+        } catch (Exception e) {
+            LOG.error("Exception processing event {}", new Object[] { eventClass, gameId }, e);
+        }
+    }
+
+    public void executeAsync(String eventClass, int gameId, Map<String, Serializable> properties) {
         String queueForName = messageQueueFactory.getQueueForName(eventClass);
-        AbstractMessage messageForName = messageQueueFactory.getMessageForName(eventClass); // SUPPRESS CHECKSTYLE IllegalType
+        GameEventMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
         messageForName.setGameId(gameId);
         messageForName.setProperties(properties);
         jmsTemplate.convertAndSend(queueForName, messageForName);
+    }
+
+    public void test() {
     }
 }

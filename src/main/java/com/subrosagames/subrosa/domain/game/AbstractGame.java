@@ -16,8 +16,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
+import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -25,7 +27,9 @@ import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.EventExecutor;
+import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
@@ -38,23 +42,24 @@ public abstract class AbstractGame implements Game {
     private GameRepository gameRepository;
     private RuleRepository ruleRepository;
     private PlayerFactory playerFactory;
+    private EventRepository eventRepository;
 
     private EventExecutor eventExecutor;
 
     @JsonIgnore
     private GameEntity gameEntity;
     @JsonIgnore
-    private Lifecycle gameLifecycle;
+    private LifecycleEntity lifecycleEntity;
 
 
     /**
      * Construct with given game information and lifecycle.
      * @param gameEntity game entity
-     * @param gameLifecycle game lifecycle
+     * @param lifecycleEntity game lifecycle
      */
-    public AbstractGame(GameEntity gameEntity, Lifecycle gameLifecycle) {
+    public AbstractGame(GameEntity gameEntity, LifecycleEntity lifecycleEntity) {
         this.gameEntity = gameEntity;
-        this.gameLifecycle = gameLifecycle;
+        this.lifecycleEntity = lifecycleEntity;
     }
 
     /**
@@ -75,8 +80,8 @@ public abstract class AbstractGame implements Game {
      * Get game lifecycle.
      * @return game lifecycle
      */
-    public Lifecycle getGameLifecycle() {
-        return gameLifecycle;
+    public LifecycleEntity getLifecycleEntity() {
+        return lifecycleEntity;
     }
 
     /**
@@ -123,8 +128,8 @@ public abstract class AbstractGame implements Game {
 
     @Transactional
     @Override
-    public void addUserAsPlayer(Account account) {
-        playerFactory.createPlayerForGame(this, account);
+    public Player addUserAsPlayer(Account account) {
+        return playerFactory.createPlayerForGame(this, account);
     }
 
     @Transactional
@@ -132,6 +137,26 @@ public abstract class AbstractGame implements Game {
     public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
         LOG.debug("Setting attribute {} to {} for game {}", new Object[] { attributeType, attributeValue, getId() });
         gameRepository.setGameAttribute(getGameEntity(), attributeType, attributeValue);
+    }
+
+    @Override
+    public void addTriggeredEvent(EventMessage eventType, Event trigger) {
+        TriggeredEventEntity entity = eventRepository.createTriggeredEvent(eventType, trigger);
+        lifecycleEntity.addTriggeredEvent(entity);
+        gameRepository.save(lifecycleEntity);
+    }
+
+    @Override
+    public List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage) {
+        List<TriggeredEvent> eventsTriggered = Lists.newArrayList();
+        List<TriggeredEventEntity> persistedEvents = lifecycleEntity.getTriggeredEvents();
+        for (TriggeredEventEntity event : persistedEvents) {
+            String eventClass = event.getTriggerEvent().getEventClass();
+            if (eventClass.equals(eventMessage.name())) {
+                eventsTriggered.add(event);
+            }
+        }
+        return eventsTriggered;
     }
 
     @JsonIgnore
@@ -175,19 +200,19 @@ public abstract class AbstractGame implements Game {
     }
 
     public Date getStartTime() {
-        return getGameLifecycle().getGameStart();
+        return getLifecycleEntity().getGameStart();
     }
 
     public Date getEndTime() {
-        return getGameLifecycle().getGameEnd();
+        return getLifecycleEntity().getGameEnd();
     }
 
     public Date getRegistrationStartTime() {
-        return getGameLifecycle().getRegistrationStart();
+        return getLifecycleEntity().getRegistrationStart();
     }
 
     public Date getRegistrationEndTime() {
-        return getGameLifecycle().getRegistrationEnd();
+        return getLifecycleEntity().getRegistrationEnd();
     }
 
     public String getTimezone() {
@@ -220,5 +245,9 @@ public abstract class AbstractGame implements Game {
 
     public void setRuleRepository(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
+    }
+
+    public void setEventRepository(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
     }
 }

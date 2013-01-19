@@ -14,9 +14,11 @@ import com.subrosagames.subrosa.event.ScheduledEvent;
  */
 @Entity
 @Table(name = "scheduled_event")
-@DiscriminatorValue("SCHEDULED")
+@DiscriminatorValue(ScheduledEventEntity.EVENT_TYPE_SCHEDULED)
 @PrimaryKeyJoinColumn(name = "event_id")
 public class ScheduledEventEntity extends EventEntity implements ScheduledEvent {
+
+    public static final String EVENT_TYPE_SCHEDULED = "SCHEDULED";
 
     @Column(name = "event_date")
     private Timestamp eventDate;

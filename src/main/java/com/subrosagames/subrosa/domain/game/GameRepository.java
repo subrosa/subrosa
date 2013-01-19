@@ -3,7 +3,7 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
@@ -27,13 +27,13 @@ public interface GameRepository {
      * @param offset offset into the pool of games
      * @return list of games
      */
-    List<Game> getGames(int limit, int offset);
+    List<GameEntity> getGames(int limit, int offset);
 
     /**
      * Get a list of games that are currently active.
      * @return active games
      */
-    List<Game> getActiveGames();
+    List<Integer> getActiveGames();
 
     /**
      * Get a list of the games that are occurring near the provided geographical location.
@@ -60,7 +60,7 @@ public interface GameRepository {
      * @param gameId game id
      * @return game lifecycle
      */
-    Lifecycle getGameLifecycle(int gameId);
+    LifecycleEntity getGameLifecycle(int gameId);
 
     /**
      * Load the player of a game for the given user.
@@ -73,4 +73,6 @@ public interface GameRepository {
     List<PlayerEntity> getPlayersForGame(int gameId);
 
     void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
+
+    void save(LifecycleEntity lifecycleEntity);
 }

@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.assassins.AssassinGameAttributeType;
-import com.subrosagames.subrosa.domain.game.assassins.OrdnanceType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.event.Event;
+import com.subrosagames.subrosa.event.TriggeredEvent;
+import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
  * The minimum information shared by all games.
@@ -36,8 +37,9 @@ public interface Game {
     /**
      * Add the provided account as a player in this game.
      * @param account account
+     * @return game player
      */
-    void addUserAsPlayer(Account account);
+    Player addUserAsPlayer(Account account);
 
     /**
      * Get the player associated with the provided account id.
@@ -155,4 +157,7 @@ public interface Game {
      */
     Integer getMaximumTeamSize();
 
+    void addTriggeredEvent(EventMessage eventType, Event trigger);
+
+    List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage);
 }

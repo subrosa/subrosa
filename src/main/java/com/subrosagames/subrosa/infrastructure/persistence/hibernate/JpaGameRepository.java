@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
 import java.util.List;
-import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -10,16 +9,11 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.game.AbstractGame;
-import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
@@ -27,7 +21,8 @@ import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
-import com.subrosagames.subrosa.domain.game.persistence.Lifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
@@ -43,23 +38,36 @@ public class JpaGameRepository implements GameRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private GameFactory gameFactory;
-
     @Override
     public AbstractGame createGame(AbstractGame game) throws GameValidationException { // SUPPRESS CHECKSTYLE IllegalType
         GameEntity gameEntity = game.getGameEntity();
         entityManager.persist(gameEntity);
 
-        Lifecycle lifecycle = game.getGameLifecycle();
-        entityManager.persist(lifecycle);
+        LifecycleEntity seedLifecycle = game.getLifecycleEntity();
+        LifecycleEntity lifecycleEntity = new LifecycleEntity();
+        lifecycleEntity.setRegistrationStart(seedLifecycle.getRegistrationStart());
+        lifecycleEntity.setRegistrationEnd(seedLifecycle.getRegistrationEnd());
+        lifecycleEntity.setGameStart(seedLifecycle.getGameStart());
+        lifecycleEntity.setGameEnd(seedLifecycle.getGameEnd());
+        entityManager.persist(lifecycleEntity);
+
+        List<ScheduledEventEntity> scheduledEvents = seedLifecycle.getScheduledEvents();
+        for (ScheduledEventEntity scheduledEvent : scheduledEvents) {
+            scheduledEvent.setLifecycle(lifecycleEntity);
+            entityManager.persist(scheduledEvent);
+        }
 
         GameLifecycle gameLifecycle = new GameLifecycle();
         gameLifecycle.setGameId(gameEntity.getId());
-        gameLifecycle.setLifecycle(lifecycle);
+        gameLifecycle.setLifecycleEntity(lifecycleEntity);
         entityManager.persist(gameLifecycle);
 
         return game;
+    }
+
+    @Override
+    public void save(LifecycleEntity lifecycleEntity) {
+        entityManager.merge(lifecycleEntity);
     }
 
     @Override
@@ -73,49 +81,29 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public Lifecycle getGameLifecycle(int gameId) {
-        return entityManager.find(GameLifecycle.class, gameId).getLifecycle();
+    public LifecycleEntity getGameLifecycle(int gameId) {
+        return entityManager.find(GameLifecycle.class, gameId).getLifecycleEntity();
     }
 
     @Override
-    public List<Game> getGames(int limit, int offset) {
+    public List<GameEntity> getGames(int limit, int offset) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
         TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
         query.setMaxResults(limit);
         query.setFirstResult(offset);
-        return Lists.transform(query.getResultList(), new Function<GameEntity, Game>() {
-            @Override
-            public Game apply(GameEntity gameEntity) {
-                try {
-                    return gameFactory.getGameForId(gameEntity.getId());
-                } catch (GameNotFoundException e) {
-                    LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
-                    return null;
-                }
-            }
-        });
+        return query.getResultList();
     }
 
     @Override
-    public List<Game> getActiveGames() {
+    public List<Integer> getActiveGames() {
         LOG.debug("Retrieving active games list");
         String jpql = "SELECT gl.gameId "
                 + " FROM GameLifecycle gl "
-                + " JOIN Lifecycle l"
+                + " JOIN LifecycleEntity l"
                 + " WHERE NOW('') > l.registrationStart "
                 + "     AND NOW('') < l.registrationEnd ";
         TypedQuery<Integer> query = entityManager.createQuery(jpql, Integer.class);
-        return Lists.transform(query.getResultList(), new Function<Integer, Game>() {
-            @Override
-            public Game apply(Integer gameId) {
-                try {
-                    return gameFactory.getGameForId(gameId);
-                } catch (GameNotFoundException e) {
-                    LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
-                    return null;
-                }
-            }
-        });
+        return query.getResultList();
     }
 
     @Override

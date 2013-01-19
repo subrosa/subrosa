@@ -21,6 +21,8 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.post.PostEntity;
@@ -70,9 +72,10 @@ public class GameEntity {
     @Column(name = "min_age")
     private Integer minimumAge;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = PostEntity.class)
+    @OneToMany(targetEntity = PostEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created desc")
+    @LazyCollection(LazyCollectionOption.FALSE)
     private List<Post> posts;
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity = RuleEntity.class)

@@ -11,14 +11,16 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.event.TriggeredEvent;
+
 /**
  * Persisted triggered event.
  */
 @Entity
 @Table(name = "triggered_event")
-@DiscriminatorValue("SCHEDULED")
+@DiscriminatorValue("TRIGGERED")
 @PrimaryKeyJoinColumn(name = "event_id")
-public class TriggeredEventEntity extends EventEntity {
+public class TriggeredEventEntity extends EventEntity implements TriggeredEvent {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trigger_event_id", nullable = false)
