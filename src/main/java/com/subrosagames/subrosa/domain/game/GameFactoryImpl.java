@@ -51,6 +51,15 @@ public class GameFactoryImpl implements GameFactory {
     }
 
     @Override
+    public Game getGameForUrl(String url) throws GameNotFoundException {
+        GameEntity gameEntity = gameRepository.getGameEntity(url);
+        LifecycleEntity lifecycleEntity = gameRepository.getGameLifecycle(gameEntity.getId());
+        AssassinsGame game = new AssassinsGame(gameEntity, lifecycleEntity);
+        injectDependencies(game);
+        return game;
+    }
+
+    @Override
     public Game createGame(GameEntity gameEntity, LifecycleEntity lifecycleEntity) throws GameValidationException {
         final AssassinsGame game = new AssassinsGame(gameEntity, lifecycleEntity);
         injectDependencies(game);

@@ -11,12 +11,19 @@ public interface GameFactory {
 
     /**
      * Get the game for the given id.
-     *
      * @param gameId game id
      * @return game
      * @throws GameNotFoundException if no game exists for that id
      */
     Game getGameForId(int gameId) throws GameNotFoundException;
+
+    /**
+     * Get the game for the given url.
+     * @param url game url
+     * @return game
+     * @throws GameNotFoundException if no game exists for that id
+     */
+    Game getGameForUrl(String url) throws GameNotFoundException;
 
     /**
      * Create a game with the given game info and lifecycle.

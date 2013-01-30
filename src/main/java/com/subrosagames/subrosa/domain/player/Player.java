@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.domain.player;
 import java.util.Collection;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -37,6 +38,7 @@ public class Player implements Participant {
         return playerEntity.getAccount().getUsername();
     }
 
+    @JsonIgnore
     public List<? extends Target> getTargets() {
         return playerEntity.getTargets();
     }

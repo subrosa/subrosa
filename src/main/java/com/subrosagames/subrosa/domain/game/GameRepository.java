@@ -56,6 +56,13 @@ public interface GameRepository {
     GameEntity getGameEntity(int gameId) throws GameNotFoundException;
 
     /**
+     * Retrieve the specified game entity by identifying url.
+     * @param url game url
+     * @return game
+     */
+    GameEntity getGameEntity(String url) throws GameNotFoundException;
+
+    /**
      * Retrieve the lifecycle for the given game id.
      * @param gameId game id
      * @return game lifecycle
@@ -75,4 +82,5 @@ public interface GameRepository {
     void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
     void save(LifecycleEntity lifecycleEntity);
+
 }
