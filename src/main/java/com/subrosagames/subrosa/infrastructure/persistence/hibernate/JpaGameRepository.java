@@ -83,10 +83,12 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public GameEntity getGameEntity(String url) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
-        GameEntity gameEntity = entityManager.createQuery("SELECT g FROM GameEntity g WHERE g.url = :url", GameEntity.class)
-                .setParameter("url", url)
-                .getSingleResult();
-        if (gameEntity == null) {
+        GameEntity gameEntity;
+        try {
+            gameEntity = entityManager.createQuery("SELECT g FROM GameEntity g WHERE g.url = :url", GameEntity.class)
+                    .setParameter("url", url)
+                    .getSingleResult();
+        } catch (NoResultException e) {
             throw new GameNotFoundException("Game for url " + url + " not found");
         }
         return gameEntity;

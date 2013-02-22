@@ -77,10 +77,25 @@ public interface GameRepository {
      */
     PlayerEntity getPlayerForUserAndGame(int accountId, int gameId);
 
+    /**
+     * Get all of the players enrolled in the specified game.
+     * @param gameId game id
+     * @return list of players
+     */
     List<PlayerEntity> getPlayersForGame(int gameId);
 
+    /**
+     * Set an attribute of a game.
+     * @param gameEntity persisted game
+     * @param attributeType attribute type
+     * @param attributeValue attribute value
+     */
     void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
+    /**
+     * Persist the provided game lifecycle.
+     * @param lifecycleEntity lifecycle entity
+     */
     void save(LifecycleEntity lifecycleEntity);
 
 }
