@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
 
@@ -65,6 +66,7 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Set<AccountRole> accountRoles;
 
+    @JsonIgnore
     @Column
     private String password;
 

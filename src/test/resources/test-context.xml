@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
     <!-- pull in application context -->
-    <import resource="com/subrosagames/subrosa/subrosa-application-context.xml"/>
+    <import resource="classpath:com/subrosagames/subrosa/subrosa-application-context.xml"/>
 
     <!-- then override with test-specific bean definitions -->
     <import resource="test-persistence-context.xml"/>

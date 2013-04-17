@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+       ">
+
+    <bean id="amazonAccessKey" class="java.lang.String">
+        <constructor-arg value="${amazon.aws.accessKey}"/>
+    </bean>
+
+    <bean id="amazonSecretKey" class="java.lang.String">
+        <constructor-arg value="${amazon.aws.secretKey}"/>
+    </bean>
+
+    <bean id="s3BucketName" class="java.lang.String">
+        <constructor-arg value="${amazon.s3.bucket.image}"/>
+    </bean>
+</beans>
