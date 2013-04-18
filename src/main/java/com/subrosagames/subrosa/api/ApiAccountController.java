@@ -66,7 +66,7 @@ public class ApiAccountController {
      * @param registration the registration parameters.
      * @return {@link Account}
      */
-    @RequestMapping(value = "/account/", method = RequestMethod.POST)
+    @RequestMapping(value = "/account", method = RequestMethod.POST)
     @ResponseBody
     public Account createAccount(@RequestBody Registration registration) {
         LOG.debug("Creating new account");
