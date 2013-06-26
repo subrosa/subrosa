@@ -21,11 +21,11 @@ import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.post.PostEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 
@@ -80,6 +80,12 @@ public class GameEntity {
     @OrderBy("created desc")
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<Post> posts;
+
+    @OneToMany(targetEntity = GameEventEntity.class)
+    @JoinColumn(name = "game_id")
+    @OrderBy("created desc")
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<GameEvent> history;
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity = RuleEntity.class)
     @JoinTable(
@@ -179,6 +185,14 @@ public class GameEntity {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public List<GameEvent> getHistory() {
+        return history;
+    }
+
+    public void setHistory(List<GameEvent> history) {
+        this.history = history;
     }
 
     public List<Rule> getRules() {

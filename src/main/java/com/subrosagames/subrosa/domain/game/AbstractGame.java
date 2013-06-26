@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,6 +158,11 @@ public abstract class AbstractGame implements Game {
             }
         }
         return eventsTriggered;
+    }
+
+    @Override
+    public List<GameEvent> getHistory() {
+        return getGameEntity().getHistory();
     }
 
     @JsonIgnore

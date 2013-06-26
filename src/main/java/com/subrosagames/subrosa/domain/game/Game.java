@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -166,4 +167,6 @@ public interface Game {
     void addTriggeredEvent(EventMessage eventType, Event trigger);
 
     List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage);
+
+    List<GameEvent> getHistory();
 }

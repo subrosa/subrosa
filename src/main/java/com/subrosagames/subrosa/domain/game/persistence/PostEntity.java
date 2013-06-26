@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game.post;
+package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.util.Date;
 import javax.persistence.CascadeType;

@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletResponse;
 
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -183,14 +184,41 @@ public class ApiGameController {
                                @RequestParam(value = "offset", required = false) Integer offset)
             throws GameNotFoundException
     {
+        limit = ObjectUtils.defaultIfNull(limit, 10);
+        offset = ObjectUtils.defaultIfNull(offset, 0);
         List<Post> posts = gameFactory.getGameForUrl(gameUrl).getPosts();
         if (CollectionUtils.isEmpty(posts)) {
             return new PaginatedList<Post>(Lists.<Post>newArrayList(), 0, limit, offset);
         } else {
-
             return new PaginatedList<Post>(
                     posts.subList(offset, offset + limit),
                     posts.size(),
+                    limit, offset);
+        }
+    }
+
+    @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
+    @ResponseBody
+    public PaginatedList<GameEvent> getHistory(@PathVariable("gameUrl") String gameUrl,
+                                 @RequestParam(value = "limit", required = false) Integer limit,
+                                 @RequestParam(value = "offset", required = false) Integer offset)
+            throws GameNotFoundException {
+        limit = ObjectUtils.defaultIfNull(limit, 10);
+        offset = ObjectUtils.defaultIfNull(offset, 0);
+        if (limit == null) {
+            limit = 10;
+        }
+        if (offset == null) {
+            offset = 0;
+        }
+        LOG.debug("Retrieving history for game {}", gameUrl);
+        List<GameEvent> events = gameFactory.getGameForUrl(gameUrl).getHistory();
+        if (CollectionUtils.isEmpty(events)) {
+            return new PaginatedList<GameEvent>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
+        } else {
+            return new PaginatedList<GameEvent>(
+                    events.subList(offset, offset + limit),
+                    events.size(),
                     limit, offset);
         }
     }
@@ -270,4 +298,16 @@ public class ApiGameController {
         return new NotificationList(notification);
     }
 
+    // TODO utility class
+    static class ObjectUtils {
+
+        private ObjectUtils() { }
+
+        public static <T> T defaultIfNull(T object, T defaultValue) {
+            if (object != null) {
+                return object;
+            }
+            return defaultValue;
+        }
+    }
 }
