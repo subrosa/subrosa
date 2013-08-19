@@ -27,12 +27,26 @@ import javax.persistence.TemporalType;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfiles;
 
 /**
  * Represents an account in the Subrosa application.
  */
 @Entity
 @Table(name = "account")
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@FetchProfiles({
+        @FetchProfile(name = "addresses", fetchOverrides = {
+                @FetchProfile.FetchOverride(entity = Account.class, association = "addresses", mode = FetchMode.JOIN)
+        }),
+        @FetchProfile(name = "images", fetchOverrides = {
+                @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
+        })
+})
 public class Account {
 
     @Id
@@ -70,7 +84,7 @@ public class Account {
     @Column
     private String password;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     @JoinTable(
             name = "account_address",
             joinColumns = @JoinColumn(name = "account_id"),
@@ -80,7 +94,7 @@ public class Account {
     @MapKeyEnumerated(EnumType.STRING)
     private Map<AddressType, Address> addresses;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany
     @JoinTable(
             name = "account_image",
             joinColumns = @JoinColumn(name = "account_id"),
@@ -172,6 +186,9 @@ public class Account {
     }
 
     public Map<AddressType, Address> getAddresses() {
+        if (!Hibernate.isInitialized(addresses)) {
+            return null;
+        }
         return addresses;
     }
 
@@ -180,6 +197,9 @@ public class Account {
     }
 
     public Map<ImageType, Image> getImages() {
+        if (!Hibernate.isInitialized(images)) {
+            return null;
+        }
         return images;
     }
 

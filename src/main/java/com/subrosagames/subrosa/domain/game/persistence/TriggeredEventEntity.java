@@ -1,16 +1,8 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 
+import com.subrosagames.subrosa.domain.game.event.TriggerType;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 
 /**
@@ -28,7 +20,7 @@ public class TriggeredEventEntity extends EventEntity implements TriggeredEvent 
 
     @Column(name = "trigger_type")
     @Enumerated(EnumType.STRING)
-    private String triggerType;
+    private TriggerType triggerType;
 
     public EventEntity getTriggerEvent() {
         return triggerEvent;
@@ -38,11 +30,11 @@ public class TriggeredEventEntity extends EventEntity implements TriggeredEvent 
         this.triggerEvent = triggerEvent;
     }
 
-    public String getTriggerType() {
+    public TriggerType getTriggerType() {
         return triggerType;
     }
 
-    public void setTriggerType(String triggerType) {
+    public void setTriggerType(TriggerType triggerType) {
         this.triggerType = triggerType;
     }
 }

@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContexts;
 
+import com.subrosagames.subrosa.domain.game.event.TriggerType;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
@@ -26,7 +27,7 @@ public class JpaEventRepository implements EventRepository {
     public TriggeredEventEntity createTriggeredEvent(EventMessage eventType, Event trigger) {
         TriggeredEventEntity triggeredEventEntity = new TriggeredEventEntity();
         triggeredEventEntity.setEventClass(eventType.getEventClass());
-        triggeredEventEntity.setTriggerType("PREREQUISITE");
+        triggeredEventEntity.setTriggerType(TriggerType.PREREQUISITE);
 //        triggeredEventEntity.setTriggerEvent(findEvent(trigger));
         entityManager.merge(triggeredEventEntity);
         return triggeredEventEntity;

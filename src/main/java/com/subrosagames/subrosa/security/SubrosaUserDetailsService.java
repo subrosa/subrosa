@@ -19,11 +19,11 @@ public class SubrosaUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Account account = accountRepository.getAccountByEmail(email);
-        if (account == null) {
-            throw new UsernameNotFoundException("User with email " + email + " not found");
+        try {
+            return new SubrosaUser(accountRepository.getAccountByEmail(email));
+        } catch (com.subrosagames.subrosa.domain.account.AccountNotFoundException e) {
+            throw new UsernameNotFoundException("User with email " + email + " not found", e);
         }
-        return new SubrosaUser(account);
     }
 
 }

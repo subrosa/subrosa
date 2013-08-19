@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletResponse;
 
+import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -38,11 +39,6 @@ import com.subrosagames.subrosa.api.dto.target.TargetDto;
 import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
 import com.subrosagames.subrosa.api.dto.target.TargetList;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.GameFactory;
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.assassins.AssassinGameAttributeType;
 import com.subrosagames.subrosa.domain.game.assassins.OrdnanceType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
@@ -127,12 +123,14 @@ public class ApiGameController {
      * @param offset offset into the list.
      * @return a PaginatedList of {@link com.subrosagames.subrosa.domain.game.AbstractGame}s.
      */
-    @RequestMapping(value = "/game/", method = RequestMethod.GET)
+    @RequestMapping(value = {"/game", "/game/"}, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Game> listGames(@RequestParam(value = "limit", required = false) Integer limit,
                                          @RequestParam(value = "offset", required = false) Integer offset)
     {
         LOG.debug("Getting game list with limit {} and offset {}.", limit, offset);
+        limit = ObjectUtils.defaultIfNull(limit, 10);
+        offset = ObjectUtils.defaultIfNull(offset, 0);
         return gameFactory.getGames(limit, offset);
     }
 
@@ -205,12 +203,6 @@ public class ApiGameController {
             throws GameNotFoundException {
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
-        if (limit == null) {
-            limit = 10;
-        }
-        if (offset == null) {
-            offset = 0;
-        }
         LOG.debug("Retrieving history for game {}", gameUrl);
         List<GameEvent> events = gameFactory.getGameForUrl(gameUrl).getHistory();
         if (CollectionUtils.isEmpty(events)) {
@@ -237,7 +229,7 @@ public class ApiGameController {
         LOG.debug("Retrieving targets for game {} and account {}", gameUrl, accountId);
         Game game = gameFactory.getGameForUrl(gameUrl);
         Player player = game.getPlayer(accountId);
-        LOG.debug("Found player {} in game.. getting targets.", player.getId());
+        LOG.debug("Found player {} in game. Getting targets.", player.getId());
         List<? extends Target> targets = player.getTargets();
         LOG.debug("Player {} in game {} has {} targets", new Object[] { player.getId(), gameUrl, targets.size()});
         return new TargetList(Lists.transform(targets, new Function<Target, TargetDto>() {

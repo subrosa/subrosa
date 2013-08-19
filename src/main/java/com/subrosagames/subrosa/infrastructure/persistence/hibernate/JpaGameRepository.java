@@ -6,17 +6,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import com.subrosagames.subrosa.domain.game.*;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import com.subrosagames.subrosa.domain.game.AbstractGame;
-import com.subrosagames.subrosa.domain.game.GameAttributeType;
-import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;

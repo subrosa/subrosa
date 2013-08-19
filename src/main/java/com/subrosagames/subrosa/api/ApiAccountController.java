@@ -2,6 +2,8 @@ package com.subrosagames.subrosa.api;
 
 import java.util.List;
 
+import com.subrosagames.subrosa.domain.account.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,16 +11,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import com.subrosagames.subrosa.api.dto.Registration;
-import com.subrosagames.subrosa.domain.account.Accolade;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.security.SubrosaUser;
 
 /**
@@ -54,11 +48,19 @@ public class ApiAccountController {
      * @param accountId the accountId from the path.
      * @return {@link Account}
      */
+    @PreAuthorize("hasPermission(VIEW_ACCOUNT)")
     @RequestMapping(value = "/account/{accountId}", method = RequestMethod.GET)
     @ResponseBody
-    public Account getAccount(@PathVariable("accountId") Integer accountId) {
-        LOG.debug("Getting account {} info", accountId);
-        return accountRepository.getAccount(accountId);
+    public Account getAccount(@PathVariable("accountId") Integer accountId,
+                              @RequestParam(value = "expand", required = false) String expand)
+            throws AccountNotFoundException
+    {
+        LOG.debug("Getting account {} info with expansions {}", accountId, expand);
+        if (StringUtils.isEmpty(expand)) {
+            return accountRepository.getAccount(accountId);
+        } else {
+            return accountRepository.getAccount(accountId, expand.split(","));
+        }
     }
 
     /**
@@ -96,7 +98,9 @@ public class ApiAccountController {
      */
     @RequestMapping(value = "/account/{accountId}/accolade", method = RequestMethod.GET)
     @ResponseBody
-    public List<Accolade> getAccolades(@PathVariable("accountId") Integer accountId) {
+    public List<Accolade> getAccolades(@PathVariable("accountId") Integer accountId)
+            throws AccountNotFoundException
+    {
         LOG.debug("Getting accolades for account ID {}", accountId);
         Account account = accountRepository.getAccount(accountId);
         return account.getAccolades();
@@ -112,6 +116,7 @@ public class ApiAccountController {
     @ResponseBody
     public Account updateAddress(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Address address)
+            throws AccountNotFoundException
     {
         LOG.debug("Saving address of type {} for account ID {}", address.getAddressType(), accountId);
         return accountRepository.getAccount(accountId);

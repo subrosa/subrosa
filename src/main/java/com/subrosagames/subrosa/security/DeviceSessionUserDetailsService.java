@@ -30,7 +30,11 @@ public class DeviceSessionUserDetailsService implements AuthenticationUserDetail
         Token sessionToken = tokenFactory.getToken((String) token.getPrincipal(), TokenType.DEVICE_AUTH);
         if (sessionToken != null) {
             LOG.debug("Device session token resolved to user " + sessionToken.getOwner());
-            return new SubrosaUser(accountRepository.getAccount(sessionToken.getOwner()));
+            try {
+                return new SubrosaUser(accountRepository.getAccount(sessionToken.getOwner()));
+            } catch (com.subrosagames.subrosa.domain.account.AccountNotFoundException e) {
+                // fall through to UsernameNotFoundException below
+            }
         }
         throw new UsernameNotFoundException("No user found for auth token " + token.getPrincipal());
     }
