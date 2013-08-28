@@ -3,7 +3,6 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
@@ -18,16 +17,18 @@ public interface GameRepository {
      * @param game game information
      * @return created game
      */
-    AbstractGame createGame(AbstractGame game) throws GameValidationException; // SUPPRESS CHECKSTYLE IllegalType
+    GameEntity createGame(GameEntity game) throws GameValidationException; // SUPPRESS CHECKSTYLE IllegalType
 
     /**
      * Get a list of games, sorted by start date, with the provided limit and offset.
      *
+     *
      * @param limit number of games to return
      * @param offset offset into the pool of games
+     * @param expansions
      * @return list of games
      */
-    List<GameEntity> getGames(int limit, int offset);
+    List<GameEntity> getGames(int limit, int offset, String... expansions);
 
     /**
      * Get a list of games that are currently active.
@@ -40,7 +41,7 @@ public interface GameRepository {
      * @param location geographical location
      * @return games near that location
      */
-    List<AbstractGame> getGamesNear(Coordinates location);
+    List<GameHelper> getGamesNear(Coordinates location);
 
     /**
      * Get the total number of games.
@@ -51,23 +52,20 @@ public interface GameRepository {
     /**
      * Retrieve the specified game entity by id.
      * @param gameId game id
+     * @param expansions fields to expand
      * @return game
      */
-    GameEntity getGameEntity(int gameId) throws GameNotFoundException;
+    GameEntity getGameEntity(int gameId, String... expansions) throws GameNotFoundException;
 
     /**
      * Retrieve the specified game entity by identifying url.
+     *
+     *
      * @param url game url
+     * @param expansions fields to expand
      * @return game
      */
-    GameEntity getGameEntity(String url) throws GameNotFoundException;
-
-    /**
-     * Retrieve the lifecycle for the given game id.
-     * @param gameId game id
-     * @return game lifecycle
-     */
-    LifecycleEntity getGameLifecycle(int gameId);
+    GameEntity getGameEntity(String url, String... expansions) throws GameNotFoundException;
 
     /**
      * Load the player of a game for the given user.
@@ -94,8 +92,8 @@ public interface GameRepository {
 
     /**
      * Persist the provided game lifecycle.
-     * @param lifecycleEntity lifecycle entity
+     * @param lifecycle lifecycle entity
      */
-    void save(LifecycleEntity lifecycleEntity);
+    void save(Lifecycle lifecycle);
 
 }

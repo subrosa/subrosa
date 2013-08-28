@@ -1,21 +1,25 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.GameLifecycle;
 import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -33,12 +37,14 @@ public class JpaGameRepository implements GameRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Override
-    public AbstractGame createGame(AbstractGame game) throws GameValidationException { // SUPPRESS CHECKSTYLE IllegalType
-        GameEntity gameEntity = game.getGameEntity();
-        entityManager.persist(gameEntity);
+    @Autowired
+    private QueryHelper queryHelper;
 
-        LifecycleEntity seedLifecycle = game.getLifecycleEntity();
+    @Override
+    public GameEntity createGame(GameEntity game) throws GameValidationException { // SUPPRESS CHECKSTYLE IllegalType
+        entityManager.persist(game);
+
+        Lifecycle seedLifecycle = game.getLifecycle();
         LifecycleEntity lifecycleEntity = new LifecycleEntity();
         lifecycleEntity.setRegistrationStart(seedLifecycle.getRegistrationStart());
         lifecycleEntity.setRegistrationEnd(seedLifecycle.getRegistrationEnd());
@@ -52,22 +58,20 @@ public class JpaGameRepository implements GameRepository {
             entityManager.persist(scheduledEvent);
         }
 
-        GameLifecycle gameLifecycle = new GameLifecycle();
-        gameLifecycle.setGameId(gameEntity.getId());
-        gameLifecycle.setLifecycleEntity(lifecycleEntity);
-        entityManager.persist(gameLifecycle);
-
         return game;
     }
 
     @Override
-    public void save(LifecycleEntity lifecycleEntity) {
-        entityManager.merge(lifecycleEntity);
+    public void save(Lifecycle lifecycle) {
+        entityManager.merge(lifecycle);
     }
 
     @Override
-    public GameEntity getGameEntity(int gameId) throws GameNotFoundException {
+    public GameEntity getGameEntity(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
+        for (String expansion : expansions) {
+            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+        }
         GameEntity gameEntity = entityManager.find(GameEntity.class, gameId);
         if (gameEntity == null) {
             throw new GameNotFoundException("Game for id " + gameId + " not found");
@@ -76,13 +80,19 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity getGameEntity(String url) throws GameNotFoundException {
+    public GameEntity getGameEntity(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         GameEntity gameEntity;
         try {
-            gameEntity = entityManager.createQuery("SELECT g FROM GameEntity g WHERE g.url = :url", GameEntity.class)
-                    .setParameter("url", url)
-                    .getSingleResult();
+            for (String expansion : expansions) {
+                LOG.debug("Enabling fetch profile for {}", expansion);
+                ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+            }
+            Map<String, Object> conditions = new HashMap<String, Object>(1) {
+                { put("url", url); }
+            };
+            TypedQuery<GameEntity> query = queryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
+            gameEntity = query.getSingleResult();
         } catch (NoResultException e) {
             throw new GameNotFoundException("Game for url " + url + " not found");
         }
@@ -90,13 +100,12 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public LifecycleEntity getGameLifecycle(int gameId) {
-        return entityManager.find(GameLifecycle.class, gameId).getLifecycleEntity();
-    }
-
-    @Override
-    public List<GameEntity> getGames(int limit, int offset) {
+    public List<GameEntity> getGames(int limit, int offset, String... expansions) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
+        for (String expansion : expansions) {
+            LOG.debug("Enabling fetch profile for {}", expansion);
+            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+        }
         TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
         query.setMaxResults(limit);
         query.setFirstResult(offset);
@@ -106,9 +115,9 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public List<Integer> getActiveGames() {
         LOG.debug("Retrieving active games list");
-        String jpql = "SELECT gl.gameId "
-                + " FROM GameLifecycle gl "
-                + " JOIN LifecycleEntity l"
+        String jpql = "SELECT ge.id "
+                + " FROM GameEntity ge "
+                + " JOIN LifecycleEntity l "
                 + " WHERE NOW('') > l.registrationStart "
                 + "     AND NOW('') < l.registrationEnd ";
         TypedQuery<Integer> query = entityManager.createQuery(jpql, Integer.class);
@@ -116,7 +125,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<AbstractGame> getGamesNear(Coordinates location) {
+    public List<GameHelper> getGamesNear(Coordinates location) {
         throw new NotImplementedException("Querying for games near a location is not yet supported");
     }
 

@@ -1,19 +1,8 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import com.subrosagames.subrosa.domain.game.Lifecycle;
+
+import javax.persistence.*;
 
 /**
  * Persists events. Parent class for {@link ScheduledEventEntity}s and {@link TriggeredEventEntity}s.
@@ -30,9 +19,9 @@ public class EventEntity {
     @Column(name = "event_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, targetEntity = LifecycleEntity.class)
     @JoinColumn(name = "lifecycle_id")
-    private LifecycleEntity lifecycle;
+    private Lifecycle lifecycle;
 
     @Column(name = "event_class")
     private String eventClass;
@@ -48,11 +37,11 @@ public class EventEntity {
         this.id = id;
     }
 
-    public LifecycleEntity getLifecycle() {
+    public Lifecycle getLifecycle() {
         return lifecycle;
     }
 
-    public void setLifecycle(LifecycleEntity lifecycle) {
+    public void setLifecycle(Lifecycle lifecycle) {
         this.lifecycle = lifecycle;
     }
 

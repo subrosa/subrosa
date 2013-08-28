@@ -13,6 +13,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.domain.game.Lifecycle;
 import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
@@ -22,7 +23,7 @@ import com.subrosagames.subrosa.event.message.EventMessage;
  */
 @Entity
 @Table(name = "lifecycle")
-public class LifecycleEntity {
+public class LifecycleEntity implements Lifecycle {
 
     @Id
     @SequenceGenerator(name = "lifecycleSeq", sequenceName = "lifecycle_lifecycle_id_seq")
@@ -50,6 +51,7 @@ public class LifecycleEntity {
     @JoinColumn(name = "event_id")
     private List<TriggeredEventEntity> triggeredEvents = Lists.newArrayList();
 
+    @Override
     public Integer getId() {
         return id;
     }
@@ -58,6 +60,7 @@ public class LifecycleEntity {
         this.id = id;
     }
 
+    @Override
     public Timestamp getRegistrationStart() {
         return registrationStart == null ? null : new Timestamp(registrationStart.getTime());
     }
@@ -66,6 +69,7 @@ public class LifecycleEntity {
         this.registrationStart = registrationStart == null ? null : new Timestamp(registrationStart.getTime());
     }
 
+    @Override
     public Timestamp getRegistrationEnd() {
         return registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
     }
@@ -74,6 +78,7 @@ public class LifecycleEntity {
         this.registrationEnd = registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
     }
 
+    @Override
     public Timestamp getGameStart() {
         return gameStart == null ? null : new Timestamp(gameStart.getTime());
     }
@@ -82,6 +87,7 @@ public class LifecycleEntity {
         this.gameStart = gameStart == null ? null : new Timestamp(gameStart.getTime());
     }
 
+    @Override
     public Timestamp getGameEnd() {
         return gameEnd == null ? null : new Timestamp(gameEnd.getTime());
     }
@@ -90,6 +96,7 @@ public class LifecycleEntity {
         this.gameEnd = gameEnd == null ? null : new Timestamp(gameEnd.getTime());
     }
 
+    @Override
     public List<ScheduledEventEntity> getScheduledEvents() {
         return scheduledEvents;
     }
@@ -98,6 +105,7 @@ public class LifecycleEntity {
         this.scheduledEvents = scheduledEvents;
     }
 
+    @Override
     public List<TriggeredEventEntity> getTriggeredEvents() {
         return triggeredEvents;
     }
@@ -106,10 +114,12 @@ public class LifecycleEntity {
         this.triggeredEvents = triggeredEvents;
     }
 
+    @Override
     public void addTriggeredEvent(TriggeredEventEntity triggeredEventEntity) {
         triggeredEvents.add(triggeredEventEntity);
     }
 
+    @Override
     public void addScheduledEvent(EventMessage event, Timestamp time) {
         ScheduledEventEntity scheduledEventEntity = new ScheduledEventEntity();
         scheduledEventEntity.setEventClass(event.getEventClass());

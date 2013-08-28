@@ -169,4 +169,11 @@ public interface Game {
     List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage);
 
     List<GameEvent> getHistory();
+
+    Lifecycle getLifecycle();
+
+    Game create() throws GameValidationException;
+
+    Game publish() throws GameValidationException;
+
 }

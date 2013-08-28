@@ -1,26 +1,26 @@
 package com.subrosagames.subrosa.domain.payment;
 
+import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
 import org.joda.money.Money;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 
 /**
  * Encapsulates a single financial transaction.
  */
 public class Transaction {
 
-    private AssassinsGame game;
+    private AssassinGame game;
     private Account account;
     private TransactionType type;
     private Money amount;
     private String paypalTransactionId;
     private Money paypalFee;
 
-    public AssassinsGame getGame() {
+    public AssassinGame getGame() {
         return game;
     }
 
-    public void setGame(AssassinsGame game) {
+    public void setGame(AssassinGame game) {
         this.game = game;
     }
 

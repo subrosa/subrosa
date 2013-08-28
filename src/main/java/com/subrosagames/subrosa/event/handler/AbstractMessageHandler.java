@@ -29,7 +29,7 @@ public abstract class AbstractMessageHandler {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Handling game event of type {} for game {}", getClass(), message.getGameId());
         }
-        Game game = gameFactory.getGameForId(message.getGameId());
+        Game game = gameFactory.getGame(message.getGameId());
         process(game, message.getProperties());
     }
 

@@ -1,43 +1,50 @@
 package com.subrosagames.subrosa.domain.game.assassins;
 
 import java.util.List;
-import java.util.Map;
 
+import com.subrosagames.subrosa.domain.game.*;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
-import com.subrosagames.subrosa.domain.game.AbstractGame;
-import com.subrosagames.subrosa.domain.game.GameAttributeType;
-import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.domain.player.Player;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Transient;
 
 /**
  * Represents a generic game.
  */
 @JsonPropertyOrder({ "ordnance" })
-public class AssassinsGame extends AbstractGame {
+@JsonIgnoreProperties({ "password" })
+@Entity
+@DiscriminatorValue(AssassinGame.GAME_TYPE_ASSASSIN)
+public class AssassinGame extends GameEntity {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AssassinsGame.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AssassinGame.class);
 
+    public static final String GAME_TYPE_ASSASSIN = "ASSASSIN";
+
+    @Transient
     private String[] requiredEvents = {
     };
 
+    @Transient
     private AssignmentType assignmentType;
+
+    public AssassinGame() { }
 
     /**
      * Construct with given persistent entity and game lifecycle.
      * @param gameEntity game entity
-     * @param lifecycleEntity game lifecycle
+     * @param lifecycle game lifecycle
      */
-    public AssassinsGame(GameEntity gameEntity, LifecycleEntity lifecycleEntity) {
-        super(gameEntity, lifecycleEntity);
+    public AssassinGame(GameEntity gameEntity, Lifecycle lifecycle) {
     }
 
-    @Override
     protected String[] getRequiredEvents() {
         return requiredEvents;
     }
@@ -48,15 +55,13 @@ public class AssassinsGame extends AbstractGame {
 
     public String getOrdnance() {
         if (hasAttribute(AssassinGameAttributeType.ORDNANCE_TYPE)) {
-            return getGameEntity().getAttributes().get(AssassinGameAttributeType.ORDNANCE_TYPE.name()).getValue();
+            return getAttributes().get(AssassinGameAttributeType.ORDNANCE_TYPE.name()).getValue();
         }
         return null;
     }
 
     private boolean hasAttribute(Enum<? extends GameAttributeType> attributeType) {
-        return getGameEntity() != null
-                && getGameEntity().getAttributes() != null
-                && getGameEntity().getAttributes().containsKey(attributeType.name());
+        return getAttributes() != null && getAttributes().containsKey(attributeType.name());
     }
 
     public AssignmentType getAssignmentType() {
@@ -65,11 +70,6 @@ public class AssassinsGame extends AbstractGame {
 
     public void setAssignmentType(AssignmentType assignmentType) {
         this.assignmentType = assignmentType;
-    }
-
-    public Map<RuleType, List<String>> getRules() {
-        Map<RuleType, List<String>> rules = super.getRules();
-        return rules;
     }
 
     @Transactional

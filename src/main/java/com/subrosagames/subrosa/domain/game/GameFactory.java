@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.domain.game;
 
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -12,27 +10,31 @@ public interface GameFactory {
     /**
      * Get the game for the given id.
      * @param gameId game id
+     * @param expansions fields to expand
      * @return game
      * @throws GameNotFoundException if no game exists for that id
      */
-    Game getGameForId(int gameId) throws GameNotFoundException;
+    Game getGame(int gameId, String... expansions) throws GameNotFoundException;
 
     /**
      * Get the game for the given url.
+     *
      * @param url game url
+     * @param expansions fields to expand
      * @return game
      * @throws GameNotFoundException if no game exists for that id
      */
-    Game getGameForUrl(String url) throws GameNotFoundException;
+    Game getGame(String url, String... expansions) throws GameNotFoundException;
 
     /**
      * Create a game with the given game info and lifecycle.
-     * @param gameEntity game entity
-     * @param lifecycleEntity game lifecycle
+     *
+     *
+     * @param game game entity
      * @return created game
      * @throws GameValidationException if game information is invalid or incomplete
      */
-    Game createGame(GameEntity gameEntity, LifecycleEntity lifecycleEntity) throws GameValidationException;
+    Game createGame(Game game) throws GameValidationException;
 
     /**
      * Get a paginated list of games.
@@ -40,6 +42,5 @@ public interface GameFactory {
      * @param offset offset into the games list
      * @return paginated list of games
      */
-    PaginatedList<Game> getGames(Integer limit, Integer offset);
-
+    PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
 }

@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.service;
 
+import com.subrosagames.subrosa.domain.game.Lifecycle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -52,7 +53,7 @@ public class GameServiceTest {
 
         // game master creates an assassins game
         GameEntity gameEntity = new GameEntity();
-        LifecycleEntity lifecycleEntity = new LifecycleEntity();
+        Lifecycle lifecycle = new LifecycleEntity();
 //        Game game = gameFactory.createGame(gameEntity, gameLifecycle);
 
         // 1st game player registers

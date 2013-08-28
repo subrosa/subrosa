@@ -2,15 +2,15 @@ package com.subrosagames.subrosa.domain.game.dispute;
 
 import java.util.List;
 
+import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
 import com.subrosagames.subrosa.domain.player.Player;
-import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
 
 /**
  * Represents a dispute between two {@link Player}s.
  */
 public class Dispute {
 
-    private AssassinsGame game;
+    private AssassinGame game;
     private Player plaintiff;
     private Player defendant;
     private DisputeType type;
@@ -18,11 +18,11 @@ public class Dispute {
     private String complaint;
     private List<DisputeComment> comments;
 
-    public AssassinsGame getGame() {
+    public AssassinGame getGame() {
         return game;
     }
 
-    public void setGame(AssassinsGame game) {
+    public void setGame(AssassinGame game) {
         this.game = game;
     }
 

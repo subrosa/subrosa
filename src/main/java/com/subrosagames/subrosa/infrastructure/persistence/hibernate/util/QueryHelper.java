@@ -1,9 +1,7 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate.util;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Column;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -12,8 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Utility for generating efficient queries.
- */
+* Utility for generating efficient queries.
+*/
 @Component
 public final class QueryHelper {
 

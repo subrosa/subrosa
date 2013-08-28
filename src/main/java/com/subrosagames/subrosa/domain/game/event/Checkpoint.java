@@ -2,24 +2,24 @@ package com.subrosagames.subrosa.domain.game.event;
 
 import java.util.Date;
 
-import com.subrosagames.subrosa.domain.game.assassins.AssassinsGame;
+import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
 
 /**
  * Used to represent checkpoints which require players to register a {@link Checkin} in time.
  */
 public class Checkpoint {
 
-    private AssassinsGame game;
+    private AssassinGame game;
     private Date startTime;
     private Date endTime;
     private String secret;
     private String message;
 
-    public AssassinsGame getGame() {
+    public AssassinGame getGame() {
         return game;
     }
 
-    public void setGame(AssassinsGame game) {
+    public void setGame(AssassinGame game) {
         this.game = game;
     }
 

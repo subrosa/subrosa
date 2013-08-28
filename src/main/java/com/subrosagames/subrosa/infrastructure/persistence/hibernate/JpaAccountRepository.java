@@ -6,7 +6,6 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.jpa.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class JpaAccountRepository implements AccountRepository {
     private PasswordUtility passwordUtility;
 
     @Autowired
-    private QueryHelper queryExpander;
+    private QueryHelper queryHelper;
 
     @Override
     public Account getAccount(int accountId, String... expansions) throws AccountNotFoundException {
@@ -50,7 +49,7 @@ public class JpaAccountRepository implements AccountRepository {
     public Account getAccountByEmail(final String email, String... expansions) throws AccountNotFoundException {
         @SuppressWarnings("serial")
         Map<String, Object> conditions = new HashMap<String, Object>() {{ put("email", email); }};
-        TypedQuery<Account> query = queryExpander.createQuery(entityManager, Account.class, conditions, expansions);
+        TypedQuery<Account> query = queryHelper.createQuery(entityManager, Account.class, conditions, expansions);
         return getSingleResult(query);
     }
 
