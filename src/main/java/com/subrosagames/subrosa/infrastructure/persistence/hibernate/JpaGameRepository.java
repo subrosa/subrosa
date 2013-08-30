@@ -63,7 +63,7 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public void save(Lifecycle lifecycle) {
-        entityManager.merge(lifecycle);
+        entityManager.persist(lifecycle);
     }
 
     @Override

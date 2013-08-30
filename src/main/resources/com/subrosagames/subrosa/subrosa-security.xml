@@ -7,56 +7,74 @@
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd
                         ">
 
-    <global-method-security pre-post-annotations="enabled"/>
+  <global-method-security pre-post-annotations="enabled">
+    <!--<expression-handler ref="expressionHandler"/>-->
+  </global-method-security>
+  <!--<beans:bean id="expressionHandler"-->
+        <!--class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">-->
+    <!--<beans:property name="permissionEvaluator">-->
+      <!--<beans:bean class="org.springframework.security.acls.AclPermissionEvaluator">-->
+        <!--<beans:constructor-arg>-->
+          <!--<beans:bean class="org.springframework.security.acls.jdbc.JdbcAclService"/>-->
+        <!--</beans:constructor-arg>-->
+      <!--</beans:bean>-->
+    <!--</beans:property>-->
+  <!--</beans:bean>-->
 
-    <http auto-config="false" use-expressions="true" entry-point-ref="http403ForbiddenEntryPoint">
-        <custom-filter ref="usernamePasswordAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
-        <custom-filter ref="deviceSessionAuthenticationFilter" position="PRE_AUTH_FILTER"/>
-        <intercept-url pattern="/v1/authenticate" access="isAnonymous()"/>
-        <intercept-url pattern="/v1/game/**" access="permitAll"/>
-        <intercept-url pattern="/com/subrosagames/subrosa/domain/message" access="isAuthenticated()"/>
-        <logout logout-url="/v1/logout" success-handler-ref="http200LogoutSuccessHandler"/>
-    </http>
+  <http auto-config="false" use-expressions="true" entry-point-ref="http403ForbiddenEntryPoint">
+    <custom-filter ref="usernamePasswordAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
+    <custom-filter ref="deviceSessionAuthenticationFilter" position="PRE_AUTH_FILTER"/>
+    <intercept-url pattern="/v1/authenticate" access="isAnonymous()"/>
+    <intercept-url pattern="/v1/game/**" access="permitAll"/>
+    <intercept-url pattern="/com/subrosagames/subrosa/domain/message" access="isAuthenticated()"/>
+    <logout logout-url="/v1/logout" success-handler-ref="http200LogoutSuccessHandler"/>
+  </http>
 
-    <beans:bean id="http200LogoutSuccessHandler" class="com.subrosagames.subrosa.security.Http200LogoutSuccessHandler"/>
+  <beans:bean id="http200LogoutSuccessHandler" class="com.subrosagames.subrosa.security.Http200LogoutSuccessHandler"/>
 
-    <beans:bean id="http403ForbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
-    <beans:bean id="usernamePasswordAuthenticationFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
-        <beans:property name="authenticationSuccessHandler" ref="setCookieAuthenticationSuccessHandler"/>
-        <beans:property name="filterProcessesUrl" value="/v1/authenticate"/>
-        <beans:property name="usernameParameter" value="email"/>
-        <beans:property name="passwordParameter" value="password"/>
-        <beans:property name="authenticationManager" ref="authenticationManager"/>
-    </beans:bean>
+  <beans:bean id="http403ForbiddenEntryPoint"
+              class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
+  <beans:bean id="usernamePasswordAuthenticationFilter"
+              class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
+    <beans:property name="authenticationSuccessHandler" ref="setCookieAuthenticationSuccessHandler"/>
+    <beans:property name="filterProcessesUrl" value="/v1/authenticate"/>
+    <beans:property name="usernameParameter" value="email"/>
+    <beans:property name="passwordParameter" value="password"/>
+    <beans:property name="authenticationManager" ref="authenticationManager"/>
+  </beans:bean>
 
-    <beans:bean id="deviceSessionAuthenticationFilter" class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
-        <beans:property name="exceptionIfHeaderMissing" value="false"/>
-        <beans:property name="principalRequestHeader" value="X-SUBROSA-MOBILE-AUTH"/>
-        <beans:property name="authenticationManager" ref="preAuthAuthenticationManager"/>
-    </beans:bean>
+  <beans:bean id="deviceSessionAuthenticationFilter"
+              class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
+    <beans:property name="exceptionIfHeaderMissing" value="false"/>
+    <beans:property name="principalRequestHeader" value="X-SUBROSA-MOBILE-AUTH"/>
+    <beans:property name="authenticationManager" ref="preAuthAuthenticationManager"/>
+  </beans:bean>
 
-    <beans:bean id="setCookieAuthenticationSuccessHandler" class="com.subrosagames.subrosa.security.SetCookieAuthenticationSuccessHandler"/>
+  <beans:bean id="setCookieAuthenticationSuccessHandler"
+              class="com.subrosagames.subrosa.security.SetCookieAuthenticationSuccessHandler"/>
 
-    <beans:bean id="preAuthAuthenticationProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
-        <beans:property name="preAuthenticatedUserDetailsService" ref="preAuthenticatedUserDetailsService"/>
-    </beans:bean>
-    <beans:bean id="preAuthenticatedUserDetailsService" class="com.subrosagames.subrosa.security.DeviceSessionUserDetailsService"/>
-    <authentication-manager id="preAuthAuthenticationManager">
-        <authentication-provider ref="preAuthAuthenticationProvider"/>
-    </authentication-manager>
+  <beans:bean id="preAuthAuthenticationProvider"
+              class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+    <beans:property name="preAuthenticatedUserDetailsService" ref="preAuthenticatedUserDetailsService"/>
+  </beans:bean>
+  <beans:bean id="preAuthenticatedUserDetailsService"
+              class="com.subrosagames.subrosa.security.DeviceSessionUserDetailsService"/>
+  <authentication-manager id="preAuthAuthenticationManager">
+    <authentication-provider ref="preAuthAuthenticationProvider"/>
+  </authentication-manager>
 
-    <beans:bean id="userDetailsService" class="com.subrosagames.subrosa.security.SubrosaUserDetailsService"/>
-    <beans:bean id="passwordEncoder" class="com.subrosagames.subrosa.security.SubrosaSha512PasswordEncoder"/>
-    <beans:bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
-        <beans:property name="userPropertyToUse" value="salt"/>
-    </beans:bean>
-    <authentication-manager alias="authenticationManager">
-        <authentication-provider user-service-ref="userDetailsService">
-            <password-encoder ref="passwordEncoder">
-                <salt-source ref="saltSource"/>
-            </password-encoder>
-        </authentication-provider>
-    </authentication-manager>
+  <beans:bean id="userDetailsService" class="com.subrosagames.subrosa.security.SubrosaUserDetailsService"/>
+  <beans:bean id="passwordEncoder" class="com.subrosagames.subrosa.security.SubrosaSha512PasswordEncoder"/>
+  <beans:bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
+    <beans:property name="userPropertyToUse" value="salt"/>
+  </beans:bean>
+  <authentication-manager alias="authenticationManager">
+    <authentication-provider user-service-ref="userDetailsService">
+      <password-encoder ref="passwordEncoder">
+        <salt-source ref="saltSource"/>
+      </password-encoder>
+    </authentication-provider>
+  </authentication-manager>
 
 
 </beans:beans>

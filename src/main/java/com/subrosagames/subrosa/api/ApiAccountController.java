@@ -48,7 +48,6 @@ public class ApiAccountController {
      * @param accountId the accountId from the path.
      * @return {@link Account}
      */
-    @PreAuthorize("hasPermission(VIEW_ACCOUNT)")
     @RequestMapping(value = "/account/{accountId}", method = RequestMethod.GET)
     @ResponseBody
     public Account getAccount(@PathVariable("accountId") Integer accountId,

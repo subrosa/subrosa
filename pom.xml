@@ -32,8 +32,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <org.slf4j.version>1.6.1</org.slf4j.version>
-    <org.springframework.version>3.1.1.RELEASE</org.springframework.version>
-    <org.springframework.security.version>3.1.0.RELEASE</org.springframework.security.version>
+    <org.springframework.version>3.2.4.RELEASE</org.springframework.version>
+    <org.springframework.security.version>3.1.4.RELEASE</org.springframework.security.version>
     <junit.version>4.8</junit.version>
   </properties>
 
@@ -98,8 +98,19 @@
       <version>${org.springframework.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.jayway.jsonpath</groupId>
+      <artifactId>json-path</artifactId>
+      <version>0.8.1</version>
+      <scope>test</scope>
+    </dependency>
 
     <!--spring framework-->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${org.springframework.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
@@ -135,10 +146,21 @@
       <artifactId>spring-jms</artifactId>
       <version>${org.springframework.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <version>${org.springframework.version}</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
+      <version>${org.springframework.security.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-acl</artifactId>
       <version>${org.springframework.security.version}</version>
     </dependency>
     <dependency>
@@ -343,6 +365,7 @@
       </plugin>
 
     </plugins>
+
   </build>
 
   <distributionManagement>

@@ -43,4 +43,5 @@ public interface GameFactory {
      * @return paginated list of games
      */
     PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
+
 }
