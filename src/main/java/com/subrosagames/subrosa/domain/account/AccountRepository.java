@@ -1,5 +1,9 @@
 package com.subrosagames.subrosa.domain.account;
 
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
+
 /**
  * Provides CRUD functionality for accounts and their subordinate entities.
  */
@@ -13,6 +17,7 @@ public interface AccountRepository {
      * @return account optionally populated with expanded fields
      * @throws AccountNotFoundException if account does not exist
      */
+    @PostAuthorize("hasPermission(returnObject, 'VIEW_ACCOUNT')")
     Account getAccount(int accountId, String... expansions) throws AccountNotFoundException;
 
     /**
@@ -30,7 +35,7 @@ public interface AccountRepository {
      * @param account account
      * @return stored account
      */
-    Account update(Account account);
+    Account update(Account account) throws AccountNotFoundException;
 
     /**
      * Create an account with the supplied account information.
@@ -39,6 +44,6 @@ public interface AccountRepository {
      * @param password password
      * @return stored account
      */
-    Account create(Account account, String password);
+    Account create(Account account, String password) throws AccountNotFoundException;
 
 }

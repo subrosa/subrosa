@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <account account_id="10000" activated="true"/>
-  <account account_id="10001" activated="true" email="admin@example.org" roles=""/>
+  <account account_id="10000" activated="true" email="bob@user.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+
+  <account account_id="10001" activated="true" email="joe@admin.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
   <account_role account_id="10001" role="ADMIN"/>
 </dataset>

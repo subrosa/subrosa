@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.security;
 
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,7 +22,7 @@ public class SubrosaUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         try {
             return new SubrosaUser(accountRepository.getAccountByEmail(email));
-        } catch (com.subrosagames.subrosa.domain.account.AccountNotFoundException e) {
+        } catch (AccountNotFoundException e) {
             throw new UsernameNotFoundException("User with email " + email + " not found", e);
         }
     }

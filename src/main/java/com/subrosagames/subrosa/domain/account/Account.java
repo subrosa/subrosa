@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.subrosagames.subrosa.domain.PermissionTarget;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
@@ -47,16 +48,16 @@ import org.hibernate.annotations.FetchProfiles;
                 @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
         })
 })
-public class Account {
+public class Account implements PermissionTarget {
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
     @Column(name = "account_id")
-    private int id;
+    private Integer id;
 
     @Column
-    private boolean activated;
+    private Boolean activated;
 
     @Column
     private String username;
@@ -112,19 +113,19 @@ public class Account {
         return new ArrayList<Accolade>();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public boolean isActivated() {
+    public Boolean isActivated() {
         return activated;
     }
 
-    public void setActivated(boolean activated) {
+    public void setActivated(Boolean activated) {
         this.activated = activated;
     }
 

@@ -69,7 +69,7 @@ public class ApiAccountController {
      */
     @RequestMapping(value = "/account", method = RequestMethod.POST)
     @ResponseBody
-    public Account createAccount(@RequestBody Registration registration) {
+    public Account createAccount(@RequestBody Registration registration) throws AccountNotFoundException {
         LOG.debug("Creating new account");
         return accountRepository.create(registration.getAccount(), registration.getPassword());
     }
@@ -84,6 +84,7 @@ public class ApiAccountController {
     @ResponseBody
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Account account)
+            throws AccountNotFoundException
     {
         LOG.debug("Saving account with ID {} as {}", accountId, account);
         account.setId(accountId);

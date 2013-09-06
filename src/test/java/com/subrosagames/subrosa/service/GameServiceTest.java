@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.service;
 
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void createNewGameAndTestWorkflow() throws GameValidationException {
+    public void createNewGameAndTestWorkflow() throws GameValidationException, AccountNotFoundException {
 
         // game master registers an account
         Account gameMaster = new Account();
