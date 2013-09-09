@@ -27,9 +27,6 @@ public class JpaAccountRepository implements AccountRepository {
     private EntityManager entityManager;
 
     @Autowired
-    private SessionFactory sessionFactory;
-
-    @Autowired
     private PasswordUtility passwordUtility;
 
     @Autowired
@@ -42,7 +39,11 @@ public class JpaAccountRepository implements AccountRepository {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
             }
         }
-        return entityManager.find(Account.class, accountId);
+        Account account = entityManager.find(Account.class, accountId);
+        if (account == null) {
+            throw new AccountNotFoundException("Account with id " + accountId + " not found");
+        }
+        return account;
     }
 
     @Override
@@ -54,13 +55,13 @@ public class JpaAccountRepository implements AccountRepository {
     }
 
     @Override
-    public Account update(Account account) {
+    public Account update(Account account) throws AccountNotFoundException {
         entityManager.merge(account);
         return account;
     }
 
     @Override
-    public Account create(Account account, String password) {
+    public Account create(Account account, String password) throws AccountNotFoundException {
         account.setPassword(passwordUtility.encryptPassword(password));
         entityManager.persist(account);
         try {

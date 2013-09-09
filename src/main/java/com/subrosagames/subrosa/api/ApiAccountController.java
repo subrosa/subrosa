@@ -2,11 +2,16 @@ package com.subrosagames.subrosa.api;
 
 import java.util.List;
 
+import com.subrosa.api.notification.GeneralCode;
+import com.subrosa.api.notification.Notification;
+import com.subrosa.api.notification.Severity;
+import com.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.domain.account.*;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -120,5 +125,15 @@ public class ApiAccountController {
     {
         LOG.debug("Saving address of type {} for account ID {}", address.getAddressType(), accountId);
         return accountRepository.getAccount(accountId);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public NotificationList handleAccountNotFoundException(AccountNotFoundException e) {
+        Notification notification = new Notification(
+                GeneralCode.DOMAIN_OBJECT_NOT_FOUND, Severity.ERROR,
+                GeneralCode.DOMAIN_OBJECT_NOT_FOUND.getDefaultMessage());
+        return new NotificationList(notification);
     }
 }

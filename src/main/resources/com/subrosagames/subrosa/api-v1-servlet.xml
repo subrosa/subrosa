@@ -8,14 +8,24 @@
             http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
             ">
 
-    <context:component-scan base-package="com.subrosagames.subrosa.api"/>
-    <mvc:annotation-driven/>
+  <context:component-scan base-package="com.subrosagames.subrosa.api"/>
+  <mvc:annotation-driven/>
 
+  <bean id="methodHandlerExceptionResolver"
+        class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
+    <property name="messageConverters">
+      <list>
+        <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+      </list>
+    </property>
+    <property name="order" value="1"/>
+  </bean>
   <!--<bean id="contentNegotiatingViewResolver" class="org.springframework.web.servlet.view.ContentNegotiatingViewResolver">-->
-  <!--<property name="defaultViews">-->
-  <!--<list>-->
-  <!--<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>-->
-  <!--</list>-->
-  <!--</property>-->
+    <!--<property name="defaultViews">-->
+      <!--<list>-->
+        <!--<bean class="org.springframework.web.servlet.view.json.MappingJacksonJsonView"/>-->
+      <!--</list>-->
+    <!--</property>-->
   <!--</bean>-->
 </beans>
+

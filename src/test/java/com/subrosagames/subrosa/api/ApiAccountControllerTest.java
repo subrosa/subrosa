@@ -4,64 +4,27 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.junit.Before;
+import org.hibernate.boot.registry.classloading.spi.ClassLoadingException;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * Test {@link ApiAccountController}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(locations = { "/test-context.xml" })
 @TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
         DbUnitTestExecutionListener.class
 })
 @DatabaseSetup("/fixtures/accounts.xml")
-public class ApiAccountControllerTest {
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private FilterChainProxy springSecurityFilterChain;
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    private MockMvc mockMvc;
-
-    @Before
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(springSecurityFilterChain)
-                .build();
-    }
+public class ApiAccountControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUnauthenticatedAccountRetrieval() throws Exception {
@@ -79,6 +42,15 @@ public class ApiAccountControllerTest {
     }
 
     @Test
+    public void testOwnedAccountRetrieval() throws Exception {
+        mockMvc.perform(
+                get("/account/10000")
+                        .with(user("bob@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("bob@user.com"));
+    }
+
+    @Test
     public void testAdminAccountRetrieval() throws Exception {
         mockMvc.perform(
                 get("/account/10000")
@@ -88,12 +60,12 @@ public class ApiAccountControllerTest {
     }
 
     @Test
-    public void testOwnedAccountRetrieval() throws Exception {
+    public void testNonexistantAccountRetrieval() throws Exception {
         mockMvc.perform(
-                get("/account/10000")
-                        .with(user("bob@user.com")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("bob@user.com"));
+                get("/account/934834")
+                        .with(user("joe@admin.com"))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -129,8 +101,20 @@ public class ApiAccountControllerTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    private SecurityRequestPostProcessors.UserDetailsRequestPostProcessor user(String email) {
-        return userDetailsService(email).userDetailsServiceBeanId("userDetailsService");
+    @Test
+    public void testCurrentUser() throws Exception {
+        mockMvc.perform(
+                get("/user")
+                        .with(user("bob@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("bob@user.com"));
+    }
+
+    @Test
+    public void testUnauthenticatedCurrentUser() throws Exception {
+        mockMvc.perform(
+                get("/user"))
+                .andExpect(status().isForbidden());
     }
 
 }
