@@ -114,7 +114,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     public void testUnauthenticatedCurrentUser() throws Exception {
         mockMvc.perform(
                 get("/user"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isNotFound());
     }
 
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <account account_id="10000" activated="true" email="bob@user.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+
+  <game game_id="10000" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
+  <lifecycle lifecycle_id="10000"/>
+  <game_lifecycle game_id="10000" lifecycle_id="10000"/>
+</dataset>

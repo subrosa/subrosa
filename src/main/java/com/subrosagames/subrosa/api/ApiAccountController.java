@@ -7,6 +7,7 @@ import com.subrosa.api.notification.Notification;
 import com.subrosa.api.notification.Severity;
 import com.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.domain.account.*;
+import com.subrosagames.subrosa.security.SecurityHelper;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,17 +36,15 @@ public class ApiAccountController {
      * Get the currently logged in user's account info.
      *
      */
-    @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     @ResponseBody
-    public Account getLoggedInUser() {
+    public Account getLoggedInUser() throws AccountNotFoundException {
         LOG.debug("Getting account info for the currently logged in user");
-        return getAuthenticatedUser();
-    }
-
-    private Account getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ((SubrosaUser) authentication.getPrincipal()).getAccount();
+        if (SecurityHelper.isAuthenticated()) {
+            return SecurityHelper.getAuthenticatedUser();
+        } else {
+            throw new AccountNotFoundException("No logged in user found");
+        }
     }
 
     /**
@@ -126,6 +125,8 @@ public class ApiAccountController {
         LOG.debug("Saving address of type {} for account ID {}", address.getAddressType(), accountId);
         return accountRepository.getAccount(accountId);
     }
+
+
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
