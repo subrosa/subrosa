@@ -91,7 +91,6 @@ public class UriUserType implements UserType {
 
     @Override
     public int[] sqlTypes() {
-        final int[] sqlTypes = { Types.VARCHAR };
-        return sqlTypes;
+        return new int[]{Types.VARCHAR};
     }
 }

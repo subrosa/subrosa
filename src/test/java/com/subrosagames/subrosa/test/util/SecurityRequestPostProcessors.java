@@ -50,6 +50,9 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  */
 public final class SecurityRequestPostProcessors {
 
+    private SecurityRequestPostProcessors() {
+    }
+
     /**
      * Establish a security context for a user with the specified username. All
      * details are declarative and do not require that the user actually exists.
@@ -77,8 +80,10 @@ public final class SecurityRequestPostProcessors {
     }
 
 
-    /** Support class for {@link RequestPostProcessor}'s that establish a Spring Security context */
-    private static abstract class SecurityContextRequestPostProcessorSupport {
+    /**
+     * Support class for {@link RequestPostProcessor}'s that establish a Spring Security context
+     */
+    private static abstract class AbstractSecurityContextRequestPostProcessor {
 
         private SecurityContextRepository repository = new HttpSessionSecurityContextRepository();
 
@@ -102,7 +107,7 @@ public final class SecurityRequestPostProcessors {
     }
 
     public final static class SecurityContextRequestPostProcessor
-            extends SecurityContextRequestPostProcessorSupport implements RequestPostProcessor {
+            extends AbstractSecurityContextRequestPostProcessor implements RequestPostProcessor {
 
         private final SecurityContext securityContext;
 
@@ -111,13 +116,13 @@ public final class SecurityRequestPostProcessors {
         }
 
         public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
-            save(this.securityContext,request);
+            save(this.securityContext, request);
             return request;
         }
     }
 
     public final static class UserRequestPostProcessor
-            extends SecurityContextRequestPostProcessorSupport implements RequestPostProcessor {
+            extends AbstractSecurityContextRequestPostProcessor implements RequestPostProcessor {
 
         private final String username;
 
@@ -146,15 +151,15 @@ public final class SecurityRequestPostProcessors {
          * {@link #authorities(GrantedAuthority...)}, but just not as flexible.
          *
          * @param roles The roles to populate. Note that if the role does not start with
-         * {@link #rolePrefix(String)} it will automatically be prepended. This means by
-         * default {@code roles("ROLE_USER")} and {@code roles("USER")} are equivalent.
+         *              {@link #rolePrefix(String)} it will automatically be prepended. This means by
+         *              default {@code roles("ROLE_USER")} and {@code roles("USER")} are equivalent.
          * @see #authorities(GrantedAuthority...)
          * @see #rolePrefix(String)
          */
         public UserRequestPostProcessor roles(String... roles) {
             authorities = new ArrayList<GrantedAuthority>(roles.length);
-            for(String role : roles) {
-                if(this.rolePrefix == null || role.startsWith(this.rolePrefix)) {
+            for (String role : roles) {
+                if (this.rolePrefix == null || role.startsWith(this.rolePrefix)) {
                     authorities.add(new SimpleGrantedAuthority(role));
                 } else {
                     authorities.add(new SimpleGrantedAuthority(this.rolePrefix + role));
@@ -165,6 +170,7 @@ public final class SecurityRequestPostProcessors {
 
         /**
          * Populates the user's {@link GrantedAuthority}'s.
+         *
          * @param authorities
          * @see #roles(String...)
          */
@@ -176,13 +182,13 @@ public final class SecurityRequestPostProcessors {
         public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(this.username, this.credentials, this.authorities);
-            save(authentication,request);
+            save(authentication, request);
             return request;
         }
     }
 
     public final static class UserDetailsRequestPostProcessor
-            extends SecurityContextRequestPostProcessorSupport implements RequestPostProcessor {
+            extends AbstractSecurityContextRequestPostProcessor implements RequestPostProcessor {
 
         private final String username;
 
@@ -195,7 +201,7 @@ public final class SecurityRequestPostProcessors {
         /**
          * Use this method to specify the bean id of the {@link UserDetailsService} to
          * use to look up the {@link UserDetails}.
-         *
+         * <p/>
          * <p>By default a lookup of {@link UserDetailsService} is performed by type. This
          * can be problematic if multiple {@link UserDetailsService} beans are declared.
          */
@@ -206,7 +212,7 @@ public final class SecurityRequestPostProcessors {
 
         public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
             UsernamePasswordAuthenticationToken authentication = authentication(request.getServletContext());
-            save(authentication,request);
+            save(authentication, request);
             return request;
         }
 
@@ -219,13 +225,11 @@ public final class SecurityRequestPostProcessors {
         }
 
         private UserDetailsService userDetailsService(ApplicationContext context) {
-            if(this.userDetailsServiceBeanId == null) {
+            if (this.userDetailsServiceBeanId == null) {
                 return context.getBean(UserDetailsService.class);
             }
             return context.getBean(this.userDetailsServiceBeanId, UserDetailsService.class);
         }
     }
-
-    private SecurityRequestPostProcessors() {}
 
 }

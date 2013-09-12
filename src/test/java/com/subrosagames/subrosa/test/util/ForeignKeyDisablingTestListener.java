@@ -1,12 +1,15 @@
 package com.subrosagames.subrosa.test.util;
 
+import javax.sql.DataSource;
+
 import org.dbunit.database.DatabaseDataSourceConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.support.AbstractTestExecutionListener;
 
-import javax.sql.DataSource;
-
+/**
+ * Test listener that disables referential integrity checks during tests.
+ */
 public class ForeignKeyDisablingTestListener extends AbstractTestExecutionListener {
 
     @Override

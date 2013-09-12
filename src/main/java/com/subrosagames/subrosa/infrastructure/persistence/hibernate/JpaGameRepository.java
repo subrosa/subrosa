@@ -8,6 +8,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
@@ -41,7 +42,7 @@ public class JpaGameRepository implements GameRepository {
     private QueryHelper queryHelper;
 
     @Override
-    public GameEntity createGame(GameEntity game) throws GameValidationException { // SUPPRESS CHECKSTYLE IllegalType
+    public GameEntity create(GameEntity game) throws GameValidationException {
         entityManager.persist(game);
 
         Lifecycle seedLifecycle = game.getLifecycle();
@@ -67,7 +68,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity getGameEntity(int gameId, String... expansions) throws GameNotFoundException {
+    public GameEntity get(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
         for (String expansion : expansions) {
             ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
@@ -80,7 +81,12 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity getGameEntity(final String url, String... expansions) throws GameNotFoundException {
+    public GameEntity update(GameEntity gameEntity) throws GameValidationException {
+        throw new NotImplementedException("JpaGameRepository.update");
+    }
+
+    @Override
+    public GameEntity get(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         GameEntity gameEntity;
         try {
@@ -100,7 +106,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<GameEntity> getGames(int limit, int offset, String... expansions) {
+    public List<GameEntity> list(int limit, int offset, String... expansions) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
         for (String expansion : expansions) {
             LOG.debug("Enabling fetch profile for {}", expansion);
@@ -130,7 +136,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public int getGameCount() {
+    public int count() {
         TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(g) FROM GameEntity g", Long.class);
         int count = query.getSingleResult().intValue();
         LOG.debug("Queried for game count, found {}", count);

@@ -1,9 +1,11 @@
 package com.subrosagames.subrosa.domain.account;
 
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
+
 /**
  * Exception thrown when a nonexistent account is retrieved.
  */
-public class AccountNotFoundException extends Exception {
+public class AccountNotFoundException extends DomainObjectNotFoundException {
 
     private static final long serialVersionUID = 4438876198543992287L;
 

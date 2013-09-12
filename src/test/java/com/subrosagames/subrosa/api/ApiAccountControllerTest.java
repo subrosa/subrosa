@@ -5,15 +5,14 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Account;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.hibernate.boot.registry.classloading.spi.ClassLoadingException;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -95,9 +94,9 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     public void testAuthenticationWithIncorrectCredentials() throws Exception {
         mockMvc.perform(
                 post("/v1/authenticate")
-                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                    .param("email", "random@email.org")
-                    .param("password", "incorrect"))
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("email", "random@email.org")
+                        .param("password", "incorrect"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -115,6 +114,23 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(
                 get("/user"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testListAccountsNonAdmin() throws Exception {
+        mockMvc.perform(
+                get("/account")
+                        .with(user("bob@user.com")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testListAccountsAdmin() throws Exception {
+        mockMvc.perform(
+                get("/account")
+                        .with(user("joe@admin.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(is(paginatedList())));
     }
 
 }

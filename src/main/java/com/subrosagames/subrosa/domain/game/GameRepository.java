@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
+import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
@@ -9,26 +10,7 @@ import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 /**
  * Repository for retrieval of game information.
  */
-public interface GameRepository {
-
-    /**
-     * Create a game.
-     *
-     * @param game game information
-     * @return created game
-     */
-    GameEntity createGame(GameEntity game) throws GameValidationException; // SUPPRESS CHECKSTYLE IllegalType
-
-    /**
-     * Get a list of games, sorted by start date, with the provided limit and offset.
-     *
-     *
-     * @param limit number of games to return
-     * @param offset offset into the pool of games
-     * @param expansions
-     * @return list of games
-     */
-    List<GameEntity> getGames(int limit, int offset, String... expansions);
+public interface GameRepository extends DomainRepository<GameEntity> {
 
     /**
      * Get a list of games that are currently active.
@@ -44,20 +26,6 @@ public interface GameRepository {
     List<GameHelper> getGamesNear(Coordinates location);
 
     /**
-     * Get the total number of games.
-     * @return number of games
-     */
-    int getGameCount();
-
-    /**
-     * Retrieve the specified game entity by id.
-     * @param gameId game id
-     * @param expansions fields to expand
-     * @return game
-     */
-    GameEntity getGameEntity(int gameId, String... expansions) throws GameNotFoundException;
-
-    /**
      * Retrieve the specified game entity by identifying url.
      *
      *
@@ -65,7 +33,9 @@ public interface GameRepository {
      * @param expansions fields to expand
      * @return game
      */
-    GameEntity getGameEntity(String url, String... expansions) throws GameNotFoundException;
+    GameEntity get(String url, String... expansions) throws GameNotFoundException;
+
+    GameEntity get(int id, String... expansions) throws GameNotFoundException;
 
     /**
      * Load the player of a game for the given user.
@@ -95,5 +65,8 @@ public interface GameRepository {
      * @param lifecycle lifecycle entity
      */
     void save(Lifecycle lifecycle);
+
+    GameEntity create(GameEntity gameEntity) throws GameValidationException;
+
 
 }

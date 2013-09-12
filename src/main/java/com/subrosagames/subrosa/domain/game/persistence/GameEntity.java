@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
@@ -201,7 +202,7 @@ public class GameEntity implements Game {
 
     @Override
     public Game create() throws GameValidationException {
-        return gameRepository.createGame(this);
+        return gameRepository.create(this);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.lang.Integer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;

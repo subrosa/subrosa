@@ -1,25 +1,23 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.domain.account;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 
 /**
- * Encapsulates an exception arising from a failed validation of a game.
+ * Exception indicating one or more parts of an account object are invalid.
  */
-public class GameValidationException extends DomainObjectValidationException {
-
-    private static final long serialVersionUID = 5619171923027424186L;
+public class AccountValidationException extends DomainObjectValidationException {
 
     /**
      * Default constructor.
      */
-    public GameValidationException() {
+    public AccountValidationException() {
     }
 
     /**
      * Construct with message.
      * @param s message
      */
-    public GameValidationException(String s) {
+    public AccountValidationException(String s) {
         super(s);
     }
 
@@ -28,7 +26,7 @@ public class GameValidationException extends DomainObjectValidationException {
      * @param s message
      * @param throwable cause
      */
-    public GameValidationException(String s, Throwable throwable) {
+    public AccountValidationException(String s, Throwable throwable) {
         super(s, throwable);
     }
 
@@ -36,7 +34,7 @@ public class GameValidationException extends DomainObjectValidationException {
      * Construct with cause.
      * @param throwable cause
      */
-    public GameValidationException(Throwable throwable) {
+    public AccountValidationException(Throwable throwable) {
         super(throwable);
     }
 }

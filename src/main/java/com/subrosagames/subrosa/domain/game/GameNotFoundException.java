@@ -1,9 +1,11 @@
 package com.subrosagames.subrosa.domain.game;
 
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
+
 /**
  * Exception thrown when a nonexistent game is retrieved.
  */
-public class GameNotFoundException extends Exception {
+public class GameNotFoundException extends DomainObjectNotFoundException {
 
     private static final long serialVersionUID = -574390162601235389L;
 

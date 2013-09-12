@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.service;
 
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,7 +46,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void createNewGameAndTestWorkflow() throws GameValidationException, AccountNotFoundException {
+    public void createNewGameAndTestWorkflow() throws GameValidationException, AccountValidationException {
 
         // game master registers an account
         Account gameMaster = new Account();
@@ -55,7 +56,7 @@ public class GameServiceTest {
         // game master creates an assassins game
         GameEntity gameEntity = new GameEntity();
         Lifecycle lifecycle = new LifecycleEntity();
-//        Game game = gameFactory.createGame(gameEntity, gameLifecycle);
+//        Game game = gameFactory.create(gameEntity, gameLifecycle);
 
         // 1st game player registers
         // and attempts to join - failure
@@ -83,10 +84,10 @@ public class GameServiceTest {
 
 
 
-//        Player player = gameService.enrollInGame(accountRepository.getAccount(100), game);
+//        Player player = gameService.enrollInGame(accountRepository.get(100), game);
 //        String code = player.getSecretCode();
-//        Player player2 = gameService.enrollInGame(accountRepository.getAccount(101), game);
-//        gameService.enrollInGame(accountRepository.getAccount(102), game);
+//        Player player2 = gameService.enrollInGame(accountRepository.get(101), game);
+//        gameService.enrollInGame(accountRepository.get(102), game);
 //
 //        gameService.handleTargetContact(player2, code);
 //
@@ -94,9 +95,9 @@ public class GameServiceTest {
 
 
 
-//        Account account100 = accountRepository.getAccount(101);
-//        Account account101 = accountRepository.getAccount(101);
-//        Account account102 = accountRepository.getAccount(102);
+//        Account account100 = accountRepository.get(101);
+//        Account account101 = accountRepository.get(101);
+//        Account account102 = accountRepository.get(102);
 //        Participant player1 = game.enrollPlayer(account100);
 //        Participant player2 = game.enrollPlayer(account101);
 //        Participant player3 = game.enrollPlayer(account102);

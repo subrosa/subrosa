@@ -2,7 +2,6 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
-import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,14 +41,14 @@ public class GameFactoryImpl implements GameFactory {
 
     @Override
     public Game getGame(int gameId, String... expansions) throws GameNotFoundException {
-        GameEntity game = gameRepository.getGameEntity(gameId, expansions);
+        GameEntity game = gameRepository.get(gameId, expansions);
         injectDependencies(game);
         return game;
     }
 
     @Override
     public Game getGame(String url, String... expansions) throws GameNotFoundException {
-        GameEntity game = gameRepository.getGameEntity(url, expansions);
+        GameEntity game = gameRepository.get(url, expansions);
         game = (GameEntity) getGame(game.getId(), expansions);
         injectDependencies(game);
         return game;
@@ -81,7 +80,7 @@ public class GameFactoryImpl implements GameFactory {
 
     @Override
     public PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions) {
-        List<GameEntity> gameEntities = gameRepository.getGames(limit, offset, expansions);
+        List<GameEntity> gameEntities = gameRepository.list(limit, offset, expansions);
         List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
             @Override
             public Game apply(GameEntity gameEntity) {
@@ -95,7 +94,7 @@ public class GameFactoryImpl implements GameFactory {
         });
         return new PaginatedList<Game>(
                 games,
-                gameRepository.getGameCount(),
+                gameRepository.count(),
                 limit, offset);
     }
 

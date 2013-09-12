@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.util.ObjectUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -311,16 +312,4 @@ public class ApiGameController {
         return new NotificationList(notification);
     }
 
-    // TODO utility class
-    static class ObjectUtils {
-
-        private ObjectUtils() { }
-
-        public static <T> T defaultIfNull(T object, T defaultValue) {
-            if (object != null) {
-                return object;
-            }
-            return defaultValue;
-        }
-    }
 }

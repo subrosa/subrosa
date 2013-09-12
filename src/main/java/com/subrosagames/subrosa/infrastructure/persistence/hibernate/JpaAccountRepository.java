@@ -3,10 +3,12 @@ package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 import javax.persistence.*;
 
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -14,6 +16,7 @@ import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.security.PasswordUtility;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,7 +36,8 @@ public class JpaAccountRepository implements AccountRepository {
     private QueryHelper queryHelper;
 
     @Override
-    public Account getAccount(int accountId, String... expansions) throws AccountNotFoundException {
+    @PostAuthorize("hasPermission(returnObject, 'VIEW_ACCOUNT')")
+    public Account get(int accountId, String... expansions) throws AccountNotFoundException {
         if (expansions.length > 0) {
             for (String expansion : expansions) {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
@@ -60,15 +64,33 @@ public class JpaAccountRepository implements AccountRepository {
         return account;
     }
 
-    @Override
-    public Account create(Account account, String password) throws AccountNotFoundException {
+    public Account create(Account account, String password) throws AccountValidationException {
         account.setPassword(passwordUtility.encryptPassword(password));
+        return create(account);
+    }
+
+    @Override
+    public Account create(Account account) throws AccountValidationException {
+        if (account.getPassword() == null) {
+            throw new AccountValidationException("Cannot create an account without a password");
+        }
         entityManager.persist(account);
         try {
-            return getAccount(account.getId());
+            return get(account.getId());
         } catch (AccountNotFoundException e) {
             throw new IllegalStateException("Could not find account right after persisting it?!", e);
         }
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Account> list(int limit, int offset, String... expansions) {
+        return null;
+    }
+
+    @Override
+    public int count() {
+        return 0;
     }
 
     private Account getSingleResult(TypedQuery<Account> query) throws AccountNotFoundException {
