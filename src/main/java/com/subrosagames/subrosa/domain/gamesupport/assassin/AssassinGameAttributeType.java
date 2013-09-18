@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game.assassins;
+package com.subrosagames.subrosa.domain.gamesupport.assassin;
 
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
