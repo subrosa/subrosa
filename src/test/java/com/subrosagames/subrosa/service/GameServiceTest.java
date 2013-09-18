@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.service;
 
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
 import org.junit.Before;
@@ -14,6 +13,7 @@ import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 
@@ -53,8 +53,8 @@ public class GameServiceTest {
         gameMaster.setEmail("gamemaster@test.com");
         gameMaster = accountRepository.create(gameMaster, "gamemaster");
 
-        // game master creates an assassins game
-        GameEntity gameEntity = new GameEntity();
+        // game master creates an assassin game
+        GameEntity gameEntity = new AssassinGame();
         Lifecycle lifecycle = new LifecycleEntity();
 //        Game game = gameFactory.create(gameEntity, gameLifecycle);
 

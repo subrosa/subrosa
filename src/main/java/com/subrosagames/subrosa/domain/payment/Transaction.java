@@ -1,6 +1,6 @@
 package com.subrosagames.subrosa.domain.payment;
 
-import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
+import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import org.joda.money.Money;
 import com.subrosagames.subrosa.domain.account.Account;
 

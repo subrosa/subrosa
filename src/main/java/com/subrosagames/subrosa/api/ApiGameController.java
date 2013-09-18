@@ -1,17 +1,30 @@
 package com.subrosagames.subrosa.api;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-import java.util.TimeZone;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
-import com.subrosagames.subrosa.domain.game.*;
-import com.subrosagames.subrosa.domain.game.assassins.AssassinGame;
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.TargetAchievement;
+import com.subrosagames.subrosa.api.dto.target.TargetDto;
+import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
+import com.subrosagames.subrosa.api.dto.target.TargetList;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.security.SecurityHelper;
+import com.subrosagames.subrosa.security.SubrosaUser;
+import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -22,7 +35,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,34 +42,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.subrosa.api.notification.GeneralCode;
-import com.subrosa.api.notification.Notification;
-import com.subrosa.api.notification.Severity;
-import com.subrosa.api.response.NotificationList;
-import com.subrosagames.subrosa.api.dto.GameDescriptor;
-import com.subrosagames.subrosa.api.dto.TargetAchievement;
-import com.subrosagames.subrosa.api.dto.target.TargetDto;
-import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
-import com.subrosagames.subrosa.api.dto.target.TargetList;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.assassins.AssassinGameAttributeType;
-import com.subrosagames.subrosa.domain.game.assassins.OrdnanceType;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
-import com.subrosagames.subrosa.domain.message.Post;
-import com.subrosagames.subrosa.domain.player.Player;
-import com.subrosagames.subrosa.domain.player.Target;
-import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.event.message.EventMessage;
-import com.subrosagames.subrosa.security.SubrosaUser;
-import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
  * Controller for {@link com.subrosagames.subrosa.domain.game.Game} related CRUD operations.
  */
 @Controller
+@RequestMapping("/game")
 public class ApiGameController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiGameController.class);
@@ -65,68 +55,13 @@ public class ApiGameController {
     @Autowired
     private GameFactory gameFactory;
 
-    private Random random = new Random();
-
-    public String test() {
-        return null;
-    }
-
-    /**
-     * Test endpoint, creates a random game.
-     * @return created game
-     * @throws GameValidationException if something goes wrong
-     */
-    @RequestMapping(value = "/android")
-    @ResponseBody
-    public Game doIt() throws GameValidationException, GameNotFoundException {
-          //@RequestBody GameDescriptor gameDescriptor) {
-//        GameEntity entity = gameDescriptor.getInfo();
-//        List<GameEvent> events = gameDescriptor.getEvents();
-
-        LifecycleEntity lifecycleEntity = new LifecycleEntity();
-        lifecycleEntity.setRegistrationStart(new Timestamp(new Date().getTime() + 2500)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setRegistrationEnd(new Timestamp(new Date().getTime() + 5000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setGameStart(new Timestamp(new Date().getTime() + 10000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setGameEnd(new Timestamp(new Date().getTime() + 40000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.addScheduledEvent(EventMessage.MUTUAL_INTEREST_ASSIGNMENT, lifecycleEntity.getGameStart());
-
-        GameEntity gameEntity = new AssassinGame();
-        gameEntity.setName("game name" + random.nextLong());
-        gameEntity.setUrl("game-url-" + random.nextLong());
-        gameEntity.setDescription("This is a test.");
-        gameEntity.setPrice(new BigDecimal("10.00"));
-        gameEntity.setMaximumTeamSize(5);
-        gameEntity.setGameType(GameType.ASSASSIN);
-        gameEntity.setTimezone(TimeZone.getDefault().getDisplayName());
-
-        Game game = gameFactory.createGame(gameEntity);
-
-        game.setAttribute(AssassinGameAttributeType.ORDNANCE_TYPE, OrdnanceType.WATER_WEAPONS);
-
-        Account account1 = new Account();
-        account1.setId(3);
-        Account account2 = new Account();
-        account2.setId(4);
-        Account account3 = new Account();
-        account3.setId(5);
-        Account account4 = new Account();
-        account4.setId(6);
-
-        game.addUserAsPlayer(account1);
-        game.addUserAsPlayer(account2);
-        game.addUserAsPlayer(account3);
-        game.addUserAsPlayer(account4);
-
-        return gameFactory.getGame(game.getId());
-    }
-
     /**
      * Get a list of {@link com.subrosagames.subrosa.domain.game.GameHelper}s.
-     * @param limit maximum number of {@link com.subrosagames.subrosa.domain.game.GameHelper}s to return.
+     * @param limit  maximum number of {@link com.subrosagames.subrosa.domain.game.GameHelper}s to return.
      * @param offset offset into the list.
      * @return a PaginatedList of {@link com.subrosagames.subrosa.domain.game.GameHelper}s.
      */
-    @RequestMapping(value = {"/game", "/game/"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Game> listGames(@RequestParam(value = "limit", required = false) Integer limit,
                                          @RequestParam(value = "offset", required = false) Integer offset,
@@ -147,11 +82,12 @@ public class ApiGameController {
      * @param url the game url
      * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
      */
-    @RequestMapping(value = {"/game/{url}", "/game/{url}/"}, method = RequestMethod.GET)
+    @RequestMapping(value = {"/{url}", "/{url}/"}, method = RequestMethod.GET)
     @ResponseBody
     public Game getGameByUrl(@PathVariable("url") String url,
                              @RequestParam(value = "expand", required = false) String expand)
-            throws GameNotFoundException {
+            throws GameNotFoundException
+    {
         LOG.debug("Getting game at {} with expansions {}", url, expand);
 
         if (StringUtils.isEmpty(expand)) {
@@ -166,11 +102,18 @@ public class ApiGameController {
      * @param gameDescriptor description of game
      * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
      */
-    @RequestMapping(value = "/game/", method = RequestMethod.POST)
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Game createGame(@RequestBody GameDescriptor gameDescriptor) throws GameValidationException {
-        GameEntity game = new GameEntity();
-        return gameFactory.createGame(game);
+    public Game createGame(@RequestBody GameDescriptor gameDescriptor) throws GameValidationException, NotAuthenticatedException {
+        if (!SecurityHelper.isAuthenticated()) {
+            throw new NotAuthenticatedException("Unauthenticated attempt to create a game.");
+        }
+        Account user = getAuthenticatedUser();
+        LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
+        GameEntity gameEntity = gameFactory.forDto(gameDescriptor);
+        gameEntity.setOwner(user);
+        return gameEntity.create();
     }
 
     /**
@@ -178,30 +121,49 @@ public class ApiGameController {
      * @param gameUrl game id
      * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
      */
-    @RequestMapping(value = "/game/{gameUrl}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
-    public Game updateGame(@PathVariable("gameUrl") String gameUrl) {
-        return null;
+    public Game updateGame(@PathVariable("gameUrl") String gameUrl,
+                           @RequestBody GameDescriptor gameDescriptor)
+            throws GameValidationException, GameNotFoundException, NotAuthenticatedException
+    {
+        if (!SecurityHelper.isAuthenticated()) {
+            throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
+        }
+        Account user = getAuthenticatedUser();
+        Game game = gameFactory.getGame(gameUrl);
+        if (!user.getId().equals(game.getOwner().getId())) {
+            throw new GameNotFoundException("Could not find game to update at " + gameUrl);
+        }
+        // read-only fields
+        gameDescriptor.setUrl(gameUrl);
+        gameDescriptor.setGameType(game.getGameType());
+        return game.update(gameFactory.forDto(gameDescriptor));
     }
 
-    @RequestMapping(value = "/game/{gameUrl}/publish", method = RequestMethod.POST)
+    @RequestMapping(value = "/{gameUrl}/publish", method = RequestMethod.POST)
     @ResponseBody
-    public Game publishGame(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, GameValidationException {
+    public Game publishGame(@PathVariable("gameUrl") String gameUrl)
+            throws GameNotFoundException, GameValidationException, NotAuthenticatedException
+    {
+        if (!SecurityHelper.isAuthenticated()) {
+            throw new NotAuthenticatedException("Unauthenticated attempt to publish a game.");
+        }
         return gameFactory.getGame(gameUrl).publish();
     }
 
     /**
      * Get a paginated list of posts for the specified game.
      * @param gameUrl game id
-     * @param limit number of posts
-     * @param offset offset into posts
+     * @param limit   number of posts
+     * @param offset  offset into posts
      * @return paginated list of posts
      */
-    @RequestMapping(value = "/game/{gameUrl}/post", method = RequestMethod.GET)
+    @RequestMapping(value = "/{gameUrl}/post", method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Post> getPosts(@PathVariable("gameUrl") String gameUrl,
-                               @RequestParam(value = "limit", required = false) Integer limit,
-                               @RequestParam(value = "offset", required = false) Integer offset)
+                                        @RequestParam(value = "limit", required = false) Integer limit,
+                                        @RequestParam(value = "offset", required = false) Integer offset)
             throws GameNotFoundException
     {
         limit = ObjectUtils.defaultIfNull(limit, 10);
@@ -220,9 +182,10 @@ public class ApiGameController {
     @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<GameEvent> getHistory(@PathVariable("gameUrl") String gameUrl,
-                                 @RequestParam(value = "limit", required = false) Integer limit,
-                                 @RequestParam(value = "offset", required = false) Integer offset)
-            throws GameNotFoundException {
+                                               @RequestParam(value = "limit", required = false) Integer limit,
+                                               @RequestParam(value = "offset", required = false) Integer offset)
+            throws GameNotFoundException
+    {
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
         LOG.debug("Retrieving history for game {}", gameUrl);
@@ -239,12 +202,11 @@ public class ApiGameController {
 
     /**
      * Get the current targets for the logged in user for the specified game.
-     *
      * @param gameUrl game id
      * @return list of targets
      */
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(value = "/game/{gameUrl}/target", method = RequestMethod.GET)
+    @RequestMapping(value = "/{gameUrl}/target", method = RequestMethod.GET)
     @ResponseBody
     public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException {
         int accountId = getAuthenticatedUser().getId();
@@ -253,7 +215,7 @@ public class ApiGameController {
         Player player = game.getPlayer(accountId);
         LOG.debug("Found player {} in game. Getting targets.", player.getId());
         List<? extends Target> targets = player.getTargets();
-        LOG.debug("Player {} in game {} has {} targets", new Object[] { player.getId(), gameUrl, targets.size()});
+        LOG.debug("Player {} in game {} has {} targets", new Object[]{player.getId(), gameUrl, targets.size()});
         return new TargetList(Lists.transform(targets, new Function<Target, TargetDto>() {
             @Override
             public TargetDto apply(Target input) {
@@ -263,7 +225,7 @@ public class ApiGameController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(value = "/game/{gameUrl}/target/{targetId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.GET)
     @ResponseBody
     public TargetDto getTarget(@PathVariable("gameUrl") String gameUrl,
                                @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException
@@ -276,7 +238,7 @@ public class ApiGameController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @RequestMapping(value = "/game/{gameUrl}/target/{targetId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.POST)
     @ResponseBody
     public void achieveTarget(@PathVariable("gameUrl") String gameUrl,
                               @PathVariable("targetId") Integer targetId,
@@ -300,16 +262,6 @@ public class ApiGameController {
     private Account getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ((SubrosaUser) authentication.getPrincipal()).getAccount();
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public NotificationList handleGameNotFoundException(GameNotFoundException e) {
-        Notification notification = new Notification(
-                GeneralCode.DOMAIN_OBJECT_NOT_FOUND, Severity.ERROR,
-                GeneralCode.DOMAIN_OBJECT_NOT_FOUND.getDefaultMessage());
-        return new NotificationList(notification);
     }
 
 }

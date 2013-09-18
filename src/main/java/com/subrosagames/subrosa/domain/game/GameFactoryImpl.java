@@ -1,20 +1,28 @@
 package com.subrosagames.subrosa.domain.game;
 
+import javax.validation.ConstraintViolation;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Set;
 
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.event.EventRepository;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
+import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.event.EventScheduler;
+import com.subrosagames.subrosa.service.PaginatedList;
+import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.RandomString;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import org.hibernate.validator.engine.ConstraintViolationImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.subrosagames.subrosa.domain.game.event.EventRepository;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.player.PlayerFactory;
-import com.subrosagames.subrosa.event.EventException;
-import com.subrosagames.subrosa.event.EventScheduler;
-import com.subrosagames.subrosa.event.message.EventMessage;
-import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
  * Factory class for generating game domain objects.
@@ -54,26 +62,16 @@ public class GameFactoryImpl implements GameFactory {
         return game;
     }
 
-    @Override
-    public Game createGame(Game game) throws GameValidationException {
-        GameEntity gameEntity = new GameEntity();
-        injectDependencies(gameEntity);
-        game.create();
-
-        LOG.debug("Scheduling events for game {}", game.getId());
-        try {
-            eventScheduler.scheduleEvent(EventMessage.GAME_START, game.getStartTime(), game.getId());
-            eventScheduler.scheduleEvent(EventMessage.GAME_END, game.getEndTime(), game.getId());
-            eventScheduler.scheduleEvents(game.getLifecycle().getScheduledEvents(), game.getId());
-        } catch (EventException e) {
-            throw new GameValidationException("Failed to schedule game events for game " + game.getId(), e);
+    public void injectDependencies(List<GameEntity> games) {
+        for (GameEntity game : games) {
+            injectDependencies(game);
         }
-
-        return game;
     }
 
-    private void injectDependencies(GameEntity game) {
+    @Override
+    public void injectDependencies(GameEntity game) {
         game.setGameRepository(gameRepository);
+        game.setGameFactory(this);
         game.setRuleRepository(ruleRepository);
         game.setPlayerFactory(playerFactory);
     }
@@ -98,4 +96,39 @@ public class GameFactoryImpl implements GameFactory {
                 limit, offset);
     }
 
+    @Override
+    public List<? extends Game> ownedBy(Account user) {
+        List<GameEntity> gameEntities = gameRepository.ownedBy(user);
+        injectDependencies(gameEntities);
+        return gameEntities;
+    }
+
+    @Override
+    public GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException {
+//        if (gameDescriptor.getGameType() == null) {
+//            throw new GameValidationException("Game type must be provided.");
+//        }
+        GameEntity gameEntity = GameTypeToEntityMapper.forType(gameDescriptor.getGameType());
+        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
+        try {
+            beanCopier.copyProperties(gameEntity, gameDescriptor);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+        if (gameEntity.getUrl() == null) {
+            gameEntity.setUrl(generateUrl());
+        }
+        if (gameEntity.getTimezone() == null) {
+            // TODO set timezone for realz
+            gameEntity.setTimezone("America/New_York");
+        }
+        injectDependencies(gameEntity);
+        return gameEntity;
+    }
+
+    private String generateUrl() {
+        return RandomString.generate(10);
+    }
 }

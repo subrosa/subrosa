@@ -1,11 +1,17 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.domain.DomainObjectFactory;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
  * Interface for generating game domain objects.
  */
-public interface GameFactory {
+public interface GameFactory extends DomainObjectFactory<GameEntity> {
 
     /**
      * Get the game for the given id.
@@ -27,21 +33,20 @@ public interface GameFactory {
     Game getGame(String url, String... expansions) throws GameNotFoundException;
 
     /**
-     * Create a game with the given game info and lifecycle.
-     *
-     *
-     * @param game game entity
-     * @return created game
-     * @throws GameValidationException if game information is invalid or incomplete
-     */
-    Game createGame(Game game) throws GameValidationException;
-
-    /**
      * Get a paginated list of games.
      * @param limit number of games to return
      * @param offset offset into the games list
      * @return paginated list of games
      */
     PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
+
+    /**
+     * Get the games that the given user has created.
+     * @param user game owner
+     * @return list of games
+     */
+    List<? extends Game> ownedBy(Account user);
+
+    GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException;
 
 }

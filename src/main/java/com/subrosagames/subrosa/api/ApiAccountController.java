@@ -36,6 +36,7 @@ import java.util.List;
  * Controller responsible for account related CRUD actions.
  */
 @Controller
+@RequestMapping("/account")
 public class ApiAccountController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountController.class);
@@ -47,22 +48,7 @@ public class ApiAccountController {
     private AccountFactory accountFactory;
 
 
-    /**
-     * Get the currently logged in user's account info.
-     *
-     */
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
-    @ResponseBody
-    public Account getLoggedInUser() throws AccountNotFoundException {
-        LOG.debug("Getting account info for the currently logged in user");
-        if (SecurityHelper.isAuthenticated()) {
-            return SecurityHelper.getAuthenticatedUser();
-        } else {
-            throw new AccountNotFoundException("No logged in user found");
-        }
-    }
-
-    @RequestMapping(value = { "/account", "/account/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Account> listAccounts(@RequestParam(value = "limit", required = false) Integer limit,
                                                @RequestParam(value = "offset", required = false) Integer offset,
@@ -83,7 +69,7 @@ public class ApiAccountController {
      * @param accountId the accountId from the path.
      * @return {@link Account}
      */
-    @RequestMapping(value = "/account/{accountId}", method = RequestMethod.GET)
+    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Account getAccount(@PathVariable("accountId") Integer accountId,
                               @RequestParam(value = "expand", required = false) String expand)
@@ -102,7 +88,7 @@ public class ApiAccountController {
      * @param registration the registration parameters.
      * @return {@link Account}
      */
-    @RequestMapping(value = "/account", method = RequestMethod.POST)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseBody
     public Account createAccount(@RequestBody Registration registration) throws AccountValidationException {
         LOG.debug("Creating new account");
@@ -115,7 +101,7 @@ public class ApiAccountController {
      * @param account the {@link Account} data to update.
      * @return {@link Account}
      */
-    @RequestMapping(value = "/account/{accountId}", method = RequestMethod.PUT)
+    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Account account)
@@ -131,7 +117,7 @@ public class ApiAccountController {
      * @param accountId the accountId from the path.
      * @return a list of {@link Accolade}s.
      */
-    @RequestMapping(value = "/account/{accountId}/accolade", method = RequestMethod.GET)
+    @RequestMapping(value = { "/{accountId}/accolade", "/{accountId}/accolade/" }, method = RequestMethod.GET)
     @ResponseBody
     public List<Accolade> getAccolades(@PathVariable("accountId") Integer accountId)
             throws AccountNotFoundException
@@ -147,7 +133,7 @@ public class ApiAccountController {
      * @param address the {@link Address} parameters.
      * @return {@link Account}
      */
-    @RequestMapping(value = "/account/{accountId}/address", method = RequestMethod.PUT)
+    @RequestMapping(value = { "/{accountId}/address", "/{accountId}/address/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAddress(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Address address)
@@ -157,15 +143,4 @@ public class ApiAccountController {
         return accountRepository.get(accountId);
     }
 
-
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ResponseBody
-    public NotificationList handleAccountNotFoundException(AccountNotFoundException e) {
-        Notification notification = new Notification(
-                GeneralCode.DOMAIN_OBJECT_NOT_FOUND, Severity.ERROR,
-                GeneralCode.DOMAIN_OBJECT_NOT_FOUND.getDefaultMessage());
-        return new NotificationList(notification);
-    }
 }

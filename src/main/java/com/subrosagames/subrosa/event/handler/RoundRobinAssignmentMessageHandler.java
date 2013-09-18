@@ -5,10 +5,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.assassins.AssignmentType;
-import com.subrosagames.subrosa.domain.game.assassins.TargetAssigner;
+import com.subrosagames.subrosa.domain.gamesupport.assassin.AssignmentType;
+import com.subrosagames.subrosa.domain.gamesupport.assassin.TargetAssigner;
 
 /**
  *

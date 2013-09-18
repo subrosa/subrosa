@@ -18,6 +18,5 @@ public class ForeignKeyDisablingTestListener extends AbstractTestExecutionListen
                 testContext.getApplicationContext().getBean(DataSource.class)
         );
         dbConn.getConnection().prepareStatement("SET DATABASE REFERENTIAL INTEGRITY FALSE").execute();
-
     }
 }

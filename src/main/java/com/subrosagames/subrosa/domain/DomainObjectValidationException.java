@@ -1,11 +1,17 @@
 package com.subrosagames.subrosa.domain;
 
+import javax.validation.ConstraintViolation;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Generic domain object validation exception.
  */
-public class DomainObjectValidationException extends Exception {
+public abstract class DomainObjectValidationException extends Exception {
 
     private static final long serialVersionUID = 797174315554348934L;
+
+    private Set<? extends ConstraintViolation<?>> violations = new HashSet<ConstraintViolation<?>>();
 
     /**
      * Default constructor.
@@ -23,7 +29,7 @@ public class DomainObjectValidationException extends Exception {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     * @param s         message
      * @param throwable cause
      */
     public DomainObjectValidationException(String s, Throwable throwable) {
@@ -36,5 +42,13 @@ public class DomainObjectValidationException extends Exception {
      */
     public DomainObjectValidationException(Throwable throwable) {
         super(throwable);
+    }
+
+    public DomainObjectValidationException(Set<? extends ConstraintViolation<?>> violations) {
+        this.violations = violations;
+    }
+
+    public Set<? extends ConstraintViolation<?>> getViolations() {
+        return violations;
     }
 }

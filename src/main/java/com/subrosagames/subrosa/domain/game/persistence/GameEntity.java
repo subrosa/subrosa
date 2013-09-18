@@ -1,35 +1,76 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.constraints.NotNull;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.persistence.*;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameAttributeType;
+import com.subrosagames.subrosa.domain.game.GameAttributeValue;
+import com.subrosagames.subrosa.domain.game.GameData;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameHelper;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.subrosagames.subrosa.domain.game.Rule;
+import com.subrosagames.subrosa.domain.game.RuleRepository;
+import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.domain.game.validation.PublishAction;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
+import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.Hibernate;
-import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.message.Post;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -49,7 +90,11 @@ import org.hibernate.annotations.FetchProfiles;
                 @FetchProfile.FetchOverride(entity = GameEntity.class, association = "history", mode = FetchMode.JOIN)
         })
 })
-public class GameEntity implements Game {
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+public class GameEntity implements Game, GameData {
+
+    private static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
+    private static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
 
     @JsonIgnore
     @Transient
@@ -63,24 +108,36 @@ public class GameEntity implements Game {
     @JsonIgnore
     @Transient
     private GameHelper gameHelper;
+    @JsonIgnore
+    @Transient
+    private GameFactory gameFactory;
 
     @Id
     @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gameSeq")
     @Column(name = "game_id")
-    private int id;
+    private Integer id;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private Account owner;
 
     @Column
+    @NotNull
     private String name;
 
     @Column
+    @NotNull
     private String url;
 
     @Column
+    @NotNull(groups = PublishAction.class)
     private String description;
 
     @Column(name = "game_type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
+    @NotNull
     private GameType gameType;
 
     @Column
@@ -120,7 +177,7 @@ public class GameEntity implements Game {
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
-    private Set<Rule> ruleList;
+    private Set<Rule> ruleSet = Sets.newHashSet();
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
@@ -136,12 +193,33 @@ public class GameEntity implements Game {
     )
     private Lifecycle lifecycle;
 
-    public int getId() {
+    @Column
+    private Date published;
+
+    @PrePersist
+    void prePersist() {
+        if (price == null) {
+            price = GameEntity.DEFAULT_PRICE;
+        }
+        if (maximumTeamSize == null) {
+            maximumTeamSize = GameEntity.DEFAULT_MAX_TEAM_SIZE;
+        }
+    }
+
+    public Integer getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Account getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Account owner) {
+        this.owner = owner;
     }
 
     public String getName() {
@@ -174,21 +252,33 @@ public class GameEntity implements Game {
 
     @Override
     public Date getStartTime() {
+        if (getLifecycle() == null) {
+            return null;
+        }
         return getLifecycle().getGameStart();
     }
 
     @Override
     public Date getEndTime() {
+        if (getLifecycle() == null) {
+            return null;
+        }
         return getLifecycle().getGameEnd();
     }
 
     @Override
     public Date getRegistrationStartTime() {
+        if (getLifecycle() == null) {
+            return null;
+        }
         return getLifecycle().getRegistrationStart();
     }
 
     @Override
     public Date getRegistrationEndTime() {
+        if (getLifecycle() == null) {
+            return null;
+        }
         return getLifecycle().getRegistrationEnd();
     }
 
@@ -202,12 +292,66 @@ public class GameEntity implements Game {
 
     @Override
     public Game create() throws GameValidationException {
-        return gameRepository.create(this);
+        assertValid();
+        GameEntity gameEntity = gameRepository.create(this);
+        gameFactory.injectDependencies(gameEntity);
+        return gameEntity;
+    }
+
+    @Override
+    public Game update(Game game) throws GameValidationException {
+        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
+        try {
+            beanCopier.copyProperties(this, game);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+        assertValid();
+        GameEntity updated;
+        try {
+            updated = gameRepository.update(this);
+        } catch (DomainObjectNotFoundException e) {
+            throw new GameValidationException(e);
+        } catch (DomainObjectValidationException e) {
+            throw new GameValidationException(e);
+        }
+        gameFactory.injectDependencies(updated);
+        return updated;
     }
 
     @Override
     public Game publish() throws GameValidationException {
-        return null;
+        // validate required fields
+//        if (getStartTime() == null) {
+//            throw new GameValidationException("Game start time must be set.");
+//        }
+//        if (getEndTime() == null) {
+//            throw new GameValidationException("Game start time must be set.");
+//        }
+        // fill out defaults
+//        if (getRegistrationStartTime() == null) {
+//        }
+//        if (getRegistrationEndTime() == null) {
+//        }
+        assertValid(PublishAction.class);
+        setPublished(new Date());
+        try {
+            return gameRepository.update(this);
+        } catch (DomainObjectNotFoundException e) {
+            throw new GameValidationException(e);
+        } catch (DomainObjectValidationException e) {
+            throw new GameValidationException(e);
+        }
+    }
+
+    private void assertValid(Class... validationGroups) throws GameValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<GameEntity>> violations = validator.validate(this, validationGroups);
+        if (!violations.isEmpty()) {
+            throw new GameValidationException(violations);
+        }
     }
 
     public void setLifecycle(Lifecycle lifecycle) {
@@ -286,12 +430,12 @@ public class GameEntity implements Game {
         this.history = history;
     }
 
-    public Set<Rule> getRuleList() {
-        return ruleList;
+    public Set<Rule> getRuleSet() {
+        return ruleSet;
     }
 
-    public void setRuleList(Set<Rule> rulesList) {
-        this.ruleList = rulesList;
+    public void setRuleSet(Set<Rule> rulesList) {
+        this.ruleSet = rulesList;
     }
 
     @Transient
@@ -305,10 +449,14 @@ public class GameEntity implements Game {
     public Map<RuleType, List<String>> getRules() {
         Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
         rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
-        rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
-                new ArrayList<Rule>(ruleList.size()) {{ addAll(ruleList); }},
-                extractRules
-        ));
+        if (ruleSet != null) {
+            rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
+                    new ArrayList<Rule>(ruleSet.size()) {{
+                        addAll(ruleSet);
+                    }},
+                    extractRules
+            ));
+        }
         return rules;
     }
 
@@ -326,6 +474,14 @@ public class GameEntity implements Game {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Date getPublished() {
+        return published;
+    }
+
+    public void setPublished(Date published) {
+        this.published = published;
     }
 
     public RuleRepository getRuleRepository() {
@@ -373,6 +529,10 @@ public class GameEntity implements Game {
             gameHelper.setPlayerFactory(playerFactory);
         }
         return gameHelper;
+    }
+
+    public void setGameFactory(GameFactory gameFactory) {
+        this.gameFactory = gameFactory;
     }
 
     public void setGameRepository(GameRepository gameRepository) {

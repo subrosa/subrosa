@@ -1,11 +1,17 @@
 package com.subrosagames.subrosa.domain.account;
 
+import javax.validation.ConstraintViolation;
+
+import java.util.Set;
+
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 
 /**
  * Exception indicating one or more parts of an account object are invalid.
  */
 public class AccountValidationException extends DomainObjectValidationException {
+
+    private static final long serialVersionUID = -65352831152690754L;
 
     /**
      * Default constructor.
@@ -36,5 +42,9 @@ public class AccountValidationException extends DomainObjectValidationException 
      */
     public AccountValidationException(Throwable throwable) {
         super(throwable);
+    }
+
+    public AccountValidationException(Set<ConstraintViolation<Account>> violations) {
+        super(violations);
     }
 }

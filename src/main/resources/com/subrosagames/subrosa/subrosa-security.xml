@@ -55,7 +55,7 @@
   </beans:bean>
   <beans:bean id="preAuthenticatedUserDetailsService"
               class="com.subrosagames.subrosa.security.DeviceSessionUserDetailsService"/>
-  <authentication-manager id="preAuthAuthenticationManager">
+  <authentication-manager alias="preAuthAuthenticationManager">
     <authentication-provider ref="preAuthAuthenticationProvider"/>
   </authentication-manager>
 

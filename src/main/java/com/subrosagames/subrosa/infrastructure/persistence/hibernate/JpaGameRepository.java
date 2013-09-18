@@ -7,8 +7,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
@@ -44,21 +46,6 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public GameEntity create(GameEntity game) throws GameValidationException {
         entityManager.persist(game);
-
-        Lifecycle seedLifecycle = game.getLifecycle();
-        LifecycleEntity lifecycleEntity = new LifecycleEntity();
-        lifecycleEntity.setRegistrationStart(seedLifecycle.getRegistrationStart());
-        lifecycleEntity.setRegistrationEnd(seedLifecycle.getRegistrationEnd());
-        lifecycleEntity.setGameStart(seedLifecycle.getGameStart());
-        lifecycleEntity.setGameEnd(seedLifecycle.getGameEnd());
-        entityManager.persist(lifecycleEntity);
-
-        List<ScheduledEventEntity> scheduledEvents = seedLifecycle.getScheduledEvents();
-        for (ScheduledEventEntity scheduledEvent : scheduledEvents) {
-            scheduledEvent.setLifecycle(lifecycleEntity);
-            entityManager.persist(scheduledEvent);
-        }
-
         return game;
     }
 
@@ -82,7 +69,9 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public GameEntity update(GameEntity gameEntity) throws GameValidationException {
-        throw new NotImplementedException("JpaGameRepository.update");
+        entityManager.merge(gameEntity);
+        entityManager.flush();
+        return gameEntity;
     }
 
     @Override
@@ -115,6 +104,14 @@ public class JpaGameRepository implements GameRepository {
         TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
         query.setMaxResults(limit);
         query.setFirstResult(offset);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<GameEntity> ownedBy(Account user) {
+        TypedQuery<GameEntity> query = entityManager.createQuery(
+                "SELECT g FROM GameEntity g WHERE g.owner = :owner", GameEntity.class);
+        query.setParameter("owner", user);
         return query.getResultList();
     }
 

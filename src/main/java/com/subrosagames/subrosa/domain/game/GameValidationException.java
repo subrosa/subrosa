@@ -1,6 +1,10 @@
 package com.subrosagames.subrosa.domain.game;
 
+import javax.validation.ConstraintViolation;
+import java.util.Set;
+
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 
 /**
  * Encapsulates an exception arising from a failed validation of a game.
@@ -25,7 +29,7 @@ public class GameValidationException extends DomainObjectValidationException {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     * @param s         message
      * @param throwable cause
      */
     public GameValidationException(String s, Throwable throwable) {
@@ -38,5 +42,9 @@ public class GameValidationException extends DomainObjectValidationException {
      */
     public GameValidationException(Throwable throwable) {
         super(throwable);
+    }
+
+    public GameValidationException(Set<ConstraintViolation<GameEntity>> violations) {
+        super(violations);
     }
 }

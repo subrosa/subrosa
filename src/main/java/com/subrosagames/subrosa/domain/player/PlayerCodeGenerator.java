@@ -3,6 +3,8 @@ package com.subrosagames.subrosa.domain.player;
 import java.util.Date;
 import java.util.Random;
 
+import com.subrosagames.subrosa.util.RandomString;
+
 /**
 *
 */
@@ -13,6 +15,8 @@ final class PlayerCodeGenerator {
     private PlayerCodeGenerator() { }
 
     public static String generate() {
+        return RandomString.generate(5);
+        /*
         StringBuilder builder = new StringBuilder(5);
         while (builder.length() < 5) {
             int index = RANDOM.nextInt(58);
@@ -22,5 +26,6 @@ final class PlayerCodeGenerator {
             builder.append((char) ascii);
         }
         return builder.toString();
+        */
     }
 }

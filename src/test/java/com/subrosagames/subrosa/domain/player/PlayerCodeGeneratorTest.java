@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.player;
 
+import org.junit.Assert;
 import org.junit.Test;
-import junit.framework.Assert;
 
 /**
  * Test {@link PlayerCodeGenerator}.
