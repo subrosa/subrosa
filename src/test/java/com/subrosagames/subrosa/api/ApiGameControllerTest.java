@@ -4,9 +4,7 @@ import java.util.Calendar;
 
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.Lifecycle;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -51,9 +49,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         game.setName("Test game");
         game.setUrl("test_game_url");
         game.setGameType(GameType.ASSASSIN);
-        Lifecycle lifecycle = new LifecycleEntity();
-        gameRepository.save(lifecycle);
-        game.setLifecycle(lifecycle);
         gameRepository.create(game);
 
         mockMvc.perform(
@@ -69,7 +64,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json;charset=UTF-8"))
                 .andExpect(jsonPath("$.name").value("Fun Times!"));
-
     }
 
     @Test
@@ -237,7 +231,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.url").value(url));
     }
 
-//    @Test
+    //    @Test
     public void testCannotSetStartTimeInPast() throws Exception {
         String url = "fun_times";
         Calendar yesterday = Calendar.getInstance();
@@ -257,7 +251,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
-//    @Test
+    //    @Test
     public void testCannotSetEndTimeBeforeStart() throws Exception {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
@@ -286,7 +280,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
-//    @Test
+    //    @Test
     public void testRegistrationMustEndBeforeGameStarts() throws Exception {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
@@ -321,30 +315,44 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("description"))));
-
-        /*
-        mockMvc.perform(
-                put("/game/{url}", url)
-                        .content(String.format("{\"description\": \"%s\"}", "it's going to be fun!"))
-                        .with(user("new@user.com")))
-                .andExpect(status().isOk());
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("description"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameEnd"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationEnd"))))
+        ;
 
         Calendar tomorrow = Calendar.getInstance();
         tomorrow.add(Calendar.DATE, 1);
+        Calendar nextWeek = Calendar.getInstance();
+        nextWeek.add(Calendar.DATE, 7);
         Calendar nextMonth = Calendar.getInstance();
         nextMonth.add(Calendar.DATE, 30);
         mockMvc.perform(
                 put("/game/{url}", url)
-                        .content(String.format("{\"startTime\": \"%s\", \"endTime\": \"%s\"}", tomorrow.getTimeInMillis(), nextMonth.getTimeInMillis()))
+                        .content(String.format("{\"description\": \"%s\"" +
+                                ",\"gameStart\": \"%s\"" +
+                                ",\"gameEnd\": \"%s\"" +
+                                ",\"registrationStart\": \"%s\"" +
+                                ",\"registrationEnd\": \"%s\"" +
+                                "}",
+                                "it's going to be fun!",
+                                nextWeek.getTimeInMillis(),
+                                nextMonth.getTimeInMillis(),
+                                tomorrow.getTimeInMillis(),
+                                nextWeek.getTimeInMillis()))
                         .with(user("new@user.com")))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gameStart").value(nextWeek.getTimeInMillis()))
+                .andExpect(jsonPath("$.gameEnd").value(nextMonth.getTimeInMillis()))
+                .andExpect(jsonPath("$.registrationStart").value(tomorrow.getTimeInMillis()))
+                .andExpect(jsonPath("$.registrationEnd").value(nextWeek.getTimeInMillis()))
+        ;
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").exists());
-                */
     }
 }

@@ -83,7 +83,6 @@ public interface Game extends GameData {
      */
     List<Post> getPosts();
 
-
     Lifecycle getLifecycle();
 
     Game create() throws GameValidationException;

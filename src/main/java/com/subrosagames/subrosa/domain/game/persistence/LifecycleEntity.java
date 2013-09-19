@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.sql.Timestamp;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,16 +7,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.util.Date;
+import java.util.List;
 
-import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
 import com.subrosagames.subrosa.event.message.EventMessage;
+import com.google.common.collect.Lists;
 
 /**
  * Persists a game lifecycle.
- *
+ * <p/>
  * Consists of registration times, game start and end, and scheduled and triggered events.
  */
 @Entity
@@ -31,17 +33,9 @@ public class LifecycleEntity implements Lifecycle {
     @Column(name = "lifecycle_id")
     private Integer id;
 
-    @Column(name = "registration_start")
-    private Timestamp registrationStart;
-
-    @Column(name = "registration_end")
-    private Timestamp registrationEnd;
-
-    @Column(name = "game_start")
-    private Timestamp gameStart;
-
-    @Column(name = "game_end")
-    private Timestamp gameEnd;
+    @OneToOne(targetEntity = GameEntity.class)
+    @JoinColumn(name = "game_id")
+    private Game game;
 
     @OneToMany
     @JoinColumn(name = "event_id")
@@ -60,40 +54,12 @@ public class LifecycleEntity implements Lifecycle {
         this.id = id;
     }
 
-    @Override
-    public Timestamp getRegistrationStart() {
-        return registrationStart == null ? null : new Timestamp(registrationStart.getTime());
+    public Game getGame() {
+        return game;
     }
 
-    public void setRegistrationStart(Timestamp registrationStart) {
-        this.registrationStart = registrationStart == null ? null : new Timestamp(registrationStart.getTime());
-    }
-
-    @Override
-    public Timestamp getRegistrationEnd() {
-        return registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
-    }
-
-    public void setRegistrationEnd(Timestamp registrationEnd) {
-        this.registrationEnd = registrationEnd == null ? null : new Timestamp(registrationEnd.getTime());
-    }
-
-    @Override
-    public Timestamp getGameStart() {
-        return gameStart == null ? null : new Timestamp(gameStart.getTime());
-    }
-
-    public void setGameStart(Timestamp gameStart) {
-        this.gameStart = gameStart == null ? null : new Timestamp(gameStart.getTime());
-    }
-
-    @Override
-    public Timestamp getGameEnd() {
-        return gameEnd == null ? null : new Timestamp(gameEnd.getTime());
-    }
-
-    public void setGameEnd(Timestamp gameEnd) {
-        this.gameEnd = gameEnd == null ? null : new Timestamp(gameEnd.getTime());
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     @Override
@@ -120,7 +86,7 @@ public class LifecycleEntity implements Lifecycle {
     }
 
     @Override
-    public void addScheduledEvent(EventMessage event, Timestamp time) {
+    public void addScheduledEvent(EventMessage event, Date time) {
         ScheduledEventEntity scheduledEventEntity = new ScheduledEventEntity();
         scheduledEventEntity.setEventClass(event.getEventClass());
         scheduledEventEntity.setEventType(ScheduledEventEntity.EVENT_TYPE_SCHEDULED);

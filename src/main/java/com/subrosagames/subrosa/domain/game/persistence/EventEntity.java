@@ -20,7 +20,7 @@ public class EventEntity {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY, targetEntity = LifecycleEntity.class)
-    @JoinColumn(name = "lifecycle_id")
+    @JoinColumn(name = "lifecycle_id", referencedColumnName = "game_id")
     private Lifecycle lifecycle;
 
     @Column(name = "event_class")

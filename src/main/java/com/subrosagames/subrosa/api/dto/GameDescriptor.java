@@ -24,10 +24,10 @@ public class GameDescriptor implements GameData {
     private String password;
     private Image image;
     private Integer minimumAge;
-    private Date startTime;
-    private Date endTime;
-    private Date registrationStartTime;
-    private Date registrationEndTime;
+    private Date gameStart;
+    private Date gameEnd;
+    private Date registrationStart;
+    private Date registrationEnd;
 
     public Integer getId() {
         return id;
@@ -117,36 +117,36 @@ public class GameDescriptor implements GameData {
         this.minimumAge = minimumAge;
     }
 
-    public Date getStartTime() {
-        return startTime;
+    public Date getGameStart() {
+        return gameStart;
     }
 
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
+    public void setGameStart(Date gameStart) {
+        this.gameStart = gameStart;
     }
 
-    public Date getEndTime() {
-        return endTime;
+    public Date getGameEnd() {
+        return gameEnd;
     }
 
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setGameEnd(Date gameEnd) {
+        this.gameEnd = gameEnd;
     }
 
-    public Date getRegistrationStartTime() {
-        return registrationStartTime;
+    public Date getRegistrationStart() {
+        return registrationStart;
     }
 
-    public void setRegistrationStartTime(Date registrationStartTime) {
-        this.registrationStartTime = registrationStartTime;
+    public void setRegistrationStart(Date registrationStart) {
+        this.registrationStart = registrationStart;
     }
 
-    public Date getRegistrationEndTime() {
-        return registrationEndTime;
+    public Date getRegistrationEnd() {
+        return registrationEnd;
     }
 
-    public void setRegistrationEndTime(Date registrationEndTime) {
-        this.registrationEndTime = registrationEndTime;
+    public void setRegistrationEnd(Date registrationEnd) {
+        this.registrationEnd = registrationEnd;
     }
 
     @Override
@@ -163,10 +163,10 @@ public class GameDescriptor implements GameData {
                 .add("password", password)
                 .add("image", image)
                 .add("minimumAge", minimumAge)
-                .add("startTime", startTime)
-                .add("endTime", endTime)
-                .add("registrationStartTime", registrationStartTime)
-                .add("registrationEndTime", registrationEndTime)
+                .add("gameStart", gameStart)
+                .add("gameEnd", gameEnd)
+                .add("registrationStart", registrationStart)
+                .add("registrationEnd", registrationEnd)
                 .toString();
     }
 }

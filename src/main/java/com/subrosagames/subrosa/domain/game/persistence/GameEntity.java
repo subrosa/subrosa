@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
+import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -184,14 +185,21 @@ public class GameEntity implements Game, GameData {
     @MapKey(name = "primaryKey.attributeType")
     private Map<String, GameAttributeEntity> attributes;
 
-    @JsonIgnore
-    @OneToOne(targetEntity = LifecycleEntity.class)
-    @JoinTable(
-            name = "game_lifecycle",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "lifecycle_id")
-    )
-    private Lifecycle lifecycle;
+    @Column(name = "registration_start")
+    @NotNull(groups = PublishAction.class)
+    private Date registrationStart;
+
+    @Column(name = "registration_end")
+    @NotNull(groups = PublishAction.class)
+    private Date registrationEnd;
+
+    @Column(name = "game_start")
+    @NotNull(groups = PublishAction.class)
+    private Date gameStart;
+
+    @Column(name = "game_end")
+    @NotNull(groups = PublishAction.class)
+    private Date gameEnd;
 
     @Column
     private Date published;
@@ -250,44 +258,8 @@ public class GameEntity implements Game, GameData {
         return price;
     }
 
-    @Override
-    public Date getStartTime() {
-        if (getLifecycle() == null) {
-            return null;
-        }
-        return getLifecycle().getGameStart();
-    }
-
-    @Override
-    public Date getEndTime() {
-        if (getLifecycle() == null) {
-            return null;
-        }
-        return getLifecycle().getGameEnd();
-    }
-
-    @Override
-    public Date getRegistrationStartTime() {
-        if (getLifecycle() == null) {
-            return null;
-        }
-        return getLifecycle().getRegistrationStart();
-    }
-
-    @Override
-    public Date getRegistrationEndTime() {
-        if (getLifecycle() == null) {
-            return null;
-        }
-        return getLifecycle().getRegistrationEnd();
-    }
-
     public void setPrice(BigDecimal price) {
         this.price = price;
-    }
-
-    public Lifecycle getLifecycle() {
-        return lifecycle;
     }
 
     @Override
@@ -324,16 +296,16 @@ public class GameEntity implements Game, GameData {
     @Override
     public Game publish() throws GameValidationException {
         // validate required fields
-//        if (getStartTime() == null) {
+//        if (getGameStart() == null) {
 //            throw new GameValidationException("Game start time must be set.");
 //        }
-//        if (getEndTime() == null) {
+//        if (getGameEnd() == null) {
 //            throw new GameValidationException("Game start time must be set.");
 //        }
         // fill out defaults
-//        if (getRegistrationStartTime() == null) {
+//        if (getRegistrationStart() == null) {
 //        }
-//        if (getRegistrationEndTime() == null) {
+//        if (getRegistrationEnd() == null) {
 //        }
         assertValid(PublishAction.class);
         setPublished(new Date());
@@ -352,10 +324,6 @@ public class GameEntity implements Game, GameData {
         if (!violations.isEmpty()) {
             throw new GameValidationException(violations);
         }
-    }
-
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
     }
 
     public String getTimezone() {
@@ -395,13 +363,18 @@ public class GameEntity implements Game, GameData {
     }
 
     @Override
+    public Lifecycle getLifecycle() {
+        return null;  // TODO
+    }
+
+    @Override
     public void addTriggeredEvent(EventMessage eventType, Event trigger) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // TODO
     }
 
     @Override
     public List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;  // TODO
     }
 
     public void setMaximumTeamSize(Integer maximumTeamSize) {
@@ -482,6 +455,38 @@ public class GameEntity implements Game, GameData {
 
     public void setPublished(Date published) {
         this.published = published;
+    }
+
+    public Date getGameStart() {
+        return gameStart;
+    }
+
+    public void setGameStart(Date gameStart) {
+        this.gameStart = gameStart;
+    }
+
+    public Date getGameEnd() {
+        return gameEnd;
+    }
+
+    public void setGameEnd(Date gameEnd) {
+        this.gameEnd = gameEnd;
+    }
+
+    public Date getRegistrationStart() {
+        return registrationStart;
+    }
+
+    public void setRegistrationStart(Date registrationStart) {
+        this.registrationStart = registrationStart;
+    }
+
+    public Date getRegistrationEnd() {
+        return registrationEnd;
+    }
+
+    public void setRegistrationEnd(Date registrationEnd) {
+        this.registrationEnd = registrationEnd;
     }
 
     public RuleRepository getRuleRepository() {

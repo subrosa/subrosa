@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class ScheduledEventEntity extends EventEntity implements ScheduledEvent 
         return eventDate == null ? null : new Timestamp(eventDate.getTime());
     }
 
-    public void setEventDate(Timestamp eventDate) {
+    public void setEventDate(Date eventDate) {
         this.eventDate = eventDate == null ? null : new Timestamp(eventDate.getTime());
     }
 

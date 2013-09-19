@@ -4,22 +4,17 @@ import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
 import com.subrosagames.subrosa.event.message.EventMessage;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Represents the events that occur in a game.
  */
 public interface Lifecycle {
+
     Integer getId();
 
-    Timestamp getRegistrationStart();
-
-    Timestamp getRegistrationEnd();
-
-    Timestamp getGameStart();
-
-    Timestamp getGameEnd();
+    Game getGame();
 
     List<ScheduledEventEntity> getScheduledEvents();
 
@@ -27,5 +22,5 @@ public interface Lifecycle {
 
     void addTriggeredEvent(TriggeredEventEntity triggeredEventEntity);
 
-    void addScheduledEvent(EventMessage event, Timestamp time);
+    void addScheduledEvent(EventMessage event, Date time);
 }

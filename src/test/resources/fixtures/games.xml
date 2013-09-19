@@ -4,39 +4,27 @@
   <account account_id="10001" activated="true" email="game@owner.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
 
   <game game_id="11111" owner_id="10001" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="11111"/>
-  <game_lifecycle game_id="11111" lifecycle_id="11111"/>
+  <lifecycle game_id="11111" lifecycle_id="11111"/>
   <game game_id="22222" owner_id="10001" name="Fun Times!" url="fun_times2" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="22222"/>
-  <game_lifecycle game_id="22222" lifecycle_id="22222"/>
+  <lifecycle game_id="22222" lifecycle_id="22222"/>
   <game game_id="33333" owner_id="10001" name="Fun Times!" url="fun_times3" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="33333"/>
-  <game_lifecycle game_id="33333" lifecycle_id="33333"/>
+  <lifecycle game_id="33333" lifecycle_id="33333"/>
   <game game_id="44444" owner_id="10001" name="Fun Times!" url="fun_times4" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="44444"/>
-  <game_lifecycle game_id="44444" lifecycle_id="44444"/>
+  <lifecycle game_id="44444" lifecycle_id="44444"/>
   <game game_id="55555" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="55555"/>
-  <game_lifecycle game_id="55555" lifecycle_id="55555"/>
+  <lifecycle game_id="55555" lifecycle_id="55555"/>
   <game game_id="66666" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="66666"/>
-  <game_lifecycle game_id="66666" lifecycle_id="66666"/>
+  <lifecycle game_id="66666" lifecycle_id="66666"/>
   <game game_id="77777" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="77777"/>
-  <game_lifecycle game_id="77777" lifecycle_id="77777"/>
+  <lifecycle game_id="77777" lifecycle_id="77777"/>
   <game game_id="88888" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="88888"/>
-  <game_lifecycle game_id="88888" lifecycle_id="88888"/>
+  <lifecycle game_id="88888" lifecycle_id="88888"/>
   <game game_id="99999" owner_id="10001" name="Fun Times!" url="fun_times9" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="99999"/>
-  <game_lifecycle game_id="99999" lifecycle_id="99999"/>
+  <lifecycle game_id="99999" lifecycle_id="99999"/>
   <game game_id="10000" owner_id="10001" name="Fun Times!" url="fun_times10" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="10000"/>
-  <game_lifecycle game_id="10000" lifecycle_id="10000"/>
+  <lifecycle game_id="10000" lifecycle_id="10000"/>
   <game game_id="10001" owner_id="10001" name="Fun Times!" url="fun_times11" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="10001"/>
-  <game_lifecycle game_id="10001" lifecycle_id="10001"/>
+  <lifecycle game_id="10001" lifecycle_id="10001"/>
   <game game_id="10002" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
-  <lifecycle lifecycle_id="10002"/>
-  <game_lifecycle game_id="10002" lifecycle_id="10002"/>
+  <lifecycle game_id="10002" lifecycle_id="10002"/>
 </dataset>

@@ -79,23 +79,23 @@ public interface GameData {
      * Game start time.
      * @return game start time
      */
-    Date getStartTime();
+    Date getGameStart();
 
     /**
      * Game end time.
      * @return game end time
      */
-    Date getEndTime();
+    Date getGameEnd();
 
     /**
      * Registration start time.
      * @return registration start time
      */
-    Date getRegistrationStartTime();
+    Date getRegistrationStart();
 
     /**
      * Registration end time.
      * @return registration end time
      */
-    Date getRegistrationEndTime();
+    Date getRegistrationEnd();
 }

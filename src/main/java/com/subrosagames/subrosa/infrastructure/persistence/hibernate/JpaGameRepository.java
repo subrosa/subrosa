@@ -70,7 +70,6 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public GameEntity update(GameEntity gameEntity) throws GameValidationException {
         entityManager.merge(gameEntity);
-        entityManager.flush();
         return gameEntity;
     }
 

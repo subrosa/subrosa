@@ -46,12 +46,8 @@ public class ApiSandboxController {
 //        GameEntity entity = gameDescriptor.getInfo();
 //        List<GameEvent> events = gameDescriptor.getEvents();
 
-        LifecycleEntity lifecycleEntity = new LifecycleEntity();
-        lifecycleEntity.setRegistrationStart(new Timestamp(new Date().getTime() + 2500)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setRegistrationEnd(new Timestamp(new Date().getTime() + 5000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setGameStart(new Timestamp(new Date().getTime() + 10000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.setGameEnd(new Timestamp(new Date().getTime() + 40000)); // SUPPRESS CHECKSTYLE MagicNumber
-        lifecycleEntity.addScheduledEvent(EventMessage.MUTUAL_INTEREST_ASSIGNMENT, lifecycleEntity.getGameStart());
+//        LifecycleEntity lifecycleEntity = new LifecycleEntity();
+//        lifecycleEntity.addScheduledEvent(EventMessage.MUTUAL_INTEREST_ASSIGNMENT, lifecycleEntity.getGameStart());
 
         GameEntity gameEntity = new AssassinGame();
         gameEntity.setName("game name" + random.nextLong());
@@ -61,6 +57,10 @@ public class ApiSandboxController {
         gameEntity.setMaximumTeamSize(5);
         gameEntity.setGameType(GameType.ASSASSIN);
         gameEntity.setTimezone(TimeZone.getDefault().getDisplayName());
+        gameEntity.setRegistrationStart(new Timestamp(new Date().getTime() + 2500)); // SUPPRESS CHECKSTYLE MagicNumber
+        gameEntity.setRegistrationEnd(new Timestamp(new Date().getTime() + 5000)); // SUPPRESS CHECKSTYLE MagicNumber
+        gameEntity.setGameStart(new Timestamp(new Date().getTime() + 10000)); // SUPPRESS CHECKSTYLE MagicNumber
+        gameEntity.setGameEnd(new Timestamp(new Date().getTime() + 40000)); // SUPPRESS CHECKSTYLE MagicNumber
 
         Game game = gameEntity.create();
 
