@@ -21,13 +21,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
-import javax.persistence.SecondaryTable;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -64,6 +64,7 @@ import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
 import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
+import com.subrosagames.subrosa.validation.DateRange;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -92,6 +93,11 @@ import org.hibernate.annotations.FetchProfiles;
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@DateRange.List({
+        @DateRange(start = "gameStart", end = "gameEnd", message = "The game start and end times must define a valid range"),
+        @DateRange(start = "registrationStart", end = "registrationEnd", message = "The registration start and end times must define a valid range"),
+        @DateRange(start = "registrationEnd", end = "gameStart", allowEmptyRange = true, message = "Registration must end before the game starts")
+})
 public class GameEntity implements Game, GameData {
 
     private static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
@@ -186,18 +192,22 @@ public class GameEntity implements Game, GameData {
     private Map<String, GameAttributeEntity> attributes;
 
     @Column(name = "registration_start")
+    @Future
     @NotNull(groups = PublishAction.class)
     private Date registrationStart;
 
     @Column(name = "registration_end")
+    @Future
     @NotNull(groups = PublishAction.class)
     private Date registrationEnd;
 
     @Column(name = "game_start")
+    @Future
     @NotNull(groups = PublishAction.class)
     private Date gameStart;
 
     @Column(name = "game_end")
+    @Future
     @NotNull(groups = PublishAction.class)
     private Date gameEnd;
 

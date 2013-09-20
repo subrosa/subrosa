@@ -32,9 +32,6 @@ public class JpaAccountRepository implements AccountRepository {
     @Autowired
     private PasswordUtility passwordUtility;
 
-    @Autowired
-    private QueryHelper queryHelper;
-
     @Override
     @PostAuthorize("hasPermission(returnObject, 'VIEW_ACCOUNT')")
     public Account get(int accountId, String... expansions) throws AccountNotFoundException {
@@ -54,7 +51,7 @@ public class JpaAccountRepository implements AccountRepository {
     public Account getAccountByEmail(final String email, String... expansions) throws AccountNotFoundException {
         @SuppressWarnings("serial")
         Map<String, Object> conditions = new HashMap<String, Object>() {{ put("email", email); }};
-        TypedQuery<Account> query = queryHelper.createQuery(entityManager, Account.class, conditions, expansions);
+        TypedQuery<Account> query = QueryHelper.createQuery(entityManager, Account.class, conditions, expansions);
         return getSingleResult(query);
     }
 

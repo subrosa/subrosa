@@ -33,6 +33,7 @@ import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.validator.constraints.Email;
 
 /**
  * Represents an account in the Subrosa application.
@@ -66,6 +67,7 @@ public class Account implements PermissionTarget {
     private String name;
 
     @Column
+    @Email
     private String email;
 
     @Column(name = "cell_phone")

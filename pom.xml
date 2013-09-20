@@ -87,6 +87,12 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>2.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.dbunit</groupId>
       <artifactId>dbunit</artifactId>
       <version>2.4.9</version>
@@ -164,7 +170,6 @@
       <version>${org.springframework.version}</version>
     </dependency>
 
-
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
@@ -228,11 +233,15 @@
     </dependency>
 
     <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>1.4.1.RELEASE</version>
+    </dependency>
+    <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
       <version>0.9.1.2</version>
     </dependency>
-
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
@@ -263,12 +272,6 @@
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>3.18.0-GA</version>
-    </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <version>2.0.0</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>

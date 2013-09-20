@@ -40,9 +40,6 @@ public class JpaGameRepository implements GameRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Autowired
-    private QueryHelper queryHelper;
-
     @Override
     public GameEntity create(GameEntity game) throws GameValidationException {
         entityManager.persist(game);
@@ -85,7 +82,7 @@ public class JpaGameRepository implements GameRepository {
             Map<String, Object> conditions = new HashMap<String, Object>(1) {
                 { put("url", url); }
             };
-            TypedQuery<GameEntity> query = queryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
+            TypedQuery<GameEntity> query = QueryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
             gameEntity = query.getSingleResult();
         } catch (NoResultException e) {
             throw new GameNotFoundException("Game for url " + url + " not found");
@@ -119,9 +116,8 @@ public class JpaGameRepository implements GameRepository {
         LOG.debug("Retrieving active games list");
         String jpql = "SELECT ge.id "
                 + " FROM GameEntity ge "
-                + " JOIN LifecycleEntity l "
-                + " WHERE NOW('') > l.registrationStart "
-                + "     AND NOW('') < l.registrationEnd ";
+                + " WHERE NOW('') > ge.registrationStart "
+                + "     AND NOW('') < ge.registrationEnd ";
         TypedQuery<Integer> query = entityManager.createQuery(jpql, Integer.class);
         return query.getResultList();
     }

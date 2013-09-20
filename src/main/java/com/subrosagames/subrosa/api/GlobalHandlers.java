@@ -13,9 +13,11 @@ import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
 import com.subrosa.api.notification.Severity;
 import com.subrosa.api.response.NotificationList;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,8 +37,8 @@ public class GlobalHandlers {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Set<? extends ConstraintViolation<?>> violations = e.getViolations();
         Notification notification = new Notification(
-                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
-                GeneralCode.INVALID_REQUEST_ENTITY.getDefaultMessage());
+                GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
+                GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
         Map<String, String> details = Maps.newHashMap();
         for (ConstraintViolation<?> violation : violations) {
             details.put(violation.getPropertyPath().toString(), violation.getMessage());
@@ -64,6 +66,27 @@ public class GlobalHandlers {
         Notification notification = new Notification(
                 GeneralCode.FORBIDDEN, Severity.ERROR,
                 GeneralCode.FORBIDDEN.getDefaultMessage());
+        return new NotificationList(notification);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public NotificationList unwrapHttpMessageConversionException(HttpMessageConversionException e) {
+        return handleUnrecognizedPropertyException((UnrecognizedPropertyException) e.getCause());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public NotificationList handleUnrecognizedPropertyException(UnrecognizedPropertyException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
+                GeneralCode.INVALID_REQUEST_ENTITY.getDefaultMessage());
+        Map<String, String> details = Maps.newHashMap();
+        details.put(e.getUnrecognizedPropertyName(), "unrecognized property");
+        notification.setDetails(details);
         return new NotificationList(notification);
     }
 }

@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api;
 
 import java.util.Calendar;
+import java.util.HashSet;
 
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameType;
@@ -8,6 +9,7 @@ import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,6 +208,34 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testUnrecognizedFieldsResultsInBadRequest() throws Exception {
+        mockMvc.perform(
+                post("/game")
+                        .content("{\"what\": \"is this?\"}")
+                        .with(user("new@user.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("what"))));
+
+        String response = mockMvc.perform(
+                post("/game")
+                        .content("{\"name\": \"new game\", \"gameType\": \"ASSASSIN\"}")
+                        .with(user("new@user.com")))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.url").exists())
+                .andReturn().getResponse().getContentAsString();
+        String url = JsonPath.compile("$.url").read(response);
+
+        mockMvc.perform(
+                put("/game/{url}", url)
+                        .content("{\"another\": \"weird param\"}")
+                        .with(user("new@user.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("another"))));
+    }
+
+    @Test
     public void testCannotUpdateUrlOrGameType() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
@@ -231,28 +261,24 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.url").value(url));
     }
 
-    //    @Test
-    public void testCannotSetStartTimeInPast() throws Exception {
+    @Test
+    public void testCannotSetTimesInPast() throws Exception {
         String url = "fun_times";
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DATE, -1);
-        mockMvc.perform(
-                put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
-                        .content(String.format("{\"startTime\": \"%s\"}", yesterday.getTimeInMillis())))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
-
-        mockMvc.perform(
-                put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
-                        .content(String.format("{\"registrationStartTime\": \"%s\"}", yesterday.getTimeInMillis())))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
+        HashSet<String> times = Sets.newHashSet("gameStart", "gameEnd", "registrationStart", "registrationEnd");
+        for (String time : times) {
+            mockMvc.perform(
+                    put("/game/{url}/", url)
+                            .with(user("game@owner.com"))
+                            .content(String.format("{\"%s\": \"%s\"}", time, yesterday.getTimeInMillis())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$").value(is(notificationList())));
+        }
     }
 
-    //    @Test
-    public void testCannotSetEndTimeBeforeStart() throws Exception {
+    @Test
+    public void testEndTimesMustBeAfterStartTimes() throws Exception {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
         nextMonth.add(Calendar.DATE, 30);
@@ -260,44 +286,51 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("/game/{url}/", url)
                         .with(user("game@owner.com"))
                         .content(String.format(
-                                "{\"startTime\": \"%s\", \"registrationStartTime\": \"%s\"}",
+                                "{\"gameStart\": \"%s\", \"registrationStart\": \"%s\"}",
                                 nextMonth.getTimeInMillis(), nextMonth.getTimeInMillis())
                         ))
                 .andExpect(status().isOk());
 
-        nextMonth.add(Calendar.DATE, -1);
         mockMvc.perform(
                 put("/game/{url}/", url)
                         .with(user("game@owner.com"))
-                        .content(String.format("{\"endTime\": \"%s\"}", nextMonth.getTimeInMillis())))
+                        .content(String.format("{\"gameEnd\": \"%s\"}", nextMonth.getTimeInMillis())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
         mockMvc.perform(
                 put("/game/{url}/", url)
                         .with(user("game@owner.com"))
-                        .content(String.format("{\"registrationEndTime\": \"%s\"}", nextMonth.getTimeInMillis())))
+                        .content(String.format("{\"registrationEnd\": \"%s\"}", nextMonth.getTimeInMillis())))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
-    //    @Test
-    public void testRegistrationMustEndBeforeGameStarts() throws Exception {
+    @Test
+    public void testRegistrationEndAtOrBeforeGameStart() throws Exception {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
         nextMonth.add(Calendar.DATE, 30);
         mockMvc.perform(
                 put("/game/{url}/", url)
                         .with(user("game@owner.com"))
-                        .content(String.format("{\"startTime\": \"%s\"}", nextMonth.getTimeInMillis())))
+                        .content(String.format("{\"gameStart\": \"%s\"}", nextMonth.getTimeInMillis())))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(
+                put("/game/{url}/", url)
+                        .with(user("game@owner.com"))
+                        .content(String.format("{\"registrationEnd\": \"%s\"}", nextMonth.getTimeInMillis())))
                 .andExpect(status().isOk());
 
         nextMonth.add(Calendar.DATE, 1);
         mockMvc.perform(
                 put("/game/{url}/", url)
                         .with(user("game@owner.com"))
-                        .content(String.format("{\"registrationEndTime\": \"%s\"}", nextMonth.getTimeInMillis())))
+                        .content(String.format("{\"registrationEnd\": \"%s\"}", nextMonth.getTimeInMillis())))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationEnd"))));
     }
 
     @Test
