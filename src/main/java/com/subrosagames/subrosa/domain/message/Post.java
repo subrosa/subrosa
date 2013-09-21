@@ -1,11 +1,14 @@
 package com.subrosagames.subrosa.domain.message;
 
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Encapsulates a user post in a game.
  */
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public interface Post {
 
     /**
@@ -25,6 +28,12 @@ public interface Post {
      * @return owning account
      */
     Account getAccount();
+
+    /**
+     * Get the type of post.
+     * @return post type
+     */
+    PostType getPostType();
 
     /**
      * Get post content.

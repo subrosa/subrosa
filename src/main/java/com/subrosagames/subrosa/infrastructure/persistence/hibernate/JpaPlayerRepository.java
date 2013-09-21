@@ -11,7 +11,7 @@ import com.subrosagames.subrosa.domain.player.PlayerRepository;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**
- *
+ * Managers storage and retrieval of game players.
  */
 @Repository
 @Transactional

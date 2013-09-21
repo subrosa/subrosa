@@ -25,9 +25,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.subrosagames.subrosa.domain.PermissionTarget;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;

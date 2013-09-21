@@ -22,5 +22,5 @@ public interface MessageQueueFactory {
      */
     GameEventMessage getMessageForName(String eventClass);
 
-    AbstractMessageHandler getHandlerForName(String eventClass);
+    AbstractMessageHandler getHandlerForName(String eventClass); // SUPPRESS CHECKSTYLE IllegalType
 }

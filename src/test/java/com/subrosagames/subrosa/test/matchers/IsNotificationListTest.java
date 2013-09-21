@@ -1,18 +1,21 @@
 package com.subrosagames.subrosa.test.matchers;
 
+import org.junit.Test;
 import net.minidev.json.JSONObject;
 import net.minidev.json.JSONValue;
-import org.junit.Test;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 
 
 /**
+ * Test {@link IsNotificationList}.
  */
 public class IsNotificationListTest {
+
+    // CHECKSTYLE-OFF: JavadocMethod
 
     @Test
     public void testMatches() throws Exception {
@@ -46,4 +49,6 @@ public class IsNotificationListTest {
         input = (JSONObject) JSONValue.parse("{notifications:[{text:\"it's all wrong\"}]}");
         assertThat(input, not(notificationList()));
     }
+
+    // CHECKSTYLE-ON: JavadocMethod
 }

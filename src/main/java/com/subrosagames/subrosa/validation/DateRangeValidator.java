@@ -1,8 +1,8 @@
 package com.subrosagames.subrosa.validation;
 
+import java.util.Date;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Date;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
@@ -17,14 +17,14 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
 
     private String startField;
     private String endField;
-    private boolean allowEmptyRangeField;
+    private boolean allowEmptyRange;
     private String message;
 
     @Override
     public void initialize(DateRange dateRange) {
         startField = dateRange.start();
         endField = dateRange.end();
-        allowEmptyRangeField = dateRange.allowEmptyRange();
+        allowEmptyRange = dateRange.allowEmptyRange();
         message = dateRange.message();
     }
 
@@ -37,11 +37,11 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
             Object endProperty = PropertyUtils.getProperty(value, endField);
             final Date startDate = startProperty == null ? null : new Date(((Date) startProperty).getTime());
             final Date endDate = endProperty == null ? null : new Date(((Date) endProperty).getTime());
-            isValid = startDate == null || endDate == null ||
-                    (allowEmptyRangeField ?
-                            startDate.compareTo(endDate) <= 0 :
-                            startDate.compareTo(endDate) < 0);
-        } catch (final Exception e) {
+            isValid = startDate == null || endDate == null
+                    || (allowEmptyRange
+                    ? startDate.compareTo(endDate) <= 0
+                    : startDate.compareTo(endDate) < 0);
+        } catch (final Exception e) { // SUPPRESS CHECKSTYLE IllegalThrows
             LOG.warn("Got exception attempting to validate date range", e);
         }
         if (!isValid) {

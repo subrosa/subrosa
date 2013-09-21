@@ -14,7 +14,7 @@ import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.message.EventMessage;
 
 /**
- *
+ * Managers storage and retrieval of game events.
  */
 @Repository
 @Transactional

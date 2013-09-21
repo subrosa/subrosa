@@ -9,7 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
- *
+ * Logout success handler that returns an empty HTTP 200 OK.
  */
 public class Http200LogoutSuccessHandler implements LogoutSuccessHandler {
     @Override

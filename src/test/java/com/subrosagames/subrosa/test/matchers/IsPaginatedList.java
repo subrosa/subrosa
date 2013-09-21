@@ -1,12 +1,10 @@
 package com.subrosagames.subrosa.test.matchers;
 
-import net.minidev.json.JSONObject;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.DiagnosingMatcher;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import net.minidev.json.JSONObject;
 
 /**
  * Matches a JSON object representing the API's paginated list.
@@ -14,8 +12,8 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 public class IsPaginatedList extends TypeSafeDiagnosingMatcher<JSONObject> {
 
     /**
-     * Factory method.
-     * @return instance
+     * Factory for matching paginated list.
+     * @return paginated list matcher
      */
     @Factory
     public static Matcher<JSONObject> paginatedList() {

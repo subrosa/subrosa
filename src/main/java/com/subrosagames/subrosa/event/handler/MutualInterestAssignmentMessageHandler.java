@@ -10,7 +10,7 @@ import com.subrosagames.subrosa.domain.gamesupport.assassin.AssignmentType;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.TargetAssigner;
 
 /**
- *
+ * Performs mutual interest assignments.
  */
 public class MutualInterestAssignmentMessageHandler extends AbstractMessageHandler {
 

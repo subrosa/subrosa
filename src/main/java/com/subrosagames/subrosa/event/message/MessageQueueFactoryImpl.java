@@ -24,7 +24,7 @@ public class MessageQueueFactoryImpl implements MessageQueueFactory {
     }
 
     @Override
-    public AbstractMessageHandler getHandlerForName(String eventClass) {
+    public AbstractMessageHandler getHandlerForName(String eventClass) { // SUPPRESS CHECKSTYLE IllegalType
         return EventMessage.valueOf(eventClass).getHandler();
     }
 }

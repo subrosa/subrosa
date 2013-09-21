@@ -3,9 +3,11 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -49,4 +51,5 @@ public interface GameFactory extends DomainObjectFactory<GameEntity> {
 
     GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException;
 
+    PostEntity forDto(PostDescriptor postDescriptor);
 }

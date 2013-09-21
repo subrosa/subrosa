@@ -1,11 +1,11 @@
 package com.subrosagames.subrosa.api.dto.target;
 
 import com.subrosagames.subrosa.domain.account.Address;
-import com.subrosagames.subrosa.domain.player.TargetPlayer;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.player.TargetPlayer;
 
 /**
- *
+ * Target player DTO.
  */
 public class TargetPlayerDto extends TargetDto {
 
@@ -15,6 +15,10 @@ public class TargetPlayerDto extends TargetDto {
     private Address homeAddress;
     private Address workAddress;
 
+    /**
+     * Construct with given target player.
+     * @param target target player
+     */
     public TargetPlayerDto(TargetPlayer target) {
         super(target);
         photoId = target.getPhotoId();

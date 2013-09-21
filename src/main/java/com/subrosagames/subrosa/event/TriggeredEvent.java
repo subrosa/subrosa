@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.event;
 
 /**
- * TODO
+ * TODO.
  */
 public interface TriggeredEvent extends Event {
 }

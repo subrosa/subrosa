@@ -1,24 +1,25 @@
 package com.subrosagames.subrosa.test.matchers;
 
-import net.minidev.json.JSONObject;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
+import net.minidev.json.JSONObject;
 
 /**
  * Matcher for paginated lists with a certain {@code resultCount}.
  */
-public class IsPaginatedListWithResultCount extends IsPaginatedList{
+public class IsPaginatedListWithResultCount extends IsPaginatedList {
 
     private final int count;
 
-    public IsPaginatedListWithResultCount(int count) {
+    private IsPaginatedListWithResultCount(int count) {
         this.count = count;
     }
 
     /**
-     * Factory method.
-     * @return instance
+     * Factory for matching total result count.
+     * @param count result count
+     * @return paginated list matcher
      */
     @Factory
     public static Matcher<JSONObject> hasResultCount(int count) {

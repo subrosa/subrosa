@@ -5,6 +5,7 @@ import java.util.List;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
@@ -70,4 +71,6 @@ public interface GameRepository extends DomainRepository<GameEntity> {
     GameEntity create(GameEntity gameEntity) throws GameValidationException;
 
     List<GameEntity> ownedBy(Account user);
+
+    PostEntity create(PostEntity postEntity);
 }

@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.api.dto;
 
 /**
- *
+ * Encapsulates target achievement data.
  */
 public class TargetAchievement {
 

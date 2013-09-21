@@ -1,20 +1,12 @@
 package com.subrosagames.subrosa.security;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRole;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
-import com.subrosagames.subrosa.domain.account.AccountRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-
-import com.subrosagames.subrosa.domain.account.Account;
-
-import javax.annotation.Nullable;
 
 /**
  * Overrides default spring security user to manipulate salted passwords handling.

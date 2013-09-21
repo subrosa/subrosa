@@ -11,7 +11,7 @@ import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
 
 /**
- *
+ * Base class for message handlers.
  */
 public abstract class AbstractMessageHandler {
 
@@ -33,6 +33,12 @@ public abstract class AbstractMessageHandler {
         process(game, message.getProperties());
     }
 
+    /**
+     * Process message with properties for game.
+     * @param game game
+     * @param properties properties
+     * @throws Exception if something goes wrong
+     */
     public abstract void process(Game game, Map<String, Serializable> properties) throws Exception;
 
 }

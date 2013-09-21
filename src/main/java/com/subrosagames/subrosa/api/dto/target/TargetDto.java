@@ -4,7 +4,7 @@ import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetType;
 
 /**
- *
+ * Data transfer object for targets.
  */
 public class TargetDto {
 

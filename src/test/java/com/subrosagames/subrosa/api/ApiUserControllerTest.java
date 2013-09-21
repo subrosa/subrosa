@@ -10,10 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
 
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -26,6 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiUserControllerTest extends AbstractApiControllerTest {
 
+    // CHECKSTYLE-OFF: JavadocMethod
+
     @Test
     public void testRegistrationAndAuthentication() throws Exception {
         Registration registration = new Registration();
@@ -34,11 +37,12 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
         registration.setAccount(account);
         registration.setPassword("password");
 
+        System.out.println(new ObjectMapper().writeValueAsString(registration));
         mockMvc.perform(
                 post("/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(registration)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("jimmy@icanhazemail.com"));
 
         mockMvc.perform(
@@ -76,4 +80,9 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
+//    @Test
+    public void testLogout() throws Exception {
+    }
+
+    // CHECKSTYLE-ON: JavadocMethod
 }

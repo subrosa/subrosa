@@ -1,9 +1,10 @@
 package com.subrosagames.subrosa.api;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.api.dto.TargetAchievement;
 import com.subrosagames.subrosa.api.dto.target.TargetDto;
 import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
@@ -15,12 +16,14 @@ import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.security.SecurityHelper;
 import com.subrosagames.subrosa.security.SubrosaUser;
+import com.subrosagames.subrosa.security.annotation.IsAuthenticated;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 import com.google.common.base.Function;
@@ -56,12 +59,13 @@ public class ApiGameController {
     private GameFactory gameFactory;
 
     /**
-     * Get a list of {@link com.subrosagames.subrosa.domain.game.GameHelper}s.
-     * @param limit  maximum number of {@link com.subrosagames.subrosa.domain.game.GameHelper}s to return.
+     * Get a list of {@link Game}s.
+     * @param limit  maximum number of {@link Game}s to return.
      * @param offset offset into the list.
-     * @return a PaginatedList of {@link com.subrosagames.subrosa.domain.game.GameHelper}s.
+     * @param expand fields to expand
+     * @return a PaginatedList of {@link Game}s.
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Game> listGames(@RequestParam(value = "limit", required = false) Integer limit,
                                          @RequestParam(value = "offset", required = false) Integer offset,
@@ -78,31 +82,32 @@ public class ApiGameController {
     }
 
     /**
-     * Get a {@link com.subrosagames.subrosa.domain.game.GameHelper} representation.
-     * @param url the game url
-     * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
+     * Get a {@link Game} representation.
+     * @param gameUrl the game gameUrl
+     * @return {@link Game}
+     * @throws GameNotFoundException if game is not found
      */
-    @RequestMapping(value = {"/{url}", "/{url}/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/{gameUrl}", "/{gameUrl}/" }, method = RequestMethod.GET)
     @ResponseBody
-    public Game getGameByUrl(@PathVariable("url") String url,
+    public Game getGameByUrl(@PathVariable("gameUrl") String gameUrl,
                              @RequestParam(value = "expand", required = false) String expand)
             throws GameNotFoundException
     {
-        LOG.debug("Getting game at {} with expansions {}", url, expand);
+        LOG.debug("Getting game at {} with expansions {}", gameUrl, expand);
 
         if (StringUtils.isEmpty(expand)) {
-            return gameFactory.getGame(url);
+            return gameFactory.getGame(gameUrl);
         } else {
-            return gameFactory.getGame(url, expand.split(","));
+            return gameFactory.getGame(gameUrl, expand.split(","));
         }
     }
 
     /**
-     * Create a {@link com.subrosagames.subrosa.domain.game.GameHelper} from the provided parameters.
+     * Create a {@link Game} from the provided parameters.
      * @param gameDescriptor description of game
-     * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
+     * @return {@link Game}
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Game createGame(@RequestBody GameDescriptor gameDescriptor) throws GameValidationException, NotAuthenticatedException {
@@ -117,9 +122,11 @@ public class ApiGameController {
     }
 
     /**
-     * Update an {@link com.subrosagames.subrosa.domain.game.GameHelper} from the provided parameters.
-     * @param gameUrl game id
-     * @return {@link com.subrosagames.subrosa.domain.game.GameHelper}
+     * Update an {@link Game} from the provided parameters.
+     * @param gameUrl        game id
+     * @param gameDescriptor game descriptor
+     * @return {@link Game}
+     * @throws GameNotFoundException if game is not found
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
@@ -141,6 +148,14 @@ public class ApiGameController {
         return game.update(gameFactory.forDto(gameDescriptor));
     }
 
+    /**
+     * Publish game.
+     * @param gameUrl game url
+     * @return updated game
+     * @throws GameNotFoundException if game is not found
+     * @throws GameValidationException if game is not valid for publishing
+     * @throws NotAuthenticatedException if user not authenticated
+     */
     @RequestMapping(value = "/{gameUrl}/publish", method = RequestMethod.POST)
     @ResponseBody
     public Game publishGame(@PathVariable("gameUrl") String gameUrl)
@@ -158,6 +173,7 @@ public class ApiGameController {
      * @param limit   number of posts
      * @param offset  offset into posts
      * @return paginated list of posts
+     * @throws GameNotFoundException if game is not found
      */
     @RequestMapping(value = "/{gameUrl}/post", method = RequestMethod.GET)
     @ResponseBody
@@ -168,17 +184,48 @@ public class ApiGameController {
     {
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
-        List<Post> posts = gameFactory.getGame(gameUrl).getPosts();
+        List<Post> posts = gameFactory.getGame(gameUrl, "posts").getPosts();
         if (CollectionUtils.isEmpty(posts)) {
             return new PaginatedList<Post>(Lists.<Post>newArrayList(), 0, limit, offset);
         } else {
             return new PaginatedList<Post>(
-                    posts.subList(offset, offset + limit),
+                    posts.subList(offset, Math.min(posts.size() - 1, offset + limit)),
                     posts.size(),
                     limit, offset);
         }
     }
 
+    /**
+     * Create new post for game.
+     * @param gameUrl game url
+     * @param postDescriptor post descriptor
+     * @return created post
+     * @throws GameNotFoundException if game is not found
+     * @throws NotAuthenticatedException if user is not authenticated
+     */
+    @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
+    @ResponseBody
+    public Post createPost(@PathVariable("gameUrl") String gameUrl,
+                           @RequestBody PostDescriptor postDescriptor)
+            throws GameNotFoundException, NotAuthenticatedException
+    {
+        if (!SecurityHelper.isAuthenticated()) {
+            throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
+        }
+        Game game = gameFactory.getGame(gameUrl);
+        PostEntity postEntity = gameFactory.forDto(postDescriptor);
+        postEntity.setAccount(SecurityHelper.getAuthenticatedUser());
+        return game.addPost(postEntity);
+    }
+
+    /**
+     * Get game history.
+     * @param gameUrl game url
+     * @param limit limit
+     * @param offset offset
+     * @return paginated list of history
+     * @throws GameNotFoundException if game is not found
+     */
     @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<GameEvent> getHistory(@PathVariable("gameUrl") String gameUrl,
@@ -204,6 +251,7 @@ public class ApiGameController {
      * Get the current targets for the logged in user for the specified game.
      * @param gameUrl game id
      * @return list of targets
+     * @throws GameNotFoundException if game is not found
      */
     @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{gameUrl}/target", method = RequestMethod.GET)
@@ -215,7 +263,7 @@ public class ApiGameController {
         Player player = game.getPlayer(accountId);
         LOG.debug("Found player {} in game. Getting targets.", player.getId());
         List<? extends Target> targets = player.getTargets();
-        LOG.debug("Player {} in game {} has {} targets", new Object[]{player.getId(), gameUrl, targets.size()});
+        LOG.debug("Player {} in game {} has {} targets", new Object[]{ player.getId(), gameUrl, targets.size() });
         return new TargetList(Lists.transform(targets, new Function<Target, TargetDto>() {
             @Override
             public TargetDto apply(Target input) {
@@ -253,8 +301,13 @@ public class ApiGameController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
-    public Player joinGame(String gameUrl) throws GameNotFoundException {
+    @IsAuthenticated
+    @RequestMapping(value = { "/{gameUrl}/join", "{gameUrl}/join/" }, method = RequestMethod.POST)
+    @ResponseBody
+    public Player joinGame(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException {
+        if (!SecurityHelper.isAuthenticated()) {
+            throw new NotAuthenticatedException("Unauthenticated attempt to join game.");
+        }
         Game game = gameFactory.getGame(gameUrl);
         return game.addUserAsPlayer(getAuthenticatedUser());
     }

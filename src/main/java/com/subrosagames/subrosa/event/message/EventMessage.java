@@ -18,17 +18,15 @@ import com.subrosagames.subrosa.infrastructure.spring.ApplicationContextProvider
  */
 public enum EventMessage implements Event {
 
-    /**
-     * Triggered upon the start of a game.
-     */
+    // CHECKSTYLE-OFF: JavadocVariable
+
     GAME_START("subrosa.game.start", GameEventMessage.class, GameStartMessageHandler.class),
-    /**
-     * Triggered at the end of a game.
-     */
     GAME_END("subrosa.game.end", GameEventMessage.class, GameEndMessageHandler.class),
     TARGET_ACHIEVED("subrosa.game.target.achieved", GameEventMessage.class, null),
     ROUND_ROBIN_ASSIGNMENT(null, GameEventMessage.class, RoundRobinAssignmentMessageHandler.class),
     MUTUAL_INTEREST_ASSIGNMENT(null, GameEventMessage.class, MutualInterestAssignmentMessageHandler.class);
+
+    // CHECKSTYLE-ON: JavadocVariable
 
     private final String queue;
     private final Class<? extends GameEventMessage> messageClass;
@@ -58,7 +56,7 @@ public enum EventMessage implements Event {
      * Get an message instance to be sent on the message queue.
      * @return instantiated message
      */
-    public GameEventMessage getMessage() { // SUPPRESS CHECKSTYLE IllegalType
+    public GameEventMessage getMessage() {
         try {
             return messageClass.newInstance();
         } catch (InstantiationException e) {
@@ -68,7 +66,7 @@ public enum EventMessage implements Event {
         }
     }
 
-    public AbstractMessageHandler getHandler() {
+    public AbstractMessageHandler getHandler() { // SUPPRESS CHECKSTYLE IllegalType
         ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
         return applicationContext.getBean(handlerClass);
     }

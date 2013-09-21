@@ -1,23 +1,25 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
-import javax.persistence.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
+import com.subrosagames.subrosa.security.PasswordUtility;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.security.PasswordUtility;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * JPA-based implementation of CRUD functionality for accounts.
@@ -50,7 +52,9 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     public Account getAccountByEmail(final String email, String... expansions) throws AccountNotFoundException {
         @SuppressWarnings("serial")
-        Map<String, Object> conditions = new HashMap<String, Object>() {{ put("email", email); }};
+        Map<String, Object> conditions = new HashMap<String, Object>() { {
+            put("email", email);
+        } };
         TypedQuery<Account> query = QueryHelper.createQuery(entityManager, Account.class, conditions, expansions);
         return getSingleResult(query);
     }
@@ -61,6 +65,7 @@ public class JpaAccountRepository implements AccountRepository {
         return account;
     }
 
+    @Override
     public Account create(Account account, String password) throws AccountValidationException {
         account.setPassword(passwordUtility.encryptPassword(password));
         return create(account);

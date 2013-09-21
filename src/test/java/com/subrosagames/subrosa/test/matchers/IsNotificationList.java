@@ -1,14 +1,14 @@
 package com.subrosagames.subrosa.test.matchers;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.IsNotification.isNotification;
 import static org.hamcrest.Matchers.everyItem;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.IsNotification.isNotification;
 
 
 /**
@@ -17,8 +17,8 @@ import static org.hamcrest.Matchers.everyItem;
 public class IsNotificationList extends TypeSafeDiagnosingMatcher<JSONObject> {
 
     /**
-     * Factory method.
-     * @return instance
+     * Factory for matching notification list.
+     * @return notification list matcher
      */
     @Factory
     public static Matcher<JSONObject> notificationList() {

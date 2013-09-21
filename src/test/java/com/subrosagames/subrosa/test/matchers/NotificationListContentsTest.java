@@ -1,23 +1,21 @@
 package com.subrosagames.subrosa.test.matchers;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-import net.minidev.json.JSONValue;
 import org.junit.Test;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONValue;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.NotificationListContents.NotificationDetailKey.withDetailKey;
-import static com.subrosagames.subrosa.test.matchers.NotificationListContents.NotificationListHas.hasNotification;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.any;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 
 /**
+ * Test {@link NotificationListHas}.
  */
 public class NotificationListContentsTest {
+
+    // CHECKSTYLE-OFF: JavadocMethod
 
     @Test
     public void testDetailKeyWithEmptyDetails() throws Exception {
@@ -40,4 +38,6 @@ public class NotificationListContentsTest {
         JSONArray input = (JSONArray) JSONValue.parse(s);
         assertThat(input, not(hasNotification(withDetailKey("field3"))));
     }
+
+    // CHECKSTYLE-ON: JavadocMethod
 }

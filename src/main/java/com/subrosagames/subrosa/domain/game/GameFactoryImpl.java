@@ -1,24 +1,22 @@
 package com.subrosagames.subrosa.domain.game;
 
-import javax.validation.ConstraintViolation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Set;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
-import com.subrosagames.subrosa.util.RandomString;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import org.hibernate.validator.engine.ConstraintViolationImpl;
+import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,14 +107,7 @@ public class GameFactoryImpl implements GameFactory {
 //            throw new GameValidationException("Game type must be provided.");
 //        }
         GameEntity gameEntity = GameTypeToEntityMapper.forType(gameDescriptor.getGameType());
-        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
-        try {
-            beanCopier.copyProperties(gameEntity, gameDescriptor);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
+        copyProperties(gameDescriptor, gameEntity);
         if (gameEntity.getUrl() == null) {
             gameEntity.setUrl(generateUrl());
         }
@@ -128,7 +119,25 @@ public class GameFactoryImpl implements GameFactory {
         return gameEntity;
     }
 
+    private void copyProperties(Object dto, Object entity) {
+        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
+        try {
+            beanCopier.copyProperties(entity, dto);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     private String generateUrl() {
-        return RandomString.generate(10);
+        return RandomStringUtils.randomAlphanumeric(10);
+    }
+
+    @Override
+    public PostEntity forDto(PostDescriptor postDescriptor) {
+        PostEntity postEntity = new PostEntity();
+        copyProperties(postDescriptor, postEntity);
+        return postEntity;
     }
 }

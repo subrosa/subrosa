@@ -1,17 +1,17 @@
 package com.subrosagames.subrosa.security;
 
+import javax.annotation.Nullable;
+
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRole;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRole;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-
-import javax.annotation.Nullable;
 
 import static org.junit.Assert.assertTrue;
 
@@ -19,6 +19,8 @@ import static org.junit.Assert.assertTrue;
  * Tests {@link SubrosaAclPermissionEvaluator}.
  */
 public class SubrosaAclPermissionEvaluatorTest {
+
+    // CHECKSTYLE-OFF: JavadocMethod
 
     private SubrosaAclPermissionEvaluator permissionEvaluator = new SubrosaAclPermissionEvaluator();
 
@@ -46,5 +48,7 @@ public class SubrosaAclPermissionEvaluatorTest {
                     }
                 }));
     }
+
+    // CHECKSTYLE-ON: JavadocMethod
 }
 

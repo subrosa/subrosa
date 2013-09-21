@@ -93,11 +93,6 @@ import org.hibernate.annotations.FetchProfiles;
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@DateRange.List({
-        @DateRange(start = "gameStart", end = "gameEnd", message = "The game start and end times must define a valid range"),
-        @DateRange(start = "registrationStart", end = "registrationEnd", message = "The registration start and end times must define a valid range"),
-        @DateRange(start = "registrationEnd", end = "gameStart", allowEmptyRange = true, message = "Registration must end before the game starts")
-})
 public class GameEntity implements Game, GameData {
 
     private static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
@@ -131,20 +126,16 @@ public class GameEntity implements Game, GameData {
     private Account owner;
 
     @Column
-    @NotNull
     private String name;
 
     @Column
-    @NotNull
     private String url;
 
     @Column
-    @NotNull(groups = PublishAction.class)
     private String description;
 
     @Column(name = "game_type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
-    @NotNull
     private GameType gameType;
 
     @Column
@@ -192,23 +183,15 @@ public class GameEntity implements Game, GameData {
     private Map<String, GameAttributeEntity> attributes;
 
     @Column(name = "registration_start")
-    @Future
-    @NotNull(groups = PublishAction.class)
     private Date registrationStart;
 
     @Column(name = "registration_end")
-    @Future
-    @NotNull(groups = PublishAction.class)
     private Date registrationEnd;
 
     @Column(name = "game_start")
-    @Future
-    @NotNull(groups = PublishAction.class)
     private Date gameStart;
 
     @Column(name = "game_end")
-    @Future
-    @NotNull(groups = PublishAction.class)
     private Date gameEnd;
 
     @Column
@@ -305,18 +288,6 @@ public class GameEntity implements Game, GameData {
 
     @Override
     public Game publish() throws GameValidationException {
-        // validate required fields
-//        if (getGameStart() == null) {
-//            throw new GameValidationException("Game start time must be set.");
-//        }
-//        if (getGameEnd() == null) {
-//            throw new GameValidationException("Game start time must be set.");
-//        }
-        // fill out defaults
-//        if (getRegistrationStart() == null) {
-//        }
-//        if (getRegistrationEnd() == null) {
-//        }
         assertValid(PublishAction.class);
         setPublished(new Date());
         try {
@@ -535,6 +506,12 @@ public class GameEntity implements Game, GameData {
     @Override
     public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
         getGameHelper().setAttribute(attributeType, attributeValue);
+    }
+
+    @Override
+    public Post addPost(PostEntity postEntity) {
+        postEntity.setGameId(getId());
+        return gameRepository.create(postEntity);
     }
 
     private GameHelper getGameHelper() {

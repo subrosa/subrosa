@@ -1,12 +1,12 @@
 package com.subrosagames.subrosa.security;
 
+import java.io.Serializable;
+
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
 
 /**
  * Implements ACL-based permission decisions based on subrosa's roles and ownership rules.
@@ -28,16 +28,23 @@ public class SubrosaAclPermissionEvaluator implements PermissionEvaluator {
                 && SubrosaPermission.valueOf(permission.toString()).evaluate(authentication, targetId, targetType);
     }
 
+    /**
+     * Enumerates possible permissions, along with the implementation of their evaluations.
+     */
     public enum SubrosaPermission {
 
-        VIEW_ACCOUNT {
-            @Override
-            boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
-                return authenticationHasRole(authentication, "ADMIN")
-                        || ((SubrosaUser) authentication.getPrincipal()).getAccount().getId().equals(targetId);
-            }
-        }
-        ;
+        // CHECKSTYLE-OFF: JavadocMethod
+
+        VIEW_ACCOUNT
+                {
+                    @Override
+                    boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
+                        return authenticationHasRole(authentication, "ADMIN")
+                                || ((SubrosaUser) authentication.getPrincipal()).getAccount().getId().equals(targetId);
+                    }
+                };
+
+        // CHECKSTYLE-ON: JavadocMethod
 
         private static boolean authenticationHasRole(Authentication authentication, String role) {
             return authentication.getAuthorities().contains(new SimpleGrantedAuthority(role));

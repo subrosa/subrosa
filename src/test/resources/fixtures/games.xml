@@ -2,6 +2,8 @@
 <dataset>
   <account account_id="10000" activated="true" email="new@user.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
   <account account_id="10001" activated="true" email="game@owner.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+  <account account_id="10002" activated="true" email="player1@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+  <account account_id="10003" activated="true" email="player2@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
 
   <game game_id="11111" owner_id="10001" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
   <lifecycle game_id="11111" lifecycle_id="11111"/>
@@ -27,4 +29,14 @@
   <lifecycle game_id="10001" lifecycle_id="10001"/>
   <game game_id="10002" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
   <lifecycle game_id="10002" lifecycle_id="10002"/>
+
+  <team team_id="10000" game_id="11111"/>
+  <team team_id="10001" game_id="11111"/>
+  <player player_id="10000" team_id="10000" account_id="10002"/>
+  <player player_id="10001" team_id="10001" account_id="10003"/>
+  <history history_id="10000" game_id="11111" history_type="KILL" assassin_id="10000" victim_id="10001" obituary="Tom got capped"/>
+
+  <post post_id="10000" game_id="11111" post_type="TEXT" account_id="10001" content="This is a message"/>
+  <post post_id="10001" game_id="11111" post_type="KILL_EVENT" history_id="10000" account_id="10001" content="This is a message"/>
+
 </dataset>

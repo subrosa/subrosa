@@ -15,9 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test {@link ApiAccountController}.
  */
-@TestExecutionListeners({
-        DbUnitTestExecutionListener.class
-})
+@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountControllerTest extends AbstractApiControllerTest {
 

@@ -50,6 +50,10 @@ public class GCMNotifier implements Notifier {
                 builder.addData("title", "The Game Is OVER!")
                         .addData("text", "You lost. You're a loser.");
                 break;
+            default:
+                // TODO should probably be an exception
+                builder.addData("title", "I don't know what happened")
+                        .addData("text", "I was told to send you a notification so I did.");
         }
         Message message = builder.build();
         MulticastResult multicastResult = sender.send(message, devices, 5);

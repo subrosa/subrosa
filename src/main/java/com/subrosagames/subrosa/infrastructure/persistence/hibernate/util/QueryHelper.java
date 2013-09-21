@@ -1,13 +1,13 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.EntityGraph;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Utility for generating efficient queries.
@@ -31,9 +31,9 @@ public final class QueryHelper {
      * @return a typed query to retrieve the model
      */
     public static <T> TypedQuery<T> createQuery(EntityManager entityManager, Class<T> type, final Object id, String... expansions) {
-        Map<String, Object> map = new HashMap<String, Object>() {{
+        Map<String, Object> map = new HashMap<String, Object>() { {
             put("id", id);
-        }};
+        } };
         return createQuery(entityManager, type, map, expansions);
     }
 

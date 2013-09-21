@@ -1,8 +1,8 @@
 package com.subrosagames.subrosa.domain;
 
-import javax.validation.ConstraintViolation;
 import java.util.HashSet;
 import java.util.Set;
+import javax.validation.ConstraintViolation;
 
 /**
  * Generic domain object validation exception.
@@ -44,10 +44,18 @@ public abstract class DomainObjectValidationException extends Exception {
         super(throwable);
     }
 
+    /**
+     * Construct with constraint violations.
+     * @param violations constrain violations
+     */
     public DomainObjectValidationException(Set<? extends ConstraintViolation<?>> violations) {
         this.violations = violations;
     }
 
+    /**
+     * Get constraint violations.
+     * @return constraint violations
+     */
     public Set<? extends ConstraintViolation<?>> getViolations() {
         return violations;
     }

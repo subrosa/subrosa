@@ -1,7 +1,14 @@
 package com.subrosagames.subrosa.api;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
+import com.jayway.jsonpath.JsonPath;
+import org.apache.commons.lang.RandomStringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +22,20 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Base class for MVC tests.
+ *
+ * Provides scaffolding for performing mock requests, along with helpers for generating domain objects.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ContextConfiguration(locations = { "/test-context.xml" })
@@ -32,6 +46,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
         ForeignKeyDisablingTestListener.class
 })
 public abstract class AbstractApiControllerTest {
+
+    // CHECKSTYLE-OFF: JavadocMethod
+    // CHECKSTYLE-OFF: JavadocType
 
     protected MockMvc mockMvc;
 
@@ -54,4 +71,70 @@ public abstract class AbstractApiControllerTest {
     protected SecurityRequestPostProcessors.UserDetailsRequestPostProcessor user(String email) {
         return userDetailsService(email).userDetailsServiceBeanId("userDetailsService");
     }
+
+    protected String newRandomUser() throws Exception {
+        String rnd = RandomStringUtils.randomAlphanumeric(10);
+        JsonBuilder account = jsonBuilder().add("email", rnd + "@gmail.com");
+        String registration = jsonBuilder().addChild("account", account).add("password", rnd).build();
+        System.out.println(registration);
+        MvcResult result = mockMvc.perform(
+                post("/account")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registration))
+                .andExpect(status().isCreated())
+                .andReturn();
+        return JsonPath.compile("$.email").read(result.getResponse().getContentAsString());
+    }
+
+    protected JsonBuilder jsonBuilder() {
+        return new JsonBuilder();
+    }
+
+    protected String newRandomGame(GameType gameType) throws Exception {
+        String email = newRandomUser();
+        MvcResult result = mockMvc.perform(
+                post("/game")
+                        .with(user(email))
+                        .content(jsonBuilder()
+                                .add("name", RandomStringUtils.random(10))
+                                .add("gameType", gameType.name()).build()))
+                .andExpect(status().isCreated())
+                .andReturn();
+        return JsonPath.compile("$.url").read(result.getResponse().getContentAsString());
+    }
+
+    class JsonBuilder {
+        private final JsonMap jsonMap;
+
+        public JsonBuilder() {
+            jsonMap = new JsonMap();
+        }
+
+        JsonBuilder add(String key, Object value) {
+            jsonMap.put(key, value);
+            return this;
+        }
+
+        public JsonBuilder addChild(String key, JsonBuilder child) {
+            jsonMap.put(key, child.jsonMap);
+            return this;
+        }
+
+        String build() {
+            return jsonMap.toString();
+        }
+    }
+
+    class JsonMap extends HashMap<String, Object> {
+        public String toString() {
+            try {
+                return new ObjectMapper().writeValueAsString(this);
+            } catch (IOException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+    }
+
+    // CHECKSTYLE-ON: JavadocMethod
+    // CHECKSTYLE-ON: JavadocType
 }

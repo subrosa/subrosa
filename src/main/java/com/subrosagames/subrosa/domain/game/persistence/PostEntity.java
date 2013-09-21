@@ -4,13 +4,19 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 
@@ -22,6 +28,8 @@ import com.subrosagames.subrosa.domain.message.Post;
 public class PostEntity implements Post {
 
     @Id
+    @SequenceGenerator(name = "postSeq", sequenceName = "post_post_id_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "postSeq")
     @Column(name = "post_id")
     private Integer postId;
 
@@ -31,6 +39,10 @@ public class PostEntity implements Post {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+
+    @Column(name = "post_type")
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
 
     @Column
     private String content;
@@ -57,6 +69,14 @@ public class PostEntity implements Post {
 
     public void setPostId(Integer postId) {
         this.postId = postId;
+    }
+
+    public PostType getPostType() {
+        return postType;
+    }
+
+    public void setPostType(PostType postType) {
+        this.postType = postType;
     }
 
     public Integer getGameId() {

@@ -1,13 +1,12 @@
 package com.subrosagames.subrosa.api;
 
-import javax.annotation.Nullable;
 import javax.validation.ConstraintViolation;
+import java.io.EOFException;
 import java.util.Map;
 import java.util.Set;
 
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
-import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
@@ -24,12 +23,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
+ * Implements global exception handling.
  */
 @ControllerAdvice
-public class GlobalHandlers {
+public class GlobalExceptionHandlers {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GlobalHandlers.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandlers.class);
 
+    /**
+     * Handle {@link DomainObjectValidationException}.
+     * @param e exception
+     * @return notification list
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
@@ -47,6 +52,11 @@ public class GlobalHandlers {
         return new NotificationList(notification);
     }
 
+    /**
+     * Handle {@link DomainObjectNotFoundException}.
+     * @param e exception
+     * @return notification list
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
@@ -54,10 +64,15 @@ public class GlobalHandlers {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Notification notification = new Notification(
                 GeneralCode.DOMAIN_OBJECT_NOT_FOUND, Severity.ERROR,
-                GeneralCode.DOMAIN_OBJECT_NOT_FOUND.getDefaultMessage());
+                e.getMessage());
         return new NotificationList(notification);
     }
 
+    /**
+     * Handle {@link NotAuthenticatedException}.
+     * @param e exception
+     * @return notification list
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
@@ -65,17 +80,48 @@ public class GlobalHandlers {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Notification notification = new Notification(
                 GeneralCode.FORBIDDEN, Severity.ERROR,
-                GeneralCode.FORBIDDEN.getDefaultMessage());
+                e.getMessage());
         return new NotificationList(notification);
     }
 
+    /**
+     * Handle {@link HttpMessageConversionException}.
+     * @param e exception
+     * @return notification list
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public NotificationList unwrapHttpMessageConversionException(HttpMessageConversionException e) {
-        return handleUnrecognizedPropertyException((UnrecognizedPropertyException) e.getCause());
+        if (e.getCause() instanceof UnrecognizedPropertyException) {
+            return handleUnrecognizedPropertyException((UnrecognizedPropertyException) e.getCause());
+        } else if (e.getCause() instanceof EOFException) {
+            return handleEOFException((EOFException) e.getCause());
+        }
+        throw e;
     }
 
+    /**
+     * Handle {@link EOFException}.
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    private NotificationList handleEOFException(EOFException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
+                "Empty request body");
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link UnrecognizedPropertyException}.
+     * @param e exception
+     * @return notification list
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

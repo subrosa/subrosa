@@ -12,18 +12,17 @@ import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGameAttributeType;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.OrdnanceType;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
-import com.subrosagames.subrosa.event.message.EventMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
+ * Controller for prototyping. Not for production.
  */
 @Controller
 public class ApiSandboxController {
@@ -33,11 +32,11 @@ public class ApiSandboxController {
 
     private Random random = new Random();
 
-
     /**
      * Test endpoint, creates a random game.
      * @return created game
      * @throws GameValidationException if something goes wrong
+     * @throws GameNotFoundException if game is not found
      */
     @RequestMapping(value = "/android")
     @ResponseBody

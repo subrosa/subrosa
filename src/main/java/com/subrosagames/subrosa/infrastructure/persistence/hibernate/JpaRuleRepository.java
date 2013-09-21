@@ -12,7 +12,7 @@ import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.persistence.RuleEntity;
 
 /**
- *
+ * Manages storage and retrieval of game rules.
  */
 @Repository
 @Cacheable

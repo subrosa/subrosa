@@ -7,26 +7,28 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
 
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.GameAttributeType;
+import com.subrosagames.subrosa.domain.game.GameAttributeValue;
+import com.subrosagames.subrosa.domain.game.GameHelper;
+import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.location.Coordinates;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
-import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.LifecycleEntity;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
-import com.subrosagames.subrosa.domain.location.Coordinates;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * JPA-based implementation of the {@link GameRepository}.
@@ -44,6 +46,12 @@ public class JpaGameRepository implements GameRepository {
     public GameEntity create(GameEntity game) throws GameValidationException {
         entityManager.persist(game);
         return game;
+    }
+
+    @Override
+    public PostEntity create(PostEntity post) {
+        entityManager.persist(post);
+        return post;
     }
 
     @Override
@@ -80,7 +88,9 @@ public class JpaGameRepository implements GameRepository {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
             }
             Map<String, Object> conditions = new HashMap<String, Object>(1) {
-                { put("url", url); }
+                {
+                    put("url", url);
+                }
             };
             TypedQuery<GameEntity> query = QueryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
             gameEntity = query.getSingleResult();
