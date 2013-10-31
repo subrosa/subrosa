@@ -23,6 +23,8 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -101,6 +103,12 @@ public abstract class AbstractApiControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         return JsonPath.compile("$.url").read(result.getResponse().getContentAsString());
+    }
+
+    protected ResultActions perform(MockHttpServletRequestBuilder requestBuilder) throws Exception {
+        ResultActions resultActions = mockMvc.perform(requestBuilder);
+        System.out.println(resultActions.andReturn().getResponse().getContentAsString());
+        return resultActions;
     }
 
     class JsonBuilder {

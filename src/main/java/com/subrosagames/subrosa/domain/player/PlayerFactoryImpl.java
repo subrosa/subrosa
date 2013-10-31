@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.player;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
@@ -17,7 +18,9 @@ public class PlayerFactoryImpl implements PlayerFactory {
     private PlayerRepository playerRepository;
 
     @Override
-    public Player createPlayerForGame(Game game, Account account) {
+    public Player createPlayerForGame(Game game, Account account, PlayerDescriptor playerDescriptor)
+            throws PlayerValidationException
+    {
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
         playerRepository.createTeam(teamEntity);
@@ -26,16 +29,11 @@ public class PlayerFactoryImpl implements PlayerFactory {
         playerEntity.setAccount(account);
         playerEntity.setTeam(teamEntity);
         playerEntity.setGameRole(GameRole.PLAYER);
+        playerEntity.setName(playerDescriptor.getName());
         playerEntity.setKillCode(PlayerCodeGenerator.generate());
         playerRepository.createPlayer(playerEntity);
 
-        return new Player(playerEntity);
+        return playerEntity;
     }
 
-    @Override
-    public Player getPlayerForEntity(PlayerEntity entity) {
-        Player player = new Player(entity);
-        player.setPlayerRepository(playerRepository);
-        return player;
-    }
 }

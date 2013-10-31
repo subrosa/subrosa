@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.player;
 
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
@@ -9,7 +10,6 @@ import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
  */
 public interface PlayerFactory {
 
-    Player createPlayerForGame(Game gameId, Account account);
+    Player createPlayerForGame(Game gameId, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
 
-    Player getPlayerForEntity(PlayerEntity input);
 }

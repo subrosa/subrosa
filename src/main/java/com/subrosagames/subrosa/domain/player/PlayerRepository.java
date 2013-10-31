@@ -17,5 +17,5 @@ public interface PlayerRepository {
 
     void createTeam(TeamEntity teamEntity);
 
-    void createPlayer(PlayerEntity playerEntity);
+    void createPlayer(PlayerEntity playerEntity) throws PlayerValidationException;
 }

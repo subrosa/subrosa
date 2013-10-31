@@ -3,11 +3,13 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 import java.util.Map;
 
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
@@ -47,10 +49,12 @@ public interface Game extends GameData {
 
     /**
      * Add the provided account as a player in this game.
+     *
      * @param account account
+     * @param playerDescriptor
      * @return game player
      */
-    Player addUserAsPlayer(Account account);
+    Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
 
     /**
      * Get the player associated with the provided account id.

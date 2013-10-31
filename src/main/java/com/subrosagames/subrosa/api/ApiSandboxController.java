@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Random;
 import java.util.TimeZone;
 
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
@@ -16,6 +17,7 @@ import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGameAttributeType;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.OrdnanceType;
+import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +42,7 @@ public class ApiSandboxController {
      */
     @RequestMapping(value = "/android")
     @ResponseBody
-    public Game doIt() throws GameValidationException, GameNotFoundException {
+    public Game doIt() throws GameValidationException, GameNotFoundException, PlayerValidationException {
         //@RequestBody GameDescriptor gameDescriptor) {
 //        GameEntity entity = gameDescriptor.getInfo();
 //        List<GameEvent> events = gameDescriptor.getEvents();
@@ -67,17 +69,26 @@ public class ApiSandboxController {
 
         Account account1 = new Account();
         account1.setId(3);
+        PlayerDescriptor playerDescriptor1 = new PlayerDescriptor();
+        playerDescriptor1.setName("player1");
         Account account2 = new Account();
         account2.setId(4);
+        PlayerDescriptor playerDescriptor2 = new PlayerDescriptor();
+        playerDescriptor2.setName("player2");
         Account account3 = new Account();
         account3.setId(5);
+        PlayerDescriptor playerDescriptor3 = new PlayerDescriptor();
+        playerDescriptor1.setName("player1");
         Account account4 = new Account();
         account4.setId(6);
+        PlayerDescriptor playerDescriptor4 = new PlayerDescriptor();
+        playerDescriptor1.setName("player1");
 
-        game.addUserAsPlayer(account1);
-        game.addUserAsPlayer(account2);
-        game.addUserAsPlayer(account3);
-        game.addUserAsPlayer(account4);
+
+        game.addUserAsPlayer(account1, playerDescriptor1);
+        game.addUserAsPlayer(account2, playerDescriptor2);
+        game.addUserAsPlayer(account3, playerDescriptor3);
+        game.addUserAsPlayer(account4, playerDescriptor4);
 
         return gameFactory.getGame(game.getId());
     }

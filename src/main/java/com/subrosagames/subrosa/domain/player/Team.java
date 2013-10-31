@@ -56,11 +56,6 @@ public class Team implements Participant {
     }
 
     public List<? extends Player> getPlayers() {
-        return Lists.transform(teamEntity.getPlayers(), new Function<PlayerEntity, Player>() {
-            @Override
-            public Player apply(@Nullable PlayerEntity input) {
-                return new Player(input);
-            }
-        });
+        return teamEntity.getPlayers();
     }
 }

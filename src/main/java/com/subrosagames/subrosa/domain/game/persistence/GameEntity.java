@@ -27,8 +27,6 @@ import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -37,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -59,12 +58,13 @@ import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
 import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
-import com.subrosagames.subrosa.validation.DateRange;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -489,8 +489,11 @@ public class GameEntity implements Game, GameData {
     }
 
     @Override
-    public Player addUserAsPlayer(Account account) {
-        return getGameHelper().addUserAsPlayer(account);
+    public Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException {
+        if (account == null || playerDescriptor == null) {
+            throw new IllegalArgumentException("account and playerDescriptor cannot be null");
+        }
+        return getGameHelper().addUserAsPlayer(account, playerDescriptor);
     }
 
     @Override
@@ -498,9 +501,14 @@ public class GameEntity implements Game, GameData {
         return getGameHelper().getPlayer(accountId);
     }
 
+    @JsonIgnore
     @Override
     public List<Player> getPlayers() {
-        return getGameHelper().getPlayers();
+        return getPlayers(getGameHelper().getPlayers());
+    }
+
+    private List<Player> getPlayers(List<? extends Player> players) {
+        return Lists.newArrayList(players);
     }
 
     @Override

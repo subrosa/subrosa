@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
@@ -56,17 +58,12 @@ public class GameHelper {
     }
 
     public Player getPlayer(int accountId) {
-        return new Player(gameRepository.getPlayerForUserAndGame(accountId, game.getId()));
+        return gameRepository.getPlayerForUserAndGame(accountId, game.getId());
     }
 
-    public List<Player> getPlayers() {
+    public List<PlayerEntity> getPlayers() {
         List<PlayerEntity> playerEntities = gameRepository.getPlayersForGame(game.getId());
-        return Lists.transform(playerEntities, new Function<PlayerEntity, Player>() {
-            @Override
-            public Player apply(@Nullable PlayerEntity input) {
-                return playerFactory.getPlayerForEntity(input);
-            }
-        });
+        return playerEntities;
     }
 
     public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
@@ -79,8 +76,8 @@ public class GameHelper {
         return true;
     }
 
-    public Player addUserAsPlayer(Account account) {
-        return playerFactory.createPlayerForGame(game, account);
+    public Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException {
+        return playerFactory.createPlayerForGame(game, account, playerDescriptor);
     }
 
     public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {

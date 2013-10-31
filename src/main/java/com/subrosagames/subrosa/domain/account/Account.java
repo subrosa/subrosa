@@ -66,7 +66,7 @@ public class Account implements PermissionTarget {
     @Column
     private String name;
 
-    @Column
+    @Column(length = 320)
     @Email
     private String email;
 
@@ -84,7 +84,7 @@ public class Account implements PermissionTarget {
     private Set<AccountRole> accountRoles;
 
     @JsonIgnore
-    @Column
+    @Column(length = 256)
     private String password;
 
     @OneToMany

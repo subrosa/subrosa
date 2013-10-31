@@ -3,31 +3,6 @@ package com.subrosagames.subrosa.api;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.subrosagames.subrosa.api.dto.GameDescriptor;
-import com.subrosagames.subrosa.api.dto.PostDescriptor;
-import com.subrosagames.subrosa.api.dto.TargetAchievement;
-import com.subrosagames.subrosa.api.dto.target.TargetDto;
-import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
-import com.subrosagames.subrosa.api.dto.target.TargetList;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.GameFactory;
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
-import com.subrosagames.subrosa.domain.message.Post;
-import com.subrosagames.subrosa.domain.player.Player;
-import com.subrosagames.subrosa.domain.player.Target;
-import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.security.SecurityHelper;
-import com.subrosagames.subrosa.security.SubrosaUser;
-import com.subrosagames.subrosa.security.annotation.IsAuthenticated;
-import com.subrosagames.subrosa.service.PaginatedList;
-import com.subrosagames.subrosa.util.ObjectUtils;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -45,6 +20,33 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
+import com.subrosagames.subrosa.api.dto.PostDescriptor;
+import com.subrosagames.subrosa.api.dto.TargetAchievement;
+import com.subrosagames.subrosa.api.dto.target.TargetDto;
+import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
+import com.subrosagames.subrosa.api.dto.target.TargetList;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerValidationException;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.security.SecurityHelper;
+import com.subrosagames.subrosa.security.SubrosaUser;
+import com.subrosagames.subrosa.security.annotation.IsAuthenticated;
+import com.subrosagames.subrosa.service.PaginatedList;
+import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Controller for {@link com.subrosagames.subrosa.domain.game.Game} related CRUD operations.
@@ -152,8 +154,8 @@ public class ApiGameController {
      * Publish game.
      * @param gameUrl game url
      * @return updated game
-     * @throws GameNotFoundException if game is not found
-     * @throws GameValidationException if game is not valid for publishing
+     * @throws GameNotFoundException     if game is not found
+     * @throws GameValidationException   if game is not valid for publishing
      * @throws NotAuthenticatedException if user not authenticated
      */
     @RequestMapping(value = "/{gameUrl}/publish", method = RequestMethod.POST)
@@ -197,10 +199,10 @@ public class ApiGameController {
 
     /**
      * Create new post for game.
-     * @param gameUrl game url
+     * @param gameUrl        game url
      * @param postDescriptor post descriptor
      * @return created post
-     * @throws GameNotFoundException if game is not found
+     * @throws GameNotFoundException     if game is not found
      * @throws NotAuthenticatedException if user is not authenticated
      */
     @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
@@ -221,8 +223,8 @@ public class ApiGameController {
     /**
      * Get game history.
      * @param gameUrl game url
-     * @param limit limit
-     * @param offset offset
+     * @param limit   limit
+     * @param offset  offset
      * @return paginated list of history
      * @throws GameNotFoundException if game is not found
      */
@@ -304,12 +306,16 @@ public class ApiGameController {
     @IsAuthenticated
     @RequestMapping(value = { "/{gameUrl}/join", "{gameUrl}/join/" }, method = RequestMethod.POST)
     @ResponseBody
-    public Player joinGame(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException {
+    public Player joinGame(@PathVariable("gameUrl") String gameUrl,
+                           @RequestBody(required = false) PlayerDescriptor playerDescriptor)
+            throws GameNotFoundException, NotAuthenticatedException, PlayerValidationException
+    {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to join game.");
         }
+        playerDescriptor = ObjectUtils.defaultIfNull(playerDescriptor, new PlayerDescriptor());
         Game game = gameFactory.getGame(gameUrl);
-        return game.addUserAsPlayer(getAuthenticatedUser());
+        return game.addUserAsPlayer(getAuthenticatedUser(), playerDescriptor);
     }
 
     private Account getAuthenticatedUser() {

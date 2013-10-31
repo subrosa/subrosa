@@ -32,8 +32,8 @@
 
   <team team_id="10000" game_id="11111"/>
   <team team_id="10001" game_id="11111"/>
-  <player player_id="10000" team_id="10000" account_id="10002"/>
-  <player player_id="10001" team_id="10001" account_id="10003"/>
+  <player player_id="10000" team_id="10000" account_id="10002" name="peter" kill_code="12345" game_role="PLAYER"/>
+  <player player_id="10001" team_id="10001" account_id="10003" name="paul" kill_code="12345" game_role="PLAYER"/>
   <history history_id="10000" game_id="11111" history_type="KILL" assassin_id="10000" victim_id="10001" obituary="Tom got capped"/>
 
   <post post_id="10000" game_id="11111" post_type="TEXT" account_id="10001" content="This is a message"/>
