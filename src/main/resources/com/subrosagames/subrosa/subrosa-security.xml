@@ -42,7 +42,7 @@
   <beans:bean id="deviceSessionAuthenticationFilter"
               class="org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter">
     <beans:property name="exceptionIfHeaderMissing" value="false"/>
-    <beans:property name="principalRequestHeader" value="X-SUBROSA-MOBILE-AUTH"/>
+    <beans:property name="principalRequestHeader" value="X-SUBROSA-AUTH"/>
     <beans:property name="authenticationManager" ref="preAuthAuthenticationManager"/>
   </beans:bean>
 
