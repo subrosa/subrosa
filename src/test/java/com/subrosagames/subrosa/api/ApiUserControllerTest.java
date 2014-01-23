@@ -46,20 +46,18 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.email").value("jimmy@icanhazemail.com"));
 
         mockMvc.perform(
-                post("/v1/authenticate")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("email", "jimmy@icanhazemail.com")
-                        .param("password", "password"))
+                post("/v1/session")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBuilder().add("email", "jimmy@icanhazemail.com").add("password", "password").build()))
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testAuthenticationWithIncorrectCredentials() throws Exception {
         mockMvc.perform(
-                post("/v1/authenticate")
-                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                        .param("email", "random@email.org")
-                        .param("password", "incorrect"))
+                post("/v1/session")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonBuilder().add("email", "jimmy@icanhazemail.com").add("password", "password").build()))
                 .andExpect(status().isUnauthorized());
     }
 
