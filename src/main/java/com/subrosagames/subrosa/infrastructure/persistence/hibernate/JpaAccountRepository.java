@@ -42,6 +42,10 @@ public class JpaAccountRepository implements AccountRepository {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
             }
         }
+        return getUnauthenticated(accountId);
+    }
+
+    public Account getUnauthenticated(int accountId) throws AccountNotFoundException {
         Account account = entityManager.find(Account.class, accountId);
         if (account == null) {
             throw new AccountNotFoundException("Account with id " + accountId + " not found");

@@ -36,4 +36,6 @@ public interface AccountRepository extends DomainRepository<Account> {
 
     Account create(Account account) throws AccountValidationException;
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
+
+    Account getUnauthenticated(int id) throws AccountNotFoundException;
 }

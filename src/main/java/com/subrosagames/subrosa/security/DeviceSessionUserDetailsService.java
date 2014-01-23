@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
@@ -32,7 +33,7 @@ public class DeviceSessionUserDetailsService implements AuthenticationUserDetail
         if (sessionToken != null) {
             LOG.debug("Device session token resolved to user " + sessionToken.getOwner());
             try {
-                return new SubrosaUser(accountRepository.get(sessionToken.getOwner()));
+                return new SubrosaUser(accountRepository.getUnauthenticated(sessionToken.getOwner()));
             } catch (AccountNotFoundException e) {
                 // SUPPRESS CHECKSTYLE EmptyCatch
                 // fall through to UsernameNotFoundException below
@@ -40,4 +41,5 @@ public class DeviceSessionUserDetailsService implements AuthenticationUserDetail
         }
         throw new UsernameNotFoundException("No user found for auth token " + token.getPrincipal());
     }
+
 }
