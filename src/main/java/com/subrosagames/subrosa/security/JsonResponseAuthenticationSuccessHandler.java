@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenType;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -15,7 +16,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 /**
  * Authentication success handler that sets an auth token cookie for use by mobile devices.
  */
-public class SetCookieAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+public class JsonResponseAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Autowired
     private TokenFactory tokenFactory;
@@ -25,6 +26,8 @@ public class SetCookieAuthenticationSuccessHandler implements AuthenticationSucc
             throws IOException, ServletException
     {
         int accountId = ((SubrosaUser) authentication.getPrincipal()).getAccount().getId();
-        response.addCookie(new Cookie("subrosa_auth_token", tokenFactory.generateNewToken(accountId, TokenType.DEVICE_AUTH)));
+        AuthenticationResponse authenticationResponse = new AuthenticationResponse();
+        authenticationResponse.setToken(tokenFactory.generateNewToken(accountId, TokenType.DEVICE_AUTH));
+        response.getOutputStream().print(new ObjectMapper().writeValueAsString(authenticationResponse));
     }
 }

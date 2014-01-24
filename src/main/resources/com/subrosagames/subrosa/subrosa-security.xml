@@ -18,12 +18,12 @@
   </beans:bean>
 
   <http auto-config="false" use-expressions="true" entry-point-ref="http403ForbiddenEntryPoint">
-    <custom-filter ref="usernamePasswordAuthenticationFilter" position="FORM_LOGIN_FILTER"/>
+    <custom-filter ref="usernamePasswordAuthenticationFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
     <custom-filter ref="deviceSessionAuthenticationFilter" position="PRE_AUTH_FILTER"/>
     <intercept-url pattern="/v1/authenticate" access="isAnonymous()"/>
     <intercept-url pattern="/v1/session" access="isAnonymous()"/>
     <intercept-url pattern="/v1/game/**" access="permitAll"/>
-    <intercept-url pattern="/com/subrosagames/subrosa/domain/message" access="isAuthenticated()"/>
+    <intercept-url pattern="/v1/test/**" access="isAuthenticated()"/>
     <logout logout-url="/v1/logout" success-handler-ref="http200LogoutSuccessHandler"/>
   </http>
 
@@ -33,7 +33,8 @@
               class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint"/>
   <beans:bean id="usernamePasswordAuthenticationFilter"
               class="com.subrosagames.subrosa.security.JsonUsernamePasswordAuthenticationFilter">
-    <beans:property name="authenticationSuccessHandler" ref="setCookieAuthenticationSuccessHandler"/>
+    <beans:property name="authenticationSuccessHandler" ref="jsonTokenAuthenticationSuccessHandler"/>
+    <beans:property name="authenticationFailureHandler" ref="jsonResponseAuthenticationFailureHandler"/>
     <beans:property name="filterProcessesUrl" value="/v1/session"/>
     <beans:property name="authenticationManager" ref="authenticationManager"/>
   </beans:bean>
@@ -46,8 +47,10 @@
     <beans:property name="authenticationManager" ref="authenticationManager"/>
   </beans:bean>
 
-  <beans:bean id="setCookieAuthenticationSuccessHandler"
-              class="com.subrosagames.subrosa.security.SetCookieAuthenticationSuccessHandler"/>
+  <beans:bean id="jsonTokenAuthenticationSuccessHandler"
+              class="com.subrosagames.subrosa.security.JsonResponseAuthenticationSuccessHandler"/>
+  <beans:bean id="jsonResponseAuthenticationFailureHandler"
+              class="com.subrosagames.subrosa.security.JsonResponseAuthenticationFailureHandler"/>
 
   <beans:bean id="preAuthAuthenticationProvider"
               class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
@@ -62,6 +65,7 @@
   <beans:bean id="saltSource" class="org.springframework.security.authentication.dao.ReflectionSaltSource">
     <beans:property name="userPropertyToUse" value="salt"/>
   </beans:bean>
+
   <authentication-manager alias="authenticationManager">
     <authentication-provider ref="preAuthAuthenticationProvider"/>
     <authentication-provider user-service-ref="userDetailsService">
