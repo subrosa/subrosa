@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
@@ -52,16 +53,15 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
     private LoginRequest getLoginRequest(HttpServletRequest request) {
         try {
             BufferedReader reader = request.getReader();
-            return new ObjectMapper().readValue(reader, LoginRequest.class);
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+            return objectMapper.readValue(reader, LoginRequest.class);
         } catch (JsonParseException e) {
             LOG.info("Encountered invalid JSON for authentication", e);
             throw new AuthenticationCredentialsNotFoundException("Invalid JSON body provided");
-        } catch (UnrecognizedPropertyException e) {
-            LOG.info("Encountered bad JSON for authentication", e);
-            throw new AuthenticationCredentialsNotFoundException("Unrecognized property " + e.getUnrecognizedPropertyName() + " given");
         } catch (JsonMappingException e) {
             LOG.info("Encountered bad JSON for authentication", e);
-            throw new AuthenticationCredentialsNotFoundException("Invalid JSON body given");
+            throw new AuthenticationCredentialsNotFoundException("Invalid JSON body provided");
         } catch (IOException e) {
             LOG.error("Failed to obtain request body reader", e);
             throw new IllegalStateException(e);
