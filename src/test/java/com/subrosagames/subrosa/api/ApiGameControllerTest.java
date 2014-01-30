@@ -204,34 +204,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testUnrecognizedFieldsResultsInBadRequest() throws Exception {
-        mockMvc.perform(
-                post("/game")
-                        .with(user("new@user.com"))
-                        .content(jsonBuilder().add("what", "is this?").build()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("what"))));
-
-        String response = mockMvc.perform(
-                post("/game")
-                        .with(user("new@user.com"))
-                        .content(jsonBuilder().add("name", "new game").add("gameType", "ASSASSIN").build()))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.url").exists())
-                .andReturn().getResponse().getContentAsString();
-        String url = JsonPath.compile("$.url").read(response);
-
-        mockMvc.perform(
-                put("/game/{url}", url)
-                        .with(user("new@user.com"))
-                        .content(jsonBuilder().add("another", "weird param").build()))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("another"))));
-    }
-
-    @Test
     public void testCannotUpdateUrlOrGameType() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
