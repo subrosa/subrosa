@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -62,6 +64,17 @@ public class PostEntity implements Post {
 
     @Column
     private Date modified;
+
+    @PrePersist
+    protected void prePersist() {
+        created = new Date();
+        modified = new Date();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        modified = new Date();
+    }
 
     public Integer getPostId() {
         return postId;

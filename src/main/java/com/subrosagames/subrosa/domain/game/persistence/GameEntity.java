@@ -21,6 +21,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -49,6 +50,7 @@ import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.RuleRepository;
 import com.subrosagames.subrosa.domain.game.RuleType;
@@ -197,8 +199,16 @@ public class GameEntity implements Game, GameData {
     @Column
     private Date published;
 
+    @Column
+    private Date created;
+
+    @Column
+    private Date modified;
+
     @PrePersist
-    void prePersist() {
+    protected void prePersist() {
+        created = new Date();
+        modified = new Date();
         if (price == null) {
             price = GameEntity.DEFAULT_PRICE;
         }
@@ -206,6 +216,12 @@ public class GameEntity implements Game, GameData {
             maximumTeamSize = GameEntity.DEFAULT_MAX_TEAM_SIZE;
         }
     }
+
+    @PreUpdate
+    protected void preUpdate() {
+        modified = new Date();
+    }
+
 
     public Integer getId() {
         return id;
@@ -470,6 +486,22 @@ public class GameEntity implements Game, GameData {
         this.registrationEnd = registrationEnd;
     }
 
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
     public RuleRepository getRuleRepository() {
         return ruleRepository;
     }
@@ -519,6 +551,7 @@ public class GameEntity implements Game, GameData {
     @Override
     public Post addPost(PostEntity postEntity) {
         postEntity.setGameId(getId());
+        postEntity.setPostType(PostType.TEXT);
         return gameRepository.create(postEntity);
     }
 

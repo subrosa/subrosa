@@ -9,7 +9,13 @@
             ">
 
   <context:component-scan base-package="com.subrosagames.subrosa.api"/>
-  <mvc:annotation-driven/>
+  <mvc:annotation-driven>
+    <mvc:message-converters>
+      <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+        <property name="objectMapper" ref="jacksonObjectMapper"/>
+      </bean>
+    </mvc:message-converters>
+  </mvc:annotation-driven>
   <mvc:interceptors>
     <bean class="com.subrosagames.subrosa.util.LogResponseBodyInterceptor"/>
   </mvc:interceptors>
@@ -30,5 +36,18 @@
       </list>
     </property>
   </bean>
+
+  <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
+  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="jacksonObjectMapper" />
+    <property name="targetMethod" value="configure" />
+    <property name="arguments">
+      <list>
+        <value type="org.codehaus.jackson.map.DeserializationConfig.Feature">FAIL_ON_UNKNOWN_PROPERTIES</value>
+        <value>false</value>
+      </list>
+    </property>
+  </bean>
 </beans>
+
 
