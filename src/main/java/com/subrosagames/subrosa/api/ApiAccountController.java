@@ -2,16 +2,6 @@ package com.subrosagames.subrosa.api;
 
 import java.util.List;
 
-import com.subrosagames.subrosa.api.dto.Registration;
-import com.subrosagames.subrosa.domain.account.Accolade;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountFactory;
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.domain.account.AccountValidationException;
-import com.subrosagames.subrosa.domain.account.Address;
-import com.subrosagames.subrosa.service.PaginatedList;
-import com.subrosagames.subrosa.util.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +15,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import com.subrosagames.subrosa.api.dto.Registration;
+import com.subrosagames.subrosa.domain.account.Accolade;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountFactory;
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountValidationException;
+import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.service.PaginatedList;
+import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Controller responsible for account related CRUD actions.
@@ -95,7 +95,9 @@ public class ApiAccountController {
     @ResponseBody
     public Account createAccount(@RequestBody Registration registration) throws AccountValidationException {
         LOG.debug("Creating new account");
-        return accountRepository.create(registration.getAccount(), registration.getPassword());
+        Account account = registration.getAccount();
+        account.setActivated(false);
+        return accountRepository.create(account, registration.getPassword());
     }
 
     /**
