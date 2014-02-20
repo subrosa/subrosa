@@ -8,6 +8,7 @@ import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -52,4 +53,6 @@ public interface GameFactory extends DomainObjectFactory<GameEntity> {
     GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException;
 
     PostEntity forDto(PostDescriptor postDescriptor);
+
+    List<Zone> getGameZones(String gameUrl) throws GameNotFoundException;
 }

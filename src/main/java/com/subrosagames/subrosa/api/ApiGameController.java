@@ -37,6 +37,7 @@ import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
@@ -272,6 +273,13 @@ public class ApiGameController {
                 return TargetDtoFactory.getDtoForTarget(input);
             }
         }));
+    }
+
+    @RequestMapping(value = "/{gameUrl}/zone", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Zone> getZones(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException {
+        LOG.debug("Retrieving zones for game {}", gameUrl);
+        return gameFactory.getGameZones(gameUrl);
     }
 
     @PreAuthorize("isAuthenticated()")

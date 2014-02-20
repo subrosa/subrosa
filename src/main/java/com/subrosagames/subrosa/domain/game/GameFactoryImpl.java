@@ -10,6 +10,7 @@ import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
+import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
@@ -139,5 +140,10 @@ public class GameFactoryImpl implements GameFactory {
         PostEntity postEntity = new PostEntity();
         copyProperties(postDescriptor, postEntity);
         return postEntity;
+    }
+
+    @Override
+    public List<Zone> getGameZones(String gameUrl) throws GameNotFoundException {
+        return gameRepository.getZonesForGame(gameUrl);
     }
 }

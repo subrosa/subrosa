@@ -27,7 +27,7 @@
         class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
         factory-bean="entityManagerFactory" factory-method="getSessionFactory"/>
 
-  <tx:annotation-driven/>
+  <tx:annotation-driven transaction-manager="transactionManager"/>
   <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory"/>
   </bean>

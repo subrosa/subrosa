@@ -57,6 +57,9 @@ import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.location.Location;
+import com.subrosagames.subrosa.domain.location.Zone;
+import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
@@ -75,6 +78,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.Hibernate;
+import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -92,6 +96,9 @@ import org.hibernate.annotations.FetchProfiles;
         }),
         @FetchProfile(name = "history", fetchOverrides = {
                 @FetchProfile.FetchOverride(entity = GameEntity.class, association = "history", mode = FetchMode.JOIN)
+        }),
+        @FetchProfile(name = "zones", fetchOverrides = {
+                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "zones", mode = FetchMode.JOIN)
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -183,6 +190,15 @@ public class GameEntity implements Game, GameData {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
     @MapKey(name = "primaryKey.attributeType")
     private Map<String, GameAttributeEntity> attributes;
+
+    @JsonIgnore
+    @OneToMany(targetEntity = ZoneEntity.class)
+    @JoinTable(
+            name = "game_zone",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "zone_id")
+    )
+    private List<Zone> zones;
 
     @Column(name = "registration_start")
     private Date registrationStart;
@@ -452,6 +468,14 @@ public class GameEntity implements Game, GameData {
 
     public void setPublished(Date published) {
         this.published = published;
+    }
+
+    public List<Zone> getZones() {
+        return zones;
+    }
+
+    public void setZones(List<Zone> zones) {
+        this.zones = zones;
     }
 
     public Date getGameStart() {

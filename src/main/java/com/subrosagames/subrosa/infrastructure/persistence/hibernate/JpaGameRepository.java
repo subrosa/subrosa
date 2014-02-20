@@ -21,6 +21,8 @@ import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
+import com.subrosagames.subrosa.domain.location.Zone;
+import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
@@ -79,6 +81,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
+    @Transactional
     public GameEntity get(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         GameEntity gameEntity;
@@ -186,5 +189,13 @@ public class JpaGameRepository implements GameRepository {
             attributeEntity.setValue(attributeValue.name());
         }
         entityManager.merge(attributeEntity);
+    }
+
+    @Override
+    @Transactional
+    public List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException {
+        List<Zone> zones = get(gameUrl).getZones();
+        LOG.debug("Retrieved {} zones", zones.size());
+        return zones;
     }
 }
