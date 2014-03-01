@@ -11,7 +11,6 @@ import javax.persistence.TypedQuery;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameHelper;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
@@ -22,7 +21,7 @@ import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
-import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
+import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import org.apache.commons.lang.NotImplementedException;
@@ -54,6 +53,12 @@ public class JpaGameRepository implements GameRepository {
     public PostEntity create(PostEntity post) {
         entityManager.persist(post);
         return post;
+    }
+
+    @Override
+    public LocationEntity create(LocationEntity location) {
+        entityManager.persist(location);
+        return location;
     }
 
     @Override
@@ -111,7 +116,9 @@ public class JpaGameRepository implements GameRepository {
             ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
         }
         TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
-        query.setMaxResults(limit);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
         query.setFirstResult(offset);
         return query.getResultList();
     }
@@ -136,8 +143,16 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<GameHelper> getGamesNear(Coordinates location) {
-        throw new NotImplementedException("Querying for games near a location is not yet supported");
+    public List<GameEntity> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions) {
+        String jpql = "SELECT g FROM GameEntity g ORDER BY 3959 * acos( cos(radians(:latitude)) * cos(radians(g.location.latitude)) * cos(radians(g.location.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(g.location.latitude)) ) DESC\n";
+        TypedQuery<GameEntity> query = entityManager.createQuery(jpql, GameEntity.class);
+        query.setParameter("latitude", location.getLatitude());
+        query.setParameter("longitude", location.getLongitude());
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
+        query.setFirstResult(offset);
+        return query.getResultList();
     }
 
     @Override

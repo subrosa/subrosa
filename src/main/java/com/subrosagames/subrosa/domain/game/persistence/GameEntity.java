@@ -1,5 +1,12 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -28,14 +35,18 @@ import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfiles;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
@@ -43,10 +54,10 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameData;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameHelper;
 import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
@@ -59,29 +70,17 @@ import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.location.Zone;
+import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
 import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import org.apache.commons.lang.NotImplementedException;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 
 /**
  * Persisted entity for a game.
@@ -102,7 +101,7 @@ import org.hibernate.annotations.FetchProfiles;
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class GameEntity implements Game, GameData {
+public class GameEntity implements Game {
 
     private static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
     private static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
@@ -200,6 +199,14 @@ public class GameEntity implements Game, GameData {
     )
     private List<Zone> zones;
 
+    @OneToOne(fetch = FetchType.EAGER, targetEntity = LocationEntity.class)
+    @JoinTable(
+            name = "game_location",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "location_id")
+    )
+    private Location location;
+
     @Column(name = "registration_start")
     private Date registrationStart;
 
@@ -285,6 +292,20 @@ public class GameEntity implements Game, GameData {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public GameStatus getStatus() {
+        Date now = new Date();
+        if (published == null) {
+            return GameStatus.DRAFT;
+        } else {
+            if (registrationStart.before(now)) {
+                return GameStatus.PREREGISTRATION;
+            } else if (registrationEnd.before(now)) {
+                return GameStatus.REGISTRATION;
+            }
+        }
+        return GameStatus.ARCHIVED;
     }
 
     @Override
@@ -470,12 +491,21 @@ public class GameEntity implements Game, GameData {
         this.published = published;
     }
 
+    @Override
     public List<Zone> getZones() {
         return zones;
     }
 
     public void setZones(List<Zone> zones) {
         this.zones = zones;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public Date getGameStart() {

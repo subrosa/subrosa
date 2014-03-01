@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.subrosagames.subrosa.domain.game.GameData;
+import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.google.common.base.Objects;
@@ -28,6 +29,7 @@ public class GameDescriptor implements GameData {
     private Date gameEnd;
     private Date registrationStart;
     private Date registrationEnd;
+    private GameStatus status;
 
     public Integer getId() {
         return id;
@@ -147,6 +149,14 @@ public class GameDescriptor implements GameData {
 
     public void setRegistrationEnd(Date registrationEnd) {
         this.registrationEnd = registrationEnd;
+    }
+
+    public GameStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(GameStatus status) {
+        this.status = status;
     }
 
     @Override

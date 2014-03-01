@@ -10,6 +10,7 @@ import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
+import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
@@ -87,6 +88,22 @@ public class GameFactoryImpl implements GameFactory {
                     LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
                     return null;
                 }
+            }
+        });
+        return new PaginatedList<Game>(
+                games,
+                gameRepository.count(),
+                limit, offset);
+    }
+
+    @Override
+    public PaginatedList<Game> getGamesNear(Coordinates coordinates, Integer limit, Integer offset, String... expansions) {
+        List<GameEntity> gameEntities = gameRepository.getGamesNear(coordinates, limit, offset, expansions);
+        List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
+            @Override
+            public Game apply(GameEntity gameEntity) {
+                injectDependencies(gameEntity);
+                return gameEntity;
             }
         });
         return new PaginatedList<Game>(

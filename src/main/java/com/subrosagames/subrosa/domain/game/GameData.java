@@ -119,4 +119,11 @@ public interface GameData {
     @Future
     @NotNull(groups = PublishAction.class)
     Date getRegistrationEnd();
+
+    /**
+     * Status of game.
+     * @return game status
+     */
+    GameStatus getStatus();
 }
+

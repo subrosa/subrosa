@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.api;
 
+import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
@@ -37,6 +38,7 @@ import com.subrosagames.subrosa.domain.game.GameValidationException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -72,16 +74,22 @@ public class ApiGameController {
     @ResponseBody
     public PaginatedList<Game> listGames(@RequestParam(value = "limit", required = false) Integer limit,
                                          @RequestParam(value = "offset", required = false) Integer offset,
-                                         @RequestParam(value = "expand", required = false) String expand)
+                                         @RequestParam(value = "expand", required = false) String expand,
+                                         @RequestParam(value = "latitude", required = false) Double latitude,
+                                         @RequestParam(value = "longitude", required = false) Double longitude)
     {
         LOG.debug("Getting game list with limit {} and offset {}.", limit, offset);
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
-        if (StringUtils.isEmpty(expand)) {
-            return gameFactory.getGames(limit, offset);
-        } else {
-            return gameFactory.getGames(limit, offset, expand.split(","));
+        if (latitude != null && longitude != null) {
+            Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
+            return StringUtils.isEmpty(expand) ?
+                    gameFactory.getGamesNear(coordinates, limit, offset) :
+                    gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
         }
+        return StringUtils.isEmpty(expand) ?
+                gameFactory.getGames(limit, offset) :
+                gameFactory.getGames(limit, offset, expand.split(","));
     }
 
     /**

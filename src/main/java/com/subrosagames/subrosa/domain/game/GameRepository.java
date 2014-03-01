@@ -8,6 +8,7 @@ import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
+import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
@@ -24,10 +25,11 @@ public interface GameRepository extends DomainRepository<GameEntity> {
 
     /**
      * Get a list of the games that are occurring near the provided geographical location.
+     *
      * @param location geographical location
      * @return games near that location
      */
-    List<GameHelper> getGamesNear(Coordinates location);
+    List<GameEntity> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions);
 
     /**
      * Retrieve the specified game entity by identifying url.
@@ -77,4 +79,6 @@ public interface GameRepository extends DomainRepository<GameEntity> {
     PostEntity create(PostEntity postEntity);
 
     List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException;
+
+    LocationEntity create(LocationEntity location);
 }

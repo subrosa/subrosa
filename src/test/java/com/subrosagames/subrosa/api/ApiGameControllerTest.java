@@ -1,28 +1,28 @@
 package com.subrosagames.subrosa.api;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.web.servlet.MvcResult;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameStatus;
+import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
-import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -32,6 +32,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
+import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.ApiGameController}.
@@ -39,6 +46,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/games.xml")
 public class ApiGameControllerTest extends AbstractApiControllerTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApiGameControllerTest.class);
 
     // CHECKSTYLE-OFF: JavadocMethod
 
@@ -324,27 +333,23 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationStart"))))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationEnd"))));
 
-        final Calendar tomorrow = Calendar.getInstance();
-        tomorrow.add(Calendar.DATE, 1);
-        final Calendar nextWeek = Calendar.getInstance();
-        nextWeek.add(Calendar.DATE, 7);
-        final Calendar nextMonth = Calendar.getInstance();
-        nextMonth.add(Calendar.DATE, 30);
-        mockMvc.perform(
-                put("/game/{url}", url)
-                        .content(jsonBuilder()
-                                .add("description", "it's going to be fun!")
-                                .add("gameStart", nextWeek.getTimeInMillis())
-                                .add("gameEnd", nextMonth.getTimeInMillis())
-                                .add("registrationStart", tomorrow.getTimeInMillis())
-                                .add("registrationEnd", nextWeek.getTimeInMillis())
-                                .build())
-                        .with(user("new@user.com")))
+        final Long registrationStart = timeDaysInFuture(1);
+        final Long registrationEnd = timeDaysInFuture(7);
+        final Long gameStart = timeDaysInFuture(7);
+        final Long gameEnd = timeDaysInFuture(30);
+        HashMap<String, Object> updates = new HashMap<String, Object>() {{
+            put("description", "it's going to be fun!");
+            put("gameStart", gameStart);
+            put("gameEnd", gameEnd);
+            put("registrationStart", registrationStart);
+            put("registrationEnd", registrationEnd);
+        }};
+        performGameUpdates(url, updates)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.gameStart").value(nextWeek.getTimeInMillis()))
-                .andExpect(jsonPath("$.gameEnd").value(nextMonth.getTimeInMillis()))
-                .andExpect(jsonPath("$.registrationStart").value(tomorrow.getTimeInMillis()))
-                .andExpect(jsonPath("$.registrationEnd").value(nextWeek.getTimeInMillis()))
+                .andExpect(jsonPath("$.gameStart").value(gameStart))
+                .andExpect(jsonPath("$.gameEnd").value(gameEnd))
+                .andExpect(jsonPath("$.registrationStart").value(registrationStart))
+                .andExpect(jsonPath("$.registrationEnd").value(gameStart))
         ;
 
         mockMvc.perform(
@@ -401,5 +406,90 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.results[*].creationDate").value(isSortedAscending()));
     }
 
+    @Test
+    public void testGameStatusFlags() throws Exception {
+        String response = mockMvc.perform(
+                post("/game")
+                        .with(user("new@user.com"))
+                        .content(jsonBuilder()
+                                .add("name", "name of the game")
+                                .add("gameType", "ASSASSIN")
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.status").value(GameStatus.DRAFT.name()))
+                .andReturn().getResponse().getContentAsString();
+        String url = JsonPath.compile("$.url").read(response);
+
+        performGameUpdates(url, new HashMap<String, Object>() {{
+            put("description", "need this");
+            put("registrationStart", timeDaysInFuture(1));
+            put("registrationEnd", timeDaysInFuture(2));
+            put("gameStart", timeDaysInFuture(2));
+            put("gameEnd", timeDaysInFuture(3));
+        }});
+
+        mockMvc.perform(
+                post("/game/{url}/publish", url)
+                        .with(user("new@user.com")))
+                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()))
+        .andReturn().getResponse().getContentAsString();
+
+        GameEntity gameEntity;
+        gameEntity = gameRepository.get(url);
+        gameEntity.setRegistrationStart(new Date(timeDaysInFuture(-4)));
+        gameRepository.update(gameEntity);
+
+        expectGameStatusIs(url, GameStatus.REGISTRATION);
+
+        gameEntity = gameRepository.get(url);
+        gameEntity.setRegistrationEnd(new Date(timeDaysInFuture(-3)));
+        gameRepository.update(gameEntity);
+
+        expectGameStatusIs(url, GameStatus.POSTREGISTRATION);
+
+        gameEntity = gameRepository.get(url);
+        gameEntity.setGameStart(new Date(timeDaysInFuture(-2)));
+        gameRepository.update(gameEntity);
+
+        expectGameStatusIs(url, GameStatus.RUNNING);
+
+        gameEntity = gameRepository.get(url);
+        gameEntity.setGameEnd(new Date(timeDaysInFuture(-1)));
+        gameRepository.update(gameEntity);
+
+        GameStatus gameStatus = GameStatus.ARCHIVED;
+        expectGameStatusIs(url, gameStatus);
+    }
+
+    private void expectGameStatusIs(String url, GameStatus gameStatus) throws Exception {
+        String contentAsString = mockMvc.perform(
+                get("/game/{url}", url)
+                        .with(user("new@user.com")))
+//                .andExpect(jsonPath("$.status").value(gameStatus.name()))
+                .andReturn().getResponse().getContentAsString();
+        return;
+    }
+
+    private ResultActions performGameUpdates(String url, HashMap<String, Object> updates) throws Exception {
+        JsonBuilder builder = jsonBuilder();
+        for (Map.Entry<String, Object> update : updates.entrySet()) {
+            builder.add(update.getKey(), update.getValue());
+        }
+        String json = builder.build();
+        return mockMvc.perform(
+                put("/game/{url}", url)
+                        .content(json)
+                        .with(user("new@user.com")))
+                .andExpect(status().isOk());
+    }
+
+    private long timeDaysInFuture(int days) {
+        final Calendar registrationStart = Calendar.getInstance();
+        registrationStart.add(Calendar.DATE, days);
+        return registrationStart.getTimeInMillis();
+    }
+
     // CHECKSTYLE-ON: JavadocMethod
+
 }
