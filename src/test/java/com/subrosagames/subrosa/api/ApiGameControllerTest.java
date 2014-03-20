@@ -37,7 +37,7 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedLi
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
 import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
@@ -124,7 +124,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder().add("name", "name of the game").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameType"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameType"))));
 
         mockMvc.perform(
                 post("/game")
@@ -132,7 +132,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder().add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("name"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("name"))));
 
         mockMvc.perform(
                 post("/game")
@@ -140,8 +140,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("name"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameType"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("name"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameType"))));
 
         mockMvc.perform(
                 post("/game")
@@ -306,8 +306,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder().add("registrationEnd", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameStart"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationEnd"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("registrationEnd"))));
     }
 
     @Test
@@ -327,11 +327,11 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("description"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameStart"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("gameEnd"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationStart"))))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("registrationEnd"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("description"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameEnd"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("registrationStart"))))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("registrationEnd"))));
 
         final Long registrationStart = timeDaysInFuture(1);
         final Long registrationEnd = timeDaysInFuture(7);

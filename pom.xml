@@ -41,7 +41,7 @@
     <dependency>
       <groupId>com.subrosa.commons</groupId>
       <artifactId>api-server</artifactId>
-      <version>0.1</version>
+      <version>0.4-SNAPSHOT</version>
       <exclusions>
         <exclusion>
           <groupId>org.springframework</groupId>

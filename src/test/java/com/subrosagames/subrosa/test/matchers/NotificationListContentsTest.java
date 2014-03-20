@@ -6,7 +6,7 @@ import net.minidev.json.JSONValue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 
@@ -18,25 +18,24 @@ public class NotificationListContentsTest {
     // CHECKSTYLE-OFF: JavadocMethod
 
     @Test
-    public void testDetailKeyWithEmptyDetails() throws Exception {
+    public void testDetailFieldWithEmptyDetails() throws Exception {
         String s = "[ { \"details\": {} } ]";
         JSONArray input = (JSONArray) JSONValue.parse(s);
-        assertThat(input, not(hasNotification(withDetailKey("anything"))));
+        assertThat(input, not(hasNotification(withDetailField("anything"))));
     }
 
     @Test
-    public void testMatchesDetailKey() throws Exception {
-        String s = "[ { \"details\": {\"field1\": \"field1 is wrong\", \"field2\": \"field2 is wrong\"} } ]";
+    public void testMatchesDetailField() throws Exception {
+        String s = "[ { \"details\": {\"field\": \"field1\", \"constraint\": \"field1 is wrong\"} } ]";
         JSONArray input = (JSONArray) JSONValue.parse(s);
-        assertThat(input, hasNotification(withDetailKey("field1")));
-        assertThat(input, hasNotification(withDetailKey("field2")));
+        assertThat(input, hasNotification(withDetailField("field1")));
     }
 
     @Test
-    public void testDetailKeyWithWrongDetails() throws Exception {
-        String s = "[ { \"details\": {\"field1\": \"field1 is wrong\", \"field2\": \"field2 is wrong\"} } ]";
+    public void testDetailFieldWithWrongDetails() throws Exception {
+        String s = "[ { \"details\": {\"field\": \"field1\", \"constraint\": \"field1 is wrong\"} } ]";
         JSONArray input = (JSONArray) JSONValue.parse(s);
-        assertThat(input, not(hasNotification(withDetailKey("field3"))));
+        assertThat(input, not(hasNotification(withDetailField("field2"))));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

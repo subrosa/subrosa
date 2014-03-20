@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.api;
 
 import javax.validation.ConstraintViolation;
 import java.io.EOFException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,16 +41,24 @@ public class GlobalExceptionHandlers {
     @ResponseBody
     public NotificationList handleDomainObjectValidationException(DomainObjectValidationException e) {
         LOG.debug("Global exception handler: {}", e.getMessage());
+        NotificationList notificationList = new NotificationList();
         Set<? extends ConstraintViolation<?>> violations = e.getViolations();
-        Notification notification = new Notification(
+        for (ConstraintViolation<?> violation : violations) {
+            Notification notification = createInvalidFieldNotification(violation);
+            notificationList.addNotification(notification);
+        }
+        return notificationList;
+    }
+
+    private Notification createInvalidFieldNotification(final ConstraintViolation<?> violation) {
+        final Notification notification = new Notification(
                 GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
-        Map<String, String> details = Maps.newHashMap();
-        for (ConstraintViolation<?> violation : violations) {
-            details.put(violation.getPropertyPath().toString(), violation.getMessage());
-        }
-        notification.setDetails(details);
-        return new NotificationList(notification);
+        notification.setDetails(new HashMap<String, String>(2) {{
+            put("field", violation.getPropertyPath().toString());
+            put("constraint", violation.getMessage());
+        }});
+        return notification;
     }
 
     /**

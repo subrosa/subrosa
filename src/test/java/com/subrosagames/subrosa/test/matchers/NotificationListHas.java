@@ -51,24 +51,24 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
     }
 
     /**
-     * Matches notification with a details map containing a specified key.
+     * Matches notification with a details map containing a specified field.
      */
-    public static final class NotificationDetailKey extends AbstractNotificationMatcher {
+    public static final class NotificationDetailField extends AbstractNotificationMatcher {
 
-        private final String detailKey;
+        private final String detailField;
 
-        private NotificationDetailKey(String detailKey) {
-            this.detailKey = detailKey;
+        private NotificationDetailField(String detailField) {
+            this.detailField = detailField;
         }
 
         /**
-         * Factory for matching notification with specified detail key.
-         * @param detailKey detail key
+         * Factory for matching notification with specified detail field.
+         * @param detailKey detail field
          * @return notification matcher
          */
         @Factory
-        public static AbstractNotificationMatcher withDetailKey(String detailKey) {
-            return new NotificationDetailKey(detailKey);
+        public static AbstractNotificationMatcher withDetailField(String detailKey) {
+            return new NotificationDetailField(detailKey);
         }
 
         @Override
@@ -79,8 +79,8 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
                 matches = false;
             } else {
                 JSONObject details = (JSONObject) jsonObject.get("details");
-                if (!details.containsKey(detailKey)) {
-                    description.appendText("| does not contain detail key " + detailKey + " ");
+                if (!details.containsKey("field") || !details.get("field").equals(detailField)) {
+                    description.appendText("| does not contain detail field " + detailField + " ");
                     matches = false;
                 }
             }
@@ -89,7 +89,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("detail key " + detailKey);
+            description.appendText("detail field " + detailField);
         }
     }
 }

@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailKey.withDetailKey;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
@@ -38,14 +38,14 @@ public class GamePlayTest extends AbstractApiControllerTest {
                 .with(user(player)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("name"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("name"))));
 
         perform(post("/game/{url}/join", url)
                 .with(user(player))
                 .content(jsonBuilder().add("name", "  ").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailKey("name"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("name"))));
 
         perform(post("/game/{url}/join", url)
                 .with(user(player))
