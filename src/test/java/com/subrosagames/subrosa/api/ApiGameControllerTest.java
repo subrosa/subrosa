@@ -432,7 +432,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 post("/game/{url}/publish", url)
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()))
+                .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()))
         .andReturn().getResponse().getContentAsString();
 
         GameEntity gameEntity;
@@ -458,17 +458,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         gameEntity.setGameEnd(new Date(timeDaysInFuture(-1)));
         gameRepository.update(gameEntity);
 
-        GameStatus gameStatus = GameStatus.ARCHIVED;
-        expectGameStatusIs(url, gameStatus);
+        expectGameStatusIs(url, GameStatus.ARCHIVED);
     }
 
     private void expectGameStatusIs(String url, GameStatus gameStatus) throws Exception {
-        String contentAsString = mockMvc.perform(
+        mockMvc.perform(
                 get("/game/{url}", url)
                         .with(user("new@user.com")))
-//                .andExpect(jsonPath("$.status").value(gameStatus.name()))
-                .andReturn().getResponse().getContentAsString();
-        return;
+                .andExpect(jsonPath("$.status").value(gameStatus.name()));
     }
 
     private ResultActions performGameUpdates(String url, HashMap<String, Object> updates) throws Exception {
@@ -485,9 +482,9 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     private long timeDaysInFuture(int days) {
-        final Calendar registrationStart = Calendar.getInstance();
-        registrationStart.add(Calendar.DATE, days);
-        return registrationStart.getTimeInMillis();
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days);
+        return calendar.getTimeInMillis();
     }
 
     // CHECKSTYLE-ON: JavadocMethod

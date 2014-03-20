@@ -299,10 +299,14 @@ public class GameEntity implements Game {
         if (published == null) {
             return GameStatus.DRAFT;
         } else {
-            if (registrationStart.before(now)) {
+            if (now.before(registrationStart)) {
                 return GameStatus.PREREGISTRATION;
-            } else if (registrationEnd.before(now)) {
+            } else if (now.before(registrationEnd)) {
                 return GameStatus.REGISTRATION;
+            } else if (now.before(gameStart)) {
+                return GameStatus.POSTREGISTRATION;
+            } else if (now.before(gameEnd)) {
+                return GameStatus.RUNNING;
             }
         }
         return GameStatus.ARCHIVED;
