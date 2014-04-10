@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -41,7 +43,7 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.Notific
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
- * Test {@link com.subrosagames.subrosa.api.ApiGameController}.
+ * Test {@link com.subrosagames.subrosa.api.web.ApiGameController}.
  */
 @TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/games.xml")
@@ -105,6 +107,52 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(hasResultCount(count)))
                 .andExpect(jsonPath("$").value(hasResultsSize(2)));
+    }
+
+    @Test
+    public void testFindActiveGames() throws Exception {
+        Long now = new Date().getTime();
+
+        // precondition - no active games
+        mockMvc.perform(
+                get("/game")
+                        .param("registrationStartBefore", now.toString())
+                        .param("registrationEndAfter", now.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(hasResultCount(0)));
+
+        // create 2 active and an inactive game
+        String active1 = createGame(new HashMap<String, String>() {{
+            put("name", "active 1");
+            put("description", "description");
+            put("gameType", "ASSASSIN");
+            put("registrationStart", Long.toString(timeDaysInFuture(-1)));
+            put("registrationEnd", Long.toString(timeDaysInFuture(1)));
+        }});
+        String active2 = createGame(new HashMap<String, String>() {{
+            put("name", "active 2");
+            put("description", "description");
+            put("gameType", "ASSASSIN");
+            put("registrationStart", Long.toString(timeDaysInFuture(-100)));
+            put("registrationEnd", Long.toString(timeDaysInFuture(100)));
+        }});
+        String inactive1 = createGame(new HashMap<String, String>() {{
+            put("name", "inactive 1");
+            put("description", "description");
+            put("gameType", "ASSASSIN");
+            put("registrationStart", Long.toString(timeDaysInFuture(1)));
+            put("registrationEnd", Long.toString(timeDaysInFuture(5)));
+        }});
+
+        // search should now contain the two active games
+        mockMvc.perform(
+                get("/game")
+                        .param("registrationStartBefore", now.toString())
+                        .param("registrationEndAfter", now.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(hasResultCount(2)))
+                .andExpect(jsonPath("$").value(hasResultsSize(2)))
+                .andExpect(jsonPath("$.results[*].url").value(hasItems(active1, active2)));
     }
 
     @Test
@@ -243,7 +291,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String url = "fun_times";
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DATE, -1);
-        HashSet<String> times = Sets.newHashSet("gameStart", "gameEnd", "registrationStart", "registrationEnd");
+        HashSet<String> times = Sets.newHashSet("gameStart", "gameEnd", "registrationEnd");
         for (String time : times) {
             mockMvc.perform(
                     put("/game/{url}/", url)
@@ -485,6 +533,20 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         final Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days);
         return calendar.getTimeInMillis();
+    }
+
+    private String createGame(Map<String, String> properties) throws Exception {
+        JsonBuilder jsonBuilder = jsonBuilder();
+        for (Map.Entry<String, String> property : properties.entrySet()) {
+            jsonBuilder.add(property.getKey(), property.getValue());
+        }
+        String response = mockMvc.perform(
+                post("/game")
+                        .content(jsonBuilder.build())
+                        .with(user("new@user.com")))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        return JsonPath.compile("$.url").read(response);
     }
 
     // CHECKSTYLE-ON: JavadocMethod

@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
+import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
@@ -9,7 +10,6 @@ import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
-import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
@@ -18,10 +18,19 @@ import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 public interface GameRepository extends DomainRepository<GameEntity> {
 
     /**
-     * Get a list of games that are currently active.
-     * @return active games
+     * Get a list of games matching the provided criteria.
+     * @param criteria query criteria
+     * @param expansions game field expansions
+     * @return matching games
      */
-    List<Integer> getActiveGames();
+    List<GameEntity> findByCriteria(QueryCriteria<GameEntity> criteria, String... expansions);
+
+    /**
+     * Get a count of games matching the provided criteria.
+     * @param criteria query criteria
+     * @return count of matching games
+     */
+    Long countByCriteria(QueryCriteria<GameEntity> criteria);
 
     /**
      * Get a list of the games that are occurring near the provided geographical location.

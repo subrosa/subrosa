@@ -7,7 +7,7 @@ import java.util.Date;
 
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.validation.DateRange;
+import com.subrosagames.subrosa.util.bean.validation.DateRange;
 
 /**
  */
@@ -108,7 +108,6 @@ public interface GameData {
      * Registration start time.
      * @return registration start time
      */
-    @Future
     @NotNull(groups = PublishAction.class)
     Date getRegistrationStart();
 

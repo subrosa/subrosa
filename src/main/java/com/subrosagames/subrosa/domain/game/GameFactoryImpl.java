@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.domain.game;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -15,7 +16,7 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
-import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.NullAwareBeanUtilsBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.RandomStringUtils;
@@ -110,6 +111,22 @@ public class GameFactoryImpl implements GameFactory {
                 games,
                 gameRepository.count(),
                 limit, offset);
+    }
+
+    @Override
+    public PaginatedList<Game> fromCriteria(QueryCriteria<GameEntity> queryCriteria, String... expansions) {
+        List<GameEntity> gameEntities = gameRepository.findByCriteria(queryCriteria, expansions);
+        List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
+            @Override
+            public Game apply(GameEntity gameEntity) {
+                injectDependencies(gameEntity);
+                return gameEntity;
+            }
+        });
+        return new PaginatedList<Game>(
+                games,
+                gameRepository.countByCriteria(queryCriteria).intValue(),
+                queryCriteria.getLimit(), queryCriteria.getOffset());
     }
 
     @Override

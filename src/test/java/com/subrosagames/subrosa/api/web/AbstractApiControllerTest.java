@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -111,14 +111,14 @@ public abstract class AbstractApiControllerTest {
         return resultActions;
     }
 
-    class JsonBuilder {
+    protected class JsonBuilder {
         private final JsonMap jsonMap;
 
         public JsonBuilder() {
             jsonMap = new JsonMap();
         }
 
-        JsonBuilder add(String key, Object value) {
+        public JsonBuilder add(String key, Object value) {
             jsonMap.put(key, value);
             return this;
         }
@@ -128,12 +128,12 @@ public abstract class AbstractApiControllerTest {
             return this;
         }
 
-        String build() {
+        public String build() {
             return jsonMap.toString();
         }
     }
 
-    class JsonMap extends HashMap<String, Object> {
+    protected class JsonMap extends HashMap<String, Object> {
         public String toString() {
             try {
                 return new ObjectMapper().writeValueAsString(this);

@@ -36,6 +36,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import com.subrosa.api.actions.list.Operator;
+import com.subrosa.api.actions.list.annotation.Filterable;
+import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import org.apache.commons.lang.NotImplementedException;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -80,7 +83,7 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
-import com.subrosagames.subrosa.util.NullAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.NullAwareBeanUtilsBean;
 
 /**
  * Persisted entity for a game.
@@ -207,15 +210,31 @@ public class GameEntity implements Game {
     )
     private Location location;
 
+    @Filterable(
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            translator = TimestampToDateTranslator.class
+    )
     @Column(name = "registration_start")
     private Date registrationStart;
 
+    @Filterable(
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            translator = TimestampToDateTranslator.class
+    )
     @Column(name = "registration_end")
     private Date registrationEnd;
 
+    @Filterable(
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            translator = TimestampToDateTranslator.class
+    )
     @Column(name = "game_start")
     private Date gameStart;
 
+    @Filterable(
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            translator = TimestampToDateTranslator.class
+    )
     @Column(name = "game_end")
     private Date gameEnd;
 

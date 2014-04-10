@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import javax.validation.ConstraintViolation;
 import java.io.EOFException;
@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.google.common.collect.Maps;
@@ -58,6 +59,7 @@ public class GlobalExceptionHandlers {
             put("field", violation.getPropertyPath().toString());
             put("constraint", violation.getMessage());
         }});
+        LOG.debug("Global exception handler domain object constraint violation: {} => {}", violation.getPropertyPath(), violation.getMessage());
         return notification;
     }
 
@@ -78,7 +80,7 @@ public class GlobalExceptionHandlers {
     }
 
     /**
-     * Handle {@link NotAuthenticatedException}.
+     * Handle {@link com.subrosagames.subrosa.api.NotAuthenticatedException}.
      * @param e exception
      * @return notification list
      */

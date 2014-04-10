@@ -8,13 +8,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import com.subrosa.api.actions.list.QueryBuilder;
+import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.GameAttributeType;
-import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
-import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
@@ -24,7 +21,6 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
-import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -124,21 +120,27 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<GameEntity> ownedBy(Account user) {
-        TypedQuery<GameEntity> query = entityManager.createQuery(
-                "SELECT g FROM GameEntity g WHERE g.owner = :owner", GameEntity.class);
-        query.setParameter("owner", user);
+    public List<GameEntity> findByCriteria(QueryCriteria<GameEntity> criteria, String... expansions) {
+        for (String expansion : expansions) {
+            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+        }
+        QueryBuilder<GameEntity, TypedQuery<GameEntity>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<GameEntity>(entityManager);
+        TypedQuery<GameEntity> query = queryBuilder.getQuery(criteria);
         return query.getResultList();
     }
 
     @Override
-    public List<Integer> getActiveGames() {
-        LOG.debug("Retrieving active games list");
-        String jpql = "SELECT ge.id "
-                + " FROM GameEntity ge "
-                + " WHERE NOW('') > ge.registrationStart "
-                + "     AND NOW('') < ge.registrationEnd ";
-        TypedQuery<Integer> query = entityManager.createQuery(jpql, Integer.class);
+    public Long countByCriteria(QueryCriteria<GameEntity> criteria) {
+        QueryBuilder<GameEntity, TypedQuery<GameEntity>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<GameEntity>(entityManager);
+        TypedQuery<Long> query = queryBuilder.countQuery(criteria);
+        return query.getSingleResult();
+    }
+
+    @Override
+    public List<GameEntity> ownedBy(Account user) {
+        TypedQuery<GameEntity> query = entityManager.createQuery(
+                "SELECT g FROM GameEntity g WHERE g.owner = :owner", GameEntity.class);
+        query.setParameter("owner", user);
         return query.getResultList();
     }
 

@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -14,12 +14,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Test {@link com.subrosagames.subrosa.api.ApiAccountController}.
+ * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
  */
 @TestExecutionListeners({
         DbUnitTestExecutionListener.class

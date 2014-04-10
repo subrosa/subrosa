@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Test {@link ApiAccountController}.
+ * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
  */
 @TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")

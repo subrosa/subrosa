@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.api;
 
+import com.subrosagames.subrosa.api.web.AbstractApiControllerTest;
 import org.junit.Test;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.player.GameRole;

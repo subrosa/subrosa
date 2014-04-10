@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.util;
+package com.subrosagames.subrosa.util.bean;
 
 import java.lang.reflect.InvocationTargetException;
 

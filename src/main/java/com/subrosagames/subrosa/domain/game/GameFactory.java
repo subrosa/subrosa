@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
+import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
@@ -58,4 +59,6 @@ public interface GameFactory extends DomainObjectFactory<GameEntity> {
     List<Zone> getGameZones(String gameUrl) throws GameNotFoundException;
 
     PaginatedList<Game> getGamesNear(Coordinates coordinates, Integer limit, Integer offset, String... expansions);
+
+    PaginatedList<Game> fromCriteria(QueryCriteria<GameEntity> queryCriteria, String... expansions);
 }

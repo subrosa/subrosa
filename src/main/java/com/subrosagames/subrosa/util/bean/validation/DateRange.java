@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.validation;
+package com.subrosagames.subrosa.util.bean.validation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

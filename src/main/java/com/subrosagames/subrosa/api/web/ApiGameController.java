@@ -1,9 +1,13 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import java.math.BigDecimal;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.util.RequestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -76,20 +80,21 @@ public class ApiGameController {
                                          @RequestParam(value = "offset", required = false) Integer offset,
                                          @RequestParam(value = "expand", required = false) String expand,
                                          @RequestParam(value = "latitude", required = false) Double latitude,
-                                         @RequestParam(value = "longitude", required = false) Double longitude)
+                                         @RequestParam(value = "longitude", required = false) Double longitude,
+                                         HttpServletRequest request)
     {
-        LOG.debug("Getting game list with limit {} and offset {}.", limit, offset);
-        limit = ObjectUtils.defaultIfNull(limit, 10);
-        offset = ObjectUtils.defaultIfNull(offset, 0);
+        LOG.debug("Getting game list with limit {}, offset {}, expand {}, latitude {}, longitude {}.", new Object[] { limit, offset, expand, latitude, longitude });
         if (latitude != null && longitude != null) {
             Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
+            limit = ObjectUtils.defaultIfNull(limit, 10);
+            offset = ObjectUtils.defaultIfNull(offset, 0);
             return StringUtils.isEmpty(expand) ?
                     gameFactory.getGamesNear(coordinates, limit, offset) :
                     gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
         }
-        return StringUtils.isEmpty(expand) ?
-                gameFactory.getGames(limit, offset) :
-                gameFactory.getGames(limit, offset, expand.split(","));
+        QueryCriteria<GameEntity> queryCriteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, GameEntity.class);
+        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
+        return gameFactory.fromCriteria(queryCriteria, expansions);
     }
 
     /**

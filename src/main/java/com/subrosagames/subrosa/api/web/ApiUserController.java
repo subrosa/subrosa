@@ -1,7 +1,8 @@
-package com.subrosagames.subrosa.api;
+package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
 
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
@@ -28,7 +29,7 @@ public class ApiUserController {
 
     /**
      * Get the currently logged in user's account info.
-     * @throws NotAuthenticatedException if user is not authenticated
+     * @throws com.subrosagames.subrosa.api.NotAuthenticatedException if user is not authenticated
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody

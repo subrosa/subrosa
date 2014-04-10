@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.validation;
+package com.subrosagames.subrosa.util.bean.validation;
 
 import java.util.Date;
 import javax.validation.ConstraintValidator;
