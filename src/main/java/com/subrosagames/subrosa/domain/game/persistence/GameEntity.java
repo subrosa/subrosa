@@ -315,7 +315,7 @@ public class GameEntity implements Game {
 
     public GameStatus getStatus() {
         Date now = new Date();
-        if (published == null) {
+        if (Lists.asList(published, new Date[] { registrationStart, registrationEnd, gameStart, gameEnd }).contains(null)) {
             return GameStatus.DRAFT;
         } else {
             if (now.before(registrationStart)) {
