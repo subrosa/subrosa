@@ -1,9 +1,9 @@
 package com.subrosagames.subrosa.domain.game;
 
-import javax.validation.constraints.Future;
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
+import javax.validation.constraints.Future;
+import javax.validation.constraints.NotNull;
 
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -42,7 +42,6 @@ public interface GameData {
      * Game description.
      * @return game description
      */
-    @NotNull(groups = PublishAction.class)
     String getDescription();
 
     /**

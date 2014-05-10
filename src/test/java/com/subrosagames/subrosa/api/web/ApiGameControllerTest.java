@@ -375,7 +375,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("description"))))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameStart"))))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("gameEnd"))))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("registrationStart"))))
