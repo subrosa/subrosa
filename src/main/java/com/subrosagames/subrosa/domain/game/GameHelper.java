@@ -4,14 +4,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nullable;
-
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.account.Account;

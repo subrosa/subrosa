@@ -2,12 +2,7 @@ package com.subrosagames.subrosa.domain.player;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.domain.location.Location;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**

@@ -3,8 +3,6 @@ package com.subrosagames.subrosa.domain.player;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 
-import org.hibernate.validator.engine.ConstraintViolationImpl;
-import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 

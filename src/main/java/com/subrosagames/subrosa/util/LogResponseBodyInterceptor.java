@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -40,6 +41,15 @@ public class LogResponseBodyInterceptor implements HandlerInterceptor {
                 @Override
                 public String toString() {
                     return stringBuilder.toString();
+                }
+
+                @Override
+                public boolean isReady() {
+                    return true;
+                }
+
+                @Override
+                public void setWriteListener(WriteListener writeListener) {
                 }
             };
             HttpServletResponseWrapper responseWrapper = new HttpServletResponseWrapper(httpServletResponse) {

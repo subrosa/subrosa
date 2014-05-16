@@ -9,6 +9,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -78,4 +79,17 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(paginatedList())));
     }
 
+    @Test
+    public void testUpdateAccount() throws Exception {
+        String response = mockMvc.perform(
+                get("/account/10000")
+                .with(user("bob@user.com")))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        mockMvc.perform(
+                put("/account/10000")
+                .with(user("bob@user.com"))
+                .content(response))
+                .andExpect(status().isOk());
+    }
 }

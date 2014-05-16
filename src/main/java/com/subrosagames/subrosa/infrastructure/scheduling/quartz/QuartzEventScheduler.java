@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.infrastructure.scheduling.quartz;
 
-import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 
@@ -19,6 +18,7 @@ import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
+
 
 /**
  * Schedules game events using Quartz.
@@ -103,11 +103,7 @@ public class QuartzEventScheduler implements EventScheduler {
         trigger.setJobDetail(jobDetail);
         trigger.setRepeatCount(0);
         trigger.setStartTime(eventDate);
-        try {
-            trigger.afterPropertiesSet();
-        } catch (ParseException e) {
-            throw new IllegalStateException(e);
-        }
+        trigger.afterPropertiesSet();
         return trigger;
     }
 
