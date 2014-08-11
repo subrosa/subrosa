@@ -3,12 +3,12 @@ package com.subrosagames.subrosa.api.web;
 import java.io.IOException;
 import java.util.HashMap;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.lang.RandomStringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

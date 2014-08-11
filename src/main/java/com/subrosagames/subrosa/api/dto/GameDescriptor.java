@@ -3,159 +3,160 @@ package com.subrosagames.subrosa.api.dto;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.subrosagames.subrosa.domain.game.GameData;
+import com.google.common.base.Optional;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.google.common.base.Objects;
+import org.codehaus.jackson.node.NullNode;
 
 /**
  * Encapsulates the necessary information to create a game.
  */
-public class GameDescriptor implements GameData {
+public class GameDescriptor {//implements GameData {
 
     private Integer id;
-    private String name;
-    private String url;
-    private String description;
-    private GameType gameType;
-    private BigDecimal price;
-    private String timezone;
-    private Integer maximumTeamSize;
-    private String password;
-    private Image image;
-    private Integer minimumAge;
-    private Date gameStart;
-    private Date gameEnd;
-    private Date registrationStart;
-    private Date registrationEnd;
-    private GameStatus status;
+    private Optional<String> name;
+    private Optional<String> url;
+    private Optional<String> description;
+    private Optional<GameType> gameType;
+    private Optional<BigDecimal> price;
+    private Optional<String> timezone;
+    private Optional<Integer> maximumTeamSize;
+    private Optional<String> password;
+    private Optional<Image> image;
+    private Optional<Integer> minimumAge;
+    private Optional<Date> gameStart;
+    private Optional<Date> gameEnd;
+    private Optional<Date> registrationStart;
+    private Optional<Date> registrationEnd;
+    private Optional<GameStatus> status;
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getName() {
+    public Optional<String> getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Optional<String> name) {
         this.name = name;
     }
 
-    public String getUrl() {
+    public Optional<String> getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(Optional<String> url) {
         this.url = url;
     }
 
-    public String getDescription() {
+    public Optional<String> getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(Optional<String> description) {
         this.description = description;
     }
 
-    public GameType getGameType() {
+    public Optional<GameType> getGameType() {
         return gameType;
     }
 
-    public void setGameType(GameType gameType) {
+    public void setGameType(Optional<GameType> gameType) {
         this.gameType = gameType;
     }
 
-    public BigDecimal getPrice() {
+    public Optional<BigDecimal> getPrice() {
         return price;
     }
 
-    public void setPrice(BigDecimal price) {
+    public void setPrice(Optional<BigDecimal> price) {
         this.price = price;
     }
 
-    public String getTimezone() {
+    public Optional<String> getTimezone() {
         return timezone;
     }
 
-    public void setTimezone(String timezone) {
+    public void setTimezone(Optional<String> timezone) {
         this.timezone = timezone;
     }
 
-    public Integer getMaximumTeamSize() {
+    public Optional<Integer> getMaximumTeamSize() {
         return maximumTeamSize;
     }
 
-    public void setMaximumTeamSize(Integer maximumTeamSize) {
+    public void setMaximumTeamSize(Optional<Integer> maximumTeamSize) {
         this.maximumTeamSize = maximumTeamSize;
     }
 
-    public String getPassword() {
+    public Optional<String> getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(Optional<String> password) {
         this.password = password;
     }
 
-    public Image getImage() {
+    public Optional<Image> getImage() {
         return image;
     }
 
-    public void setImage(Image image) {
+    public void setImage(Optional<Image> image) {
         this.image = image;
     }
 
-    public Integer getMinimumAge() {
+    public Optional<Integer> getMinimumAge() {
         return minimumAge;
     }
 
-    public void setMinimumAge(Integer minimumAge) {
+    public void setMinimumAge(Optional<Integer> minimumAge) {
         this.minimumAge = minimumAge;
     }
 
-    public Date getGameStart() {
+    public Optional<Date> getGameStart() {
         return gameStart;
     }
 
-    public void setGameStart(Date gameStart) {
+    public void setGameStart(Optional<Date> gameStart) {
         this.gameStart = gameStart;
     }
 
-    public Date getGameEnd() {
+    public Optional<Date> getGameEnd() {
         return gameEnd;
     }
 
-    public void setGameEnd(Date gameEnd) {
+    public void setGameEnd(Optional<Date> gameEnd) {
         this.gameEnd = gameEnd;
     }
 
-    public Date getRegistrationStart() {
+    public Optional<Date> getRegistrationStart() {
         return registrationStart;
     }
 
-    public void setRegistrationStart(Date registrationStart) {
+    public void setRegistrationStart(Optional<Date> registrationStart) {
         this.registrationStart = registrationStart;
     }
 
-    public Date getRegistrationEnd() {
+    public Optional<Date> getRegistrationEnd() {
         return registrationEnd;
     }
 
-    public void setRegistrationEnd(Date registrationEnd) {
+    public void setRegistrationEnd(Optional<Date> registrationEnd) {
         this.registrationEnd = registrationEnd;
     }
 
-    public GameStatus getStatus() {
+    public Optional<GameStatus> getStatus() {
         return status;
     }
 
-    public void setStatus(GameStatus status) {
+    public void setStatus(Optional<GameStatus> status) {
         this.status = status;
     }
 
@@ -179,4 +180,5 @@ public class GameDescriptor implements GameData {
                 .add("registrationEnd", registrationEnd)
                 .toString();
     }
+
 }

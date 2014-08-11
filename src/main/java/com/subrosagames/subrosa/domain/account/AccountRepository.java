@@ -1,16 +1,11 @@
 package com.subrosagames.subrosa.domain.account;
 
 import com.subrosagames.subrosa.domain.DomainRepository;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
-
-import java.util.List;
 
 /**
  * Provides CRUD functionality for accounts and their subordinate entities.
  */
-public interface AccountRepository extends DomainRepository<Account> {
+public interface AccountRepository extends DomainRepository<Account, Account> {
 
     /**
      * Get the account with the specified email.

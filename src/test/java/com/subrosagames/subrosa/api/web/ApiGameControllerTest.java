@@ -24,8 +24,7 @@ import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
@@ -404,6 +403,41 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").exists());
+
+        mockMvc.perform(
+                get("/game/{url}", url)
+                        .with(user("new@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.published").value(notNullValue()))
+        ;
+    }
+
+    @Test
+    public void testNullPriceMakesFreeGame() throws Exception {
+        String response = performGameCreation(new HashMap<String, Object>() {{
+            put("name", "name of the game");
+            put("gameType", "ASSASSIN");
+            put("price", null);
+        }})
+                .andExpect(jsonPath("$.price").value(0))
+                .andReturn().getResponse().getContentAsString();
+        String url = JsonPath.compile("$.url").read(response);
+
+        // enter a price and assert it updates successfully
+        performGameUpdates(url, new HashMap<String, Object>() {{
+            put("price", 500);
+        }})
+                .andExpect(jsonPath("$.price").value(500));
+
+        // update without specifying price and see original
+        performGameUpdates(url, new HashMap<String, Object>() {{ }})
+                .andExpect(jsonPath("$.price").value(500.0));
+
+        // update with null and see that it sets it successfully
+        performGameUpdates(url, new HashMap<String, Object>() {{
+            put("price", null);
+        }})
+                .andExpect(jsonPath("$.price").value(nullValue()));
     }
 
     @Test
@@ -513,6 +547,19 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 get("/game/{url}", url)
                         .with(user("new@user.com")))
                 .andExpect(jsonPath("$.status").value(gameStatus.name()));
+    }
+
+    private ResultActions performGameCreation(HashMap<String, Object> attributes) throws Exception {
+        JsonBuilder builder = jsonBuilder();
+        for (Map.Entry<String, Object> update : attributes.entrySet()) {
+            builder.add(update.getKey(), update.getValue());
+        }
+        String json = builder.build();
+        return mockMvc.perform(
+                post("/game")
+                        .content(json)
+                        .with(user("new@user.com")))
+                .andExpect(status().isCreated());
     }
 
     private ResultActions performGameUpdates(String url, HashMap<String, Object> updates) throws Exception {

@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 import java.util.Map;
 
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
@@ -95,7 +96,7 @@ public interface Game extends GameData {
 
     Game create() throws GameValidationException;
 
-    Game update(Game game) throws GameValidationException;
+    Game update(GameDescriptor game) throws GameValidationException;
 
     Game publish() throws GameValidationException;
 

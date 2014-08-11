@@ -2,13 +2,12 @@ package com.subrosagames.subrosa.security;
 
 import java.io.IOException;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenType;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

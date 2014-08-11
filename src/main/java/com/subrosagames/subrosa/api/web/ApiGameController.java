@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
+import com.google.common.base.Optional;
 import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.util.RequestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -67,6 +71,9 @@ public class ApiGameController {
     @Autowired
     private GameFactory gameFactory;
 
+    @Autowired
+    private GameService gameService;
+
     /**
      * Get a list of {@link Game}s.
      * @param limit  maximum number of {@link Game}s to return.
@@ -126,9 +133,14 @@ public class ApiGameController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Game createGame(@RequestBody GameDescriptor gameDescriptor) throws GameValidationException, NotAuthenticatedException {
+    public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptor)
+            throws GameValidationException, NotAuthenticatedException, BadRequestException
+    {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a game.");
+        }
+        if (gameDescriptor == null) {
+            throw new BadRequestException("No POST body supplied");
         }
         Account user = getAuthenticatedUser();
         LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
@@ -153,15 +165,7 @@ public class ApiGameController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
-        Account user = getAuthenticatedUser();
-        Game game = gameFactory.getGame(gameUrl);
-        if (!user.getId().equals(game.getOwner().getId())) {
-            throw new GameNotFoundException("Could not find game to update at " + gameUrl);
-        }
-        // read-only fields
-        gameDescriptor.setUrl(gameUrl);
-        gameDescriptor.setGameType(game.getGameType());
-        return game.update(gameFactory.forDto(gameDescriptor));
+        return gameService.updateGame(gameUrl, gameDescriptor);
     }
 
     /**
@@ -180,7 +184,7 @@ public class ApiGameController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to publish a game.");
         }
-        return gameFactory.getGame(gameUrl).publish();
+        return gameService.publishGame(gameUrl);
     }
 
     /**
@@ -222,11 +226,14 @@ public class ApiGameController {
     @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
     @ResponseBody
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
-                           @RequestBody PostDescriptor postDescriptor)
-            throws GameNotFoundException, NotAuthenticatedException
+                           @RequestBody(required = false) PostDescriptor postDescriptor)
+            throws GameNotFoundException, NotAuthenticatedException, BadRequestException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
+        }
+        if (postDescriptor == null) {
+            throw new BadRequestException("No POST body supplied");
         }
         Game game = gameFactory.getGame(gameUrl);
         PostEntity postEntity = gameFactory.forDto(postDescriptor);

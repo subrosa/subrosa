@@ -1,17 +1,16 @@
 package com.subrosagames.subrosa.api.web;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
 
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

@@ -11,7 +11,7 @@
   <context:component-scan base-package="com.subrosagames.subrosa.api"/>
   <mvc:annotation-driven>
     <mvc:message-converters>
-      <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+      <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
         <property name="objectMapper" ref="jacksonObjectMapper"/>
       </bean>
     </mvc:message-converters>
@@ -37,14 +37,11 @@
     </property>
   </bean>
 
-  <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper" />
-  <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="targetObject" ref="jacksonObjectMapper" />
-    <property name="targetMethod" value="configure" />
-    <property name="arguments">
+  <bean id="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
+    <property name="modulesToInstall" value="com.fasterxml.jackson.datatype.guava.GuavaModule"/>
+    <property name="featuresToDisable">
       <list>
-        <value type="org.codehaus.jackson.map.DeserializationConfig.Feature">FAIL_ON_UNKNOWN_PROPERTIES</value>
-        <value>false</value>
+        <value type="com.fasterxml.jackson.databind.DeserializationFeature">FAIL_ON_UNKNOWN_PROPERTIES</value>
       </list>
     </property>
   </bean>

@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
@@ -14,7 +16,6 @@ import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
 import com.subrosa.api.notification.Severity;
 import com.subrosa.api.response.NotificationList;
-import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -125,6 +126,22 @@ public class GlobalExceptionHandlers {
         Notification notification = new Notification(
                 GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
                 "Empty request body");
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link UnrecognizedPropertyException}.
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public NotificationList handleBadRequestException(BadRequestException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
+                e.getMessage());
         return new NotificationList(notification);
     }
 

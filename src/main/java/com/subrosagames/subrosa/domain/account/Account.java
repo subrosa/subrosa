@@ -24,11 +24,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;

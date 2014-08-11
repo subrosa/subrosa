@@ -36,12 +36,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 import org.apache.commons.lang.NotImplementedException;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
@@ -83,7 +85,6 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.TriggeredEvent;
 import com.subrosagames.subrosa.event.message.EventMessage;
-import com.subrosagames.subrosa.util.bean.NullAwareBeanUtilsBean;
 
 /**
  * Persisted entity for a game.
@@ -340,8 +341,8 @@ public class GameEntity implements Game {
     }
 
     @Override
-    public Game update(Game game) throws GameValidationException {
-        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
+    public Game update(GameDescriptor game) throws GameValidationException {
+        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
             beanCopier.copyProperties(this, game);
         } catch (IllegalAccessException e) {
@@ -350,29 +351,30 @@ public class GameEntity implements Game {
             throw new IllegalStateException(e);
         }
         assertValid();
-        GameEntity updated;
-        try {
-            updated = gameRepository.update(this);
-        } catch (DomainObjectNotFoundException e) {
-            throw new GameValidationException(e);
-        } catch (DomainObjectValidationException e) {
-            throw new GameValidationException(e);
-        }
-        gameFactory.injectDependencies(updated);
-        return updated;
+//        GameEntity updated;
+//        try {
+//            updated = gameRepository.update(game);
+//        } catch (DomainObjectNotFoundException e) {
+//            throw new GameValidationException(e);
+//        } catch (DomainObjectValidationException e) {
+//            throw new GameValidationException(e);
+//        }
+//        gameFactory.injectDependencies(updated);
+        return this;
     }
 
     @Override
     public Game publish() throws GameValidationException {
         assertValid(PublishAction.class);
         setPublished(new Date());
-        try {
-            return gameRepository.update(this);
-        } catch (DomainObjectNotFoundException e) {
-            throw new GameValidationException(e);
-        } catch (DomainObjectValidationException e) {
-            throw new GameValidationException(e);
-        }
+//        try {
+//            return gameRepository.update(null);
+//        } catch (DomainObjectNotFoundException e) {
+//            throw new GameValidationException(e);
+//        } catch (DomainObjectValidationException e) {
+//            throw new GameValidationException(e);
+//        }
+        return this;
     }
 
     private void assertValid(Class... validationGroups) throws GameValidationException {

@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 
 import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
@@ -15,7 +16,7 @@ import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 /**
  * Repository for retrieval of game information.
  */
-public interface GameRepository extends DomainRepository<GameEntity> {
+public interface GameRepository extends DomainRepository<GameEntity, GameEntity> {
 
     /**
      * Get a list of games matching the provided criteria.

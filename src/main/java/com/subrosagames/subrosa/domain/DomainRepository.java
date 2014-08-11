@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Generic CRUD interface for domain repositories.
  */
-public interface DomainRepository<T> {
+public interface DomainRepository<I, T> {
 
     /**
      * Create domain object.
@@ -46,5 +46,5 @@ public interface DomainRepository<T> {
      * @throws DomainObjectNotFoundException is object is not found
      * @throws DomainObjectValidationException if object is not valid
      */
-    T update(T object) throws DomainObjectNotFoundException, DomainObjectValidationException;
+    T update(I object) throws DomainObjectNotFoundException, DomainObjectValidationException;
 }

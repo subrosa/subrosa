@@ -16,7 +16,7 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
-import com.subrosagames.subrosa.util.bean.NullAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.RandomStringUtils;
@@ -58,7 +58,6 @@ public class GameFactoryImpl implements GameFactory {
     @Override
     public Game getGame(String url, String... expansions) throws GameNotFoundException {
         GameEntity game = gameRepository.get(url, expansions);
-        game = (GameEntity) getGame(game.getId(), expansions);
         injectDependencies(game);
         return game;
     }
@@ -138,10 +137,13 @@ public class GameFactoryImpl implements GameFactory {
 
     @Override
     public GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException {
-//        if (gameDescriptor.getGameType() == null) {
-//            throw new GameValidationException("Game type must be provided.");
-//        }
-        GameEntity gameEntity = GameTypeToEntityMapper.forType(gameDescriptor.getGameType());
+        GameType gameType;
+        if (gameDescriptor.getGameType() == null) {
+            gameType = null;
+        } else {
+            gameType = gameDescriptor.getGameType().orNull();
+        }
+        GameEntity gameEntity = GameTypeToEntityMapper.forType(gameType);
         copyProperties(gameDescriptor, gameEntity);
         if (gameEntity.getUrl() == null) {
             gameEntity.setUrl(generateUrl());
@@ -155,7 +157,7 @@ public class GameFactoryImpl implements GameFactory {
     }
 
     private void copyProperties(Object dto, Object entity) {
-        NullAwareBeanUtilsBean beanCopier = new NullAwareBeanUtilsBean();
+        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
             beanCopier.copyProperties(entity, dto);
         } catch (IllegalAccessException e) {

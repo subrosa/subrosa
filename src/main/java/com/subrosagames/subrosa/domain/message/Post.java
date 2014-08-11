@@ -1,9 +1,9 @@
 package com.subrosagames.subrosa.domain.message;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * Encapsulates a user post in a game.
