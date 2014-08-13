@@ -42,6 +42,7 @@ import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 import org.apache.commons.lang.NotImplementedException;
@@ -54,8 +55,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
-import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
@@ -65,7 +64,7 @@ import com.subrosagames.subrosa.domain.game.GameHelper;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.Lifecycle;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.game.Rule;
@@ -617,9 +616,14 @@ public class GameEntity extends BaseEntity implements Game {
     }
 
     @Override
-    public Post addPost(PostEntity postEntity) {
+    public Post addPost(PostEntity postEntity) throws PostValidationException {
         postEntity.setGameId(getId());
         postEntity.setPostType(PostType.TEXT);
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<PostEntity>> violations = validator.validate(postEntity);
+        if (!violations.isEmpty()) {
+            throw new PostValidationException(violations);
+        }
         return gameRepository.create(postEntity);
     }
 

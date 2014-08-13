@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class GameHelper {
 
     /**
      * Validate that this is a valid game.
-     * @throws GameValidationException if the game is invalid
+     * @throws com.subrosagames.subrosa.domain.game.validation.GameValidationException if the game is invalid
      */
     public void validate() throws GameValidationException {
     }

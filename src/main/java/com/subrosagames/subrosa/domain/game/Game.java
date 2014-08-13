@@ -8,6 +8,8 @@ import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -100,5 +102,5 @@ public interface Game extends GameData {
 
     Game publish() throws GameValidationException;
 
-    Post addPost(PostEntity postEntity);
+    Post addPost(PostEntity postEntity) throws PostValidationException;
 }

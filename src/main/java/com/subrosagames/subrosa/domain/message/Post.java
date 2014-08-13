@@ -5,6 +5,8 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Encapsulates a user post in a game.
  */
@@ -39,6 +41,7 @@ public interface Post {
      * Get post content.
      * @return post content
      */
+    @NotNull
     String getContent();
 
     /**

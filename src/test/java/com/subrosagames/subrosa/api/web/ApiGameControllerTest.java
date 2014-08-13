@@ -452,8 +452,16 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testCreatePostMissingFields() throws Exception {
-        mockMvc.perform(post("/game/{url}/post", "fun_times")
-                .with(user("new@user.com")))
+        mockMvc.perform(
+                post("/game/{url}/post", "fun_times")
+                        .with(user("new@user.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+
+        mockMvc.perform(
+                post("/game/{url}/post", "fun_times")
+                        .content("{}")
+                        .with(user("new@user.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }

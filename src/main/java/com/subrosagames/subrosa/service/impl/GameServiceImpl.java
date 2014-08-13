@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.service.impl;
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.security.SubrosaUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

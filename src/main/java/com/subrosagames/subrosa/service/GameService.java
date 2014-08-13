@@ -4,10 +4,9 @@ import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.Team;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Handles interactions between players and games.

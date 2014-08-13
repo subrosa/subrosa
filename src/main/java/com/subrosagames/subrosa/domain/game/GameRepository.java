@@ -3,11 +3,11 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.List;
 
 import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;

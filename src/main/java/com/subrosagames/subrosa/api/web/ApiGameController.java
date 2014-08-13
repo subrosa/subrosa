@@ -4,12 +4,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
-import com.google.common.base.Optional;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.util.RequestUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -42,7 +41,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
@@ -227,8 +226,7 @@ public class ApiGameController {
     @ResponseBody
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) PostDescriptor postDescriptor)
-            throws GameNotFoundException, NotAuthenticatedException, BadRequestException
-    {
+            throws GameNotFoundException, NotAuthenticatedException, BadRequestException, PostValidationException {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
         }
