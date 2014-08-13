@@ -230,7 +230,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("my favorite game"))
                 .andExpect(jsonPath("$.gameType").value("ASSASSIN"))
-                .andExpect(jsonPath("$.url").value(url));
+                .andExpect(jsonPath("$.url").value(url))
+        ;
     }
 
     @Test
@@ -419,7 +420,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
             put("gameType", "ASSASSIN");
             put("price", null);
         }})
-                .andExpect(jsonPath("$.price").value(0))
+                .andExpect(jsonPath("$.price").value(nullValue()))
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 

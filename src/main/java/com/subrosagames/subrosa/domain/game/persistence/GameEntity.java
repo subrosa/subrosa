@@ -42,6 +42,7 @@ import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Hibernate;
@@ -105,10 +106,10 @@ import com.subrosagames.subrosa.event.message.EventMessage;
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class GameEntity implements Game {
+public class GameEntity extends BaseEntity implements Game {
 
-    private static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
-    private static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
+    public static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
+    public static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
 
     @JsonIgnore
     @Transient
@@ -252,19 +253,23 @@ public class GameEntity implements Game {
     protected void prePersist() {
         created = new Date();
         modified = new Date();
-        if (price == null) {
-            price = GameEntity.DEFAULT_PRICE;
-        }
-        if (maximumTeamSize == null) {
-            maximumTeamSize = GameEntity.DEFAULT_MAX_TEAM_SIZE;
-        }
+//        setDefaults();
     }
 
     @PreUpdate
     protected void preUpdate() {
         modified = new Date();
+//        setDefaults();
     }
 
+//    private void setDefaults() {
+//        if (price == null) {
+//            price = GameEntity.DEFAULT_PRICE;
+//        }
+//        if (maximumTeamSize == null) {
+//            maximumTeamSize = GameEntity.DEFAULT_MAX_TEAM_SIZE;
+//        }
+//    }
 
     public Integer getId() {
         return id;
@@ -335,9 +340,9 @@ public class GameEntity implements Game {
     @Override
     public Game create() throws GameValidationException {
         assertValid();
-        GameEntity gameEntity = gameRepository.create(this);
-        gameFactory.injectDependencies(gameEntity);
-        return gameEntity;
+        gameRepository.create(this);
+        gameFactory.injectDependencies(this);
+        return this;
     }
 
     @Override
@@ -351,15 +356,6 @@ public class GameEntity implements Game {
             throw new IllegalStateException(e);
         }
         assertValid();
-//        GameEntity updated;
-//        try {
-//            updated = gameRepository.update(game);
-//        } catch (DomainObjectNotFoundException e) {
-//            throw new GameValidationException(e);
-//        } catch (DomainObjectValidationException e) {
-//            throw new GameValidationException(e);
-//        }
-//        gameFactory.injectDependencies(updated);
         return this;
     }
 
@@ -367,13 +363,6 @@ public class GameEntity implements Game {
     public Game publish() throws GameValidationException {
         assertValid(PublishAction.class);
         setPublished(new Date());
-//        try {
-//            return gameRepository.update(null);
-//        } catch (DomainObjectNotFoundException e) {
-//            throw new GameValidationException(e);
-//        } catch (DomainObjectValidationException e) {
-//            throw new GameValidationException(e);
-//        }
         return this;
     }
 
