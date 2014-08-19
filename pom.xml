@@ -21,9 +21,9 @@
   </description>
 
   <scm>
-    <connection>scm:hg:https://hg.subrosagames.com/subrosa</connection>
-    <developerConnection>scm:hg:https://hg.subrosagames.com/subrosa</developerConnection>
-    <url>https://hg.subrosagames.com/subrosa</url>
+    <connection>scm:git:https://github.com/subrosagames/subrosa</connection>
+    <developerConnection>scm:git:https://github.com/subrosagames/subrosa</developerConnection>
+    <url>https://github.com/subrosagames/subrosa</url>
   </scm>
 
   <properties>
