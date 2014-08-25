@@ -74,5 +74,5 @@ You will need to install the following to be able to run the Subrosa API locally
 Download [nexus.subrosagames.com.crt](https://trac.subrosagames.com/raw-attachment/wiki/technology/sandbox/api/nexus.subrosagames.com.crt) and run the following (the default password for java system keystores is `changeit`):
 
 ```
-sudo keytool -import -trustcacerts -alias "nexus.subrosagames.com" -file nexus.subrosagames.com.crt -keystore  $JAVA_HOME/jre/lib/security
+sudo keytool -import -trustcacerts -alias "nexus.subrosagames.com" -file nexus.subrosagames.com.crt -keystore  $JAVA_HOME/jre/lib/security/cacerts
 ```
