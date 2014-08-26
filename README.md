@@ -22,14 +22,19 @@ You will need to install the following to be able to run the Subrosa API locally
 <settings>
   <servers>
     <server>
+      <id>subrosa-releases</id>
+      <username>[username]</username>
+      <password>[password]</password>
+    </server>
+    <server>
       <id>subrosa-snapshots</id>
-      <username>walden</username>
-      <password>password</password>
+      <username>[username]</username>
+      <password>[password]</password>
     </server>
     <server>
       <id>nexus</id>
-      <username>walden</username>
-      <password>password</password>
+      <username>[username]</username>
+      <password>[password]</password>
     </server>
   </servers>
   <mirrors>
