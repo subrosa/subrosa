@@ -6,29 +6,22 @@
   <account account_id="10003" activated="true" email="player2@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
 
   <game game_id="11111" owner_id="10001" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
-  <lifecycle game_id="11111" lifecycle_id="11111"/>
-  <game game_id="22222" owner_id="10001" name="Fun Times!" url="fun_times2" game_type="ASSASSIN"/>
-  <lifecycle game_id="22222" lifecycle_id="22222"/>
+
+  <game game_id="22222" owner_id="10001" name="Fun Times!" url="with_start" game_type="ASSASSIN"/>
+  <lifecycle_event event_id="1" event_type="SCHEDULED" event_class="gameStart"/>
+  <scheduled_event event_id="1" event_date="2015-01-01"/>
+  <game_lifecycle game_id="22222" event_id="1"/>
+
   <game game_id="33333" owner_id="10001" name="Fun Times!" url="fun_times3" game_type="ASSASSIN"/>
-  <lifecycle game_id="33333" lifecycle_id="33333"/>
   <game game_id="44444" owner_id="10001" name="Fun Times!" url="fun_times4" game_type="ASSASSIN"/>
-  <lifecycle game_id="44444" lifecycle_id="44444"/>
   <game game_id="55555" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
-  <lifecycle game_id="55555" lifecycle_id="55555"/>
   <game game_id="66666" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>
-  <lifecycle game_id="66666" lifecycle_id="66666"/>
   <game game_id="77777" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
-  <lifecycle game_id="77777" lifecycle_id="77777"/>
   <game game_id="88888" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>
-  <lifecycle game_id="88888" lifecycle_id="88888"/>
   <game game_id="99999" owner_id="10001" name="Fun Times!" url="fun_times9" game_type="ASSASSIN"/>
-  <lifecycle game_id="99999" lifecycle_id="99999"/>
   <game game_id="10000" owner_id="10001" name="Fun Times!" url="fun_times10" game_type="ASSASSIN"/>
-  <lifecycle game_id="10000" lifecycle_id="10000"/>
   <game game_id="10001" owner_id="10001" name="Fun Times!" url="fun_times11" game_type="ASSASSIN"/>
-  <lifecycle game_id="10001" lifecycle_id="10001"/>
   <game game_id="10002" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
-  <lifecycle game_id="10002" lifecycle_id="10002"/>
 
   <team team_id="10000" game_id="11111"/>
   <team team_id="10001" game_id="11111"/>

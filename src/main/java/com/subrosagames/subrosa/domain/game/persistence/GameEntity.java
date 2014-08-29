@@ -1,76 +1,25 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
-import javax.persistence.MapKey;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.subrosa.api.actions.list.Operator;
-import com.subrosa.api.actions.list.annotation.Filterable;
-import com.subrosa.api.actions.list.TimestampToDateTranslator;
-import com.subrosagames.subrosa.api.dto.GameDescriptor;
-import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
-import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
-import org.apache.commons.lang.NotImplementedException;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.subrosa.api.actions.list.Operator;
+import com.subrosa.api.actions.list.TimestampToDateTranslator;
+import com.subrosa.api.actions.list.annotation.Filterable;
+import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.GameAttributeType;
-import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameFactory;
-import com.subrosagames.subrosa.domain.game.GameHelper;
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameStatus;
-import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.game.Lifecycle;
-import com.subrosagames.subrosa.domain.game.PostType;
-import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.RuleRepository;
-import com.subrosagames.subrosa.domain.game.RuleType;
+import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
+import com.subrosagames.subrosa.domain.game.event.GameHistory;
+import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
@@ -82,9 +31,24 @@ import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.event.Event;
-import com.subrosagames.subrosa.event.TriggeredEvent;
-import com.subrosagames.subrosa.event.message.EventMessage;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
+import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfiles;
+
+import javax.persistence.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * Persisted entity for a game.
@@ -102,6 +66,9 @@ import com.subrosagames.subrosa.event.message.EventMessage;
         }),
         @FetchProfile(name = "zones", fetchOverrides = {
                 @FetchProfile.FetchOverride(entity = GameEntity.class, association = "zones", mode = FetchMode.JOIN)
+        }),
+        @FetchProfile(name = "events", fetchOverrides = {
+                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "events", mode = FetchMode.JOIN)
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
@@ -116,6 +83,9 @@ public class GameEntity extends BaseEntity implements Game {
     @JsonIgnore
     @Transient
     private GameRepository gameRepository;
+    @JsonIgnore
+    @Transient
+    private EventRepository eventRepository;
     @JsonIgnore
     @Transient
     private PlayerFactory playerFactory;
@@ -175,10 +145,10 @@ public class GameEntity extends BaseEntity implements Game {
     @OrderBy("created DESC")
     private List<Post> posts;
 
-    @OneToMany(targetEntity = GameEventEntity.class)
+    @OneToMany(targetEntity = GameHistoryEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created DESC")
-    private List<GameEvent> history;
+    private List<GameHistory> history;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, targetEntity = RuleEntity.class)
@@ -212,28 +182,28 @@ public class GameEntity extends BaseEntity implements Game {
     private Location location;
 
     @Filterable(
-            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
             translator = TimestampToDateTranslator.class
     )
     @Column(name = "registration_start")
     private Date registrationStart;
 
     @Filterable(
-            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
             translator = TimestampToDateTranslator.class
     )
     @Column(name = "registration_end")
     private Date registrationEnd;
 
     @Filterable(
-            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
             translator = TimestampToDateTranslator.class
     )
     @Column(name = "game_start")
     private Date gameStart;
 
     @Filterable(
-            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
+            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
             translator = TimestampToDateTranslator.class
     )
     @Column(name = "game_end")
@@ -242,33 +212,13 @@ public class GameEntity extends BaseEntity implements Game {
     @Column
     private Date published;
 
-    @Column
-    private Date created;
-
-    @Column
-    private Date modified;
-
-    @PrePersist
-    protected void prePersist() {
-        created = new Date();
-        modified = new Date();
-//        setDefaults();
-    }
-
-    @PreUpdate
-    protected void preUpdate() {
-        modified = new Date();
-//        setDefaults();
-    }
-
-//    private void setDefaults() {
-//        if (price == null) {
-//            price = GameEntity.DEFAULT_PRICE;
-//        }
-//        if (maximumTeamSize == null) {
-//            maximumTeamSize = GameEntity.DEFAULT_MAX_TEAM_SIZE;
-//        }
-//    }
+    @OneToMany(targetEntity = EventEntity.class)
+    @JoinTable(
+            name = "game_lifecycle",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<GameEvent> events;
 
     public Integer getId() {
         return id;
@@ -320,7 +270,7 @@ public class GameEntity extends BaseEntity implements Game {
 
     public GameStatus getStatus() {
         Date now = new Date();
-        if (Lists.asList(published, new Date[] { registrationStart, registrationEnd, gameStart, gameEnd }).contains(null)) {
+        if (Lists.asList(published, new Date[]{registrationStart, registrationEnd, gameStart, gameEnd}).contains(null)) {
             return GameStatus.DRAFT;
         } else {
             if (now.before(registrationStart)) {
@@ -409,21 +359,6 @@ public class GameEntity extends BaseEntity implements Game {
         return maximumTeamSize;
     }
 
-    @Override
-    public Lifecycle getLifecycle() {
-        return null;  // TODO
-    }
-
-    @Override
-    public void addTriggeredEvent(EventMessage eventType, Event trigger) {
-        // TODO
-    }
-
-    @Override
-    public List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage) {
-        return null;  // TODO
-    }
-
     public void setMaximumTeamSize(Integer maximumTeamSize) {
         this.maximumTeamSize = maximumTeamSize;
     }
@@ -439,15 +374,32 @@ public class GameEntity extends BaseEntity implements Game {
         this.posts = posts;
     }
 
-    public List<GameEvent> getHistory() {
+    public List<GameHistory> getHistory() {
         if (!Hibernate.isInitialized(history)) {
             return null;
         }
         return history;
     }
 
-    public void setHistory(List<GameEvent> history) {
+    public void setHistory(List<GameHistory> history) {
         this.history = history;
+    }
+
+    public List<GameEvent> getEvents() {
+        if (!Hibernate.isInitialized(events)) {
+            return null;
+        }
+        return events;
+    }
+
+    public GameEvent getEvent(int eventId) throws GameEventNotFoundException {
+        EventEntity event = gameRepository.getEvent(eventId);
+        // TODO ensure the event is part of this game
+        return event;
+    }
+
+    public void setEvents(List<GameEvent> events) {
+        this.events = events;
     }
 
     public Set<Rule> getRuleSet() {
@@ -553,22 +505,6 @@ public class GameEntity extends BaseEntity implements Game {
         this.registrationEnd = registrationEnd;
     }
 
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
-
     public RuleRepository getRuleRepository() {
         return ruleRepository;
     }
@@ -627,11 +563,24 @@ public class GameEntity extends BaseEntity implements Game {
         return gameRepository.create(postEntity);
     }
 
+    @Override
+    public GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
+        if (!violations.isEmpty()) {
+            throw new GameEventValidationException(violations);
+        }
+        GameEvent event = gameRepository.create(eventEntity);
+        events.add(event);
+        return event;
+    }
+
     private GameHelper getGameHelper() {
         if (gameHelper == null) {
             gameHelper = new GameHelper(this);
             gameHelper.setGameRepository(gameRepository);
             gameHelper.setPlayerFactory(playerFactory);
+            gameHelper.setEventRepository(eventRepository);
         }
         return gameHelper;
     }
@@ -646,6 +595,10 @@ public class GameEntity extends BaseEntity implements Game {
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
         this.playerFactory = playerFactory;
+    }
+
+    public void setEventRepository(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
     }
 
     public PlayerFactory getPlayerFactory() {

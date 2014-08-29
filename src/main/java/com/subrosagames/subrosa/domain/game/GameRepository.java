@@ -1,10 +1,10 @@
 package com.subrosagames.subrosa.domain.game;
 
-import java.util.List;
-
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
+import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
@@ -13,6 +13,8 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
+import java.util.List;
+
 /**
  * Repository for retrieval of game information.
  */
@@ -20,7 +22,8 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
 
     /**
      * Get a list of games matching the provided criteria.
-     * @param criteria query criteria
+     *
+     * @param criteria   query criteria
      * @param expansions game field expansions
      * @return matching games
      */
@@ -28,6 +31,7 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
 
     /**
      * Get a count of games matching the provided criteria.
+     *
      * @param criteria query criteria
      * @return count of matching games
      */
@@ -44,8 +48,7 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
     /**
      * Retrieve the specified game entity by identifying url.
      *
-     *
-     * @param url game url
+     * @param url        game url
      * @param expansions fields to expand
      * @return game
      */
@@ -55,14 +58,16 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
 
     /**
      * Load the player of a game for the given user.
+     *
      * @param accountId account id
-     * @param gameId game id
+     * @param gameId    game id
      * @return player entity
      */
     PlayerEntity getPlayerForUserAndGame(int accountId, int gameId);
 
     /**
      * Get all of the players enrolled in the specified game.
+     *
      * @param gameId game id
      * @return list of players
      */
@@ -70,17 +75,12 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
 
     /**
      * Set an attribute of a game.
-     * @param gameEntity persisted game
-     * @param attributeType attribute type
+     *
+     * @param gameEntity     persisted game
+     * @param attributeType  attribute type
      * @param attributeValue attribute value
      */
     void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
-
-    /**
-     * Persist the provided game lifecycle.
-     * @param lifecycle lifecycle entity
-     */
-    void save(Lifecycle lifecycle);
 
     GameEntity create(GameEntity gameEntity) throws GameValidationException;
 
@@ -88,7 +88,11 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
 
     PostEntity create(PostEntity postEntity);
 
+    EventEntity create(EventEntity gameEventEntity);
+
     List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException;
 
     LocationEntity create(LocationEntity location);
+
+    EventEntity getEvent(int eventId) throws GameEventNotFoundException;
 }

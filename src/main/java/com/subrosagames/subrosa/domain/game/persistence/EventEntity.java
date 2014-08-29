@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
 import javax.persistence.*;
 
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Table(name = "lifecycle_event")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "event_type", discriminatorType = DiscriminatorType.STRING)
-public class EventEntity {
+public class EventEntity extends BaseEntity implements GameEvent {
 
     @Id
     @SequenceGenerator(name = "lifecycleEventSeq", sequenceName = "lifecycle_event_event_id_seq")
@@ -19,15 +20,8 @@ public class EventEntity {
     @Column(name = "event_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = LifecycleEntity.class)
-    @JoinColumn(name = "lifecycle_id", referencedColumnName = "game_id")
-    private Lifecycle lifecycle;
-
     @Column(name = "event_class")
     private String eventClass;
-
-    @Column(name = "event_type")
-    private String eventType;
 
     public Integer getId() {
         return id;
@@ -35,14 +29,6 @@ public class EventEntity {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Lifecycle getLifecycle() {
-        return lifecycle;
-    }
-
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
     }
 
     public String getEventClass() {
@@ -53,11 +39,4 @@ public class EventEntity {
         this.eventClass = eventClass;
     }
 
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
 }

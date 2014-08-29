@@ -45,7 +45,7 @@ public class ApiSandboxController {
     public Game doIt() throws GameValidationException, GameNotFoundException, PlayerValidationException {
         //@RequestBody GameDescriptor gameDescriptor) {
 //        GameEntity entity = gameDescriptor.getInfo();
-//        List<GameEvent> events = gameDescriptor.getEvents();
+//        List<GameHistory> events = gameDescriptor.getEvents();
 
 //        LifecycleEntity lifecycleEntity = new LifecycleEntity();
 //        lifecycleEntity.addScheduledEvent(EventMessage.MUTUAL_INTEREST_ASSIGNMENT, lifecycleEntity.getGameStart());

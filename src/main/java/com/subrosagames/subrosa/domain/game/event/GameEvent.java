@@ -8,21 +8,13 @@ import java.util.Date;
  */
 public interface GameEvent {
 
+    public String getEventClass();
 
-    Integer getHistoryId();
+//    public String getEventType();
 
-    Integer getGameId();
+    public Date getCreated();
 
-    Integer getAssassinId();
+    public Date getModified();
 
-    Integer getVictimId();
-
-    String getObituary();
-
-    String getType();
-
-    Date getCreated();
-
-    Date getModified();
 }
 

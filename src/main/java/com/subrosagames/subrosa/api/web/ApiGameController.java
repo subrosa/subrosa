@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.util.RequestUtils;
@@ -42,7 +43,6 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -249,7 +249,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<GameEvent> getHistory(@PathVariable("gameUrl") String gameUrl,
+    public PaginatedList<GameHistory> getHistory(@PathVariable("gameUrl") String gameUrl,
                                                @RequestParam(value = "limit", required = false) Integer limit,
                                                @RequestParam(value = "offset", required = false) Integer offset)
             throws GameNotFoundException
@@ -257,11 +257,11 @@ public class ApiGameController {
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
         LOG.debug("Retrieving history for game {}", gameUrl);
-        List<GameEvent> events = gameFactory.getGame(gameUrl).getHistory();
+        List<GameHistory> events = gameFactory.getGame(gameUrl).getHistory();
         if (CollectionUtils.isEmpty(events)) {
-            return new PaginatedList<GameEvent>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
+            return new PaginatedList<GameHistory>(Lists.<GameHistory>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<GameEvent>(
+            return new PaginatedList<GameHistory>(
                     events.subList(offset, offset + limit),
                     events.size(),
                     limit, offset);

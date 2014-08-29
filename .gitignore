@@ -1,7 +1,4 @@
-syntax: glob
 .idea
 *.iml
-syntax: regexp
-^target/
-^activemq-data/
+target/
 script/

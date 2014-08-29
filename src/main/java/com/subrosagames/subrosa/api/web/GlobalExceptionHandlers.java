@@ -9,6 +9,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.api.NotAuthorizedException;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.google.common.collect.Maps;
@@ -89,6 +90,22 @@ public class GlobalExceptionHandlers {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public NotificationList handleNotAuthenticatedException(NotAuthenticatedException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.FORBIDDEN, Severity.ERROR,
+                e.getMessage());
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link com.subrosagames.subrosa.api.NotAuthorizedException}.
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public NotificationList handleNotAuthorizedException(NotAuthorizedException e) {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Notification notification = new Notification(
                 GeneralCode.FORBIDDEN, Severity.ERROR,
