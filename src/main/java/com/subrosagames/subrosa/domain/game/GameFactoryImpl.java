@@ -187,8 +187,6 @@ public class GameFactoryImpl implements GameFactory {
     @Override
     public EventEntity forDto(GameEventDescriptor gameEventDescriptor) {
         ScheduledEventEntity eventEntity = new ScheduledEventEntity();
-        eventEntity.setEventClass("gameStart");
-        eventEntity.setEventDate(new Date());
         copyProperties(gameEventDescriptor, eventEntity);
         return eventEntity;
     }

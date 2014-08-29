@@ -4,6 +4,7 @@ import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 /**
  * Persists events. Parent class for {@link ScheduledEventEntity}s and {@link TriggeredEventEntity}s.
@@ -21,7 +22,8 @@ public class EventEntity extends BaseEntity implements GameEvent {
     private Integer id;
 
     @Column(name = "event_class")
-    private String eventClass;
+    @NotNull
+    private String event;
 
     public Integer getId() {
         return id;
@@ -31,12 +33,12 @@ public class EventEntity extends BaseEntity implements GameEvent {
         this.id = id;
     }
 
-    public String getEventClass() {
-        return eventClass;
+    public String getEvent() {
+        return event;
     }
 
-    public void setEventClass(String eventClass) {
-        this.eventClass = eventClass;
+    public void setEvent(String event) {
+        this.event = event;
     }
 
 }

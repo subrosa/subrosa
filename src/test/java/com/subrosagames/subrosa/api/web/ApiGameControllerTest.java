@@ -584,12 +584,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk());
     }
 
-    private long timeDaysInFuture(int days) {
-        final Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, days);
-        return calendar.getTimeInMillis();
-    }
-
     private String createGame(Map<String, String> properties) throws Exception {
         JsonBuilder jsonBuilder = jsonBuilder();
         for (Map.Entry<String, String> property : properties.entrySet()) {

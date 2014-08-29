@@ -118,7 +118,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                         .with(user("game@owner.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.eventClass").value("gameStart"));
+                .andExpect(jsonPath("$.event").value("gameStart"));
     }
 
     @Test
@@ -141,6 +141,38 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testCreateEventBadRequest() throws Exception {
+        mockMvc.perform(
+                post("/game/fun_times/event")
+                        .with(user("game@owner.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+
+        mockMvc.perform(
+                post("/game/fun_times/event")
+                        .with(user("game@owner.com"))
+                        .content("{}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+
+        mockMvc.perform(
+                post("/game/fun_times/event")
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("event", "gameEnd").build()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+
+        mockMvc.perform(
+                post("/game/fun_times/event")
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("date", "2016-01-01").build()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+    }
+
+    @Test
     public void testCreateEvent() throws Exception {
         mockMvc.perform(
                 get("/game/fun_times/event")
@@ -149,16 +181,14 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
 
-        mockMvc.perform(
-                post("/game/fun_times/event")
-                        .with(user("game@owner.com")))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
-
+        long date = timeDaysInFuture(300);
         String response = mockMvc.perform(
                 post("/game/fun_times/event")
                         .with(user("game@owner.com"))
-                        .content("{}"))
+                        .content(jsonBuilder()
+                                .add("event", "gameEnd")
+                                .add("date", date)
+                                .build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andReturn().getResponse().getContentAsString();
@@ -175,7 +205,9 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                 get("/game/fun_times/event/{id}", id)
                         .with(user("game@owner.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(id));
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.event").value("gameEnd"))
+                .andExpect(jsonPath("$.date").value(date));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

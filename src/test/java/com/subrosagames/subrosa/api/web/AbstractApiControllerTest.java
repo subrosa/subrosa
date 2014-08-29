@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,6 +73,12 @@ public abstract class AbstractApiControllerTest {
 
     protected SecurityRequestPostProcessors.UserDetailsRequestPostProcessor user(String email) {
         return userDetailsService(email).userDetailsServiceBeanId("userDetailsService");
+    }
+
+    protected long timeDaysInFuture(int days) {
+        final Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, days);
+        return calendar.getTimeInMillis();
     }
 
     protected String newRandomUser() throws Exception {

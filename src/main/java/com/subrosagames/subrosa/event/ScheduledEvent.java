@@ -11,5 +11,5 @@ public interface ScheduledEvent extends Event {
      * Get the date at which this event should be fired.
      * @return event date
      */
-    Date getEventDate();
+    Date getDate();
 }

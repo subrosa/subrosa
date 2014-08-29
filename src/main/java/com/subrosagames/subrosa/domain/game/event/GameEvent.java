@@ -8,9 +8,7 @@ import java.util.Date;
  */
 public interface GameEvent {
 
-    public String getEventClass();
-
-//    public String getEventType();
+    public String getEvent();
 
     public Date getCreated();
 

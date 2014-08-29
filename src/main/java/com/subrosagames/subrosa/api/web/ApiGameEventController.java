@@ -137,13 +137,16 @@ public class ApiGameEventController {
     public Game updateGame(@PathVariable("gameUrl") String gameUrl,
                            @PathVariable("eventId") Integer eventId,
                            @RequestBody GameEventDescriptor gameEventDescriptor)
-            throws GameNotFoundException, GameEventNotFoundException, NotAuthenticatedException
+            throws GameNotFoundException, GameEventNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
         Game game = gameFactory.getGame(gameUrl);
-//        return gameService.updateGame(gameUrl, gameDescriptor);
+        if (!SecurityHelper.getAuthenticatedUser().getId().equals(game.getOwner().getId())) {
+            throw new NotAuthorizedException("Unauthenticated attempt to get game event.");
+        }
+//        return game.updateEvent(gameEventDescriptor);
         return null;
     }
 

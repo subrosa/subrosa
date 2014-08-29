@@ -9,5 +9,5 @@ import com.subrosagames.subrosa.event.message.EventMessage;
  */
 public interface EventRepository {
 
-    TriggeredEventEntity createTriggeredEvent(EventMessage eventType, Event trigger);
+    TriggeredEventEntity createTriggeredEvent(EventMessage eventMessage, Event trigger);
 }

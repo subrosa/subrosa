@@ -12,3 +12,6 @@ INSERT INTO game_lifecycle (game_id, event_id)
 DROP TABLE lifecycle;
 
 ALTER TABLE lifecycle_event DROP COLUMN lifecycle_id;
+ALTER TABLE lifecycle_event ADD created TIMESTAMP NOT NULL DEFAULT NOW();
+ALTER TABLE lifecycle_event ADD modified TIMESTAMP NOT NULL DEFAULT NOW();
+
