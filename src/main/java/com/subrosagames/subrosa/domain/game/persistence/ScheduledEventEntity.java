@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import javax.persistence.*;
@@ -10,9 +12,7 @@ import java.util.Date;
  * Persists a scheduled event.
  */
 @Entity
-@Table(name = "scheduled_event")
 @DiscriminatorValue(ScheduledEventEntity.EVENT_TYPE_SCHEDULED)
-@PrimaryKeyJoinColumn(name = "event_id")
 public class ScheduledEventEntity extends EventEntity implements ScheduledEvent {
 
     public static final String EVENT_TYPE_SCHEDULED = "SCHEDULED";

@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -11,6 +12,8 @@ import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
+import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
@@ -31,18 +34,18 @@ import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
-import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.*;
 
+import javax.persistence.CascadeType;
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -114,6 +117,9 @@ public class GameEntity extends BaseEntity implements Game {
     private String url;
 
     @Column
+    private Date published;
+
+    @Column
     private String description;
 
     @Column(name = "game_type", insertable = false, updatable = false)
@@ -183,41 +189,48 @@ public class GameEntity extends BaseEntity implements Game {
 
     @Filterable(
             operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
-            translator = TimestampToDateTranslator.class
+            translator = TimestampToDateTranslator.class,
+            childOperand = "date"
     )
-    @Column(name = "registration_start")
-    private Date registrationStart;
+    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    @Where(clause = "event_class='registrationStart'")
+    private List<ScheduledEvent> registrationStart;
 
     @Filterable(
             operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
-            translator = TimestampToDateTranslator.class
+            translator = TimestampToDateTranslator.class,
+            childOperand = "date"
     )
-    @Column(name = "registration_end")
-    private Date registrationEnd;
+    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    @Where(clause = "event_class='registrationEnd'")
+//    @Transient
+    private List<ScheduledEvent> registrationEnd;
 
     @Filterable(
             operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
-            translator = TimestampToDateTranslator.class
+            translator = TimestampToDateTranslator.class,
+            childOperand = "date"
     )
-    @Column(name = "game_start")
-    private Date gameStart;
+    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    @Where(clause = "event_class='gameStart'")
+//    @Transient
+    private List<ScheduledEvent> gameStart;
 
     @Filterable(
             operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
-            translator = TimestampToDateTranslator.class
+            translator = TimestampToDateTranslator.class,
+            childOperand = "date"
     )
-    @Column(name = "game_end")
-    private Date gameEnd;
+    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
+    @JoinColumn(name = "game_id")
+    @Where(clause = "event_class='gameEnd'")
+//    @Transient
+    private List<ScheduledEvent> gameEnd;
 
-    @Column
-    private Date published;
-
-    @OneToMany(targetEntity = EventEntity.class)
-    @JoinTable(
-            name = "game_lifecycle",
-            joinColumns = @JoinColumn(name = "game_id"),
-            inverseJoinColumns = @JoinColumn(name = "event_id")
-    )
+    @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
     private List<GameEvent> events;
 
     public Integer getId() {
@@ -270,16 +283,16 @@ public class GameEntity extends BaseEntity implements Game {
 
     public GameStatus getStatus() {
         Date now = new Date();
-        if (Lists.asList(published, new Date[]{registrationStart, registrationEnd, gameStart, gameEnd}).contains(null)) {
+        if (Lists.asList(published, new Date[]{getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd()}).contains(null)) {
             return GameStatus.DRAFT;
         } else {
-            if (now.before(registrationStart)) {
+            if (now.before(getRegistrationStart())) {
                 return GameStatus.PREREGISTRATION;
-            } else if (now.before(registrationEnd)) {
+            } else if (now.before(getRegistrationEnd())) {
                 return GameStatus.REGISTRATION;
-            } else if (now.before(gameStart)) {
+            } else if (now.before(getGameStart())) {
                 return GameStatus.POSTREGISTRATION;
-            } else if (now.before(gameEnd)) {
+            } else if (now.before(getGameEnd())) {
                 return GameStatus.RUNNING;
             }
         }
@@ -312,6 +325,13 @@ public class GameEntity extends BaseEntity implements Game {
     public Game publish() throws GameValidationException {
         assertValid(PublishAction.class);
         setPublished(new Date());
+        try {
+            gameRepository.update(this);
+        } catch (DomainObjectNotFoundException e) {
+            throw new IllegalStateException("Got object not found when updating persisted object");
+        } catch (DomainObjectValidationException e) {
+            throw new GameValidationException(e);
+        }
         return this;
     }
 
@@ -474,35 +494,59 @@ public class GameEntity extends BaseEntity implements Game {
     }
 
     public Date getGameStart() {
-        return gameStart;
+        return gameStart == null ? null :
+                gameStart.isEmpty() ? null : gameStart.get(0).getDate();
     }
 
-    public void setGameStart(Date gameStart) {
+    public void setGameStart(List<ScheduledEvent> gameStart) {
         this.gameStart = gameStart;
     }
 
-    public Date getGameEnd() {
-        return gameEnd;
+    @JsonIgnore
+    public List<ScheduledEvent> getGameStartEvents() {
+        return gameStart;
     }
 
-    public void setGameEnd(Date gameEnd) {
+    public Date getGameEnd() {
+        return gameEnd == null ? null :
+                gameEnd.isEmpty() ? null : gameEnd.get(0).getDate();
+    }
+
+    public void setGameEnd(List<ScheduledEvent> gameEnd) {
         this.gameEnd = gameEnd;
     }
 
-    public Date getRegistrationStart() {
-        return registrationStart;
+    @JsonIgnore
+    public List<ScheduledEvent> getGameEndEvents() {
+        return gameEnd;
     }
 
-    public void setRegistrationStart(Date registrationStart) {
+    public Date getRegistrationStart() {
+        return registrationStart == null ? null :
+                registrationStart.isEmpty() ? null : registrationStart.get(0).getDate();
+    }
+
+    public void setRegistrationStart(List<ScheduledEvent> registrationStart) {
         this.registrationStart = registrationStart;
     }
 
-    public Date getRegistrationEnd() {
-        return registrationEnd;
+    @JsonIgnore
+    public List<ScheduledEvent> getRegistrationStartEvents() {
+        return registrationStart;
     }
 
-    public void setRegistrationEnd(Date registrationEnd) {
+    public Date getRegistrationEnd() {
+        return registrationEnd == null ? null :
+                registrationEnd.isEmpty() ? null : registrationEnd.get(0).getDate();
+    }
+
+    public void setRegistrationEnd(List<ScheduledEvent> registrationEnd) {
         this.registrationEnd = registrationEnd;
+    }
+
+    @JsonIgnore
+    public List<ScheduledEvent> getRegistrationEndEvents() {
+        return registrationEnd;
     }
 
     public RuleRepository getRuleRepository() {
@@ -570,9 +614,10 @@ public class GameEntity extends BaseEntity implements Game {
         if (!violations.isEmpty()) {
             throw new GameEventValidationException(violations);
         }
-        GameEvent event = gameRepository.create(eventEntity);
-        events.add(event);
-        return event;
+        eventEntity.setGame(this);
+        GameEvent gameEvent = gameRepository.create(eventEntity);
+        events.add(eventEntity);
+        return gameEvent;
     }
 
     private GameHelper getGameHelper() {

@@ -14,6 +14,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.*;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.*;
+import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -76,21 +77,11 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public EventEntity getEvent(int eventId) throws GameEventNotFoundException {
-        EventEntity eventEntity = entityManager.find(EventEntity.class, eventId);
-        if (eventEntity == null) {
-            throw new GameEventNotFoundException("Event for id " + eventId + " not found");
-        }
-        return eventEntity;
-    }
-
-    @Override
     public GameEntity update(GameEntity game) throws GameValidationException {
         return entityManager.merge(game);
     }
 
     @Override
-    @Transactional
     public GameEntity get(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         GameEntity gameEntity;
@@ -217,10 +208,28 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    @Transactional
     public List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException {
         List<Zone> zones = get(gameUrl).getZones();
         LOG.debug("Retrieved {} zones", zones.size());
         return zones;
+    }
+
+    @Override
+    public EventEntity getEvent(int eventId) throws GameEventNotFoundException {
+        EventEntity eventEntity = entityManager.find(EventEntity.class, eventId);
+        if (eventEntity == null) {
+            throw new GameEventNotFoundException("Event for id " + eventId + " not found");
+        }
+        return eventEntity;
+    }
+
+    @Override
+    public EventEntity update(ScheduledEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
+        return entityManager.merge(eventEntity);
+    }
+
+    @Override
+    public EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
+        return entityManager.merge(eventEntity);
     }
 }

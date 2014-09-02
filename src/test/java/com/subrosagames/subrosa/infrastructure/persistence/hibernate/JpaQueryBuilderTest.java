@@ -18,6 +18,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import javax.persistence.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +58,28 @@ public class JpaQueryBuilderTest {
         entityManager.persist(new TestObject(3, 3.3, "3", new DateTime(2014, 3, 1, 0, 0, 0, 0).toDate(), 3));
         entityManager.persist(new TestObject(4, 4.4, "2", new DateTime(2014, 4, 1, 0, 0, 0, 0).toDate(), 3));
         entityManager.persist(new TestObject(5, 5.5, "1", new DateTime(2014, 5, 1, 0, 0, 0, 0).toDate(), 5));
+        TestObject testObject;
+        final EventObject eventObject1;
+        testObject = new TestObject();
+        testObject.setId(6);
+        eventObject1 = new EventObject(1, new DateTime(2014, 5, 1, 0, 0, 0, 0).toDate());
+        entityManager.persist(eventObject1);
+        testObject.setEvent(new ArrayList<EventObject>() {
+            {
+                add(eventObject1);
+            }
+        });
+        entityManager.persist(testObject);
+        testObject = new TestObject();
+        testObject.setId(7);
+        final EventObject eventObject2 = new EventObject(2, new DateTime(2013, 5, 1, 0, 0, 0, 0).toDate());
+        entityManager.persist(eventObject2);
+        testObject.setEvent(new ArrayList<EventObject>() {
+            {
+                add(eventObject2);
+            }
+        });
+        entityManager.persist(testObject);
         entityManager.getTransaction().commit();
     }
 
@@ -77,7 +100,7 @@ public class JpaQueryBuilderTest {
     public void testEmptyCriteria() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
         List<TestObject> results = findForRequest(request);
-        assertEquals(5, results.size());
+        assertEquals(7, results.size());
     }
 
     @Test
@@ -85,7 +108,7 @@ public class JpaQueryBuilderTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setParameter("notAnnotated", "3");
         List<TestObject> results = findForRequest(request);
-        assertEquals(5, results.size());
+        assertEquals(7, results.size());
     }
 
     @Test
@@ -96,7 +119,7 @@ public class JpaQueryBuilderTest {
         request.setParameter("scoreNotEqual", "3");
         request.setParameter("time", new Date().toString());
         List<TestObject> results = findForRequest(request);
-        assertEquals(5, results.size());
+        assertEquals(7, results.size());
     }
 
     @Test
@@ -210,6 +233,24 @@ public class JpaQueryBuilderTest {
         ));
     }
 
+    @Test
+    public void testChildOperand() throws Exception {
+        MockHttpServletRequest request;
+        List<TestObject> results;
+
+        request = new MockHttpServletRequest();
+        request.addParameter("eventAfter", Long.toString(new DateTime(2014, 1, 1, 0, 0, 0, 0).toDate().getTime()));
+        results = findForRequest(request);
+        assertEquals(1, results.size());
+        assertThat(results, everyItem(HasPropertyWithValue.<TestObject>hasProperty("id", is(6))));
+
+        request = new MockHttpServletRequest();
+        request.addParameter("eventBefore", Long.toString(new DateTime(2014, 1, 1, 0, 0, 0, 0).toDate().getTime()));
+        results = findForRequest(request);
+        assertEquals(1, results.size());
+        assertThat(results, everyItem(HasPropertyWithValue.<TestObject>hasProperty("id", is(7))));
+    }
+
     private List<TestObject> findForRequest(MockHttpServletRequest request) {
         QueryCriteria<TestObject> criteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, TestObject.class);
         QueryBuilder<TestObject, TypedQuery<TestObject>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<TestObject>(entityManager);
@@ -227,7 +268,7 @@ public class JpaQueryBuilderTest {
         private Integer id;
 
         @Column
-        @Filterable(operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN })
+        @Filterable(operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN})
         private Double score;
 
         @Column
@@ -236,10 +277,18 @@ public class JpaQueryBuilderTest {
 
         @Column
         @Filterable(
-                operators = { Operator.GREATER_THAN, Operator.LESS_THAN },
+                operators = {Operator.GREATER_THAN, Operator.LESS_THAN},
                 translator = TimestampToDateTranslator.class
         )
         private Date time;
+
+        @OneToMany
+        @Filterable(
+                operators = {Operator.GREATER_THAN, Operator.LESS_THAN},
+                translator = TimestampToDateTranslator.class,
+                childOperand = "innerDate"
+        )
+        private List<EventObject> event;
 
         @Column
         private Integer notAnnotated;
@@ -287,6 +336,14 @@ public class JpaQueryBuilderTest {
             this.time = time;
         }
 
+        public List<EventObject> getEvent() {
+            return event;
+        }
+
+        public void setEvent(List<EventObject> event) {
+            this.event = event;
+        }
+
         public Integer getNotAnnotated() {
             return notAnnotated;
         }
@@ -296,4 +353,40 @@ public class JpaQueryBuilderTest {
         }
 
     }
+
+    @Entity
+    @Table(name = "event")
+    public static class EventObject {
+
+        @Id
+        private Integer id;
+
+        @Column
+        private Date innerDate;
+
+        public EventObject() {
+        }
+
+        public EventObject(Integer id, Date innerDate) {
+            this.id = id;
+            this.innerDate = innerDate;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public Date getInnerDate() {
+            return innerDate;
+        }
+
+        public void setInnerDate(Date innerDate) {
+            this.innerDate = innerDate;
+        }
+    }
+
 }

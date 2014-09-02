@@ -3,10 +3,10 @@ package com.subrosagames.subrosa.domain.game;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.DomainRepository;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
-import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.*;
+import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -95,4 +95,8 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
     LocationEntity create(LocationEntity location);
 
     EventEntity getEvent(int eventId) throws GameEventNotFoundException;
+
+    EventEntity update(ScheduledEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException;
+
+    EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException;
 }

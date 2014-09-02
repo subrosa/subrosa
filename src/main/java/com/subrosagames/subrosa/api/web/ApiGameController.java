@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.BadRequestException;
@@ -132,6 +133,7 @@ public class ApiGameController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
+    @Transactional
     public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptor)
             throws GameValidationException, NotAuthenticatedException, BadRequestException
     {
@@ -157,6 +159,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
+    @Transactional
     public Game updateGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody GameDescriptor gameDescriptor)
             throws GameValidationException, GameNotFoundException, NotAuthenticatedException
@@ -183,6 +186,9 @@ public class ApiGameController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to publish a game.");
         }
+//        Game game = gameFactory.getGame(gameUrl, "events");
+        // check for ownership
+//        return game.publish();
         return gameService.publishGame(gameUrl);
     }
 
@@ -224,6 +230,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) PostDescriptor postDescriptor)
             throws GameNotFoundException, NotAuthenticatedException, BadRequestException, PostValidationException {

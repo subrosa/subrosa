@@ -6,10 +6,8 @@ import com.subrosa.api.actions.list.QueryCriteria;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
+import java.util.Comparator;
 
 /**
  * Manages the creation of a JPA {@link TypedQuery} from a {@link QueryCriteria}.
@@ -55,18 +53,23 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
         Predicate predicate = builder.conjunction();
         for (Filter filter : criteria.getFilters()) {
             Object value = filter.getTranslator().translate(filter.getValue());
+            Path<Comparable> path = root.get(filter.getField());
+            if (filter.getChildOperand() != null) {
+                path = root.join(filter.getField());
+                path = path.get(filter.getChildOperand());
+            }
             switch (filter.getOperator()) {
                 case EQUAL:
-                    predicate = builder.and(predicate, builder.equal(root.get(filter.getField()), value));
+                    predicate = builder.and(predicate, builder.equal(path, value));
                     break;
                 case NOT_EQUAL:
-                    predicate = builder.and(predicate, builder.notEqual(root.get(filter.getField()), value));
+                    predicate = builder.and(predicate, builder.notEqual(path, value));
                     break;
                 case GREATER_THAN:
-                    predicate = builder.and(predicate, builder.greaterThan(root.<Comparable>get(filter.getField()), (Comparable) value));
+                    predicate = builder.and(predicate, builder.greaterThan(path, (Comparable) value));
                     break;
                 case LESS_THAN:
-                    predicate = builder.and(predicate, builder.lessThan(root.<Comparable>get(filter.getField()), (Comparable) value));
+                    predicate = builder.and(predicate, builder.lessThan(path, (Comparable) value));
                     break;
                 default:
                     throw new IllegalStateException("Found unsupported operator " + filter.getOperator().name());
