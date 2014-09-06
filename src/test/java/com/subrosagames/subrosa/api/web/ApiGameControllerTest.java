@@ -1,28 +1,5 @@
 package com.subrosagames.subrosa.api.web;
 
-import java.util.*;
-
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
-import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
-import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
-import com.subrosagames.subrosa.event.ScheduledEvent;
-import com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaEventRepository;
-import com.subrosagames.subrosa.util.ObjectUtils;
-import org.apache.commons.beanutils.BeanPropertyValueEqualsPredicate;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.joda.time.DateTime;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.collect.Sets;
@@ -31,10 +8,36 @@ import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
-import org.springframework.util.StringUtils;
+import com.subrosagames.subrosa.event.ScheduledEvent;
+import org.dbunit.util.QualifiedTableName;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
+import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
@@ -43,13 +46,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
-import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiGameController}.
@@ -306,7 +302,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     @Ignore // TODO figure out how these should validate
-    public void testCannotSetTimesInPast() throws Exception {
+    public void testCannotSetTimesInPast() throws Exception
+    {
         String url = "fun_times";
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DATE, -1);
@@ -323,7 +320,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     @Ignore // TODO figure out how these should validate
-    public void testEndTimesMustBeAfterStartTimes() throws Exception {
+    public void testEndTimesMustBeAfterStartTimes() throws Exception
+    {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
         nextMonth.add(Calendar.DATE, 30);
@@ -352,7 +350,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     @Ignore // TODO figure out how these should validate
-    public void testRegistrationEndAtOrBeforeGameStart() throws Exception {
+    public void testRegistrationEndAtOrBeforeGameStart() throws Exception
+    {
         String url = "fun_times";
         Calendar nextMonth = Calendar.getInstance();
         nextMonth.add(Calendar.DATE, 30);
@@ -419,7 +418,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.gameStart").value(gameStart))
                 .andExpect(jsonPath("$.gameEnd").value(gameEnd))
                 .andExpect(jsonPath("$.registrationStart").value(registrationStart))
-                .andExpect(jsonPath("$.registrationEnd").value(gameStart))
+                .andExpect(jsonPath("$.registrationEnd").value(registrationEnd))
         ;
 
         mockMvc.perform(
@@ -454,7 +453,8 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.price").value(500));
 
         // update without specifying price and see original
-        performGameUpdates(url, new HashMap<String, Object>() {{ }})
+        performGameUpdates(url, new HashMap<String, Object>() {{
+        }})
                 .andExpect(jsonPath("$.price").value(500.0));
 
         // update with null and see that it sets it successfully

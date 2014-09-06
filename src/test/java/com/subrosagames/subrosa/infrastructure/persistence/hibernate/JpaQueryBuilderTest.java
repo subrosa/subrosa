@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.AllOf.allOf;
