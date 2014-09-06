@@ -21,9 +21,8 @@ repositories {
     maven {
         url "http://nexus.subrosagames.com/content/groups/public"
         credentials {
-            // TODO move creds out of this file
-            username 'josiah'
-            password 'n#qaV6Ga'
+            username nexusUsername
+            password nexusPassword
         }
     }
 }
@@ -150,12 +149,4 @@ sonarRunner {
         property "sonar.jdbc.password", "123qwe"
         property "sonar.jacoco.reportPath", "$buildDir/jacoco/jacocoTest.exec"
     }
-
-//    project {
-//        name = project.name
-//        version = project.version
-//        withProjectProperties { props ->
-//            props["sonar.jacoco.reportPath"] = "$reporting.baseDir/jacoco/jacoco.exec"
-//        }
-//    }
 }
