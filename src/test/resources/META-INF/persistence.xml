@@ -5,6 +5,7 @@
   <persistence-unit name="testPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <class>com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaQueryBuilderTest$TestObject</class>
+    <class>com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaQueryBuilderTest$EventObject</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:unit-testing-jpa"/>

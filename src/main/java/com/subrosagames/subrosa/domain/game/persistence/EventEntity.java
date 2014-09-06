@@ -1,17 +1,24 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import com.subrosagames.subrosa.domain.game.Lifecycle;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.event.GameEvent;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
 
 /**
  * Persists events. Parent class for {@link ScheduledEventEntity}s and {@link TriggeredEventEntity}s.
  */
 @Entity
 @Table(name = "lifecycle_event")
-@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "event_type", discriminatorType = DiscriminatorType.STRING)
-public class EventEntity {
+@DiscriminatorOptions(force = true)
+public abstract class EventEntity extends BaseEntity implements GameEvent {
 
     @Id
     @SequenceGenerator(name = "lifecycleEventSeq", sequenceName = "lifecycle_event_event_id_seq")
@@ -19,15 +26,22 @@ public class EventEntity {
     @Column(name = "event_id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY, targetEntity = LifecycleEntity.class)
-    @JoinColumn(name = "lifecycle_id", referencedColumnName = "game_id")
-    private Lifecycle lifecycle;
-
     @Column(name = "event_class")
-    private String eventClass;
+    @NotNull
+    protected String event;
 
-    @Column(name = "event_type")
-    private String eventType;
+    @JsonIgnore
+    @ManyToOne(targetEntity = GameEntity.class)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public Integer getId() {
         return id;
@@ -37,27 +51,12 @@ public class EventEntity {
         this.id = id;
     }
 
-    public Lifecycle getLifecycle() {
-        return lifecycle;
+    public String getEvent() {
+        return event;
     }
 
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
+    public void setEvent(String event) {
+        this.event = event;
     }
 
-    public String getEventClass() {
-        return eventClass;
-    }
-
-    public void setEventClass(String eventClass) {
-        this.eventClass = eventClass;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
-    }
 }

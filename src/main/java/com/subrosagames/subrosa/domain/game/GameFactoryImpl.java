@@ -1,15 +1,17 @@
 package com.subrosagames.subrosa.domain.game;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
+import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -18,13 +20,15 @@ import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Factory class for generating game domain objects.
@@ -74,6 +78,7 @@ public class GameFactoryImpl implements GameFactory {
         game.setGameRepository(gameRepository);
         game.setGameFactory(this);
         game.setRuleRepository(ruleRepository);
+        game.setEventRepository(eventRepository);
         game.setPlayerFactory(playerFactory);
     }
 
@@ -177,6 +182,13 @@ public class GameFactoryImpl implements GameFactory {
         PostEntity postEntity = new PostEntity();
         copyProperties(postDescriptor, postEntity);
         return postEntity;
+    }
+
+    @Override
+    public EventEntity forDto(GameEventDescriptor gameEventDescriptor) {
+        ScheduledEventEntity eventEntity = new ScheduledEventEntity();
+        copyProperties(gameEventDescriptor, eventEntity);
+        return eventEntity;
     }
 
     @Override

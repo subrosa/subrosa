@@ -1,35 +1,32 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Date;
+
 /**
- *  Persists a scheduled event.
+ * Persists a scheduled event.
  */
 @Entity
-@Table(name = "scheduled_event")
 @DiscriminatorValue(ScheduledEventEntity.EVENT_TYPE_SCHEDULED)
-@PrimaryKeyJoinColumn(name = "event_id")
 public class ScheduledEventEntity extends EventEntity implements ScheduledEvent {
 
     public static final String EVENT_TYPE_SCHEDULED = "SCHEDULED";
 
     @Column(name = "event_date")
-    private Timestamp eventDate;
+    @NotNull
+    private Date date;
 
-    public Timestamp getEventDate() {
-        return eventDate == null ? null : new Timestamp(eventDate.getTime());
+    public Date getDate() {
+        return date == null ? null : new Date(date.getTime());
     }
 
-    public void setEventDate(Date eventDate) {
-        this.eventDate = eventDate == null ? null : new Timestamp(eventDate.getTime());
+    public void setDate(Date date) {
+        this.date = date == null ? null : new Date(date.getTime());
     }
 
 }

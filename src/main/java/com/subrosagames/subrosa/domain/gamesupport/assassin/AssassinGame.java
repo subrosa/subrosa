@@ -40,9 +40,8 @@ public class AssassinGame extends GameEntity {
     /**
      * Construct with given persistent entity and game lifecycle.
      * @param gameEntity game entity
-     * @param lifecycle game lifecycle
      */
-    public AssassinGame(GameEntity gameEntity, Lifecycle lifecycle) {
+    public AssassinGame(GameEntity gameEntity) {
     }
 
     protected String[] getRequiredEvents() {

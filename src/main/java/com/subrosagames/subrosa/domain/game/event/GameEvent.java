@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game.event;
 
+import com.subrosagames.subrosa.domain.game.Game;
+
 import java.util.Date;
 
 /**
@@ -8,21 +10,17 @@ import java.util.Date;
  */
 public interface GameEvent {
 
+    public Integer getId();
 
-    Integer getHistoryId();
+    public String getEvent();
 
-    Integer getGameId();
+    public Date getCreated();
 
-    Integer getAssassinId();
+    public Date getModified();
 
-    Integer getVictimId();
+    public void setGame(Game game);
 
-    String getObituary();
+    public Game getGame();
 
-    String getType();
-
-    Date getCreated();
-
-    Date getModified();
 }
 

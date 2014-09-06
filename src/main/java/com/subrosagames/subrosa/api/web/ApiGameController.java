@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.util.RequestUtils;
@@ -42,7 +44,6 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -132,6 +133,7 @@ public class ApiGameController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
+    @Transactional
     public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptor)
             throws GameValidationException, NotAuthenticatedException, BadRequestException
     {
@@ -157,6 +159,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
+    @Transactional
     public Game updateGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody GameDescriptor gameDescriptor)
             throws GameValidationException, GameNotFoundException, NotAuthenticatedException
@@ -183,6 +186,9 @@ public class ApiGameController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to publish a game.");
         }
+//        Game game = gameFactory.getGame(gameUrl, "events");
+        // check for ownership
+//        return game.publish();
         return gameService.publishGame(gameUrl);
     }
 
@@ -224,6 +230,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
     @ResponseBody
+    @Transactional
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) PostDescriptor postDescriptor)
             throws GameNotFoundException, NotAuthenticatedException, BadRequestException, PostValidationException {
@@ -249,7 +256,7 @@ public class ApiGameController {
      */
     @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<GameEvent> getHistory(@PathVariable("gameUrl") String gameUrl,
+    public PaginatedList<GameHistory> getHistory(@PathVariable("gameUrl") String gameUrl,
                                                @RequestParam(value = "limit", required = false) Integer limit,
                                                @RequestParam(value = "offset", required = false) Integer offset)
             throws GameNotFoundException
@@ -257,11 +264,11 @@ public class ApiGameController {
         limit = ObjectUtils.defaultIfNull(limit, 10);
         offset = ObjectUtils.defaultIfNull(offset, 0);
         LOG.debug("Retrieving history for game {}", gameUrl);
-        List<GameEvent> events = gameFactory.getGame(gameUrl).getHistory();
+        List<GameHistory> events = gameFactory.getGame(gameUrl).getHistory();
         if (CollectionUtils.isEmpty(events)) {
-            return new PaginatedList<GameEvent>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
+            return new PaginatedList<GameHistory>(Lists.<GameHistory>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<GameEvent>(
+            return new PaginatedList<GameHistory>(
                     events.subList(offset, offset + limit),
                     events.size(),
                     limit, offset);

@@ -83,25 +83,6 @@ public class GameHelper {
         gameRepository.setGameAttribute(game, attributeType, attributeValue);
     }
 
-    public void addTriggeredEvent(EventMessage eventType, Event trigger) {
-        TriggeredEventEntity entity = eventRepository.createTriggeredEvent(eventType, trigger);
-        Lifecycle lifecycle = game.getLifecycle();
-        lifecycle.addTriggeredEvent(entity);
-        gameRepository.save(lifecycle);
-    }
-
-    public List<TriggeredEvent> getEventsTriggeredBy(EventMessage eventMessage) {
-        List<TriggeredEvent> eventsTriggered = Lists.newArrayList();
-        List<TriggeredEventEntity> persistedEvents = game.getLifecycle().getTriggeredEvents();
-        for (TriggeredEventEntity event : persistedEvents) {
-            String eventClass = event.getTriggerEvent().getEventClass();
-            if (eventClass.equals(eventMessage.name())) {
-                eventsTriggered.add(event);
-            }
-        }
-        return eventsTriggered;
-    }
-
     public void setGameRepository(GameRepository gameRepository) {
         this.gameRepository = gameRepository;
     }

@@ -91,7 +91,7 @@ public interface GameData {
      * Game start time.
      * @return game start time
      */
-    @Future
+    @Future(groups = PublishAction.class)
     @NotNull(groups = PublishAction.class)
     Date getGameStart();
 
@@ -99,7 +99,7 @@ public interface GameData {
      * Game end time.
      * @return game end time
      */
-    @Future
+    @Future(groups = PublishAction.class)
     @NotNull(groups = PublishAction.class)
     Date getGameEnd();
 
@@ -114,7 +114,7 @@ public interface GameData {
      * Registration end time.
      * @return registration end time
      */
-    @Future
+    @Future(groups = PublishAction.class)
     @NotNull(groups = PublishAction.class)
     Date getRegistrationEnd();
 

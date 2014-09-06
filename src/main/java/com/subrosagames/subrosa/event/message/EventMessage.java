@@ -72,7 +72,7 @@ public enum EventMessage implements Event {
     }
 
     @Override
-    public String getEventClass() {
+    public String getEvent() {
         return name();
     }
 

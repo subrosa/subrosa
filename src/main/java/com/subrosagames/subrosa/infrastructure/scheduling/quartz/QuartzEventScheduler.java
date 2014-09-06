@@ -39,7 +39,7 @@ public class QuartzEventScheduler implements EventScheduler {
 
     @Override
     public void triggerEvent(TriggeredEvent event, int gameId) throws EventException {
-        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEventClass()), gameId);
+        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEvent()), gameId);
         try {
             schedulerFactoryBean.getScheduler().triggerJob(jobDetail.getName(), jobDetail.getGroup());
         } catch (SchedulerException e) {
@@ -69,14 +69,14 @@ public class QuartzEventScheduler implements EventScheduler {
     @Override
     public void scheduleEvent(ScheduledEvent event, int gameId) throws EventException {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Scheduling event type {} for game {} at date {}", new Object[] { event.getClass(), gameId, event.getEventDate() });
+            LOG.debug("Scheduling event type {} for game {} at date {}", new Object[] { event.getClass(), gameId, event.getDate() });
         }
-        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEventClass()), gameId);
-        SimpleTriggerBean trigger = createTrigger(jobDetail, event.getEventDate());
+        JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEvent()), gameId);
+        SimpleTriggerBean trigger = createTrigger(jobDetail, event.getDate());
         try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
-            throw new EventException("Failed to schedule event of type " + event.getClass() + " at date " + event.getEventDate(), e);
+            throw new EventException("Failed to schedule event of type " + event.getClass() + " at date " + event.getDate(), e);
         }
     }
 
