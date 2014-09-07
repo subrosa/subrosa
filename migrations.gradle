@@ -1,0 +1,13 @@
+apply plugin: 'flyway'
+
+flyway {
+    url = "jdbc:postgresql://localhost:5432/engine"
+    user = 'engine'
+    password = 'engine'
+    locations = ['filesystem:src/main/db/migrations/']
+    sqlMigrationPrefix = ''
+    sqlMigrationSeparator = '_'
+    outOfOrder = true
+    initOnMigrate = true
+}
+
