@@ -10,6 +10,12 @@ sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
 configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//        if (details.requested.name == 'log4j') {
+            //prefer 'log4j-over-slf4j' over 'log4j', with fixed version:
+//            details.useTarget "org.slf4j:log4j-over-slf4j:1.7.5"
+//        }
+    }
 }
 
 // Tests fail to find persistence.xml
@@ -34,10 +40,6 @@ ext {
 }
 
 dependencies {
-    compile(group: 'com.subrosa.commons', name: 'api-server', version: '0.4-SNAPSHOT') {
-        exclude(module: 'spring-beans')
-    }
-
     // logging
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.6'
     runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.6.6'
@@ -84,6 +86,7 @@ dependencies {
         exclude(module: 'commons-logging')
     }
     compile group: 'org.joda', name: 'joda-money', version: '0.9.1'
+    compile group: 'joda-time', name: 'joda-time', version: '2.4'
     compile group: 'com.vividsolutions.jts', name: 'jts', version: '1.8.0'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 
