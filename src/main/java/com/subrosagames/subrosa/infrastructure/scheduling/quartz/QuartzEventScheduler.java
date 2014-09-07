@@ -5,12 +5,13 @@ import java.util.Date;
 
 import org.quartz.JobDetail;
 import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SimpleTriggerBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.event.EventException;
 import com.subrosagames.subrosa.event.EventExecutor;
@@ -41,7 +42,7 @@ public class QuartzEventScheduler implements EventScheduler {
     public void triggerEvent(TriggeredEvent event, int gameId) throws EventException {
         JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEvent()), gameId);
         try {
-            schedulerFactoryBean.getScheduler().triggerJob(jobDetail.getName(), jobDetail.getGroup());
+            schedulerFactoryBean.getScheduler().triggerJob(jobDetail.getKey(), jobDetail.getJobDataMap());
         } catch (SchedulerException e) {
             throw new EventException("Failed to immediately trigger event of type " + event.getClass(), e);
         }
@@ -58,7 +59,7 @@ public class QuartzEventScheduler implements EventScheduler {
     public void scheduleEvent(EventMessage eventMessage, Date eventDate, int gameId) throws EventException {
         LOG.debug("Scheduling event {} for game {} for date {}", new Object[] { eventMessage.name(), gameId, eventDate});
         JobDetail jobDetail = createJobDetail(eventMessage, gameId);
-        SimpleTriggerBean trigger = createTrigger(jobDetail, eventDate);
+        SimpleTrigger trigger = createTrigger(jobDetail, eventDate);
         try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
@@ -72,7 +73,7 @@ public class QuartzEventScheduler implements EventScheduler {
             LOG.debug("Scheduling event type {} for game {} at date {}", new Object[] { event.getClass(), gameId, event.getDate() });
         }
         JobDetail jobDetail = createJobDetail(EventMessage.valueOf(event.getEvent()), gameId);
-        SimpleTriggerBean trigger = createTrigger(jobDetail, event.getDate());
+        SimpleTrigger trigger = createTrigger(jobDetail, event.getDate());
         try {
             schedulerFactoryBean.getScheduler().scheduleJob(jobDetail, trigger);
         } catch (SchedulerException e) {
@@ -97,14 +98,14 @@ public class QuartzEventScheduler implements EventScheduler {
         return jobDetailFactory.getObject();
     }
 
-    private SimpleTriggerBean createTrigger(JobDetail jobDetail, Date eventDate) {
-        SimpleTriggerBean trigger = new SimpleTriggerBean();
-        trigger.setBeanName("trigger-" + jobDetail.getName());
-        trigger.setJobDetail(jobDetail);
-        trigger.setRepeatCount(0);
-        trigger.setStartTime(eventDate);
-        trigger.afterPropertiesSet();
-        return trigger;
+    private SimpleTrigger createTrigger(JobDetail jobDetail, Date eventDate) {
+        SimpleTriggerFactoryBean factory = new SimpleTriggerFactoryBean();
+        factory.setBeanName("trigger-" + jobDetail.getKey().getName());
+        factory.setJobDetail(jobDetail);
+        factory.setRepeatCount(0);
+        factory.setStartTime(eventDate);
+        factory.afterPropertiesSet();
+        return factory.getObject();
     }
 
 }

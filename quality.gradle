@@ -1,0 +1,34 @@
+apply plugin: 'jacoco'
+apply plugin: 'build-dashboard'
+
+def configDir = new File(buildscript.sourceFile.parentFile, 'config')
+
+apply plugin: 'checkstyle'
+checkstyle {
+    configProperties.checkstyleConfigDir = "$configDir/checkstyle"
+    ignoreFailures = true
+}
+
+apply plugin: 'findbugs'
+findbugs {
+    ignoreFailures = true
+}
+
+apply plugin: 'pmd'
+pmd {
+    ignoreFailures = true
+}
+
+apply plugin: 'sonar-runner'
+def sonarServerUrl = "10.10.10.42"
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://$sonarServerUrl:9000"
+        property "sonar.jdbc.url", "jdbc:mysql://$sonarServerUrl/sonar"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "123qwe"
+        property "sonar.jacoco.reportPath", "$buildDir/jacoco/jacocoTest.exec"
+    }
+}
+

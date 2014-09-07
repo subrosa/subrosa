@@ -14,9 +14,9 @@ import com.subrosagames.subrosa.domain.player.Team;
 public interface GameService {
 
     /**
-     * Update given
-     * @param gameDescriptor
-     * @return
+     * Update game with the given information.
+     * @param gameDescriptor game information
+     * @return updated game
      */
     Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException;
 

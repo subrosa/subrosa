@@ -8,7 +8,6 @@ import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.google.common.base.Objects;
-import org.codehaus.jackson.node.NullNode;
 
 /**
  * Encapsulates the necessary information to create a game.

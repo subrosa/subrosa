@@ -18,21 +18,20 @@
     <property name="dataSource" ref="dataSource"/>
     <property name="jpaProperties">
       <props>
-        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL9Dialect</prop>
         <prop key="hibernate.hbm2ddl.auto">validate</prop>
       </props>
     </property>
   </bean>
-  <bean id="sessionFactory"
-        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
-        factory-bean="entityManagerFactory" factory-method="getSessionFactory"/>
 
   <tx:annotation-driven transaction-manager="transactionManager"/>
   <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
     <property name="entityManagerFactory" ref="entityManagerFactory"/>
   </bean>
 
-  <!--<jpa:repositories base-package="com.subrosagames.subrosa.infrastructure.persistence.springdata" />-->
+  <bean id="persistenceExceptionTranslationPostProcessor"
+        class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/>
 
+  <!--<jpa:repositories base-package="com.subrosagames.subrosa.infrastructure.persistence.springdata" />-->
 
 </beans>
