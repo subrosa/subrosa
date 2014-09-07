@@ -16,11 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: jgore
- * Date: 12/19/11
- * Time: 7:17 午後
- * To change this template use File | Settings | File Templates.
+ * @todo
  */
 public class FilterListXmlAdapter extends XmlAdapter<Object, List<Filter>> {
 
