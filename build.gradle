@@ -22,6 +22,12 @@ configurations.all {
 sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
+compileJava {
+//    options.compilerArgs << '-Xlint:unchecked'
+//    options.compilerArgs << '-Xlint:deprecation'
+}
+
+
 repositories {
     mavenCentral()
     maven {

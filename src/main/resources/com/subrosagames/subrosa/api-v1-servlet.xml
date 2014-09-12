@@ -39,6 +39,11 @@
 
   <bean id="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
     <property name="modulesToInstall" value="com.fasterxml.jackson.datatype.guava.GuavaModule"/>
+    <property name="featuresToEnable">
+      <list>
+        <value type="com.fasterxml.jackson.databind.SerializationFeature">WRITE_ENUMS_USING_TO_STRING</value>
+      </list>
+    </property>
     <property name="featuresToDisable">
       <list>
         <value type="com.fasterxml.jackson.databind.DeserializationFeature">FAIL_ON_UNKNOWN_PROPERTIES</value>

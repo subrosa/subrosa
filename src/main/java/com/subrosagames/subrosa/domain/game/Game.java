@@ -87,10 +87,27 @@ public interface Game extends GameData {
      */
     void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
+    /**
+     * Get a list of game events.
+     *
+     * @return list of game events
+     */
     List<GameEvent> getEvents();
 
+    /**
+     * Get the specified game event.
+     *
+     * @param eventId game event id
+     * @return game event
+     * @throws GameEventNotFoundException if the specified game event does not exist
+     */
     GameEvent getEvent(int eventId) throws GameEventNotFoundException;
 
+    /**
+     * Get a list of historical game events.
+     *
+     * @return list of historical game events
+     */
     List<GameHistory> getHistory();
 
     /**
@@ -100,15 +117,53 @@ public interface Game extends GameData {
      */
     List<Post> getPosts();
 
+    /**
+     * Get the zones in which the game occurs.
+     *
+     * @return list of game zones
+     */
     List<Zone> getZones();
 
+    /**
+     * Persist a new game from the current state.
+     *
+     * @return the persisted game
+     * @throws GameValidationException if the game is invalid for creation
+     */
     Game create() throws GameValidationException;
 
+    /**
+     * Update the game with the current state.
+     *
+     * @param game game information
+     * @return updated game
+     * @throws GameValidationException if the game state is invalid
+     */
     Game update(GameDescriptor game) throws GameValidationException;
 
+    /**
+     * Publish the game.
+     *
+     * @return the published game
+     * @throws GameValidationException if the game state is invalid for publishing
+     */
     Game publish() throws GameValidationException;
 
+    /**
+     * Adds a post to the game feed.
+     *
+     * @param postEntity post to add
+     * @return added post
+     * @throws PostValidationException if the post entity is invalid
+     */
     Post addPost(PostEntity postEntity) throws PostValidationException;
 
+    /**
+     * Adds an event to the game events.
+     *
+     * @param eventEntity game event to add
+     * @return added game event
+     * @throws GameEventValidationException if the game event is invalid
+     */
     GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException;
 }
