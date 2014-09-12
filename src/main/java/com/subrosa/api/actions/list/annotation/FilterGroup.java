@@ -12,8 +12,8 @@ import java.lang.annotation.Target;
  *
  * This will only occur within a {@link FilterGroups} complex annotation.
  *
- * @see {@link FilterGroups}
- * @see {@link com.subrosa.api.actions.list.Operator}
+ * @see FilterGroups
+ * @see com.subrosa.api.actions.list.Operator Operator
  */
 @Target({ }) // SUPPRESS CHECKSTYLE AnnotationUseStyle evidently checkstyle doesn't grok complex annotation type declarations
 public @interface FilterGroup {

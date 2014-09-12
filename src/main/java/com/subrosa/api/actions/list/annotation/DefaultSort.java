@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
 /**
  * Sets which field in a type is sorted on by default.
  *
- * @see {@link com.subrosa.api.actions.list.Sort}.
- * @see {@link com.subrosa.api.actions.list.annotation.Sortable}.
+ * @see com.subrosa.api.actions.list.Sort Sort
+ * @see com.subrosa.api.actions.list.annotation.Sortable Sortable
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

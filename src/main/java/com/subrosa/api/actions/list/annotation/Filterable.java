@@ -43,7 +43,7 @@ public @interface Filterable {
      *
      * Defaults to equal and not equal.
      *
-     * @see {@link com.subrosa.api.actions.list.Operator}
+     * @see com.subrosa.api.actions.list.Operator Operator
      */
     Operator[] operators() default { Operator.EQUAL, Operator.NOT_EQUAL };
 
