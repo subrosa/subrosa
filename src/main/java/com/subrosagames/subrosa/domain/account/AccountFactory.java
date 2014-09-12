@@ -1,10 +1,9 @@
 package com.subrosagames.subrosa.domain.account;
 
-import com.subrosagames.subrosa.service.PaginatedList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
+import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
  * Factory for account objects.
@@ -21,5 +20,9 @@ public class AccountFactory {
                 accounts,
                 accountRepository.count(),
                 limit, offset);
+    }
+
+    public Account getAccount(Integer id, String... expansions) throws AccountNotFoundException {
+        return accountRepository.get(id, expansions);
     }
 }

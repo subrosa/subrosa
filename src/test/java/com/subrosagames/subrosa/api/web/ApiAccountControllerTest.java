@@ -1,17 +1,17 @@
 package com.subrosagames.subrosa.api.web;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
@@ -23,14 +23,14 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     @Test
     public void testUnauthenticatedAccountRetrieval() throws Exception {
         mockMvc.perform(
-                get("/account/10000"))
+                get("/account/1"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void testUnauthorizedAccountRetrieval() throws Exception {
         mockMvc.perform(
-                get("/account/10001")
+                get("/account/1000")
                         .with(user("bob@user.com")))
                 .andExpect(status().isForbidden());
     }
@@ -38,7 +38,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     @Test
     public void testOwnedAccountRetrieval() throws Exception {
         mockMvc.perform(
-                get("/account/10000")
+                get("/account/1")
                         .with(user("bob@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("bob@user.com"));
@@ -47,7 +47,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     @Test
     public void testAdminAccountRetrieval() throws Exception {
         mockMvc.perform(
-                get("/account/10000")
+                get("/account/1")
                         .with(user("joe@admin.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("bob@user.com"));
@@ -82,14 +82,14 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     @Test
     public void testUpdateAccount() throws Exception {
         String response = mockMvc.perform(
-                get("/account/10000")
-                .with(user("bob@user.com")))
+                get("/account/1")
+                        .with(user("bob@user.com")))
                 .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
         mockMvc.perform(
-                put("/account/10000")
-                .with(user("bob@user.com"))
-                .content(response))
+                put("/account/1")
+                        .with(user("bob@user.com"))
+                        .content(response))
                 .andExpect(status().isOk());
     }
 }

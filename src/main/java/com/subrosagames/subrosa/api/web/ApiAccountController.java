@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import com.google.common.base.Optional;
+import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Accolade;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -44,7 +45,8 @@ public class ApiAccountController {
 
     /**
      * Get paginated list of accounts.
-     * @param limit limit
+     *
+     * @param limit  limit
      * @param offset offset
      * @param expand fields to expand
      * @return paginated list of accounts
@@ -67,6 +69,7 @@ public class ApiAccountController {
 
     /**
      * Get an {@link Account} using the provided accountId.
+     *
      * @param accountId the accountId from the path.
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
@@ -79,14 +82,15 @@ public class ApiAccountController {
     {
         LOG.debug("Getting account {} info with expansions {}", accountId, expand);
         if (StringUtils.isEmpty(expand)) {
-            return accountRepository.get(accountId);
+            return accountFactory.getAccount(accountId);
         } else {
-            return accountRepository.get(accountId, expand.split(","));
+            return accountFactory.getAccount(accountId, expand.split(","));
         }
     }
 
     /**
      * Create an {@link Account} from the provided parameters.
+     *
      * @param registration the registration parameters.
      * @return {@link Account}
      */
@@ -102,24 +106,30 @@ public class ApiAccountController {
 
     /**
      * Update an {@link Account} from the provided parameters.
-     * @param accountId the accountId from the path.
-     * @param account   the {@link Account} data to update.
+     *
+     * @param accountId         the accountId from the path.
+     * @param accountDescriptor the {@link AccountDescriptor} data to update.
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
      */
     @RequestMapping(value = {"/{accountId}", "/{accountId}/"}, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
-                                 @RequestBody Account account)
+                                 @RequestBody AccountDescriptor accountDescriptor)
             throws AccountNotFoundException, AccountValidationException
     {
-        LOG.debug("Saving account with ID {} as {}", accountId, account);
-        account.setId(accountId);
-        return accountRepository.update(account);
+        LOG.debug("Saving account with ID {} as {}", accountId, accountDescriptor);
+        Account account = accountFactory.getAccount(accountId);
+        // read-only fields
+        // TODO Account should handle this
+        accountDescriptor.setId(accountId);
+        accountDescriptor.setActivated(Optional.of(false));
+        return account.update(accountDescriptor);
     }
 
     /**
      * Get a list of {@link Accolade}s for an {@link Account} using the provided accountId.
+     *
      * @param accountId the accountId from the path.
      * @return a list of {@link Accolade}s.
      * @throws AccountNotFoundException if account not found
@@ -136,6 +146,7 @@ public class ApiAccountController {
 
     /**
      * Update the {@link Address} for an {@link Account}.
+     *
      * @param accountId the accountId from the path.
      * @param address   the {@link Address} parameters.
      * @return {@link Account}

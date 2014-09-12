@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.hibernate.annotations.Type;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.UriUserType;
 
@@ -48,6 +49,7 @@ public class Image {
         this.imageType = imageType;
     }
 
+    @JsonValue
     public String getUri() {
         return uri;
     }

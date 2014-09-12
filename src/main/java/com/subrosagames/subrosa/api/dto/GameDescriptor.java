@@ -10,7 +10,7 @@ import com.subrosagames.subrosa.domain.image.Image;
 import com.google.common.base.Objects;
 
 /**
- * Encapsulates the necessary information to create a game.
+ * Encapsulates the necessary information to create or update a game.
  */
 public class GameDescriptor {//implements GameData {
 

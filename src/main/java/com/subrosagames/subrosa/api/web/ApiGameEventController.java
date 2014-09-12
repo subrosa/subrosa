@@ -1,5 +1,20 @@
 package com.subrosagames.subrosa.api.web;
 
+import java.util.List;
+import javax.transaction.Transactional;
+import org.apache.commons.collections.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
@@ -14,16 +29,6 @@ import com.subrosagames.subrosa.domain.game.validation.GameEventValidationExcept
 import com.subrosagames.subrosa.security.SecurityHelper;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
-import org.apache.commons.collections.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 /**
  * Controller for {@link com.subrosagames.subrosa.domain.game.Game} related CRUD operations.
@@ -134,9 +139,9 @@ public class ApiGameEventController {
      */
     @RequestMapping(value = {"/{eventId}", "/{eventId}/"}, method = RequestMethod.PUT)
     @ResponseBody
-    public Game updateGame(@PathVariable("gameUrl") String gameUrl,
-                           @PathVariable("eventId") Integer eventId,
-                           @RequestBody GameEventDescriptor gameEventDescriptor)
+    public Game updateEvent(@PathVariable("gameUrl") String gameUrl,
+                            @PathVariable("eventId") Integer eventId,
+                            @RequestBody GameEventDescriptor gameEventDescriptor)
             throws GameNotFoundException, GameEventNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
