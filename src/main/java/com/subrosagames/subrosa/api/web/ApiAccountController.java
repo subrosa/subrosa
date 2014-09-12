@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import com.google.common.base.Optional;
+import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Accolade;
@@ -24,6 +25,7 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 
@@ -93,15 +95,31 @@ public class ApiAccountController {
      *
      * @param registration the registration parameters.
      * @return {@link Account}
+     * @throws BadRequestException        if no POST body is supplied
+     * @throws AccountValidationException if account data is not valid
+     * @throws EmailConflictException     if supplied email is already in use
      */
     @RequestMapping(value = {"", "/"}, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Account createAccount(@RequestBody Registration registration) throws AccountValidationException {
+    public Account createAccount(@RequestBody(required = false) Registration registration)
+            throws AccountValidationException, BadRequestException, EmailConflictException
+    {
         LOG.debug("Creating new account");
-        Account account = registration.getAccount();
-        account.setActivated(false);
-        return accountRepository.create(account, registration.getPassword());
+        if (registration == null) {
+            throw new BadRequestException("No POST body supplied");
+        }
+        if (registration.getAccount() == null) {
+            throw new BadRequestException("Missing account information creating account");
+        }
+        // TODO put some constraints on password
+        if (StringUtils.isEmpty(registration.getPassword())) {
+            throw new BadRequestException("Missing password creating account");
+        }
+        AccountDescriptor accountDescriptor = registration.getAccount();
+        accountDescriptor.setActivated(Optional.of(false));
+        Account account = accountFactory.forDto(accountDescriptor);
+        return account.create(registration.getPassword());
     }
 
     /**
@@ -110,7 +128,8 @@ public class ApiAccountController {
      * @param accountId         the accountId from the path.
      * @param accountDescriptor the {@link AccountDescriptor} data to update.
      * @return {@link Account}
-     * @throws AccountNotFoundException if account not found
+     * @throws AccountNotFoundException   if account not found
+     * @throws AccountValidationException if account data is not valid
      */
     @RequestMapping(value = {"/{accountId}", "/{accountId}/"}, method = RequestMethod.PUT)
     @ResponseBody

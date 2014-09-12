@@ -75,6 +75,7 @@ dependencies {
     // validation
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.1.2.Final'
     compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
+    runtime group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05'
 
     // serialization
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion

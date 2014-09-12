@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotation that applies query filter groupings to a model class.
- *
+ * <p/>
  * This allows for specifying a group of fields that should be queried against together using
  * an OR clause, supporting things such as searching for a term across multiple fields, or querying
  * for objects where at least one of n dates is later than a certain date.

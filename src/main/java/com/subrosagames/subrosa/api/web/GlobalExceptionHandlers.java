@@ -17,6 +17,7 @@ import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
 import com.subrosa.api.notification.Severity;
 import com.subrosa.api.response.NotificationList;
+import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -176,8 +177,29 @@ public class GlobalExceptionHandlers {
                 GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
                 GeneralCode.INVALID_REQUEST_ENTITY.getDefaultMessage());
         Map<String, String> details = Maps.newHashMap();
-        details.put(e.getUnrecognizedPropertyName(), "unrecognized property");
+        details.put(e.getPropertyName(), "unrecognized property");
         notification.setDetails(details);
         return new NotificationList(notification);
     }
+
+    /**
+     * Handle {@link EmailConflictException}.
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public NotificationList handleEmailConflictException(EmailConflictException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
+                GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
+        Map<String, String> details = Maps.newHashMap();
+        details.put("field", "email");
+        details.put("constraint", "already in use");
+        notification.setDetails(details);
+        return new NotificationList(notification);
+    }
+
 }

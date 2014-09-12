@@ -6,6 +6,8 @@ import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
+import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
+import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -34,7 +36,7 @@ import java.util.List;
  * Factory class for generating game domain objects.
  */
 @Component
-public class GameFactoryImpl implements GameFactory {
+public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(GameFactoryImpl.class);
 
@@ -160,17 +162,6 @@ public class GameFactoryImpl implements GameFactory {
         }
         injectDependencies(gameEntity);
         return gameEntity;
-    }
-
-    private void copyProperties(Object dto, Object entity) {
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
-        try {
-            beanCopier.copyProperties(entity, dto);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
     }
 
     private String generateUrl() {

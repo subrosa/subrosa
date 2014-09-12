@@ -1,15 +1,15 @@
 package com.subrosa.api.actions.list.annotation;
 
-import com.subrosa.api.actions.list.Operator;
-
 import java.lang.annotation.Target;
+
+import com.subrosa.api.actions.list.Operator;
 
 /**
  * Annotation that defines a grouping of fields that can be queried against together.
- *
+ * <p/>
  * This allows for an OR clause across filters to support things like searching for a term
  * that may appear in any of a number of fields.
- *
+ * <p/>
  * This will only occur within a {@link FilterGroups} complex annotation.
  *
  * @see FilterGroups

@@ -21,7 +21,7 @@ public @interface DefaultSort {
 
     /**
      * Specifies the sort field that will be applied as the default sort.
-     *
+     * <p/>
      * Follows the format of {@link com.subrosa.api.actions.list.Sort#setSortField(String)}.
      */
     String value() default "";

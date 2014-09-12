@@ -6,6 +6,8 @@ import org.springframework.test.context.TestExecutionListeners;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.google.common.base.Optional;
+import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.Registration;
 import com.subrosagames.subrosa.domain.account.Account;
 
@@ -30,23 +32,17 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testRegistrationAndAuthentication() throws Exception {
-        Registration registration = new Registration();
-        Account account = new Account();
-        account.setEmail("jimmy@icanhazemail.com");
-        registration.setAccount(account);
-        registration.setPassword("password");
-
-        System.out.println(new ObjectMapper().writeValueAsString(registration));
         mockMvc.perform(
                 post("/account")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(registration)))
+                        .content(jsonBuilder()
+                                .addChild("account", jsonBuilder()
+                                .add("email", "jimmy@icanhazemail.com"))
+                        .add("password", "password").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("jimmy@icanhazemail.com"));
 
         mockMvc.perform(
                 post("/v1/session")
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonBuilder().add("email", "jimmy@icanhazemail.com").add("password", "password").build()))
                 .andExpect(status().isOk());
     }

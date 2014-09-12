@@ -9,14 +9,14 @@ import com.subrosagames.subrosa.domain.account.Account;
  */
 public class Registration {
 
-    private Account account;
+    private AccountDescriptor account;
     private String password;
 
-    public Account getAccount() {
+    public AccountDescriptor getAccount() {
         return account;
     }
 
-    public void setAccount(Account account) {
+    public void setAccount(AccountDescriptor account) {
         this.account = account;
     }
 

@@ -37,7 +37,7 @@ public class SubrosaAclPermissionEvaluatorTest {
         Account account = new Account();
         account.setEmail("email");
         account.setPassword("password");
-        account.setAccountRoles(Sets.<AccountRole>newHashSet());
+        account.setRoles(Sets.<AccountRole>newHashSet());
         return new PreAuthenticatedAuthenticationToken(
                 new SubrosaUser(account),
                 "credentials",

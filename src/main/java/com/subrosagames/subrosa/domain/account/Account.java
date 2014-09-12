@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.account;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -21,11 +22,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.PersistenceException;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import org.hibernate.Hibernate;
@@ -33,6 +37,8 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.orm.jpa.JpaSystemException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
@@ -57,6 +63,13 @@ import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 })
 public class Account implements PermissionTarget {
 
+    @JsonIgnore
+    @Transient
+    private AccountRepository accountRepository;
+    @JsonIgnore
+    @Transient
+    private AccountFactory accountFactory;
+
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
@@ -72,7 +85,8 @@ public class Account implements PermissionTarget {
     @Column
     private String name;
 
-    @Column(length = 320)
+    @Column(length = 320, unique = true)
+    @NotEmpty
     @Email
     private String email;
 
@@ -87,7 +101,7 @@ public class Account implements PermissionTarget {
     @CollectionTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Set<AccountRole> accountRoles;
+    private Set<AccountRole> roles;
 
     @JsonIgnore
     @Column(length = 256)
@@ -179,12 +193,12 @@ public class Account implements PermissionTarget {
     }
 
 
-    public Set<AccountRole> getAccountRoles() {
-        return accountRoles;
+    public Set<AccountRole> getRoles() {
+        return roles;
     }
 
-    public void setAccountRoles(Set<AccountRole> accountRoles) {
-        this.accountRoles = accountRoles;
+    public void setRoles(Set<AccountRole> accountRoles) {
+        this.roles = accountRoles;
     }
 
     public String getPassword() {
@@ -225,6 +239,21 @@ public class Account implements PermissionTarget {
         return addresses.get(addressType);
     }
 
+    public Account create(String password) throws AccountValidationException, EmailConflictException {
+        assertValid();
+        try {
+            accountRepository.create(this, password);
+        } catch (JpaSystemException e) {
+            String message = e.getMostSpecificCause().getMessage();
+            if (message.contains("unique constraint")) {
+                throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
+            }
+            throw e;
+        }
+        accountFactory.injectDependencies(this);
+        return this;
+    }
+
     public Account update(AccountDescriptor accountDescriptor) throws AccountValidationException {
         OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
@@ -238,11 +267,19 @@ public class Account implements PermissionTarget {
         return this;
     }
 
-    private void assertValid(Class... validationGroups) throws AccountValidationException {
+    void assertValid(Class... validationGroups) throws AccountValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<Account>> violations = validator.validate(this, validationGroups);
         if (!violations.isEmpty()) {
             throw new AccountValidationException(violations);
         }
+    }
+
+    public void setAccountRepository(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    public void setAccountFactory(AccountFactory accountFactory) {
+        this.accountFactory = accountFactory;
     }
 }

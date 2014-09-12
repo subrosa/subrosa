@@ -1,8 +1,8 @@
 package com.subrosa.api.actions.list;
 
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
 import javax.xml.bind.annotation.XmlType;
+
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
  * Represents the pagination parameters for a list response.
@@ -23,8 +23,9 @@ public class Pagination {
 
     /**
      * Creates a pagination on the limit, offset and totalResults.
-     * @param limit the limit rows on a page. 
-     * @param offset the offset selection.
+     *
+     * @param limit        the limit rows on a page.
+     * @param offset       the offset selection.
      * @param totalResults the total result of selected elements.
      */
     public Pagination(int limit, int offset, int totalResults) {
@@ -35,7 +36,8 @@ public class Pagination {
 
     /**
      * Sets a limit.
-     * @return the limit 
+     *
+     * @return the limit
      */
     public int getLimit() {
         return limit;
@@ -43,6 +45,7 @@ public class Pagination {
 
     /**
      * Gets a limit.
+     *
      * @param limit the limit
      */
     public void setLimit(int limit) {
@@ -51,6 +54,7 @@ public class Pagination {
 
     /**
      * Sets an offset.
+     *
      * @return the offset
      */
     public int getOffset() {
@@ -59,6 +63,7 @@ public class Pagination {
 
     /**
      * Gets an offset.
+     *
      * @param offset the offset
      */
     public void setOffset(int offset) {
@@ -67,6 +72,7 @@ public class Pagination {
 
     /**
      * Sets a total result of existing rows.
+     *
      * @return the total result of existing rows
      */
     public int getTotalResults() {
@@ -75,6 +81,7 @@ public class Pagination {
 
     /**
      * Gets a total result of existing rows.
+     *
      * @param totalResults the total result of existing rows
      */
     public void setTotalResults(int totalResults) {

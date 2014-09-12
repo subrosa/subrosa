@@ -1,17 +1,24 @@
 package com.subrosagames.subrosa.api.web;
 
+import java.util.HashSet;
+import java.util.Set;
 import org.junit.Test;
-import org.springframework.http.MediaType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestExecutionListeners;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
@@ -19,6 +26,8 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedLi
 @TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountControllerTest extends AbstractApiControllerTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ApiAccountControllerTest.class);
 
     @Test
     public void testUnauthenticatedAccountRetrieval() throws Exception {
@@ -54,11 +63,21 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testAccountRetrievalIncludesRoles() throws Exception {
+        mockMvc.perform(
+                get("/account/1000")
+                        .with(user("joe@admin.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("joe@admin.com"))
+                .andExpect(jsonPath("$.roles").exists())
+                .andExpect(jsonPath("$.roles[0]").value("ADMIN"));
+    }
+
+    @Test
     public void testNonexistantAccountRetrieval() throws Exception {
         mockMvc.perform(
                 get("/account/934834")
-                        .with(user("joe@admin.com"))
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .with(user("joe@admin.com")))
                 .andExpect(status().isNotFound());
     }
 
@@ -80,7 +99,64 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testUpdateAccount() throws Exception {
+    public void testCreateAccountMissingFields() throws Exception {
+        Set<String> requests = new HashSet<String>() {{
+            add("");
+            add(jsonBuilder().add("password", "mysecret").build());
+            add(jsonBuilder().add("password", "mysecret").add("account", null).build());
+            add(jsonBuilder().add("password", "mysecret").addChild("account", jsonBuilder()).build());
+            add(jsonBuilder().add("password", "mysecret").addChild("account",
+                    jsonBuilder().add("email", "")).build());
+            add(jsonBuilder().add("password", "mysecret").addChild("account",
+                    jsonBuilder().add("email", "bademail")).build());
+            add(jsonBuilder().add("password", null).addChild("account",
+                    jsonBuilder().add("email", "good@email.com")).build());
+            add(jsonBuilder().add("password", "").addChild("account",
+                    jsonBuilder().add("email", "good@email.com")).build());
+        }};
+        for (String request : requests) {
+            assertIsBadRequestCreatingAccount(request);
+        }
+    }
+
+    private void assertIsBadRequestCreatingAccount(String content) throws Exception {
+        LOG.debug("Asserting bad request creating account: {}", content);
+        mockMvc.perform(
+                post("/account")
+                        .content(content))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())));
+    }
+
+    @Test
+    public void testCreateAccount() throws Exception {
+        mockMvc.perform(
+                post("/account")
+                        .content(jsonBuilder()
+                                .add("password", "mysecret")
+                                .addChild("account", jsonBuilder()
+                                        .add("email", "new@user.com"))
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value("new@user.com"));
+    }
+
+    @Test
+    public void testCreateAccountDuplicateEmail() throws Exception {
+        mockMvc.perform(
+                post("/account")
+                        .content(jsonBuilder()
+                                .add("password", "mysecret")
+                                .addChild("account", jsonBuilder()
+                                        .add("email", "bob@user.com"))
+                                .build()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("email"))));
+    }
+
+    @Test
+    public void testUpdateAccountNoChanges() throws Exception {
         String response = mockMvc.perform(
                 get("/account/1")
                         .with(user("bob@user.com")))

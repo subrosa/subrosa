@@ -1,14 +1,14 @@
 package com.subrosa.api.actions.list;
 
+import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosa.api.actions.list.serialization.json.FilterListJsonSerializer;
 import com.subrosa.api.actions.list.serialization.xml.FilterListXmlAdapter;
-
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.List;
 
 /**
  * Represents query search request.
@@ -31,7 +31,7 @@ public class Query {
     /**
      * Creates a query with full arguments.
      *
-     * @param filters a filters.
+     * @param filters    a filters.
      * @param sortFields list of sotrs
      * @param pagination a pagination object
      */
@@ -43,6 +43,7 @@ public class Query {
 
     /**
      * Gets a filters.
+     *
      * @return filters the filters
      */
     @JsonSerialize(using = FilterListJsonSerializer.class)
@@ -53,6 +54,7 @@ public class Query {
 
     /**
      * Sets a filters.
+     *
      * @param filters the filters
      */
     public void setFilters(List<Filter> filters) {
@@ -61,6 +63,7 @@ public class Query {
 
     /**
      * Gets a pagination.
+     *
      * @return the pagination
      */
     public Pagination getPagination() {
@@ -69,6 +72,7 @@ public class Query {
 
     /**
      * Sets a pagination.
+     *
      * @param pagination the pagination
      */
     public void setPagination(Pagination pagination) {
@@ -77,6 +81,7 @@ public class Query {
 
     /**
      * Sets a sort fields.
+     *
      * @return the sort fields
      */
     public List<Sort> getSortFields() {
@@ -85,6 +90,7 @@ public class Query {
 
     /**
      * Set a sort fields.
+     *
      * @param sortFields the sort fields
      */
     public void setSortFields(List<Sort> sortFields) {
