@@ -22,7 +22,7 @@ public class SubrosaUser extends User {
      * @param account subrosa account
      */
     public SubrosaUser(Account account) {
-        super(account.getEmail(), account.getPassword(), Collections2.transform(account.getAccountRoles(), new Function<AccountRole, GrantedAuthority>() {
+        super(account.getEmail(), account.getPassword(), Collections2.transform(account.getRoles(), new Function<AccountRole, GrantedAuthority>() {
             @Override
             public GrantedAuthority apply(AccountRole accountRole) {
                 return new SimpleGrantedAuthority(accountRole.name());

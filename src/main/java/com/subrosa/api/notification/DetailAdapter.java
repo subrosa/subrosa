@@ -1,8 +1,8 @@
 package com.subrosa.api.notification;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 
 /**

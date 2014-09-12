@@ -1,10 +1,11 @@
 package com.subrosa.api.actions.list;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonValue;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 
-import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Represents a filter component of a query.
@@ -27,8 +28,8 @@ public class Filter {
     /**
      * Construct with the given key, value and value translator with optional explicit query field.
      *
-     * @param filterKey filter key
-     * @param value filter value
+     * @param filterKey  filter key
+     * @param value      filter value
      * @param translator filter value translator
      * @param queryField explicitly set field on which to query
      */
@@ -49,11 +50,11 @@ public class Filter {
 
     /**
      * Construct with the given key and value.
-     *
+     * <p/>
      * This constructs a filter that has no transformations on either the field or value used in the query.
      *
      * @param filterKey filter key
-     * @param value filter value
+     * @param value     filter value
      */
     public Filter(String filterKey, Object value) {
         this(filterKey, value, new FilterValueTranslator.IdentityValueTranslator(), null, null);

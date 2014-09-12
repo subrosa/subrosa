@@ -1,11 +1,13 @@
 package com.subrosagames.subrosa.test.matchers;
 
 import org.junit.Test;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONValue;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
+
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 

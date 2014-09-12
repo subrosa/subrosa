@@ -1,10 +1,9 @@
 package com.subrosa.api.spring;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.subrosa.api.notification.GeneralCode;
-import com.subrosa.api.notification.Notification;
-import com.subrosa.api.notification.Severity;
-import com.subrosa.api.response.NotificationList;
+import java.io.FileNotFoundException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -13,9 +12,11 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.FileNotFoundException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.subrosa.api.notification.GeneralCode;
+import com.subrosa.api.notification.Notification;
+import com.subrosa.api.notification.Severity;
+import com.subrosa.api.response.NotificationList;
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
@@ -54,8 +55,9 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
 
     /**
      * Catch-all handler for HttpMessageNotReadableException.
-     * @param ex Exception to handle
-     * @param request The servlet request
+     *
+     * @param ex                  Exception to handle
+     * @param request             The servlet request
      * @param httpServletResponse The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */
@@ -64,10 +66,12 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
         httpServletResponse.setStatus(SC_BAD_REQUEST);
         return wrapNotification(new Notification(GeneralCode.DESERIALIZATION_ERROR, Severity.ERROR, "Failed to deserialize request."));
     }
+
     /**
      * Catch-all handler for general exceptions.
-     * @param ex Exception to handle
-     * @param request The servlet request
+     *
+     * @param ex                  Exception to handle
+     * @param request             The servlet request
      * @param httpServletResponse The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */
@@ -79,13 +83,14 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
 
     /**
      * Catch-all handler for unsupported type calls.
-     * @param ex Exception to handle
-     * @param request The servlet request
+     *
+     * @param ex       Exception to handle
+     * @param request  The servlet request
      * @param response The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */
     public ModelAndView handleHttpRequestMethodNotSupportedException(Exception ex, HttpServletRequest request,
-            HttpServletResponse response)
+                                                                     HttpServletResponse response)
     {
         LOG.warn("HttpRequestMethodNotSupportedException encountered when handling URL: {}", request.getRequestURL(), ex);
         response.setStatus(SC_METHOD_NOT_ALLOWED);
@@ -94,8 +99,9 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
 
     /**
      * Catch-all handler for {@link java.io.FileNotFoundException} exceptions.
-     * @param ex  Exception to handle
-     * @param httpServletRequest The servlet request
+     *
+     * @param ex                  Exception to handle
+     * @param httpServletRequest  The servlet request
      * @param httpServletResponse The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */
@@ -108,8 +114,9 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
 
     /**
      * Catch-all handler for {@link JsonMappingException} exceptions.
-     * @param ex Exception to handle
-     * @param request The servlet request
+     *
+     * @param ex                  Exception to handle
+     * @param request             The servlet request
      * @param httpServletResponse The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */
@@ -122,8 +129,9 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
 
     /**
      * Catch-all handler for {@link org.springframework.web.HttpMediaTypeNotSupportedException} exceptions.
-     * @param ex Exception to handle
-     * @param request The servlet request
+     *
+     * @param ex                  Exception to handle
+     * @param request             The servlet request
      * @param httpServletResponse The servlet response
      * @return A {@link org.springframework.web.servlet.ModelAndView} containing an appropriate {@link com.subrosa.api.response.NotificationList}.
      */

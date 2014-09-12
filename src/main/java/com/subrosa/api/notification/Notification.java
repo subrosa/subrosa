@@ -1,20 +1,21 @@
 package com.subrosa.api.notification;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
+import java.util.Map;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents a notification message related to a request.
  */
 @XmlRootElement(name = "notification")
 public class Notification {
+
     private Code code;
     private Severity severity;
     private String text;
@@ -30,9 +31,9 @@ public class Notification {
     /**
      * Constructs a Notification with the specified code, severity, and text.
      *
-     * @param code the notification code
+     * @param code     the notification code
      * @param severity the severity of the message (error/warn/info)
-     * @param text the text of the notification
+     * @param text     the text of the notification
      */
     public Notification(Code code, Severity severity, String text) {
         this.code = code;
@@ -43,7 +44,7 @@ public class Notification {
     /**
      * Constructs a Notification with the given code and severity.
      *
-     * @param code the notification code
+     * @param code     the notification code
      * @param severity the severity of the message (error/warn/info)
      */
     public Notification(Code code, Severity severity) {

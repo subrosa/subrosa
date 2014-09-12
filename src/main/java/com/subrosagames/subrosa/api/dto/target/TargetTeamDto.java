@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.api.dto.target;
 
-import com.subrosagames.subrosa.domain.player.TargetTeam;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.player.TargetTeam;
 
 /**
  * Target team DTO.
@@ -12,6 +12,7 @@ public class TargetTeamDto extends TargetDto {
 
     /**
      * Construct with given target team.
+     *
      * @param target target team
      */
     public TargetTeamDto(TargetTeam target) {

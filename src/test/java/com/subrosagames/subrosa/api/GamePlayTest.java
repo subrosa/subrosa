@@ -1,16 +1,16 @@
 package com.subrosagames.subrosa.api;
 
-import com.subrosagames.subrosa.api.web.AbstractApiControllerTest;
 import org.junit.Test;
+
+import com.subrosagames.subrosa.api.web.AbstractApiControllerTest;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.player.GameRole;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;

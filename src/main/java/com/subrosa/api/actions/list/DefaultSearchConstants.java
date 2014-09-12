@@ -15,5 +15,6 @@ public final class DefaultSearchConstants {
      */
     public static final int DEFAULT_OFFSET = 0;
 
-    private DefaultSearchConstants() { }
+    private DefaultSearchConstants() {
+    }
 }

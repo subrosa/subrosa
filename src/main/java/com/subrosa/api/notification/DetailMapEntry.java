@@ -1,8 +1,8 @@
 package com.subrosa.api.notification;
 
+import java.util.Map.Entry;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
-import java.util.Map.Entry;
 
 
 /**

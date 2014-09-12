@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.subrosagames.subrosa.domain.notification.DeviceType;
 import com.subrosagames.subrosa.domain.notification.NotificationCode;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;
@@ -32,6 +33,7 @@ public class AndroidController {
 
     /**
      * Register a device for notifications.
+     *
      * @param registrationId registration id
      * @return success
      */
@@ -45,6 +47,7 @@ public class AndroidController {
 
     /**
      * Unregister a device for notifications.
+     *
      * @param registrationId registration id
      * @return success
      */
@@ -58,6 +61,7 @@ public class AndroidController {
 
     /**
      * Trigger notifications be sent for a game. Test endpoint.
+     *
      * @param gameId game id
      * @return success
      * @throws IOException if notification send fails

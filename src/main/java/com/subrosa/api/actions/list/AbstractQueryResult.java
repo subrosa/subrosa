@@ -9,6 +9,7 @@ public abstract class AbstractQueryResult {
 
     /**
      * Gets a search query.
+     *
      * @return the search query
      */
     public Query getQuery() {
@@ -17,6 +18,7 @@ public abstract class AbstractQueryResult {
 
     /**
      * Sets a search query.
+     *
      * @param query the search query
      */
     public void setQuery(Query query) {

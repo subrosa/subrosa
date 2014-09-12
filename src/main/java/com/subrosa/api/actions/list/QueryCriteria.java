@@ -1,16 +1,5 @@
 package com.subrosa.api.actions.list;
 
-import com.subrosa.api.actions.list.annotation.DefaultSort;
-import com.subrosa.api.actions.list.annotation.FilterGroup;
-import com.subrosa.api.actions.list.annotation.FilterGroups;
-import com.subrosa.api.actions.list.annotation.Filterable;
-import com.subrosa.api.actions.list.annotation.Sortable;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
-
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +7,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
+
+import com.subrosa.api.actions.list.annotation.DefaultSort;
+import com.subrosa.api.actions.list.annotation.FilterGroup;
+import com.subrosa.api.actions.list.annotation.FilterGroups;
+import com.subrosa.api.actions.list.annotation.Filterable;
+import com.subrosa.api.actions.list.annotation.Sortable;
+
 /**
  * Encapsulates the parameters that drive a query for a list of objects.
+ *
  * @param <T> class annotated with filterable and sortable fields
  */
 public class QueryCriteria<T> {
@@ -35,6 +37,7 @@ public class QueryCriteria<T> {
 
     /**
      * Construct for given type.
+     *
      * @param clazz type
      */
     public QueryCriteria(Class<T> clazz) {
@@ -55,6 +58,7 @@ public class QueryCriteria<T> {
 
     /**
      * Return a list of the possible keys upon which filtering may occur.
+     *
      * @return list of valid filter keys
      */
     public List<String> getValidFilterKeys() {
@@ -101,7 +105,8 @@ public class QueryCriteria<T> {
 
     /**
      * Add a filter to the criteria.
-     * @param key filter key
+     *
+     * @param key   filter key
      * @param value filter value
      */
     public void addFilter(String key, Object value) {
@@ -176,6 +181,7 @@ public class QueryCriteria<T> {
 
     /**
      * Set the sort criteria.
+     *
      * @param sortString string indicating sort field and direction
      */
     public void setSort(String sortString) {
@@ -195,7 +201,7 @@ public class QueryCriteria<T> {
             throw new IllegalArgumentException("Field " + sortField.getField() + " does not exist.");
         }
 
-        Sortable  sortable = field.getAnnotation(Sortable.class);
+        Sortable sortable = field.getAnnotation(Sortable.class);
         if (sortable != null) {
             sort = sortField;
         } else {
@@ -240,7 +246,7 @@ public class QueryCriteria<T> {
         }
 
         return String.format("Class: %s, Filters: (%s), Sort: %s, Limit: %s, Offset: %s", clazz, StringUtils.join(filterStrings, ","),
-                             sort, limit, offset);
+                sort, limit, offset);
     }
 
     public Class<T> getTargetClass() {

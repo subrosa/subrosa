@@ -19,6 +19,7 @@ public enum Operator {
     // CHECKSTYLE-ON: JavadocVariable
 
     private static final Map<String, Operator> SUFFIX_MAP;
+
     static {
         SUFFIX_MAP = new HashMap<String, Operator>();
         for (Operator operator : values()) {

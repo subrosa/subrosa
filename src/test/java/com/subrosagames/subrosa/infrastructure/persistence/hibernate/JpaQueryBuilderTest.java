@@ -1,11 +1,20 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
-import com.subrosa.api.actions.list.Operator;
-import com.subrosa.api.actions.list.QueryBuilder;
-import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosa.api.actions.list.TimestampToDateTranslator;
-import com.subrosa.api.actions.list.annotation.Filterable;
-import com.subrosagames.subrosa.util.RequestUtils;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Persistence;
+import javax.persistence.Table;
+import javax.persistence.TypedQuery;
+
 import org.hamcrest.beans.HasPropertyWithValue;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -15,12 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import javax.persistence.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import com.subrosa.api.actions.list.Operator;
+import com.subrosa.api.actions.list.QueryBuilder;
+import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosa.api.actions.list.TimestampToDateTranslator;
+import com.subrosa.api.actions.list.annotation.Filterable;
+import com.subrosagames.subrosa.util.RequestUtils;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.everyItem;
@@ -268,7 +277,7 @@ public class JpaQueryBuilderTest {
         private Integer id;
 
         @Column
-        @Filterable(operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN})
+        @Filterable(operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN })
         private Double score;
 
         @Column
@@ -277,14 +286,14 @@ public class JpaQueryBuilderTest {
 
         @Column
         @Filterable(
-                operators = {Operator.GREATER_THAN, Operator.LESS_THAN},
+                operators = { Operator.GREATER_THAN, Operator.LESS_THAN },
                 translator = TimestampToDateTranslator.class
         )
         private Date time;
 
         @OneToMany
         @Filterable(
-                operators = {Operator.GREATER_THAN, Operator.LESS_THAN},
+                operators = { Operator.GREATER_THAN, Operator.LESS_THAN },
                 translator = TimestampToDateTranslator.class,
                 childOperand = "innerDate"
         )

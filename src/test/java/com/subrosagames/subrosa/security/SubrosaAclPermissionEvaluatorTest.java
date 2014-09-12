@@ -2,16 +2,17 @@ package com.subrosagames.subrosa.security;
 
 import javax.annotation.Nullable;
 
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRole;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRole;
 
 import static org.junit.Assert.assertTrue;
 
@@ -37,7 +38,7 @@ public class SubrosaAclPermissionEvaluatorTest {
         Account account = new Account();
         account.setEmail("email");
         account.setPassword("password");
-        account.setAccountRoles(Sets.<AccountRole>newHashSet());
+        account.setRoles(Sets.<AccountRole>newHashSet());
         return new PreAuthenticatedAuthenticationToken(
                 new SubrosaUser(account),
                 "credentials",

@@ -1,8 +1,8 @@
 package com.subrosa.api.spring;
 
-import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
 import java.util.Map;
+
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 /**
  * This class will make sure that if there is a single object to transform to JSON, it won't be rendered inside a map.

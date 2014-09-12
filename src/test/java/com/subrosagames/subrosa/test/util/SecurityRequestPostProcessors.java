@@ -40,9 +40,11 @@ public final class SecurityRequestPostProcessors {
     }
 
     /**
-     * Establish a security context for a user with the specified username. The
-     * additional details are obtained from the {@link UserDetailsService}
+     * Establish a security context for a user with the specified username.
+     * <p/>
+     * The additional details are obtained from the {@link UserDetailsService}
      * declared in the {@link org.springframework.web.context.WebApplicationContext}.
+     *
      * @param username username
      * @return servletRequest post processor
      */
@@ -81,8 +83,7 @@ public final class SecurityRequestPostProcessors {
      * Post processor that provides a user details service in the security context.
      */
     public static final class UserDetailsRequestPostProcessor
-            extends AbstractSecurityContextRequestPostProcessor implements RequestPostProcessor
-    {
+            extends AbstractSecurityContextRequestPostProcessor implements RequestPostProcessor {
 
         private final String username;
 
@@ -98,6 +99,7 @@ public final class SecurityRequestPostProcessors {
          * <p/>
          * <p>By default a lookup of {@link UserDetailsService} is performed by type. This
          * can be problematic if multiple {@link UserDetailsService} beans are declared.
+         *
          * @param userDetailsServiceBeanId user details service bean id
          * @return {@code this}
          */

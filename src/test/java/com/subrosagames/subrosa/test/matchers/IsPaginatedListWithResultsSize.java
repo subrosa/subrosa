@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.test.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -19,6 +20,7 @@ public final class IsPaginatedListWithResultsSize extends IsPaginatedList {
 
     /**
      * Factory for matching results size.
+     *
      * @param size results size
      * @return paginated list matcher
      */

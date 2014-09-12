@@ -4,6 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+
 import net.minidev.json.JSONObject;
 
 /**
@@ -13,6 +14,7 @@ public class IsPaginatedList extends TypeSafeDiagnosingMatcher<JSONObject> {
 
     /**
      * Factory for matching paginated list.
+     *
      * @return paginated list matcher
      */
     @Factory

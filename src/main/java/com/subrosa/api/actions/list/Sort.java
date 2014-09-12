@@ -1,9 +1,9 @@
 package com.subrosa.api.actions.list;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
-
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Handles the parsing of an expression of a sort for file lists.
@@ -16,7 +16,8 @@ public class Sort {
     /**
      * Constructor by default.
      */
-    public Sort() {}
+    public Sort() {
+    }
 
 
     /**
@@ -49,7 +50,7 @@ public class Sort {
 
     /**
      * Creates and returns a sort expression that represents the field and order.
-     *
+     * <p/>
      * For example, a field of "createdDate" in descending order would return "-createdDate".
      *
      * @return sort expression
@@ -67,6 +68,7 @@ public class Sort {
 
     /**
      * Sets ascending.
+     *
      * @param ascending (true - up, false - down)
      */
     public void setAscending(boolean ascending) {
@@ -75,6 +77,7 @@ public class Sort {
 
     /**
      * Gets a sorting field.
+     *
      * @return the sorting field
      */
     @XmlTransient
@@ -85,6 +88,7 @@ public class Sort {
 
     /**
      * Sets a sorting field.
+     *
      * @param field the a sorting field
      */
     public void setField(String field) {

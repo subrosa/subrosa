@@ -2,7 +2,7 @@ package com.subrosa.api.actions.list;
 
 /**
  * Interface to implement if a filter value needs to be processed into a different form.
- *
+ * <p/>
  * For example, if a String is supplied as an query input but the persistence layer expects a different
  * type, the input can be translated to the appropriate type before the query is built.
  *
