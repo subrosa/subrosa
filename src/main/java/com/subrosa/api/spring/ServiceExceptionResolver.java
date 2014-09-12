@@ -107,7 +107,7 @@ public class ServiceExceptionResolver extends DefaultHandlerExceptionResolver {
     }
 
     /**
-     * Catch-all handler for {@link org.codehaus.jackson.map.JsonMappingException} exceptions.
+     * Catch-all handler for {@link JsonMappingException} exceptions.
      * @param ex Exception to handle
      * @param request The servlet request
      * @param httpServletResponse The servlet response

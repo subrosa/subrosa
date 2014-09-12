@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * an OR clause, supporting things such as searching for a term across multiple fields, or querying
  * for objects where at least one of n dates is later than a certain date.
  *
- * @see {@link FilterGroup}
+ * @see FilterGroup
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

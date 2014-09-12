@@ -1,10 +1,12 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -23,17 +25,21 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.subrosagames.subrosa.domain.PermissionTarget;
-import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.image.ImageType;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.subrosagames.subrosa.api.dto.AccountDescriptor;
+import com.subrosagames.subrosa.domain.PermissionTarget;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageType;
+import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 
 /**
  * Represents an account in the Subrosa application.
@@ -78,7 +84,7 @@ public class Account implements PermissionTarget {
     private Date dateOfBirth;
 
     @ElementCollection(targetClass = AccountRole.class, fetch = FetchType.EAGER)
-    @JoinTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
+    @CollectionTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<AccountRole> accountRoles;
@@ -97,7 +103,7 @@ public class Account implements PermissionTarget {
     @MapKeyEnumerated(EnumType.STRING)
     private Map<AddressType, Address> addresses;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "account_image",
             joinColumns = @JoinColumn(name = "account_id"),
@@ -109,6 +115,7 @@ public class Account implements PermissionTarget {
 
     /**
      * Get accolades for this account.
+     *
      * @return list of accolades
      */
     public List<Accolade> getAccolades() {
@@ -216,5 +223,26 @@ public class Account implements PermissionTarget {
 
     public Address getAddress(AddressType addressType) {
         return addresses.get(addressType);
+    }
+
+    public Account update(AccountDescriptor accountDescriptor) throws AccountValidationException {
+        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
+        try {
+            beanCopier.copyProperties(this, accountDescriptor);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+        assertValid();
+        return this;
+    }
+
+    private void assertValid(Class... validationGroups) throws AccountValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<Account>> violations = validator.validate(this, validationGroups);
+        if (!violations.isEmpty()) {
+            throw new AccountValidationException(violations);
+        }
     }
 }

@@ -1,20 +1,21 @@
 package com.subrosagames.subrosa.api.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.subrosagames.subrosa.api.dto.Registration;
-import com.subrosagames.subrosa.domain.account.Account;
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.subrosagames.subrosa.api.dto.Registration;
+import com.subrosagames.subrosa.domain.account.Account;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasEntry;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
@@ -76,7 +77,16 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
-//    @Test
+    @Test
+    public void testCurrentUserIncludesAvatar() throws Exception {
+        mockMvc.perform(
+                get("/user")
+                        .with(user("bob@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.images").value(hasEntry("AVATAR", "/avatar_uri")));
+    }
+
+    //    @Test
     public void testLogout() throws Exception {
     }
 
