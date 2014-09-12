@@ -1,5 +1,8 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+import java.util.Map;
+
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -16,12 +19,6 @@ import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.event.Event;
-import com.subrosagames.subrosa.event.TriggeredEvent;
-import com.subrosagames.subrosa.event.message.EventMessage;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * The minimum information shared by all games.
@@ -62,7 +59,7 @@ public interface Game extends GameData {
      * Add the provided account as a player in this game.
      *
      * @param account          account
-     * @param playerDescriptor
+     * @param playerDescriptor player information
      * @return game player
      */
     Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;

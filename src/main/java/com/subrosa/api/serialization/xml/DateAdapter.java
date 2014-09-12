@@ -1,9 +1,9 @@
 package com.subrosa.api.serialization.xml;
 
-import com.subrosa.api.serialization.DateSerialization;
-
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.Date;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import com.subrosa.api.serialization.DateSerialization;
 
 /**
  * JAXB xml adapter that uses subrosa's standard date formatting for marshalling and unmarshalling.

@@ -1,5 +1,20 @@
 package com.subrosagames.subrosa.api.web;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
+
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.collect.Sets;
@@ -11,29 +26,7 @@ import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.subrosagames.subrosa.event.ScheduledEvent;
-import org.dbunit.util.QualifiedTableName;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
-import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -46,6 +39,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
+import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscending;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiGameController}.
@@ -127,31 +128,37 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
 
         // create 2 active and an inactive game
-        String active1 = createGame(new HashMap<String, String>() {{
-            put("name", "active 1");
-            put("description", "description");
-            put("gameType", "ASSASSIN");
-        }});
+        String active1 = createGame(new HashMap<String, String>() {
+            {
+                put("name", "active 1");
+                put("description", "description");
+                put("gameType", "ASSASSIN");
+            }
+        });
         GameEntity entity1 = gameRepository.get(active1, "events");
         entity1.setGameRepository(gameRepository);
         addEventToGame(entity1, "registrationStart", new Date(timeDaysInFuture(-1)));
         addEventToGame(entity1, "registrationEnd", new Date(timeDaysInFuture(1)));
-        String active2 = createGame(new HashMap<String, String>() {{
-            put("name", "active 2");
-            put("description", "description");
-            put("gameType", "ASSASSIN");
-        }});
+        String active2 = createGame(new HashMap<String, String>() {
+            {
+                put("name", "active 2");
+                put("description", "description");
+                put("gameType", "ASSASSIN");
+            }
+        });
         GameEntity entity2 = gameRepository.get(active2, "events");
         entity2.setGameRepository(gameRepository);
         addEventToGame(entity2, "registrationStart", new Date(timeDaysInFuture(-100)));
         addEventToGame(entity2, "registrationEnd", new Date(timeDaysInFuture(100)));
-        String inactive1 = createGame(new HashMap<String, String>() {{
-            put("name", "inactive 1");
-            put("description", "description");
-            put("gameType", "ASSASSIN");
-            put("registrationStart", Long.toString(timeDaysInFuture(1)));
-            put("registrationEnd", Long.toString(timeDaysInFuture(5)));
-        }});
+        String inactive1 = createGame(new HashMap<String, String>() {
+            {
+                put("name", "inactive 1");
+                put("description", "description");
+                put("gameType", "ASSASSIN");
+                put("registrationStart", Long.toString(timeDaysInFuture(1)));
+                put("registrationEnd", Long.toString(timeDaysInFuture(5)));
+            }
+        });
         GameEntity entity3 = gameRepository.get(inactive1, "events");
         entity3.setGameRepository(gameRepository);
         addEventToGame(entity3, "registrationStart", new Date(timeDaysInFuture(1)));
@@ -410,9 +417,11 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         addEventToGame(gameEntity, "registrationEnd", new Date(registrationEnd));
         addEventToGame(gameEntity, "gameStart", new Date(gameStart));
         addEventToGame(gameEntity, "gameEnd", new Date(gameEnd));
-        HashMap<String, Object> updates = new HashMap<String, Object>() {{
-            put("description", "it's going to be fun!");
-        }};
+        HashMap<String, Object> updates = new HashMap<String, Object>() {
+            {
+                put("description", "it's going to be fun!");
+            }
+        };
         performGameUpdates(url, updates)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameStart").value(gameStart))
@@ -437,19 +446,23 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testNullPriceMakesFreeGame() throws Exception {
-        String response = performGameCreation(new HashMap<String, Object>() {{
-            put("name", "name of the game");
-            put("gameType", "ASSASSIN");
-            put("price", null);
-        }})
+        String response = performGameCreation(new HashMap<String, Object>() {
+            {
+                put("name", "name of the game");
+                put("gameType", "ASSASSIN");
+                put("price", null);
+            }
+        })
                 .andExpect(jsonPath("$.price").value(nullValue()))
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
         // enter a price and assert it updates successfully
-        performGameUpdates(url, new HashMap<String, Object>() {{
-            put("price", 500);
-        }})
+        performGameUpdates(url, new HashMap<String, Object>() {
+            {
+                put("price", 500);
+            }
+        })
                 .andExpect(jsonPath("$.price").value(500));
 
         // update without specifying price and see original
@@ -458,9 +471,11 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.price").value(500.0));
 
         // update with null and see that it sets it successfully
-        performGameUpdates(url, new HashMap<String, Object>() {{
-            put("price", null);
-        }})
+        performGameUpdates(url, new HashMap<String, Object>() {
+            {
+                put("price", null);
+            }
+        })
                 .andExpect(jsonPath("$.price").value(nullValue()));
     }
 
@@ -533,9 +548,11 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
-        performGameUpdates(url, new HashMap<String, Object>() {{
-            put("description", "need this");
-        }});
+        performGameUpdates(url, new HashMap<String, Object>() {
+            {
+                put("description", "need this");
+            }
+        });
 
         GameEntity gameEntity = gameRepository.get(url, "events");
         gameEntity.setGameRepository(gameRepository);

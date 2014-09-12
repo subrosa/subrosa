@@ -4,6 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
+
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -23,6 +24,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
     /**
      * Factory for matching existence of at least one matching notification.
+     *
      * @param matcher notification matcher
      * @return notification list matcher
      */
@@ -63,6 +65,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
         /**
          * Factory for matching notification with specified detail field.
+         *
          * @param detailKey detail field
          * @return notification matcher
          */

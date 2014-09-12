@@ -1,23 +1,11 @@
 package com.subrosagames.subrosa.api.web;
 
-import javax.validation.ConstraintViolation;
 import java.io.EOFException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import javax.validation.ConstraintViolation;
 
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.subrosagames.subrosa.api.BadRequestException;
-import com.subrosagames.subrosa.api.NotAuthenticatedException;
-import com.subrosagames.subrosa.api.NotAuthorizedException;
-import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
-import com.google.common.collect.Maps;
-import com.subrosa.api.notification.GeneralCode;
-import com.subrosa.api.notification.Notification;
-import com.subrosa.api.notification.Severity;
-import com.subrosa.api.response.NotificationList;
-import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -26,6 +14,19 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.google.common.collect.Maps;
+import com.subrosa.api.notification.GeneralCode;
+import com.subrosa.api.notification.Notification;
+import com.subrosa.api.notification.Severity;
+import com.subrosa.api.response.NotificationList;
+import com.subrosagames.subrosa.api.BadRequestException;
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.api.NotAuthorizedException;
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
+import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.account.EmailConflictException;
 
 /**
  * Implements global exception handling.
@@ -37,6 +38,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link DomainObjectValidationException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -68,6 +70,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link DomainObjectNotFoundException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -84,6 +87,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link com.subrosagames.subrosa.api.NotAuthenticatedException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -100,6 +104,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link com.subrosagames.subrosa.api.NotAuthorizedException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -116,6 +121,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link HttpMessageConversionException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -133,6 +139,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link EOFException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -149,6 +156,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link UnrecognizedPropertyException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -165,6 +173,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link UnrecognizedPropertyException}.
+     *
      * @param e exception
      * @return notification list
      */
@@ -184,6 +193,7 @@ public class GlobalExceptionHandlers {
 
     /**
      * Handle {@link EmailConflictException}.
+     *
      * @param e exception
      * @return notification list
      */

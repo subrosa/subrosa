@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
 import javax.transaction.Transactional;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
@@ -50,7 +52,7 @@ public class ApiGameEventController {
      * @param offset  offset into the list.
      * @return a PaginatedList of {@link com.subrosagames.subrosa.domain.game.event.GameHistory}s.
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<GameEvent> listEvents(@PathVariable("gameUrl") String gameUrl,
                                                @RequestParam(value = "limit", required = false) Integer limit,
@@ -82,7 +84,7 @@ public class ApiGameEventController {
      * @throws com.subrosagames.subrosa.domain.game.GameNotFoundException            if game is not found
      * @throws com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException if game event is not found
      */
-    @RequestMapping(value = {"/{eventId}", "/{eventId}/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.GET)
     @ResponseBody
     public GameEvent getEvent(@PathVariable("gameUrl") String gameUrl,
                               @PathVariable("eventId") Integer eventId)
@@ -106,7 +108,7 @@ public class ApiGameEventController {
      * @param gameEventDescriptor description of game event
      * @return {@link com.subrosagames.subrosa.domain.game.event.GameEvent}
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     @Transactional
@@ -137,7 +139,7 @@ public class ApiGameEventController {
      * @throws com.subrosagames.subrosa.domain.game.GameNotFoundException            if game is not found
      * @throws com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException if game event is not found
      */
-    @RequestMapping(value = {"/{eventId}", "/{eventId}/"}, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Game updateEvent(@PathVariable("gameUrl") String gameUrl,
                             @PathVariable("eventId") Integer eventId,

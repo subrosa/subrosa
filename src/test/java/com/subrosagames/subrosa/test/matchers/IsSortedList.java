@@ -8,6 +8,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 /**
  * Matches a list of sorted comparable elements.
+ *
  * @param <T> list element type
  */
 public final class IsSortedList<T> extends TypeSafeDiagnosingMatcher<List<T>> {
@@ -20,6 +21,7 @@ public final class IsSortedList<T> extends TypeSafeDiagnosingMatcher<List<T>> {
 
     /**
      * Factory for matching list sort in ascending order.
+     *
      * @param <T> list element type
      * @return list matcher
      */
@@ -30,6 +32,7 @@ public final class IsSortedList<T> extends TypeSafeDiagnosingMatcher<List<T>> {
 
     /**
      * Factory for matching list sort in descending order.
+     *
      * @param <T> list element type
      * @return list matcher
      */

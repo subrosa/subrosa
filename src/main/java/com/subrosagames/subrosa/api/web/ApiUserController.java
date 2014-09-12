@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
@@ -36,7 +38,7 @@ public class ApiUserController {
      *
      * @throws com.subrosagames.subrosa.api.NotAuthenticatedException if user is not authenticated
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public Account getLoggedInUser() throws NotAuthenticatedException {
         LOG.debug("Getting account info for the currently logged in user");
@@ -57,7 +59,7 @@ public class ApiUserController {
      * @return list of games
      * @throws NotAuthenticatedException if user is not authenticated
      */
-    @RequestMapping(value = {"/game", "/game/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/game", "/game/" }, method = RequestMethod.GET)
     @ResponseBody
     public List<? extends Game> getUsersGames() throws NotAuthenticatedException {
         LOG.debug("Getting games for the logged in user");

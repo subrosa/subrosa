@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
@@ -53,7 +55,7 @@ public class ApiAccountController {
      * @param expand fields to expand
      * @return paginated list of accounts
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Account> listAccounts(@RequestParam(value = "limit", required = false) Integer limit,
                                                @RequestParam(value = "offset", required = false) Integer offset,
@@ -76,7 +78,7 @@ public class ApiAccountController {
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
      */
-    @RequestMapping(value = {"/{accountId}", "/{accountId}/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Account getAccount(@PathVariable("accountId") Integer accountId,
                               @RequestParam(value = "expand", required = false) String expand)
@@ -99,7 +101,7 @@ public class ApiAccountController {
      * @throws AccountValidationException if account data is not valid
      * @throws EmailConflictException     if supplied email is already in use
      */
-    @RequestMapping(value = {"", "/"}, method = RequestMethod.POST)
+    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Account createAccount(@RequestBody(required = false) Registration registration)
@@ -131,7 +133,7 @@ public class ApiAccountController {
      * @throws AccountNotFoundException   if account not found
      * @throws AccountValidationException if account data is not valid
      */
-    @RequestMapping(value = {"/{accountId}", "/{accountId}/"}, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody AccountDescriptor accountDescriptor)
@@ -153,7 +155,7 @@ public class ApiAccountController {
      * @return a list of {@link Accolade}s.
      * @throws AccountNotFoundException if account not found
      */
-    @RequestMapping(value = {"/{accountId}/accolade", "/{accountId}/accolade/"}, method = RequestMethod.GET)
+    @RequestMapping(value = { "/{accountId}/accolade", "/{accountId}/accolade/" }, method = RequestMethod.GET)
     @ResponseBody
     public List<Accolade> getAccolades(@PathVariable("accountId") Integer accountId)
             throws AccountNotFoundException
@@ -171,7 +173,7 @@ public class ApiAccountController {
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
      */
-    @RequestMapping(value = {"/{accountId}/address", "/{accountId}/address/"}, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/{accountId}/address", "/{accountId}/address/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAddress(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Address address)

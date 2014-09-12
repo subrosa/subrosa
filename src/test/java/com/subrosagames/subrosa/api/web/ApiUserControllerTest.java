@@ -3,13 +3,9 @@ package com.subrosagames.subrosa.api.web;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.google.common.base.Optional;
-import com.subrosagames.subrosa.api.dto.AccountDescriptor;
-import com.subrosagames.subrosa.api.dto.Registration;
-import com.subrosagames.subrosa.domain.account.Account;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasEntry;
@@ -17,6 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 
 /**
@@ -36,8 +33,8 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 post("/account")
                         .content(jsonBuilder()
                                 .addChild("account", jsonBuilder()
-                                .add("email", "jimmy@icanhazemail.com"))
-                        .add("password", "password").build()))
+                                        .add("email", "jimmy@icanhazemail.com"))
+                                .add("password", "password").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.email").value("jimmy@icanhazemail.com"));
 

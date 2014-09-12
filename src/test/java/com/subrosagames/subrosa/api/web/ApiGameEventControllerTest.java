@@ -1,21 +1,23 @@
 package com.subrosagames.subrosa.api.web;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.jayway.jsonpath.JsonPath;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.TestExecutionListeners;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
-import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.jayway.jsonpath.JsonPath;
+
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
+import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 
 /**
  * Test {@link ApiGameController}.

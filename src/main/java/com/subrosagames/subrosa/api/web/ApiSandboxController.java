@@ -1,10 +1,13 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.Random;
 import java.util.TimeZone;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -12,16 +15,12 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGameAttributeType;
 import com.subrosagames.subrosa.domain.gamesupport.assassin.OrdnanceType;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * Controller for prototyping. Not for production.
@@ -36,9 +35,10 @@ public class ApiSandboxController {
 
     /**
      * Test endpoint, creates a random game.
+     *
      * @return created game
      * @throws GameValidationException if something goes wrong
-     * @throws GameNotFoundException if game is not found
+     * @throws GameNotFoundException   if game is not found
      */
     @RequestMapping(value = "/android")
     @ResponseBody

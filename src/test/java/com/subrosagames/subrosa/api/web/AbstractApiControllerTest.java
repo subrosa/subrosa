@@ -4,11 +4,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
-import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
-import com.jayway.jsonpath.JsonPath;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -29,14 +24,21 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
+import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
+
 /**
  * Base class for MVC tests.
- *
+ * <p/>
  * Provides scaffolding for performing mock requests, along with helpers for generating domain objects.
  */
 @RunWith(SpringJUnit4ClassRunner.class)

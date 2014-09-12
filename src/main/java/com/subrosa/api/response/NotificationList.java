@@ -1,11 +1,11 @@
 package com.subrosa.api.response;
 
-import com.subrosa.api.notification.Notification;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Collection;
 import java.util.HashSet;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.subrosa.api.notification.Notification;
 
 /**
  * Class for sending error notifications to the client. This should only be used with non 2XX HTTP status codes

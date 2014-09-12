@@ -6,13 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
-import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosagames.subrosa.api.BadRequestException;
-import com.subrosagames.subrosa.api.NotAuthenticatedException;
-import com.subrosagames.subrosa.domain.game.event.GameHistory;
-import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
-import com.subrosagames.subrosa.service.GameService;
-import com.subrosagames.subrosa.util.RequestUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -30,8 +23,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.BadRequestException;
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
@@ -43,9 +40,11 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
@@ -56,8 +55,10 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.security.SecurityHelper;
 import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.security.annotation.IsAuthenticated;
+import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
+import com.subrosagames.subrosa.util.RequestUtils;
 
 /**
  * Controller for {@link com.subrosagames.subrosa.domain.game.Game} related CRUD operations.
@@ -76,6 +77,7 @@ public class ApiGameController {
 
     /**
      * Get a list of {@link Game}s.
+     *
      * @param limit  maximum number of {@link Game}s to return.
      * @param offset offset into the list.
      * @param expand fields to expand
@@ -90,7 +92,7 @@ public class ApiGameController {
                                          @RequestParam(value = "longitude", required = false) Double longitude,
                                          HttpServletRequest request)
     {
-        LOG.debug("Getting game list with limit {}, offset {}, expand {}, latitude {}, longitude {}.", new Object[] { limit, offset, expand, latitude, longitude });
+        LOG.debug("Getting game list with limit {}, offset {}, expand {}, latitude {}, longitude {}.", new Object[]{ limit, offset, expand, latitude, longitude });
         if (latitude != null && longitude != null) {
             Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
             limit = ObjectUtils.defaultIfNull(limit, 10);
@@ -106,6 +108,7 @@ public class ApiGameController {
 
     /**
      * Get a {@link Game} representation.
+     *
      * @param gameUrl the game gameUrl
      * @return {@link Game}
      * @throws GameNotFoundException if game is not found
@@ -127,6 +130,7 @@ public class ApiGameController {
 
     /**
      * Create a {@link Game} from the provided parameters.
+     *
      * @param gameDescriptor description of game
      * @return {@link Game}
      */
@@ -152,6 +156,7 @@ public class ApiGameController {
 
     /**
      * Update an {@link Game} from the provided parameters.
+     *
      * @param gameUrl        game id
      * @param gameDescriptor game descriptor
      * @return {@link Game}
@@ -172,6 +177,7 @@ public class ApiGameController {
 
     /**
      * Publish game.
+     *
      * @param gameUrl game url
      * @return updated game
      * @throws GameNotFoundException     if game is not found
@@ -194,6 +200,7 @@ public class ApiGameController {
 
     /**
      * Get a paginated list of posts for the specified game.
+     *
      * @param gameUrl game id
      * @param limit   number of posts
      * @param offset  offset into posts
@@ -222,6 +229,7 @@ public class ApiGameController {
 
     /**
      * Create new post for game.
+     *
      * @param gameUrl        game url
      * @param postDescriptor post descriptor
      * @return created post
@@ -233,7 +241,8 @@ public class ApiGameController {
     @Transactional
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) PostDescriptor postDescriptor)
-            throws GameNotFoundException, NotAuthenticatedException, BadRequestException, PostValidationException {
+            throws GameNotFoundException, NotAuthenticatedException, BadRequestException, PostValidationException
+    {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
         }
@@ -248,6 +257,7 @@ public class ApiGameController {
 
     /**
      * Get game history.
+     *
      * @param gameUrl game url
      * @param limit   limit
      * @param offset  offset
@@ -257,8 +267,8 @@ public class ApiGameController {
     @RequestMapping(value = "/game/{gameUrl}/history", method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<GameHistory> getHistory(@PathVariable("gameUrl") String gameUrl,
-                                               @RequestParam(value = "limit", required = false) Integer limit,
-                                               @RequestParam(value = "offset", required = false) Integer offset)
+                                                 @RequestParam(value = "limit", required = false) Integer limit,
+                                                 @RequestParam(value = "offset", required = false) Integer offset)
             throws GameNotFoundException
     {
         limit = ObjectUtils.defaultIfNull(limit, 10);
@@ -277,6 +287,7 @@ public class ApiGameController {
 
     /**
      * Get the current targets for the logged in user for the specified game.
+     *
      * @param gameUrl game id
      * @return list of targets
      * @throws GameNotFoundException if game is not found
