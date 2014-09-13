@@ -337,14 +337,13 @@ public class ApiGameController {
     public void achieveTarget(@PathVariable("gameUrl") String gameUrl,
                               @PathVariable("targetId") Integer targetId,
                               @RequestBody TargetAchievement targetAchievement,
-                              HttpServletResponse httpServletResponse) throws GameNotFoundException, TargetNotFoundException
+                              HttpServletResponse httpServletResponse)
+            throws GameNotFoundException, TargetNotFoundException
     {
         int accountId = getAuthenticatedUser().getId();
         Game game = gameFactory.getGame(gameUrl);
         Player player = game.getPlayer(accountId);
-        if (!game.achieveTarget(player, targetId, targetAchievement.getCode())) {
-            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        }
+        game.achieveTarget(player, targetId, targetAchievement.getCode());
     }
 
     @IsAuthenticated

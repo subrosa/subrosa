@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
 import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
@@ -28,7 +29,7 @@ public class EventExecutor {
     private MessageQueueFactory messageQueueFactory;
 
 //    @Autowired
-//    private JmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
 
     /**
      * Execute the event of the specified type for the specified game.
@@ -65,7 +66,7 @@ public class EventExecutor {
         GameEventMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
         messageForName.setGameId(gameId);
         messageForName.setProperties(properties);
-//        jmsTemplate.convertAndSend(queueForName, messageForName);
+        jmsTemplate.convertAndSend(queueForName, messageForName);
     }
 
     public void test() {

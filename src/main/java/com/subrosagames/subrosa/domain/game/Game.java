@@ -45,10 +45,9 @@ public interface Game extends GameData {
      * @param player   player
      * @param targetId target id
      * @param code     achievement code
-     * @return whether achievement succeeded
      * @throws TargetNotFoundException if the player does not have the specified target
      */
-    boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException;
+    void achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException;
 
     /**
      * Perform actions that occur at the start of a game (assignments, for example).

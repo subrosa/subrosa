@@ -591,8 +591,8 @@ public class GameEntity extends BaseEntity implements Game {
     }
 
     @Override
-    public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
-        return getGameHelper().achieveTarget(player, targetId, code);
+    public void achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
+        getGameHelper().achieveTarget(player, targetId, code);
     }
 
     @Override
