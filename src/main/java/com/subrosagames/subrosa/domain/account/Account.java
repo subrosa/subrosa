@@ -32,11 +32,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.orm.jpa.JpaSystemException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -86,7 +89,8 @@ public class Account implements PermissionTarget {
     private String name;
 
     @Column(length = 320, unique = true)
-    @NotEmpty
+    @NotNull
+    @NotBlank
     @Email
     private String email;
 

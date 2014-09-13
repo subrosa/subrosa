@@ -21,7 +21,7 @@ import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 
 /**
- * The minimum information shared by all games.
+ * The minimum functionality shared by all games.
  */
 public interface Game extends GameData {
 

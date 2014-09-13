@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.util.bean.validation;
+package com.subrosagames.subrosa.util.validation.constraints;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
+
+import com.subrosagames.subrosa.util.validation.validators.DateRangeValidator;
 
 /**
  * Class-level constraint defining fields as making a valid date range.
@@ -25,7 +27,7 @@ public @interface DateRange {
     /**
      * Validation message.
      */
-    String message() default "{constraints.daterange}";
+    String message() default "{com.subrosa.util.validation.constraints.daterange}";
 
     /**
      * Validation groups.

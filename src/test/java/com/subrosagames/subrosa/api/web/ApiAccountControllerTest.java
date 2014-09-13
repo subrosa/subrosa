@@ -155,7 +155,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
                                 .build()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("email", "notUnique"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("email", "unique"))));
     }
 
     @Test

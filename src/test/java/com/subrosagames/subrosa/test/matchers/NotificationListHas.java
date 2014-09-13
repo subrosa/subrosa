@@ -163,7 +163,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("detail (" + field + ", " + constraint + ")");
+            description.appendText("detail (" + field + " => " + constraint + ")");
         }
     }
 }

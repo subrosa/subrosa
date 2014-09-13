@@ -189,7 +189,7 @@ public class GlobalExceptionHandlers {
                 GeneralCode.INVALID_REQUEST_ENTITY.getDefaultMessage());
         EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
         details.put(Notification.DetailKey.FIELD, e.getPropertyName());
-        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNRECOGNIZED_PROPERTY.getText());
+        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNRECOGNIZED.getText());
         notification.setDetails(details);
         return new NotificationList(notification);
     }
@@ -210,7 +210,7 @@ public class GlobalExceptionHandlers {
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
         EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
         details.put(Notification.DetailKey.FIELD, "email");
-        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.NOT_UNIQUE.getText());
+        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNIQUE.getText());
         notification.setDetails(details);
         return new NotificationList(notification);
     }

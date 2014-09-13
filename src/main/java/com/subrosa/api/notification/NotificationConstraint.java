@@ -8,8 +8,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum NotificationConstraint {
 
     // CHECKSTYLE-OFF: JavadocVariable
-    NOT_UNIQUE("notUnique"),
-    UNRECOGNIZED_PROPERTY("unrecognizedProperty");
+    REQUIRED("required"),
+    UNIQUE("unique"),
+    UNRECOGNIZED("unrecognized");
     // CHECKSTYLE-ON: JavadocVariable
 
     private final String text;

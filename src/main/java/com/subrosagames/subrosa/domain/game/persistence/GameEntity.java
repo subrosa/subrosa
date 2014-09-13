@@ -205,7 +205,6 @@ public class GameEntity extends BaseEntity implements Game {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='registrationEnd'")
-//    @Transient
     private List<ScheduledEvent> registrationEnd;
 
     @Filterable(
@@ -216,7 +215,6 @@ public class GameEntity extends BaseEntity implements Game {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameStart'")
-//    @Transient
     private List<ScheduledEvent> gameStart;
 
     @Filterable(
@@ -227,7 +225,6 @@ public class GameEntity extends BaseEntity implements Game {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameEnd'")
-//    @Transient
     private List<ScheduledEvent> gameEnd;
 
     @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
@@ -335,7 +332,7 @@ public class GameEntity extends BaseEntity implements Game {
         return this;
     }
 
-    private void assertValid(Class... validationGroups) throws GameValidationException {
+    void assertValid(Class... validationGroups) throws GameValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<GameEntity>> violations = validator.validate(this, validationGroups);
         if (!violations.isEmpty()) {
