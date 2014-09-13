@@ -16,9 +16,9 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
  */
 public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArray> {
 
-    private final AbstractNotificationMatcher matcher;
+    private final NotificationWithDetailsMatcher matcher;
 
-    private NotificationListHas(AbstractNotificationMatcher matcher) {
+    private NotificationListHas(NotificationWithDetailsMatcher matcher) {
         this.matcher = matcher;
     }
 
@@ -29,7 +29,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
      * @return notification list matcher
      */
     @Factory
-    public static Matcher<JSONArray> hasNotification(AbstractNotificationMatcher matcher) {
+    public static Matcher<JSONArray> hasNotification(NotificationWithDetailsMatcher matcher) {
         return new NotificationListHas(matcher);
     }
 
@@ -49,29 +49,16 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
         description.appendDescriptionOf(matcher);
     }
 
-    private abstract static class AbstractNotificationMatcher extends TypeSafeDiagnosingMatcher<JSONObject> {
-    }
-
     /**
-     * Matches notification with a details map containing a specified field.
+     * Matches notification with a details map.
      */
-    public static final class NotificationDetailField extends AbstractNotificationMatcher {
+    public static class NotificationWithDetailsMatcher extends TypeSafeDiagnosingMatcher<JSONObject> {
 
-        private final String detailField;
+        private NotificationWithDetailsMatcher() {  }
 
-        private NotificationDetailField(String detailField) {
-            this.detailField = detailField;
-        }
-
-        /**
-         * Factory for matching notification with specified detail field.
-         *
-         * @param detailKey detail field
-         * @return notification matcher
-         */
         @Factory
-        public static AbstractNotificationMatcher withDetailField(String detailKey) {
-            return new NotificationDetailField(detailKey);
+        public static NotificationWithDetailsMatcher withDetails() {
+            return new NotificationWithDetailsMatcher();
         }
 
         @Override
@@ -82,8 +69,50 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
                 matches = false;
             } else {
                 JSONObject details = (JSONObject) jsonObject.get("details");
-                if (!details.containsKey("field") || !details.get("field").equals(detailField)) {
-                    description.appendText("| does not contain detail field " + detailField + " ");
+                if (!details.containsKey("field") || !details.containsKey("constraint")) {
+                    description.appendText("| details entry is missing field or constraint ");
+                    matches = false;
+                }
+            }
+            return matches;
+        }
+
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("with details");
+        }
+    }
+
+    /**
+     * Matches notification with a details map containing a specified field.
+     */
+    public static class NotificationDetailField extends NotificationWithDetailsMatcher {
+
+        private final String field;
+
+        private NotificationDetailField(String field) {
+            this.field = field;
+        }
+
+        /**
+         * Factory for matching notification with specified detail field.
+         *
+         * @param detailKey field
+         * @return notification matcher
+         */
+        @Factory
+        public static NotificationWithDetailsMatcher withDetailField(String detailKey) {
+            return new NotificationDetailField(detailKey);
+        }
+
+        @Override
+        protected boolean matchesSafely(JSONObject jsonObject, Description description) {
+            boolean matches = super.matchesSafely(jsonObject, description);
+            if (matches) {
+                JSONObject details = (JSONObject) jsonObject.get("details");
+                if (!field.equals(details.get("field"))) {
+                    description.appendText("| does not have field " + field + " ");
                     matches = false;
                 }
             }
@@ -92,7 +121,49 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("detail field " + detailField);
+            description.appendText("detail field " + field);
+        }
+    }
+
+    public static class NotificationDetail extends NotificationDetailField {
+
+        private final String field;
+        private final String constraint;
+
+        private NotificationDetail(String field, String constraint) {
+            super(field);
+            this.field = field;
+            this.constraint = constraint;
+        }
+
+        /**
+         * Factory for matching notification with a detail and constraint.
+         *
+         * @param detailKey field
+         * @param detailValue constraint
+         * @return
+         */
+        @Factory
+        public static NotificationWithDetailsMatcher withDetail(String detailKey, String detailValue) {
+            return new NotificationDetail(detailKey, detailValue);
+        }
+
+         @Override
+        protected boolean matchesSafely(JSONObject jsonObject, Description description) {
+            boolean matches = super.matchesSafely(jsonObject, description);
+            if (matches) {
+                JSONObject details = (JSONObject) jsonObject.get("details");
+                if (!constraint.equals(details.get("constraint"))) {
+                    description.appendText("| field " + field + " does not have constraint " + constraint + " ");
+                    matches = false;
+                }
+            }
+            return matches;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("detail (" + field + ", " + constraint + ")");
         }
     }
 }
