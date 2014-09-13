@@ -1,12 +1,12 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import com.subrosagames.subrosa.domain.game.event.GameHistory;
-
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Date;
+
+import com.subrosagames.subrosa.domain.game.event.GameHistory;
 
 @Entity
 @Table(name = "history")

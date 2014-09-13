@@ -1,15 +1,17 @@
 package com.subrosagames.subrosa.domain.game.validation;
 
+import java.util.Set;
+import javax.validation.ConstraintViolation;
+
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
-
-import javax.validation.ConstraintViolation;
-import java.util.Set;
 
 /**
  * Encapsulates an exception arising from a failed validation of a game.
  */
 public class GameEventValidationException extends DomainObjectValidationException {
+
+    private static final long serialVersionUID = 6632349185919738063L;
 
     /**
      * Default constructor.

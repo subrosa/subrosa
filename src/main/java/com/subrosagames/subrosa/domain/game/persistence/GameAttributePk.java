@@ -18,7 +18,8 @@ public class GameAttributePk implements Serializable {
     @Column(name = "attribute_type")
     private String attributeType;
 
-    public GameAttributePk() { }
+    public GameAttributePk() {
+    }
 
     public GameAttributePk(Integer gameId, String attributeType) {
         this.gameId = gameId;

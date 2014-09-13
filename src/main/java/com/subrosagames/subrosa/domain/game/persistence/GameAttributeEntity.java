@@ -27,7 +27,8 @@ public class GameAttributeEntity {
     @Column
     private String value;
 
-    public GameAttributeEntity() { }
+    public GameAttributeEntity() {
+    }
 
     public GameAttributeEntity(GameEntity gameEntity, String attributeType, String value) {
         this.primaryKey = new GameAttributePk(gameEntity.getId(), attributeType);
