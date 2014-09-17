@@ -1,12 +1,12 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.event.ScheduledEvent;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
+
+import com.subrosagames.subrosa.event.ScheduledEvent;
 
 /**
  * Persists a scheduled event.

@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.util.bean.validation;
+package com.subrosagames.subrosa.util.validation.validators;
 
 import java.util.Date;
 import javax.validation.ConstraintValidator;
@@ -7,6 +7,8 @@ import javax.validation.ConstraintValidatorContext;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.subrosagames.subrosa.util.validation.constraints.DateRange;
 
 /**
  * Validates that two {@code Date} fields make up a valid date range.

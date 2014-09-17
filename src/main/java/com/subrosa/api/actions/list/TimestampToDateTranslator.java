@@ -10,7 +10,7 @@ public class TimestampToDateTranslator implements FilterValueTranslator<String, 
 
     @Override
     public Date translate(String timestamp) {
-        return new Date(Long.valueOf(timestamp));
+        return new Date(Long.parseLong(timestamp));
     }
 
 }

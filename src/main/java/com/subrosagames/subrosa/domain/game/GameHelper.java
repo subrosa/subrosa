@@ -64,14 +64,22 @@ public class GameHelper {
         return playerEntities;
     }
 
-    public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
-        Target target = player.getTarget(targetId);
+    /**
+     * Triggers the target achievement event for the given player and target.
+     *
+     * @param player player
+     * @param targetId target id
+     * @param code code representing target
+     * @throws TargetNotFoundException if specified target does not exist
+     */
+    public void achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
+        player.getTarget(targetId); // throws TargetNotFoundException
 
         Map<String, Serializable> properties = Maps.newHashMap();
         properties.put("playerId", player.getId());
         properties.put("targetId", targetId);
+        properties.put("code", code);
         eventExecutor.execute(EventMessage.TARGET_ACHIEVED.name(), game.getId(), properties);
-        return true;
     }
 
     public Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException {

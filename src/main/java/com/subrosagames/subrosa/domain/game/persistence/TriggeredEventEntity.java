@@ -1,14 +1,17 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.event.TriggerType;
 import com.subrosagames.subrosa.event.TriggeredEvent;
-
-import java.util.Date;
 
 /**
  * Persisted triggered event.

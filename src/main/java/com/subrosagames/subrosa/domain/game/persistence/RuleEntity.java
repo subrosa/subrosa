@@ -11,7 +11,7 @@ import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.RuleType;
 
 /**
- *
+ * Persisted game rule.
  */
 @Entity
 @Table(name = "rule")

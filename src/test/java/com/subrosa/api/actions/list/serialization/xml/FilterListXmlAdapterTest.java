@@ -29,13 +29,13 @@ public class FilterListXmlAdapterTest {
         filters.add(new Filter("numberGreaterThan", 35));
         outputStream = new ByteArrayOutputStream();
         JAXB.marshal(new FilterContainer(filters), outputStream);
-        Assert.assertTrue(new String(outputStream.toByteArray()).contains("<numberGreaterThan>35</numberGreaterThan>"));
+        Assert.assertTrue(new String(outputStream.toByteArray(), "UTF-8").contains("<numberGreaterThan>35</numberGreaterThan>"));
 
         filters.add(new Filter("yourMomIsFat", true));
         outputStream = new ByteArrayOutputStream();
         JAXB.marshal(new FilterContainer(filters), outputStream);
-        Assert.assertTrue(new String(outputStream.toByteArray()).contains("<numberGreaterThan>35</numberGreaterThan>"));
-        Assert.assertTrue(new String(outputStream.toByteArray()).contains("<yourMomIsFat>true</yourMomIsFat>"));
+        Assert.assertTrue(new String(outputStream.toByteArray(), "UTF-8").contains("<numberGreaterThan>35</numberGreaterThan>"));
+        Assert.assertTrue(new String(outputStream.toByteArray(), "UTF-8").contains("<yourMomIsFat>true</yourMomIsFat>"));
 
         // for some reason unmarshalling hits a "premature end of file"
 //        InputStream inputStream = IOUtils.toInputStream(new String(outputStream.toByteArray()));

@@ -1,7 +1,47 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import org.apache.commons.lang.NotImplementedException;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+import org.hibernate.annotations.FetchProfiles;
+import org.hibernate.annotations.Where;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -15,7 +55,18 @@ import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameAttributeType;
+import com.subrosagames.subrosa.domain.game.GameAttributeValue;
+import com.subrosagames.subrosa.domain.game.GameFactory;
+import com.subrosagames.subrosa.domain.game.GameHelper;
+import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.GameStatus;
+import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.PostType;
+import com.subrosagames.subrosa.domain.game.Rule;
+import com.subrosagames.subrosa.domain.game.RuleRepository;
+import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
@@ -37,21 +88,6 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
-import org.apache.commons.lang.NotImplementedException;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.*;
-
-import javax.persistence.CascadeType;
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.Table;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * Persisted entity for a game.
@@ -188,7 +224,7 @@ public class GameEntity extends BaseEntity implements Game {
     private Location location;
 
     @Filterable(
-            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
             translator = TimestampToDateTranslator.class,
             childOperand = "date"
     )
@@ -198,36 +234,33 @@ public class GameEntity extends BaseEntity implements Game {
     private List<ScheduledEvent> registrationStart;
 
     @Filterable(
-            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
             translator = TimestampToDateTranslator.class,
             childOperand = "date"
     )
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='registrationEnd'")
-//    @Transient
     private List<ScheduledEvent> registrationEnd;
 
     @Filterable(
-            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
             translator = TimestampToDateTranslator.class,
             childOperand = "date"
     )
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameStart'")
-//    @Transient
     private List<ScheduledEvent> gameStart;
 
     @Filterable(
-            operators = {Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN},
+            operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
             translator = TimestampToDateTranslator.class,
             childOperand = "date"
     )
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameEnd'")
-//    @Transient
     private List<ScheduledEvent> gameEnd;
 
     @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
@@ -283,7 +316,7 @@ public class GameEntity extends BaseEntity implements Game {
 
     public GameStatus getStatus() {
         Date now = new Date();
-        if (Lists.asList(published, new Date[]{getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd()}).contains(null)) {
+        if (Lists.asList(published, new Date[]{ getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd() }).contains(null)) {
             return GameStatus.DRAFT;
         } else {
             if (now.before(getRegistrationStart())) {
@@ -335,7 +368,7 @@ public class GameEntity extends BaseEntity implements Game {
         return this;
     }
 
-    private void assertValid(Class... validationGroups) throws GameValidationException {
+    void assertValid(Class... validationGroups) throws GameValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<GameEntity>> violations = validator.validate(this, validationGroups);
         if (!violations.isEmpty()) {
@@ -558,8 +591,8 @@ public class GameEntity extends BaseEntity implements Game {
     }
 
     @Override
-    public boolean achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
-        return getGameHelper().achieveTarget(player, targetId, code);
+    public void achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
+        getGameHelper().achieveTarget(player, targetId, code);
     }
 
     @Override

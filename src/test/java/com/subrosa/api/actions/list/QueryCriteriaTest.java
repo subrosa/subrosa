@@ -50,7 +50,7 @@ public class QueryCriteriaTest {
             @FilterGroup(value = "oneGroup", fields = { "name", "age" }),
             @FilterGroup(value = "twoGroup", fields = { "createDate" }, operators = Operator.GREATER_THAN)
     })
-    public class QueriableModelObject {
+    public static class QueriableModelObject {
 
         @Filterable
         private String name;
@@ -69,11 +69,23 @@ public class QueryCriteriaTest {
         private EntityObject entityObject;
 
         private String notAnnotated;
+
+        public QueriableModelObject(String name, Integer age, Date createDate, EntityObject entityObject, String notAnnotated) {
+            this.name = name;
+            this.age = age;
+            this.createDate = createDate;
+            this.entityObject = entityObject;
+            this.notAnnotated = notAnnotated;
+        }
     }
 
-    public class EntityObject {
+    public static class EntityObject {
 
         private Date innerDate;
+
+        public EntityObject(Date innerDate) {
+            this.innerDate = innerDate;
+        }
     }
 
     // CHECKSTYLE-ON: JavadocMethod

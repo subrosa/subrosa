@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
@@ -155,7 +155,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
                                 .build()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value(is(notificationList())))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetailField("email"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("email", "unique"))));
     }
 
     @Test

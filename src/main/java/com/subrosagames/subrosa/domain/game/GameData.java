@@ -5,16 +5,19 @@ import java.util.Date;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.util.bean.validation.DateRange;
+import com.subrosagames.subrosa.util.validation.constraints.DateRange;
 
 /**
+ * Defines the attributes associated with a game along with their validation constraints.
  */
 @DateRange.List({
-        @DateRange(start = "gameStart", end = "gameEnd", message = "The game start and end times must define a valid range"),
-        @DateRange(start = "registrationStart", end = "registrationEnd", message = "The registration start and end times must define a valid range"),
-        @DateRange(start = "registrationEnd", end = "gameStart", allowEmptyRange = true, message = "Registration must end before the game starts")
+        @DateRange(start = "gameStart", end = "gameEnd", message = "startBeforeEnd"),
+        @DateRange(start = "registrationStart", end = "registrationEnd", message = "startBeforeEnd"),
+        @DateRange(start = "registrationEnd", end = "gameStart", allowEmptyRange = true)
 })
 public interface GameData {
 
@@ -28,14 +31,14 @@ public interface GameData {
      * Game name.
      * @return game name
      */
-    @NotNull
+    @NotBlank
     String getName();
 
     /**
      * Game url.
      * @return game url
      */
-    @NotNull
+    @NotBlank
     String getUrl();
 
     /**

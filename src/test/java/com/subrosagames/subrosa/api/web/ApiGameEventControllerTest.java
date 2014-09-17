@@ -18,6 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link ApiGameController}.
@@ -163,7 +165,8 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder()
                                 .add("event", "gameEnd").build()))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("date", "required"))));
 
         mockMvc.perform(
                 post("/game/fun_times/event")
@@ -171,7 +174,8 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder()
                                 .add("date", "2016-01-01").build()))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(is(notificationList())));
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("event", "required"))));
     }
 
     @Test

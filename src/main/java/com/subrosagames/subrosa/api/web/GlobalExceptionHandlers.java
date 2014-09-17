@@ -1,8 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.io.EOFException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 
@@ -19,6 +18,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.common.collect.Maps;
 import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
+import com.subrosa.api.notification.NotificationConstraint;
 import com.subrosa.api.notification.Severity;
 import com.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.api.BadRequestException;
@@ -60,10 +60,12 @@ public class GlobalExceptionHandlers {
         final Notification notification = new Notification(
                 GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
-        notification.setDetails(new HashMap<String, String>(2) {{
-            put("field", violation.getPropertyPath().toString());
-            put("constraint", violation.getMessage());
-        }});
+        notification.setDetails(new EnumMap<Notification.DetailKey, String>(Notification.DetailKey.class) {
+            {
+                put(Notification.DetailKey.FIELD, violation.getPropertyPath().toString());
+                put(Notification.DetailKey.CONSTRAINT, violation.getMessage());
+            }
+        });
         LOG.debug("Global exception handler domain object constraint violation: {} => {}", violation.getPropertyPath(), violation.getMessage());
         return notification;
     }
@@ -185,8 +187,9 @@ public class GlobalExceptionHandlers {
         Notification notification = new Notification(
                 GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
                 GeneralCode.INVALID_REQUEST_ENTITY.getDefaultMessage());
-        Map<String, String> details = Maps.newHashMap();
-        details.put(e.getPropertyName(), "unrecognized property");
+        EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
+        details.put(Notification.DetailKey.FIELD, e.getPropertyName());
+        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNRECOGNIZED.getText());
         notification.setDetails(details);
         return new NotificationList(notification);
     }
@@ -205,9 +208,9 @@ public class GlobalExceptionHandlers {
         Notification notification = new Notification(
                 GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
-        Map<String, String> details = Maps.newHashMap();
-        details.put("field", "email");
-        details.put("constraint", "already in use");
+        EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
+        details.put(Notification.DetailKey.FIELD, "email");
+        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNIQUE.getText());
         notification.setDetails(details);
         return new NotificationList(notification);
     }

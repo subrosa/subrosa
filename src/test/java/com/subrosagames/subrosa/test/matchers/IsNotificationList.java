@@ -47,7 +47,7 @@ public class IsNotificationList extends TypeSafeDiagnosingMatcher<JSONObject> {
 
     @Override
     public void describeTo(Description description) {
-        description.appendText("paginated list");
+        description.appendText("notification list");
     }
 
     static class IsNotification extends TypeSafeDiagnosingMatcher<JSONObject> {

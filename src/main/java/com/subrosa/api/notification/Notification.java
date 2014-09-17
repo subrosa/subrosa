@@ -1,31 +1,29 @@
 package com.subrosa.api.notification;
 
-import java.util.Map;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.util.EnumMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.EnumMapSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializer;
 
 /**
  * Represents a notification message related to a request.
  */
-@XmlRootElement(name = "notification")
 public class Notification {
 
     private Code code;
     private Severity severity;
     private String text;
-    private Map<String, String> details;
+    private EnumMap<DetailKey, String> details;
 
     /**
      * Constructs an empty notification.
      */
     public Notification() {
-
     }
 
     /**
@@ -58,7 +56,6 @@ public class Notification {
      *
      * @return the notification code
      */
-    @XmlTransient
     @JsonIgnore
     public Code getCode() {
         return code;
@@ -96,9 +93,10 @@ public class Notification {
      *
      * @return the collection of notification details
      */
-    @XmlJavaTypeAdapter(DetailAdapter.class)
-    @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-    public Map<String, String> getDetails() {
+    @JsonSerialize(
+            include = JsonSerialize.Inclusion.NON_NULL
+    )
+    public EnumMap<DetailKey, String> getDetails() {
         return details;
     }
 
@@ -107,7 +105,7 @@ public class Notification {
      *
      * @param details the collection of notification details
      */
-    public void setDetails(Map<String, String> details) {
+    public void setDetails(EnumMap<DetailKey, String> details) {
         this.details = details;
     }
 
@@ -134,11 +132,33 @@ public class Notification {
      *
      * @return the integer code
      */
-    // For serialization
-    @SuppressWarnings("unused")
-    @XmlElement(name = "code")
     @JsonProperty("code")
     private String getStringCode() {
         return code.getCode();
     }
+
+    /**
+     * Enumeration of valid fields for the notification details map.
+     */
+    public enum DetailKey {
+        FIELD("field"),
+        CONSTRAINT("constraint");
+
+        private final String value;
+
+        DetailKey(String value) {
+            this.value = value;
+        }
+
+        @JsonValue
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return value;
+        }
+    }
+
 }
