@@ -7,27 +7,28 @@
             http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
             http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
-    <context:property-placeholder ignore-resource-not-found="true"
-                                  location="classpath:etc/build.properties,
+  <context:property-placeholder ignore-resource-not-found="true"
+                                location="classpath:etc/build.properties,
                 classpath:com/subrosagames/subrosa/subrosa.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/environment.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/secure.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/subrosa/subrosa-env.properties,
                 file:${external.config.directory:/opt/subrosa/etc}/host.properties"
-            />
+      />
 
-    <context:component-scan base-package="com.subrosagames.subrosa"/>
+  <context:component-scan base-package="com.subrosagames.subrosa"/>
 
-    <import resource="subrosa-security.xml"/>
-    <import resource="subrosa-persistence.xml"/>
-    <!--<import resource="subrosa-caching.xml"/>-->
-    <import resource="subrosa-scheduling.xml"/>
-    <import resource="subrosa-messaging.xml"/>
-    <import resource="subrosa-android.xml"/>
+  <import resource="subrosa-security.xml"/>
+  <import resource="subrosa-persistence.xml"/>
+  <!--<import resource="subrosa-caching.xml"/>-->
+  <import resource="subrosa-scheduling.xml"/>
+  <import resource="subrosa-messaging.xml"/>
+  <import resource="subrosa-android.xml"/>
+  <import resource="subrosa-google.xml"/>
 
   <bean id="customizableTraceInterceptor"
         class="org.springframework.aop.interceptor.CustomizableTraceInterceptor">
-    <property name="exitMessage" value="Leaving $[methodName](): $[returnValue]" />
+    <property name="exitMessage" value="Leaving $[methodName](): $[returnValue]"/>
   </bean>
   <mvc:interceptors>
     <bean class="com.subrosagames.subrosa.util.LogResponseBodyInterceptor"/>

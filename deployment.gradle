@@ -1,0 +1,18 @@
+apply plugin: 'cargo'
+
+cargo {
+    containerId = 'tomcat8x'
+    port = 8080
+
+    deployable {
+        file = file(war.archivePath.absolutePath)
+        context = project.name
+    }
+
+    remote {
+        hostname = '10.10.10.41'
+        username = 'admin'
+        password = 'admin'
+    }
+}
+
