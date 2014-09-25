@@ -55,6 +55,9 @@ public abstract class AbstractApiControllerTest {
     // CHECKSTYLE-OFF: JavadocMethod
     // CHECKSTYLE-OFF: JavadocType
 
+    /**
+     * Provides mechanism for performing and verifying API calls.
+     */
     protected MockMvc mockMvc;
 
     @Autowired

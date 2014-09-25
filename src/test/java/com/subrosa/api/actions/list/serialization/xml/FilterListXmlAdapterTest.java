@@ -1,17 +1,17 @@
 package com.subrosa.api.actions.list.serialization.xml;
 
-import com.subrosa.api.actions.list.Filter;
-import com.subrosa.api.actions.list.serialization.xml.FilterListXmlAdapter;
-import org.junit.Assert;
-import org.junit.Test;
-
-import javax.xml.bind.JAXB;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.bind.JAXB;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.subrosa.api.actions.list.Filter;
 
 /**
  * Test {@link com.subrosa.api.actions.list.serialization.xml.FilterListXmlAdapter}.
@@ -49,7 +49,8 @@ public class FilterListXmlAdapterTest {
 
         private List<Filter> filters;
 
-        public FilterContainer() { }
+        public FilterContainer() {
+        }
 
         public FilterContainer(List<Filter> filters) {
             this.filters = filters;

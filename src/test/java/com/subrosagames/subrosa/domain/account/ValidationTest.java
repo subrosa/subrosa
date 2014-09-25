@@ -9,8 +9,14 @@ import org.junit.runners.JUnit4;
 import static com.subrosagames.subrosa.test.matchers.HasConstraintViolation.hasConstraintViolation;
 
 
+/**
+ * Tests validation scenarios for an @{link Account} entity.
+ */
 @RunWith(JUnit4.class)
 public class ValidationTest {
+
+    // CHECKSTYLE-OFF: JavadocMethod
+    // CHECKSTYLE-OFF: JavadocVariable
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -53,5 +59,7 @@ public class ValidationTest {
         return account;
     }
 
+    // CHECKSTYLE-ON: JavadocMethod
+    // CHECKSTYLE-ON: JavadocVariable
 }
 

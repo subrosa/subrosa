@@ -5,10 +5,7 @@ import java.util.EnumMap;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.EnumMapSerializer;
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializer;
 
 /**
  * Represents a notification message related to a request.

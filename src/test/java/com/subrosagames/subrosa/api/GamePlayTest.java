@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**

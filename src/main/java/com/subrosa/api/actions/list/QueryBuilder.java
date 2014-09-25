@@ -17,7 +17,7 @@ public interface QueryBuilder<T, Q, C> {
     Q getQuery(QueryCriteria<T> criteria);
 
     /**
-     * Generate a query for counting total resulst matching criteria.
+     * Generate a query for counting total results matching criteria.
      *
      * @param criteria query criteria
      * @return runnable query

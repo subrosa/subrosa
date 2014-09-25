@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang.ObjectUtils;
 
+import com.google.code.geocoder.model.GeocoderLocationType;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
@@ -17,6 +18,8 @@ public class GoogleAddress {
     private String postalCode;
     private BigDecimal latitude;
     private BigDecimal longitude;
+    private boolean partialMatch;
+    private GeocoderLocationType locationType;
 
     public String getFullAddress() {
         return fullAddress;
@@ -82,9 +85,25 @@ public class GoogleAddress {
         this.longitude = longitude;
     }
 
+    public boolean isPartialMatch() {
+        return partialMatch;
+    }
+
+    public void setPartialMatch(boolean partialMatch) {
+        this.partialMatch = partialMatch;
+    }
+
+    public GeocoderLocationType getLocationType() {
+        return locationType;
+    }
+
+    public void setLocationType(GeocoderLocationType locationType) {
+        this.locationType = locationType;
+    }
+
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return Objects.toStringHelper(this)
                 .add("fullAddress", fullAddress)
                 .add("streetAddress", streetAddress)
                 .add("city", city)
@@ -93,6 +112,9 @@ public class GoogleAddress {
                 .add("postalCode", postalCode)
                 .add("latitude", latitude)
                 .add("longitude", longitude)
+                .add("partialMatch", partialMatch)
+                .add("locationType", locationType)
                 .toString();
     }
+
 }

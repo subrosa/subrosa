@@ -66,7 +66,7 @@ public class AcceptHeaderFilter implements Filter {
     private String defaultMimeType = MIMETYPE_JSON;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         String configMimeType = filterConfig.getInitParameter(DEFAULT_MIMETYPE_PARAM);
         if (configMimeType != null) {
             LOG.debug("Default MIME type set to {} per web.xml init-param", configMimeType);
@@ -81,9 +81,7 @@ public class AcceptHeaderFilter implements Filter {
     }
 
     @Override
-    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException
-    {
+    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String incomingAcceptHeader = httpRequest.getHeader(ACCEPT_HEADER);
         LOG.debug("Accept header is '{}'", incomingAcceptHeader);
@@ -162,8 +160,7 @@ public class AcceptHeaderFilter implements Filter {
             if (contentType != null) {
                 if (contentType.startsWith(MIMETYPE_JSON)) {
                     return MIMETYPE_JSON;
-                } else if (contentType.startsWith(MIMETYPE_XML)
-                        || contentType.startsWith(MIMETYPE_TEXT_XML)) {
+                } else if (contentType.startsWith(MIMETYPE_XML) || contentType.startsWith(MIMETYPE_TEXT_XML)) {
                     return MIMETYPE_XML;
                 }
             }

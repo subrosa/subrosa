@@ -15,7 +15,7 @@ import com.subrosa.api.actions.list.Filter;
 public class FilterListJsonSerializer extends JsonSerializer<List<Filter>> {
 
     @Override
-    public void serialize(List<Filter> value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+    public void serialize(List<Filter> value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
         jgen.writeStartArray();
         for (Filter filter : value) {
             jgen.writeStartObject();

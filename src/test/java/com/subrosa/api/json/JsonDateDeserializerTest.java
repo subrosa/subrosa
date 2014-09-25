@@ -1,10 +1,11 @@
 package com.subrosa.api.json;
 
+import org.junit.Test;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.subrosa.api.serialization.json.JsonDateDeserializer;
-import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -21,11 +22,11 @@ public class JsonDateDeserializerTest {
     public void testBadDate() throws Exception {
         JsonParser parser = mock(JsonParser.class);
         DeserializationContext context = mock(DeserializationContext.class);
-        
+
         when(parser.getText()).thenReturn("LUNCHTIME LAST WEDNESDAY");
-        
+
         JsonDateDeserializer deserializer = new JsonDateDeserializer();
         deserializer.deserialize(parser, context);
     }
-    
+
 }

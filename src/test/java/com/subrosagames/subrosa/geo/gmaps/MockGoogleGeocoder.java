@@ -22,7 +22,7 @@ public class MockGoogleGeocoder extends GoogleGeocoder {
     }
 
     @Override
-    GeocoderResult getGeocoderResultForAddress(String address, String key) throws URISyntaxException, IOException {
+    GeocoderResult getGeocoderResultForAddress(String address, String key) throws IOException {
         return responses.get(address);
     }
 

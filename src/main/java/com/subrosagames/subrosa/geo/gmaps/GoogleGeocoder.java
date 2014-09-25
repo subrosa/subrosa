@@ -61,6 +61,9 @@ public class GoogleGeocoder {
 
         gaddr.setLatitude(result.getGeometry().getLocation().getLat());
         gaddr.setLongitude(result.getGeometry().getLocation().getLng());
+
+        gaddr.setPartialMatch(result.isPartialMatch());
+        gaddr.setLocationType(result.getGeometry().getLocationType());
         return gaddr;
     }
 

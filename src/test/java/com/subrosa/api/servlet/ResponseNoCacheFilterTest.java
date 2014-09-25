@@ -1,21 +1,16 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.subrosa.api.servlet;
 
-import com.subrosa.api.servlet.ResponseNoCacheFilter;
+import java.io.IOException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
@@ -28,12 +23,17 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ResponseNoCacheFilterTest {
-    
+
+    // CHECKSTYLE-OFF: JavadocMethod
+
     private ResponseNoCacheFilter instance;
-    @Mock private HttpServletRequest request;
-    @Mock private HttpServletResponse response;
-    @Mock private FilterChain chain;
-    
+    @Mock
+    private HttpServletRequest request;
+    @Mock
+    private HttpServletResponse response;
+    @Mock
+    private FilterChain chain;
+
     /**
      * Instantiate a new ResponseNoCacheFilter before each test.
      */
@@ -48,7 +48,7 @@ public class ResponseNoCacheFilterTest {
     @Test
     public void getRequest() throws IOException, ServletException {
         when(request.getMethod()).thenReturn("GET");
-        
+
         instance.doFilter(request, response, chain);
 
         verify(response).setHeader("Pragma", "no-cache");
@@ -63,7 +63,7 @@ public class ResponseNoCacheFilterTest {
     @Test
     public void postRequest() throws IOException, ServletException {
         when(request.getMethod()).thenReturn("POST");
-        
+
         instance.doFilter(request, response, chain);
 
         verify(response, never()).setHeader(anyString(), anyString());
@@ -71,4 +71,5 @@ public class ResponseNoCacheFilterTest {
         verify(chain).doFilter(request, response);
     }
 
+    // CHECKSTYLE-ON: JavadocMethod
 }
