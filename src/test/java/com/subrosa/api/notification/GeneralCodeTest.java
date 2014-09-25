@@ -1,12 +1,11 @@
 package com.subrosa.api.notification;
 
-import com.subrosa.api.notification.GeneralCode;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
@@ -29,5 +28,5 @@ public class GeneralCodeTest {
         }
 
     }
-    
+
 }

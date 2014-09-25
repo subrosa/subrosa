@@ -11,6 +11,11 @@ public class TargetDto {
     private int targetId;
     private TargetType targetType;
 
+    /**
+     * Construct for target.
+     *
+     * @param target target
+     */
     public TargetDto(Target target) {
         this.targetId = target.getId();
         this.targetType = target.getTargetType();

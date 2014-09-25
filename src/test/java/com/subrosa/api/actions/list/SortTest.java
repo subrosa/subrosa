@@ -1,6 +1,5 @@
 package com.subrosa.api.actions.list;
 
-import com.subrosa.api.actions.list.Sort;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,7 +9,8 @@ import org.junit.Test;
 public class SortTest {
 
     @Test // SUPPRESS CHECKSTYLE JavadocMethod
-    public void testSortParsing() {
+    public void testSortParsing()
+    {
         Sort sort;
 
         sort = new Sort("name");

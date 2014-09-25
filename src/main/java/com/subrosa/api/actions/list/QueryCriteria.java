@@ -34,6 +34,7 @@ public class QueryCriteria<T> {
     private Class<T> clazz;
     private int limit = DefaultSearchConstants.DEFAULT_LIMIT;
     private int offset = DefaultSearchConstants.DEFAULT_OFFSET;
+    private boolean bypassFilterableChecks;
 
     /**
      * Construct for given type.
@@ -126,6 +127,10 @@ public class QueryCriteria<T> {
         Field filterField = getFieldForFilter(filter);
         if (filterField == null) {
             throw new IllegalArgumentException("Field " + filter.getField() + " does not exist.");
+        }
+
+        if (bypassFilterableChecks) {
+            return filter;
         }
 
         Filterable filterable = filterField.getAnnotation(Filterable.class);
@@ -251,5 +256,9 @@ public class QueryCriteria<T> {
 
     public Class<T> getTargetClass() {
         return clazz;
+    }
+
+    public void setBypassFilterableChecks(boolean bypassFilterableChecks) {
+        this.bypassFilterableChecks = bypassFilterableChecks;
     }
 }

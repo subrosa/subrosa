@@ -15,6 +15,7 @@ import javax.persistence.Persistence;
 import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 
+import org.hamcrest.Matchers;
 import org.hamcrest.beans.HasPropertyWithValue;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -64,8 +65,8 @@ public class JpaQueryBuilderTest {
         entityManager.getTransaction().begin();
         entityManager.persist(new TestObject(1, 1.1, "5", new DateTime(2014, 1, 1, 0, 0, 0, 0).toDate(), 1));
         entityManager.persist(new TestObject(2, 2.2, "5", new DateTime(2014, 2, 1, 0, 0, 0, 0).toDate(), 1));
-        entityManager.persist(new TestObject(3, 3.3, "3", new DateTime(2014, 3, 1, 0, 0, 0, 0).toDate(), 3));
-        entityManager.persist(new TestObject(4, 4.4, "2", new DateTime(2014, 4, 1, 0, 0, 0, 0).toDate(), 3));
+        entityManager.persist(new TestObject(3, 3.3, "3", new DateTime(2014, 3, 1, 0, 0, 0, 0).toDate(), 3, "set"));
+        entityManager.persist(new TestObject(4, 4.4, "2", new DateTime(2014, 4, 1, 0, 0, 0, 0).toDate(), 3, "also set"));
         entityManager.persist(new TestObject(5, 5.5, "1", new DateTime(2014, 5, 1, 0, 0, 0, 0).toDate(), 5));
         TestObject testObject;
         final EventObject eventObject1;
@@ -221,6 +222,26 @@ public class JpaQueryBuilderTest {
     }
 
     @Test
+    public void testSetAndUnsetOperators() throws Exception {
+        QueryCriteria<TestObject> criteria;
+        List<TestObject> results;
+
+        criteria = new QueryCriteria<TestObject>(TestObject.class);
+        criteria.setBypassFilterableChecks(true);
+        criteria.addFilter("nullableSet", true);
+        results = findForCriteria(criteria);
+        assertEquals(2, results.size());
+        assertThat(results, everyItem(HasPropertyWithValue.<TestObject>hasProperty("notAnnotated", is(3))));
+
+        criteria = new QueryCriteria<TestObject>(TestObject.class);
+        criteria.setBypassFilterableChecks(true);
+        criteria.addFilter("nullableUnset", true);
+        results = findForCriteria(criteria);
+        assertEquals(5, results.size());
+        assertThat(results, everyItem(HasPropertyWithValue.<TestObject>hasProperty("notAnnotated", not(3))));
+    }
+
+    @Test
     public void testFilterTransformations() throws Exception {
         MockHttpServletRequest request;
         List<TestObject> results;
@@ -262,6 +283,10 @@ public class JpaQueryBuilderTest {
 
     private List<TestObject> findForRequest(MockHttpServletRequest request) {
         QueryCriteria<TestObject> criteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, TestObject.class);
+        return findForCriteria(criteria);
+    }
+
+    private List<TestObject> findForCriteria(QueryCriteria<TestObject> criteria) {
         QueryBuilder<TestObject, TypedQuery<TestObject>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<TestObject>(entityManager);
         TypedQuery<TestObject> query = queryBuilder.getQuery(criteria);
         return query.getResultList();
@@ -302,12 +327,21 @@ public class JpaQueryBuilderTest {
         @Column
         private Integer notAnnotated;
 
+        @Column
+//        @Filterable(operators = { Operator.SET, Operator.UNSET })
+        private String nullable;
+
         public TestObject(Integer id, Double score, String text, Date time, Integer notAnnotated) {
+            this(id, score, text, time, notAnnotated, null);
+        }
+
+        public TestObject(Integer id, Double score, String text, Date time, Integer notAnnotated, String nullable) {
             this.id = id;
             this.score = score;
             this.text = text;
             this.time = time;
             this.notAnnotated = notAnnotated;
+            this.nullable = nullable;
         }
 
         public TestObject() {
@@ -361,6 +395,13 @@ public class JpaQueryBuilderTest {
             this.notAnnotated = notAnnotated;
         }
 
+        public String getNullable() {
+            return nullable;
+        }
+
+        public void setNullable(String nullable) {
+            this.nullable = nullable;
+        }
     }
 
     @Entity

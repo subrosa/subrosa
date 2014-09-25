@@ -28,10 +28,11 @@ public class Filter {
     /**
      * Construct with the given key, value and value translator with optional explicit query field.
      *
-     * @param filterKey  filter key
-     * @param value      filter value
-     * @param translator filter value translator
-     * @param queryField explicitly set field on which to query
+     * @param filterKey    filter key
+     * @param value        filter value
+     * @param translator   filter value translator
+     * @param queryField   explicitly set field on which to query
+     * @param childOperand name of a field in the filtered field against which to apply the filter
      */
     public Filter(String filterKey, Object value, FilterValueTranslator<Object, Object> translator, String queryField, String childOperand) {
         field = parseFieldNameFromFilterKey(filterKey);

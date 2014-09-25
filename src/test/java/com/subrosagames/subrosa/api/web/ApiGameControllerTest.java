@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -252,8 +253,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("my favorite game"))
                 .andExpect(jsonPath("$.gameType").value("ASSASSIN"))
-                .andExpect(jsonPath("$.url").value(url))
-        ;
+                .andExpect(jsonPath("$.url").value(url));
     }
 
     @Test
@@ -315,7 +315,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String url = "fun_times";
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DATE, -1);
-        HashSet<String> times = Sets.newHashSet("gameStart", "gameEnd", "registrationEnd");
+        Set<String> times = Sets.newHashSet("gameStart", "gameEnd", "registrationEnd");
         for (String time : times) {
             mockMvc.perform(
                     put("/game/{url}/", url)
@@ -423,7 +423,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         addEventToGame(gameEntity, "registrationEnd", new Date(registrationEnd));
         addEventToGame(gameEntity, "gameStart", new Date(gameStart));
         addEventToGame(gameEntity, "gameEnd", new Date(gameEnd));
-        HashMap<String, Object> updates = new HashMap<String, Object>() {
+        Map<String, Object> updates = new HashMap<String, Object>() {
             {
                 put("description", "it's going to be fun!");
             }
@@ -433,8 +433,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.gameStart").value(gameStart))
                 .andExpect(jsonPath("$.gameEnd").value(gameEnd))
                 .andExpect(jsonPath("$.registrationStart").value(registrationStart))
-                .andExpect(jsonPath("$.registrationEnd").value(registrationEnd))
-        ;
+                .andExpect(jsonPath("$.registrationEnd").value(registrationEnd));
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
@@ -446,8 +445,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 get("/game/{url}", url)
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.published").value(notNullValue()))
-        ;
+                .andExpect(jsonPath("$.published").value(notNullValue()));
     }
 
     @Test
@@ -572,8 +570,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 post("/game/{url}/publish", url)
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()))
-        ;
+                .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()));
 
         updateEvent(gameRepository.get(url).getRegistrationStartEvents().get(0), new Date(timeDaysInFuture(-4)));
         LOG.debug("registrationStart: {}", gameRepository.get(url).getRegistrationStart());
@@ -622,7 +619,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    private ResultActions performGameUpdates(String url, HashMap<String, Object> updates) throws Exception {
+    private ResultActions performGameUpdates(String url, Map<String, Object> updates) throws Exception {
         JsonBuilder builder = jsonBuilder();
         for (Map.Entry<String, Object> update : updates.entrySet()) {
             builder.add(update.getKey(), update.getValue());
@@ -655,7 +652,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         Date gameStart = gameEntity.getGameStart();
         LOG.debug("Game start: {}", gameStart);
     }
-
 
     // CHECKSTYLE-ON: JavadocMethod
 

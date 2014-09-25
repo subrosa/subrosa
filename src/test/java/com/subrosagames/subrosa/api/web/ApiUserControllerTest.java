@@ -19,9 +19,7 @@ import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notifica
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
  */
-@TestExecutionListeners({
-        DbUnitTestExecutionListener.class
-})
+@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiUserControllerTest extends AbstractApiControllerTest {
 

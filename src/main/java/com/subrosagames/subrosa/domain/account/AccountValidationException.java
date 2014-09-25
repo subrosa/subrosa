@@ -45,7 +45,7 @@ public class AccountValidationException extends DomainObjectValidationException 
     }
 
     /**
-     * Construct with a set of {@link ConstraintViolation<Account>}s.
+     * Construct with a set of {@link ConstraintViolation}s.
      * @param violations constraint violations
      */
     public AccountValidationException(Set<ConstraintViolation<Account>> violations) {

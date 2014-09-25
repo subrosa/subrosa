@@ -7,11 +7,18 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
+import com.subrosa.api.actions.list.QueryBuilder;
+import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
+import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import com.subrosagames.subrosa.security.PasswordUtility;
 import org.hibernate.Session;
@@ -51,6 +58,23 @@ public class JpaAccountRepository implements AccountRepository {
             throw new AccountNotFoundException("Account with id " + accountId + " not found");
         }
         return account;
+    }
+
+    @Override
+    public List<Address> addressesWhere(Map<String, Object> conditions) {
+        QueryCriteria<Address> criteria = new QueryCriteria<Address>(Address.class);
+        criteria.setBypassFilterableChecks(true);
+        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+            criteria.addFilter(entry.getKey(), entry.getValue());
+        }
+        QueryBuilder<Address, TypedQuery<Address>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<Address>(entityManager);
+        TypedQuery<Address> query = queryBuilder.getQuery(criteria);
+        return query.getResultList();
+    }
+
+    @Override
+    public Address update(Address address) {
+        return entityManager.merge(address);
     }
 
     @Override

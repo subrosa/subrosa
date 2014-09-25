@@ -103,20 +103,22 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testCreateAccountMissingFields() throws Exception {
-        Set<String> requests = new HashSet<String>() {{
-            add("");
-            add(jsonBuilder().add("password", "mysecret").build());
-            add(jsonBuilder().add("password", "mysecret").add("account", null).build());
-            add(jsonBuilder().add("password", "mysecret").addChild("account", jsonBuilder()).build());
-            add(jsonBuilder().add("password", "mysecret").addChild("account",
-                    jsonBuilder().add("email", "")).build());
-            add(jsonBuilder().add("password", "mysecret").addChild("account",
-                    jsonBuilder().add("email", "bademail")).build());
-            add(jsonBuilder().add("password", null).addChild("account",
-                    jsonBuilder().add("email", "good@email.com")).build());
-            add(jsonBuilder().add("password", "").addChild("account",
-                    jsonBuilder().add("email", "good@email.com")).build());
-        }};
+        Set<String> requests = new HashSet<String>() {
+            {
+                add("");
+                add(jsonBuilder().add("password", "mysecret").build());
+                add(jsonBuilder().add("password", "mysecret").add("account", null).build());
+                add(jsonBuilder().add("password", "mysecret").addChild("account", jsonBuilder()).build());
+                add(jsonBuilder().add("password", "mysecret").addChild("account",
+                        jsonBuilder().add("email", "")).build());
+                add(jsonBuilder().add("password", "mysecret").addChild("account",
+                        jsonBuilder().add("email", "bademail")).build());
+                add(jsonBuilder().add("password", null).addChild("account",
+                        jsonBuilder().add("email", "good@email.com")).build());
+                add(jsonBuilder().add("password", "").addChild("account",
+                        jsonBuilder().add("email", "good@email.com")).build());
+            }
+        };
         for (String request : requests) {
             assertIsBadRequestCreatingAccount(request);
         }

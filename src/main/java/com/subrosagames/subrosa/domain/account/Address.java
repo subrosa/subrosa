@@ -26,6 +26,12 @@ public class Address {
     @Column(name = "address_type")
     private AddressType addressType;
 
+    @Column(name = "full_address")
+    private String fullAddress;
+
+    @Column(name = "user_provided")
+    private String userProvided;
+
     @Column
     private Date created;
 
@@ -64,6 +70,22 @@ public class Address {
 
     public void setAddressType(AddressType addressType) {
         this.addressType = addressType;
+    }
+
+    public String getFullAddress() {
+        return fullAddress;
+    }
+
+    public void setFullAddress(String fullAddress) {
+        this.fullAddress = fullAddress;
+    }
+
+    public String getUserProvided() {
+        return userProvided;
+    }
+
+    public void setUserProvided(String userProvided) {
+        this.userProvided = userProvided;
     }
 
     public Date getCreated() {

@@ -7,7 +7,6 @@ import com.subrosa.api.actions.list.QueryCriteria;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
-import java.util.Comparator;
 
 /**
  * Manages the creation of a JPA {@link TypedQuery} from a {@link QueryCriteria}.
@@ -35,7 +34,9 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
         Root<T> root = query.from(criteria.getTargetClass());
         query.select(root).where(getPredicate(criteria, builder, root));
         TypedQuery<T> typedQuery = entityManager.createQuery(query);
-        typedQuery.setMaxResults(criteria.getLimit());
+        if (criteria.getLimit() > 0) {
+            typedQuery.setMaxResults(criteria.getLimit());
+        }
         typedQuery.setFirstResult(criteria.getOffset());
         return typedQuery;
     }
@@ -70,6 +71,12 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
                     break;
                 case LESS_THAN:
                     predicate = builder.and(predicate, builder.lessThan(path, (Comparable) value));
+                    break;
+                case SET:
+                    predicate = builder.and(predicate, builder.isNotNull(path));
+                    break;
+                case UNSET:
+                    predicate = builder.and(predicate, builder.isNull(path));
                     break;
                 default:
                     throw new IllegalStateException("Found unsupported operator " + filter.getOperator().name());

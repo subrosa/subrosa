@@ -1,14 +1,15 @@
 package com.subrosa.api.actions.list.serialization.json;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.subrosa.api.actions.list.Filter;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.subrosa.api.actions.list.Filter;
 
 /**
  * Test {@link com.subrosa.api.actions.list.serialization.json.FilterListJsonSerializer}.
@@ -36,7 +37,8 @@ public class FilterListJsonSerializerTest {
 
         private List<Filter> filters;
 
-        public FilterContainer() { }
+        public FilterContainer() {
+        }
 
         public FilterContainer(List<Filter> filters) {
             this.filters = filters;

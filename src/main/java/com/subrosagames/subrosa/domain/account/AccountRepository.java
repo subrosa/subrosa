@@ -1,5 +1,8 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.util.List;
+import java.util.Map;
+
 import com.subrosagames.subrosa.domain.DomainRepository;
 
 /**
@@ -17,6 +20,14 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
      */
     Account getAccountByEmail(String email, String... expansions) throws AccountNotFoundException;
 
+    /**
+     * Get account with the specified id.
+     *
+     * @param id object id
+     * @param expansions fields to expand
+     * @return account
+     * @throws AccountNotFoundException if account with specified id does not exist
+     */
     Account get(int id, String... expansions) throws AccountNotFoundException;
 
     /**
@@ -29,8 +40,19 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
      */
     Account create(Account account, String password) throws AccountValidationException;
 
-    Account create(Account account) throws AccountValidationException;
+    /**
+     * Save the given account to the database.
+     *
+     * @param account account to save
+     * @return saved account
+     * @throws AccountNotFoundException if no account row exists for given account
+     * @throws AccountValidationException if account is invalid for update
+     */
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
 
     Account getUnauthenticated(int id) throws AccountNotFoundException;
+
+    List<Address> addressesWhere(Map<String, Object> conditions);
+
+    Address update(Address address);
 }

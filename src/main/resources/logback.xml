@@ -13,10 +13,10 @@
     </encoder>
   </appender>
 
-  <logger name="org.hibernate.SQL" level="DEBUG"/>
-  <logger name="org.hibernate.type" level="TRACE"/>
+  <logger name="com.subrosa" level="DEBUG"/>
+  <logger name="com.subrosagames" level="DEBUG"/>
 
-  <root level="debug">
+  <root level="WARN">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

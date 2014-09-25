@@ -5,7 +5,6 @@ import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.subrosa.api.serialization.DateSerialization;
@@ -23,11 +22,10 @@ public class JsonDateDeserializer extends JsonDeserializer<Date> {
      * @param parser  the json parser
      * @param context the deserialization context
      * @return a date corresponding to the parsed string
-     * @throws JsonProcessingException when a JSON processing error occurs
-     * @throws java.io.IOException     when an IO error occurs
+     * @throws java.io.IOException when an IO error occurs
      */
     @Override
-    public Date deserialize(JsonParser parser, DeserializationContext context) throws JsonProcessingException, IOException {
+    public Date deserialize(JsonParser parser, DeserializationContext context) throws IOException {
         try {
             String dateText = parser.getText();
             return DATE_FORMATTER.deserialize(dateText);

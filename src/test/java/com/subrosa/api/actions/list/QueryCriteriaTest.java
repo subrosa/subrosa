@@ -1,17 +1,15 @@
 package com.subrosa.api.actions.list;
 
-import com.subrosa.api.actions.list.Operator;
-import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosa.api.actions.list.TimestampToDateTranslator;
-import com.subrosa.api.actions.list.annotation.FilterGroup;
-import com.subrosa.api.actions.list.annotation.FilterGroups;
-import com.subrosa.api.actions.list.annotation.Filterable;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import com.subrosa.api.actions.list.annotation.FilterGroup;
+import com.subrosa.api.actions.list.annotation.FilterGroups;
+import com.subrosa.api.actions.list.annotation.Filterable;
 
 /**
  * Test {@link com.subrosa.api.actions.list.QueryCriteria}.
@@ -79,6 +77,9 @@ public class QueryCriteriaTest {
         }
     }
 
+    /**
+     * Provides an example object to test child operations.
+     */
     public static class EntityObject {
 
         private Date innerDate;
