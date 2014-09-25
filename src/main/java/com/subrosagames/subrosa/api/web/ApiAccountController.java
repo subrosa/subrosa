@@ -75,6 +75,7 @@ public class ApiAccountController {
      * Get an {@link Account} using the provided accountId.
      *
      * @param accountId the accountId from the path.
+     * @param expand    fields to expand
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
      */

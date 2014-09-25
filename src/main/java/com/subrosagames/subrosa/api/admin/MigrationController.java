@@ -34,6 +34,13 @@ public class MigrationController {
     @Autowired
     private GameRepository gameRepository;
 
+    /**
+     * Triggers the population of the game latitude and longitude fields based on their zones.
+     *
+     * @return "OK" if successful
+     * @throws DomainObjectNotFoundException   if game could not be found
+     * @throws DomainObjectValidationException if game is invalid for updating
+     */
     @RequestMapping("/populateGameLocations")
     @ResponseBody
     public String populateGameLocations() throws DomainObjectNotFoundException, DomainObjectValidationException {

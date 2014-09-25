@@ -20,6 +20,14 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
      */
     Account getAccountByEmail(String email, String... expansions) throws AccountNotFoundException;
 
+    /**
+     * Get account with the specified id.
+     *
+     * @param id object id
+     * @param expansions fields to expand
+     * @return account
+     * @throws AccountNotFoundException if account with specified id does not exist
+     */
     Account get(int id, String... expansions) throws AccountNotFoundException;
 
     /**
@@ -32,6 +40,14 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
      */
     Account create(Account account, String password) throws AccountValidationException;
 
+    /**
+     * Save the given account to the database.
+     *
+     * @param account account to save
+     * @return saved account
+     * @throws AccountNotFoundException if no account row exists for given account
+     * @throws AccountValidationException if account is invalid for update
+     */
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
 
     Account getUnauthenticated(int id) throws AccountNotFoundException;

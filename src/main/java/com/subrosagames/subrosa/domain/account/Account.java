@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.account;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,14 +21,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
-import javax.persistence.PersistenceException;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
@@ -40,8 +37,8 @@ import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.orm.jpa.JpaSystemException;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
@@ -213,6 +210,11 @@ public class Account implements PermissionTarget {
         this.password = password;
     }
 
+    /**
+     * Get addresses if they have been loaded from the database.
+     *
+     * @return addresses if loaded or {@code null}
+     */
     public Map<AddressType, Address> getAddresses() {
         if (!Hibernate.isInitialized(addresses)) {
             return null;
@@ -220,10 +222,20 @@ public class Account implements PermissionTarget {
         return addresses;
     }
 
+    /**
+     * Set addresses.
+     *
+     * @param addresses addresses
+     */
     public void setAddresses(Map<AddressType, Address> addresses) {
         this.addresses = addresses;
     }
 
+    /**
+     * Get images if they have been loaded from the database.
+     *
+     * @return images if loaded or {@code null}
+     */
     public Map<ImageType, Image> getImages() {
         if (!Hibernate.isInitialized(images)) {
             return null;
@@ -231,18 +243,43 @@ public class Account implements PermissionTarget {
         return images;
     }
 
+    /**
+     * Set images.
+     *
+     * @param images images
+     */
     public void setImages(Map<ImageType, Image> images) {
         this.images = images;
     }
 
+    /**
+     * Get image of the specified type.
+     *
+     * @param imageType image type
+     * @return image
+     */
     public Image getImage(ImageType imageType) {
         return images.get(imageType);
     }
 
+    /**
+     * Get address of the specified type.
+     *
+     * @param addressType address type
+     * @return address
+     */
     public Address getAddress(AddressType addressType) {
         return addresses.get(addressType);
     }
 
+    /**
+     * Create an account with the specified password.
+     *
+     * @param password password
+     * @return created account
+     * @throws AccountValidationException if account is invalid for creation
+     * @throws EmailConflictException     if email address is already in use
+     */
     public Account create(String password) throws AccountValidationException, EmailConflictException {
         assertValid();
         try {

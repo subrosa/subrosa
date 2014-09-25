@@ -34,7 +34,7 @@ public class QueryCriteria<T> {
     private Class<T> clazz;
     private int limit = DefaultSearchConstants.DEFAULT_LIMIT;
     private int offset = DefaultSearchConstants.DEFAULT_OFFSET;
-    private boolean bypassFilterableChecks = false;
+    private boolean bypassFilterableChecks;
 
     /**
      * Construct for given type.

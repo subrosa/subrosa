@@ -138,7 +138,13 @@ public class Notification {
      * Enumeration of valid fields for the notification details map.
      */
     public enum DetailKey {
+        /**
+         * Used when specifying field name.
+         */
         FIELD("field"),
+        /**
+         * Used when specifying constraint violated.
+         */
         CONSTRAINT("constraint");
 
         private final String value;

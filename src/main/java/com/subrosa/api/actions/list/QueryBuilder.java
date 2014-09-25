@@ -5,6 +5,7 @@ package com.subrosa.api.actions.list;
  *
  * @param <T> type of model object for which query is searching
  * @param <Q> type of query
+ * @param <C> type of query for count of matches
  */
 public interface QueryBuilder<T, Q, C> {
 

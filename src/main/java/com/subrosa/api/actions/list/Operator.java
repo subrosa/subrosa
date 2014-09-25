@@ -16,7 +16,7 @@ public enum Operator {
     LESS_THAN("LessThan", "Before"),
     GREATER_THAN("GreaterThan", "After"),
     CONTAINS("Contains"),
-    SET("Set","IsNotNull"),
+    SET("Set", "IsNotNull"),
     UNSET("Unset", "IsNull");
     // CHECKSTYLE-ON: JavadocVariable
 

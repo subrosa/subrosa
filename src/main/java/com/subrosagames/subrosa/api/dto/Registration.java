@@ -1,10 +1,8 @@
 package com.subrosagames.subrosa.api.dto;
 
-import com.subrosagames.subrosa.domain.account.Account;
-
 /**
  * Encapsulates information for registering a new account.
- *
+ * <p/>
  * This includes the account data, along with a password for authenticating with that account.
  */
 public class Registration {

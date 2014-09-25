@@ -78,9 +78,12 @@ public class ApiGameController {
     /**
      * Get a list of {@link Game}s.
      *
-     * @param limit  maximum number of {@link Game}s to return.
-     * @param offset offset into the list.
-     * @param expand fields to expand
+     * @param limit     maximum number of {@link Game}s to return.
+     * @param offset    offset into the list.
+     * @param expand    fields to expand
+     * @param latitude  game location latitude
+     * @param longitude game location longitude
+     * @param request   HTTP servlet request
      * @return a PaginatedList of {@link Game}s.
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
@@ -92,14 +95,14 @@ public class ApiGameController {
                                          @RequestParam(value = "longitude", required = false) Double longitude,
                                          HttpServletRequest request)
     {
-        LOG.debug("Getting game list with limit {}, offset {}, expand {}, latitude {}, longitude {}.", new Object[]{ limit, offset, expand, latitude, longitude });
+        LOG.debug("Getting game list with limit {}, offset {}, expand {}, latitude {}, longitude {}.", limit, offset, expand, latitude, longitude);
         if (latitude != null && longitude != null) {
             Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
             limit = ObjectUtils.defaultIfNull(limit, 10);
             offset = ObjectUtils.defaultIfNull(offset, 0);
-            return StringUtils.isEmpty(expand) ?
-                    gameFactory.getGamesNear(coordinates, limit, offset) :
-                    gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
+            return StringUtils.isEmpty(expand)
+                    ? gameFactory.getGamesNear(coordinates, limit, offset)
+                    : gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
         }
         QueryCriteria<GameEntity> queryCriteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, GameEntity.class);
         String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
@@ -110,6 +113,7 @@ public class ApiGameController {
      * Get a {@link Game} representation.
      *
      * @param gameUrl the game gameUrl
+     * @param expand  fields to expand
      * @return {@link Game}
      * @throws GameNotFoundException if game is not found
      */

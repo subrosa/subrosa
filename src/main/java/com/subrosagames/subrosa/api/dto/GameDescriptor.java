@@ -3,16 +3,16 @@ package com.subrosagames.subrosa.api.dto;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.google.common.base.Objects;
 
 /**
  * Encapsulates the necessary information to create or update a game.
  */
-public class GameDescriptor {//implements GameData {
+public class GameDescriptor { //implements GameData {
 
     private Integer id;
     private Optional<String> name;

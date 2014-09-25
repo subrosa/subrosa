@@ -1,11 +1,11 @@
 package com.subrosagames.subrosa.api.dto;
 
-import com.google.common.base.Optional;
-
 import java.util.Date;
 
+import com.google.common.base.Optional;
+
 /**
- * @todo
+ * Encapsulates the necessary information to create or update a game event.
  */
 public class GameEventDescriptor {
 

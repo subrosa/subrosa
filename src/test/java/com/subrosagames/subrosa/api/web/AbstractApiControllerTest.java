@@ -58,7 +58,7 @@ public abstract class AbstractApiControllerTest {
     /**
      * Provides mechanism for performing and verifying API calls.
      */
-    protected MockMvc mockMvc;
+    protected MockMvc mockMvc; // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
