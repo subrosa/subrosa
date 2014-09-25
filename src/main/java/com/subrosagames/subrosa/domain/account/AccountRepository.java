@@ -1,5 +1,8 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.util.List;
+import java.util.Map;
+
 import com.subrosagames.subrosa.domain.DomainRepository;
 
 /**
@@ -32,4 +35,8 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
 
     Account getUnauthenticated(int id) throws AccountNotFoundException;
+
+    List<Address> addressesWhere(Map<String, Object> conditions);
+
+    Address update(Address address);
 }

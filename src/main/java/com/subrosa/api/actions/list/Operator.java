@@ -15,7 +15,9 @@ public enum Operator {
     NOT_EQUAL("Not"),
     LESS_THAN("LessThan", "Before"),
     GREATER_THAN("GreaterThan", "After"),
-    CONTAINS("Contains");
+    CONTAINS("Contains"),
+    SET("Set","IsNotNull"),
+    UNSET("Unset", "IsNull");
     // CHECKSTYLE-ON: JavadocVariable
 
     private static final Map<String, Operator> SUFFIX_MAP;

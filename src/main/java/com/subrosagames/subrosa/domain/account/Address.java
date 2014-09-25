@@ -20,7 +20,7 @@ public class Address {
     @SequenceGenerator(name = "addressSeq", sequenceName = "address_address_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressSeq")
     @Column(name = "address_id")
-    private int addressId;
+    private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "address_type")
@@ -56,12 +56,12 @@ public class Address {
     @Column(name = "postal_code")
     private String postalCode;
 
-    public int getAddressId() {
-        return addressId;
+    public int getId() {
+        return id;
     }
 
-    public void setAddressId(int id) {
-        this.addressId = id;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public AddressType getAddressType() {

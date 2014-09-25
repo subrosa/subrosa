@@ -232,4 +232,5 @@ public class JpaGameRepository implements GameRepository {
     public EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
         return entityManager.merge(eventEntity);
     }
+
 }

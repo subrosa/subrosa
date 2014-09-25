@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.api.admin;
+package com.subrosagames.subrosa.task;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -7,23 +7,36 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.google.code.geocoder.model.GeocoderResult;
-import com.subrosagames.subrosa.api.web.AbstractApiControllerTest;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.geo.gmaps.MockGoogleGeocoder;
+import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 
 import static org.junit.Assert.assertEquals;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Test {@link MigrationController}.
+ * Test {@link AddressGeocodingTask}.
  */
-public class MigrationControllerTest extends AbstractApiControllerTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "/test-context.xml" })
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class,
+        DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class,
+        ForeignKeyDisablingTestListener.class
+})
+public class AddressGeocodingTaskTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
 
@@ -34,7 +47,7 @@ public class MigrationControllerTest extends AbstractApiControllerTest {
     private EntityManager entityManager;
 
     @Autowired
-    private MigrationController migrationController;
+    private AddressGeocodingTask addressGeocodingTask;
 
     @Before
     public void setUp() throws Exception {
@@ -53,16 +66,14 @@ public class MigrationControllerTest extends AbstractApiControllerTest {
                         }));
             }
         });
-        migrationController.setGoogleGeocoder(mockGoogleGeocoder);
-
+        addressGeocodingTask.setGoogleGeocoder(mockGoogleGeocoder);
     }
 
     @Test
     public void testSplitAddressesIntoFields() throws Exception {
         jdbcTemplate.update("INSERT INTO address (address_id, user_provided) VALUES 1535, 'address1'");
 
-        perform(get("/admin/migrate/splitAddressesIntoFields"))
-                .andExpect(status().isOk());
+        addressGeocodingTask.execute();
 
         Address address = entityManager.find(Address.class, 1535);
         assertEquals("123 Ivy Ln", address.getStreetAddress());
