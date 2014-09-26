@@ -9,12 +9,11 @@ description = """subrosa"""
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
 
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-//        if (details.requested.name == 'log4j') {
-            //prefer 'log4j-over-slf4j' over 'log4j', with fixed version:
-//            details.useTarget "org.slf4j:log4j-over-slf4j:1.7.5"
-//        }
+def onlyFor(task, config) {
+    gradle.taskGraph.whenReady { graph ->
+        if (graph.hasTask(task)) {
+            project.configure(project, config)
+        }
     }
 }
 
@@ -27,6 +26,38 @@ compileJava {
 //    options.compilerArgs << '-Xlint:deprecation'
 }
 
+ext {
+    springVersion = '4.1.0.RELEASE'
+    springSecurityVersion = '3.2.5.RELEASE'
+    jacksonVersion = '2.4.2'
+
+    vagrantIp = '10.10.10.42'
+    databaseHost = vagrantIp
+    apiHost = vagrantIp
+
+    ec2Host = 'ec2-54-69-137-20.us-west-2.compute.amazonaws.com'
+}
+
+task ec2 {
+    description = 'Configures build for EC2 deployment'
+    group = 'configuration'
+    dependsOn war
+}
+onlyFor(ec2) {
+    ext {
+        databaseHost = ec2Host
+    }
+}
+
+task local {
+    description = 'Configures build for localhost deployment'
+    group = 'configuration'
+}
+onlyFor(local) {
+    ext {
+        databaseHost = 'localhost'
+    }
+}
 
 repositories {
     mavenCentral()
@@ -37,12 +68,6 @@ repositories {
             password nexusPassword
         }
     }
-}
-
-ext {
-    springVersion = '4.1.0.RELEASE'
-    springSecurityVersion = '3.2.5.RELEASE'
-    jacksonVersion = '2.4.2'
 }
 
 dependencies {
@@ -140,7 +165,7 @@ buildscript {
         classpath 'org.gradle.api.plugins:gradle-cargo-plugin:1.5.1'
     }
 }
-apply from: 'migrations.gradle'
-apply from: 'deployment.gradle'
-apply from: 'quality.gradle'
+apply from: 'gradle/migrations.gradle'
+apply from: 'gradle/deployment.gradle'
+apply from: 'gradle/quality.gradle'
 
