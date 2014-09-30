@@ -1,7 +1,7 @@
 apply plugin: 'jacoco'
 apply plugin: 'build-dashboard'
 
-def configDir = new File(buildscript.sourceFile.parentFile, 'config')
+def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
 
 apply plugin: 'checkstyle'
 checkstyle {

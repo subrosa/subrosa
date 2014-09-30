@@ -3,7 +3,17 @@ subrosa
 
 # Subrosa API
 
+## Vagrant and VirtualBox Setup
+This is the recommended way to setup the Subrosa API if you don't plan on doing any development.  The setup is automated and only requires one command after installing the prerequisites. 
+
+Prerequisites
+ * [Vagrant](https://www.vagrantup.com/)
+ * [VirtualBox](https://www.virtualbox.org/)
+
+After installing the prerequisites all you need to do is run: ```./sr init``` and wait for the deployment to finish.  After everything is done you should have a working server at http://10.10.10.42:8080.
+
 ## Developer Setup 
+If you plan on contributing to the Subrosa API you will likely want to set up your own instance locally.
 
 ### Dependencies
 You will need to install the following to be able to run the Subrosa API locally:
@@ -13,67 +23,6 @@ You will need to install the following to be able to run the Subrosa API locally
  * [Maven](http://maven.apache.org/)
  * [ActiveMQ](http://activemq.apache.org/)
 
-
-### Configure Maven to use self-signed cert
-
-####Setup ~/.m2/settings.xml
-
-```
-<settings>
-  <servers>
-    <server>
-      <id>subrosa-releases</id>
-      <username>[username]</username>
-      <password>[password]</password>
-    </server>
-    <server>
-      <id>subrosa-snapshots</id>
-      <username>[username]</username>
-      <password>[password]</password>
-    </server>
-    <server>
-      <id>nexus</id>
-      <username>[username]</username>
-      <password>[password]</password>
-    </server>
-  </servers>
-  <mirrors>
-    <mirror>
-      <!--This sends everything else to /public -->
-      <id>nexus</id>
-      <mirrorOf>*</mirrorOf>
-      <url>https://nexus.subrosagames.com/content/groups/public</url>
-    </mirror>
-  </mirrors>
-  <profiles>
-    <profile>
-      <id>nexus</id>
-      <!--Enable snapshots for the built in central repo to direct -->
-      <!--all requests to nexus via the mirror -->
-      <repositories>
-        <repository>
-          <id>central</id>
-          <url>http://central</url>
-          <releases><enabled>true</enabled></releases>
-          <snapshots><enabled>true</enabled></snapshots>
-        </repository>
-      </repositories>
-     <pluginRepositories>
-        <pluginRepository>
-          <id>central</id>
-          <url>http://central</url>
-          <releases><enabled>true</enabled></releases>
-          <snapshots><enabled>true</enabled></snapshots>
-        </pluginRepository>
-      </pluginRepositories>
-    </profile>
-  </profiles>
-  <activeProfiles>
-    <!--make the profile active all the time -->
-    <activeProfile>nexus</activeProfile>
-  </activeProfiles>
-</settings>
-```
 
 #### Import certificates
 Download [nexus.subrosagames.com.crt](https://trac.subrosagames.com/raw-attachment/wiki/technology/sandbox/api/nexus.subrosagames.com.crt) and run the following (the default password for java system keystores is `changeit`):

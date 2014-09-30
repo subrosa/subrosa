@@ -10,7 +10,7 @@ cargo {
     }
 
     remote {
-        hostname = '10.10.10.41'
+        hostname = apiHost
         username = 'admin'
         password = 'admin'
     }

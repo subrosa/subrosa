@@ -1,0 +1,19 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "$0" )" && pwd )"
+
+case "$1" in
+    init)
+        vagrant up
+        vagrant ssh -c "sudo /vagrant/script/env.sh update"
+        vagrant ssh -c "sudo /vagrant/script/env.sh start"
+        gradle flywayMigrate war cargoDeployRemote
+    ;;
+    ssh)
+        vagrant ssh
+    ;;
+    *)
+        vagrant ssh -c "sudo /vagrant/script/env.sh $1"
+    ;;
+esac
+

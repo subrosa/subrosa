@@ -1,9 +1,9 @@
 .idea
 *.iml
 target/
-script/
 .gradle/
 build/
 gradlew
 gradlew.bat
 gradle.properties
+.vagrant/
