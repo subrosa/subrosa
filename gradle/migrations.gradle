@@ -1,5 +1,19 @@
 apply plugin: 'flyway'
 
+if (gradle.startParameter.taskNames.contains("ec2")) {
+    ext {
+        databaseHost = ec2Host
+    }
+} else if (gradle.startParameter.taskNames.contains("local")) {
+    ext {
+        apiHost = localhost
+    }
+} else {
+    ext {
+        databaseHost = vagrantIp
+    }
+}
+
 def sqlDir = 'src/main/db/migrations/'
 def javaDir = 'src/main/java/migrations/'
 

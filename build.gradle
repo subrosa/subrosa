@@ -32,31 +32,18 @@ ext {
     jacksonVersion = '2.4.2'
 
     vagrantIp = '10.10.10.42'
-    databaseHost = vagrantIp
-    apiHost = vagrantIp
-
-    ec2Host = 'ec2-54-69-137-20.us-west-2.compute.amazonaws.com'
+    ec2Host = 'ec2-54-69-114-113.us-west-2.compute.amazonaws.com'
+    localhost = 'localhost'
 }
 
 task ec2 {
     description = 'Configures build for EC2 deployment'
     group = 'configuration'
-    dependsOn war
-}
-onlyFor(ec2) {
-    ext {
-        databaseHost = ec2Host
-    }
 }
 
 task local {
     description = 'Configures build for localhost deployment'
     group = 'configuration'
-}
-onlyFor(local) {
-    ext {
-        databaseHost = 'localhost'
-    }
 }
 
 repositories {
