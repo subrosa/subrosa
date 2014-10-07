@@ -1,13 +1,15 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
-import java.util.Date;
 
 /**
- * @todo
+ * Parent class for persisted entities.
+ * <p/>
+ * Provides common elements such as create and update timestamps.
  */
 @MappedSuperclass
 public class BaseEntity {

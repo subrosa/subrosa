@@ -27,6 +27,8 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -113,7 +115,13 @@ import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class GameEntity extends BaseEntity implements Game {
 
+    /**
+     * Default price for entrance to a game.
+     */
     public static final BigDecimal DEFAULT_PRICE = BigDecimal.ZERO;
+    /**
+     * Default maximum team size.
+     */
     public static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
 
     @JsonIgnore
@@ -265,6 +273,30 @@ public class GameEntity extends BaseEntity implements Game {
 
     @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
     private List<GameEvent> events;
+
+    /**
+     * Set the default price and max team size if unset.
+     */
+    @PrePersist
+    protected void prePersist() {
+        super.prePersist();
+        setDefaults();
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        super.preUpdate();
+        setDefaults();
+    }
+
+    private void setDefaults() {
+        if (price == null) {
+            price = DEFAULT_PRICE;
+        }
+        if (maximumTeamSize == null) {
+            maximumTeamSize = DEFAULT_MAX_TEAM_SIZE;
+        }
+    }
 
     public Integer getId() {
         return id;
