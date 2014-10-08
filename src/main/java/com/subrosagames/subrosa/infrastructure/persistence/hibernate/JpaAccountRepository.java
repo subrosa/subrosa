@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,9 +8,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+
+import org.hibernate.Session;
+import org.hibernate.UnknownProfileException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.subrosa.api.actions.list.QueryBuilder;
 import com.subrosa.api.actions.list.QueryCriteria;
@@ -18,15 +26,8 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import com.subrosagames.subrosa.security.PasswordUtility;
-import org.hibernate.Session;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA-based implementation of CRUD functionality for accounts.
@@ -34,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class JpaAccountRepository implements AccountRepository {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JpaAccountRepository.class);
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -44,15 +47,11 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     @PostAuthorize("hasPermission(returnObject, 'VIEW_ACCOUNT')")
     public Account get(int accountId, String... expansions) throws AccountNotFoundException {
-        if (expansions.length > 0) {
-            for (String expansion : expansions) {
-                ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
-            }
-        }
-        return getUnauthenticated(accountId);
+        return getUnauthenticated(accountId, expansions);
     }
 
-    public Account getUnauthenticated(int accountId) throws AccountNotFoundException {
+    public Account getUnauthenticated(int accountId, String... expansions) throws AccountNotFoundException {
+        expansions = enableExpansions(expansions);
         Account account = entityManager.find(Account.class, accountId);
         if (account == null) {
             throw new AccountNotFoundException("Account with id " + accountId + " not found");
@@ -80,9 +79,11 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     public Account getAccountByEmail(final String email, String... expansions) throws AccountNotFoundException {
         @SuppressWarnings("serial")
-        Map<String, Object> conditions = new HashMap<String, Object>() { {
-            put("email", email);
-        } };
+        Map<String, Object> conditions = new HashMap<String, Object>() {
+            {
+                put("email", email);
+            }
+        };
         TypedQuery<Account> query = QueryHelper.createQuery(entityManager, Account.class, conditions, expansions);
         return getSingleResult(query);
     }
@@ -131,6 +132,19 @@ public class JpaAccountRepository implements AccountRepository {
             throw new AccountNotFoundException(e);
         }
         return account;
+    }
+
+    private String[] enableExpansions(String... expansions) {
+        List<String> enabled = new ArrayList<String>(expansions.length);
+        for (String expansion : expansions) {
+            try {
+                ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+                enabled.add(expansion);
+            } catch (UnknownProfileException e) {
+                LOG.error("Bad fetch profile " + e.getName() + " requested. Swallowing exception and removing profile.", e);
+            }
+        }
+        return enabled.toArray(new String[enabled.size()]);
     }
 
 }

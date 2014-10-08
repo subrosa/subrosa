@@ -50,7 +50,14 @@ public interface AccountRepository extends DomainRepository<Account, Account> {
      */
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
 
-    Account getUnauthenticated(int id) throws AccountNotFoundException;
+    /**
+     * Get an account with checking permissions.
+     * @param id account id
+     * @param expansions fields to expand
+     * @return account
+     * @throws AccountNotFoundException if no account row exists for given id
+     */
+    Account getUnauthenticated(int id, String... expansions) throws AccountNotFoundException;
 
     List<Address> addressesWhere(Map<String, Object> conditions);
 

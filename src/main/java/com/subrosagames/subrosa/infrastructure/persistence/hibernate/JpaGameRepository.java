@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,12 +9,28 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.hibernate.Session;
+import org.hibernate.UnknownProfileException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.subrosa.api.actions.list.QueryBuilder;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.*;
+import com.subrosagames.subrosa.domain.game.GameAttributeType;
+import com.subrosagames.subrosa.domain.game.GameAttributeValue;
+import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
-import com.subrosagames.subrosa.domain.game.persistence.*;
+import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
+import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
+import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -21,11 +38,6 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
-import org.hibernate.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * JPA-based implementation of the {@link GameRepository}.
@@ -66,9 +78,7 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public GameEntity get(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
-        for (String expansion : expansions) {
-            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
-        }
+        expansions = enableExpansions(expansions);
         GameEntity gameEntity = entityManager.find(GameEntity.class, gameId);
         if (gameEntity == null) {
             throw new GameNotFoundException("Game for id " + gameId + " not found");
@@ -85,17 +95,14 @@ public class JpaGameRepository implements GameRepository {
     public GameEntity get(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         GameEntity gameEntity;
-        try {
-            for (String expansion : expansions) {
-                LOG.debug("Enabling fetch profile for {}", expansion);
-                ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+        expansions = enableExpansions(expansions);
+        Map<String, Object> conditions = new HashMap<String, Object>(1) {
+            {
+                put("url", url);
             }
-            Map<String, Object> conditions = new HashMap<String, Object>(1) {
-                {
-                    put("url", url);
-                }
-            };
-            TypedQuery<GameEntity> query = QueryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
+        };
+        TypedQuery<GameEntity> query = QueryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
+        try {
             gameEntity = query.getSingleResult();
         } catch (NoResultException e) {
             throw new GameNotFoundException("Game for url " + url + " not found");
@@ -106,10 +113,7 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public List<GameEntity> list(int limit, int offset, String... expansions) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
-        for (String expansion : expansions) {
-            LOG.debug("Enabling fetch profile for {}", expansion);
-            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
-        }
+        expansions = enableExpansions(expansions);
         TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
         if (limit > 0) {
             query.setMaxResults(limit);
@@ -120,9 +124,7 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public List<GameEntity> findByCriteria(QueryCriteria<GameEntity> criteria, String... expansions) {
-        for (String expansion : expansions) {
-            ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
-        }
+        expansions = enableExpansions(expansions);
         QueryBuilder<GameEntity, TypedQuery<GameEntity>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<GameEntity>(entityManager);
         TypedQuery<GameEntity> query = queryBuilder.getQuery(criteria);
         return query.getResultList();
@@ -231,6 +233,19 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
         return entityManager.merge(eventEntity);
+    }
+
+    private String[] enableExpansions(String... expansions) {
+        List<String> enabled = new ArrayList<String>(expansions.length);
+        for (String expansion : expansions) {
+            try {
+                ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
+                enabled.add(expansion);
+            } catch (UnknownProfileException e) {
+                LOG.error("Bad fetch profile " + e.getName() + " requested. Swallowing exception and removing profile.", e);
+            }
+        }
+        return enabled.toArray(new String[enabled.size()]);
     }
 
 }

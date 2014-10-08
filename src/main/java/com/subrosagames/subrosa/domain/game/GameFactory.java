@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -13,8 +15,6 @@ import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.service.PaginatedList;
-
-import java.util.List;
 
 /**
  * Interface for generating game domain objects.
@@ -44,8 +44,9 @@ public interface GameFactory extends DomainObjectFactory<GameEntity> {
     /**
      * Get a paginated list of games.
      *
-     * @param limit  number of games to return
-     * @param offset offset into the games list
+     * @param limit      number of games to return
+     * @param offset     offset into the games list
+     * @param expansions fields to expand
      * @return paginated list of games
      */
     PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
@@ -58,15 +59,56 @@ public interface GameFactory extends DomainObjectFactory<GameEntity> {
      */
     List<? extends Game> ownedBy(Account user);
 
+    /**
+     * Creates a game entity for the given game information.
+     *
+     * @param gameDescriptor game information
+     * @return game entity
+     * @throws GameValidationException if the entity cannot be created
+     */
     GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException;
 
+    /**
+     * Creates a post entity for the given post information.
+     *
+     * @param postDescriptor post information
+     * @return post entity
+     */
     PostEntity forDto(PostDescriptor postDescriptor);
 
-    EventEntity forDto(GameEventDescriptor postDescriptor);
+    /**
+     * Creates a game event entity for the given event information.
+     *
+     * @param gameEventDescriptor event information
+     * @return event entity
+     */
+    EventEntity forDto(GameEventDescriptor gameEventDescriptor);
 
+    /**
+     * Get the game zones for the specified game.
+     *
+     * @param gameUrl game url
+     * @return list of game zones
+     * @throws GameNotFoundException if the specified game does not exist
+     */
     List<Zone> getGameZones(String gameUrl) throws GameNotFoundException;
 
+    /**
+     * Get games near the given coordinates.
+     *
+     * @param coordinates coordinates
+     * @param limit number of games to return
+     * @param offset offset into the games list
+     * @param expansions fields to expand
+     * @return paginated list of matching games
+     */
     PaginatedList<Game> getGamesNear(Coordinates coordinates, Integer limit, Integer offset, String... expansions);
 
+    /**
+     * Find games matching the given criteria.
+     * @param queryCriteria query criteria
+     * @param expansions fields to expand
+     * @return list of matching games
+     */
     PaginatedList<Game> fromCriteria(QueryCriteria<GameEntity> queryCriteria, String... expansions);
 }

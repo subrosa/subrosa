@@ -8,6 +8,7 @@ public enum GeneralCode implements Code {
     // CHECKSTYLE-OFF: JavadocVariable
     NOT_FOUND("notFound", "Not found"),
     FORBIDDEN("forbidden", "Forbidden"),
+    BAD_REQUEST("badRequest", "Bad Request"),
     NOT_ACCEPTABLE("notAcceptable", "Media type in Accept header not supported"),
     UNAUTHORIZED_FIELD_ACCESS("unauthorizedFieldAccess", "Unauthorized field access"),
     MISSING_REQUIRED_FIELD("missingRequiredField", "Missing required field"),
