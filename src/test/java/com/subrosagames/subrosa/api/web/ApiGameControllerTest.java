@@ -3,7 +3,6 @@ package com.subrosagames.subrosa.api.web;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -220,6 +219,24 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("name of the game"))
                 .andExpect(jsonPath("$.gameType").value("ASSASSIN"));
+    }
+
+    @Test
+    public void testGameCreationSetsDefaultValues() throws Exception {
+        String response = mockMvc.perform(
+                post("/game")
+                        .with(user("new@user.com"))
+                        .content(jsonBuilder().add("name", "name of the game").add("gameType", "ASSASSIN").build()))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        String url = JsonPath.compile("$.url").read(response);
+
+        mockMvc.perform(
+                get("/game/{url}", url)
+                        .with(user("new@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price").value(0.0))
+                .andExpect(jsonPath("$.maximumTeamSize").value(0));
     }
 
     @Test
@@ -457,7 +474,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("price", null);
             }
         })
-                .andExpect(jsonPath("$.price").value(nullValue()))
+                .andExpect(jsonPath("$.price").value(0))
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
@@ -470,8 +487,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.price").value(500));
 
         // update without specifying price and see original
-        performGameUpdates(url, new HashMap<String, Object>() {{
-        }})
+        performGameUpdates(url, new HashMap<String, Object>())
                 .andExpect(jsonPath("$.price").value(500.0));
 
         // update with null and see that it sets it successfully
@@ -480,7 +496,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("price", null);
             }
         })
-                .andExpect(jsonPath("$.price").value(nullValue()));
+                .andExpect(jsonPath("$.price").value(0));
     }
 
     @Test

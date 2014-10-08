@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
   <account account_id="1" activated="true" email="bob@user.com"
+           name="Bob T. User"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
   <image image_id="1" uri="/avatar_uri" image_type="AVATAR"/>
   <account_image account_id="1" image_id="1"/>
