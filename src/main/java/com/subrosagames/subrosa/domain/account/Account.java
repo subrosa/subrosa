@@ -41,6 +41,7 @@ import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -278,15 +279,13 @@ public class Account implements PermissionTarget {
      * @param password password
      * @return created account
      * @throws AccountValidationException if account is invalid for creation
-     * @throws EmailConflictException     if email address is already in use
      */
-    public Account create(String password) throws AccountValidationException, EmailConflictException {
+    public Account create(String password) throws AccountValidationException {
         assertValid();
         try {
             accountRepository.create(this, password);
         } catch (JpaSystemException e) {
-            String message = e.getMostSpecificCause().getMessage();
-            if (message.contains("unique constraint")) {
+            if (isEmailConflict(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
             throw e;
@@ -295,7 +294,19 @@ public class Account implements PermissionTarget {
         return this;
     }
 
+    /**
+     * Update this account with the given account information.
+     *
+     * @param accountDescriptor account information
+     * @return updated account
+     * @throws AccountValidationException if account is invalid for saving
+     */
     public Account update(AccountDescriptor accountDescriptor) throws AccountValidationException {
+        // read-only fields
+        // TODO specify R/O fields via an annotation
+        accountDescriptor.setId(getId());
+        accountDescriptor.setActivated(Optional.of(isActivated()));
+
         OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
@@ -305,7 +316,22 @@ public class Account implements PermissionTarget {
             throw new IllegalStateException(e);
         }
         assertValid();
+        try {
+            accountRepository.update(this);
+        } catch (AccountNotFoundException e) {
+            throw new IllegalStateException("This should never happen - was the id of this object modified?", e);
+        } catch (JpaSystemException e) {
+            if (isEmailConflict(e)) {
+                throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
+            }
+            throw e;
+        }
         return this;
+    }
+
+    private boolean isEmailConflict(JpaSystemException e) {
+        String message = e.getMostSpecificCause().getMessage();
+        return message.contains("unique constraint");
     }
 
     void assertValid(Class... validationGroups) throws AccountValidationException {

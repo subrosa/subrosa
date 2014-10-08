@@ -2,8 +2,6 @@ package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +45,6 @@ public class ApiAccountController {
 
     @Autowired
     private AccountFactory accountFactory;
-
 
     /**
      * Get paginated list of accounts.
@@ -138,17 +135,12 @@ public class ApiAccountController {
      */
     @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    @Transactional
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody AccountDescriptor accountDescriptor)
             throws AccountNotFoundException, AccountValidationException
     {
         LOG.debug("Saving account with ID {} as {}", accountId, accountDescriptor);
         Account account = accountFactory.getAccount(accountId);
-        // read-only fields
-        // TODO Account should handle this
-        accountDescriptor.setId(accountId);
-        accountDescriptor.setActivated(Optional.of(false));
         return account.update(accountDescriptor);
     }
 
