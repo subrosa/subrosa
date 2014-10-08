@@ -3,7 +3,7 @@ package com.subrosagames.subrosa.domain.account;
 /**
  * Exception thrown when a nonexistent account is retrieved.
  */
-public class EmailConflictException extends Exception {
+public class EmailConflictException extends AccountValidationException {
 
 
     private static final long serialVersionUID = -7739820652337308066L;
