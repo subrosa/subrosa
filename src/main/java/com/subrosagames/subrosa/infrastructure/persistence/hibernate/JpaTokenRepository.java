@@ -1,9 +1,11 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 import com.subrosagames.subrosa.domain.token.TokenRepository;
+import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +21,15 @@ public class JpaTokenRepository implements TokenRepository {
     private EntityManager entityManager;
 
     @Override
-    public TokenEntity findToken(String token) {
-        return entityManager.createQuery("SELECT t FROM TokenEntity t WHERE t.token = :token", TokenEntity.class)
-                .setParameter("token", token)
-                .getSingleResult();
+    public TokenEntity findToken(String token, TokenType tokenType) {
+        try {
+            return entityManager.createQuery("SELECT t FROM TokenEntity t WHERE t.token = :token AND t.tokenType = :tokenType", TokenEntity.class)
+                    .setParameter("token", token)
+                    .setParameter("tokenType", tokenType)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override

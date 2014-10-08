@@ -3,12 +3,14 @@ package com.subrosagames.subrosa.domain.token;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
+import javax.persistence.NoResultException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
 
 /**
- *
+ * Token factory implementation.
  */
 @Component
 public class TokenFactoryImpl implements TokenFactory {
@@ -30,11 +32,7 @@ public class TokenFactoryImpl implements TokenFactory {
     }
 
     @Override
-    public Token getToken(String token, TokenType tokenType) {
-        TokenEntity tokenEntity = tokenRepository.findToken(token);
-        if (tokenType.equals(tokenEntity.getTokenType())) {
-            return tokenEntity;
-        }
-        return null;
+    public Token findToken(String token, TokenType tokenType) {
+        return tokenRepository.findToken(token, tokenType);
     }
 }

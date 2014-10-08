@@ -46,6 +46,10 @@ import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
+import com.subrosagames.subrosa.domain.token.Token;
+import com.subrosagames.subrosa.domain.token.TokenFactory;
+import com.subrosagames.subrosa.domain.token.TokenInvalidException;
+import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 
 /**
@@ -70,6 +74,9 @@ public class Account implements PermissionTarget {
     @JsonIgnore
     @Transient
     private AccountFactory accountFactory;
+    @JsonIgnore
+    @Transient
+    private TokenFactory tokenFactory;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -128,6 +135,7 @@ public class Account implements PermissionTarget {
     @MapKey(name = "imageType")
     @MapKeyEnumerated(EnumType.STRING)
     private Map<ImageType, Image> images;
+
 
     /**
      * Get accolades for this account.
@@ -302,11 +310,21 @@ public class Account implements PermissionTarget {
      * @throws AccountValidationException if account is invalid for saving
      */
     public Account update(AccountDescriptor accountDescriptor) throws AccountValidationException {
+        String originalEmail = getEmail();
+
+        importDescriptorValues(accountDescriptor);
+
+        if (!originalEmail.equals(getEmail())) {
+            setActivated(false);
+        }
+        return performUpdate();
+    }
+
+    private void importDescriptorValues(AccountDescriptor accountDescriptor) {
         // read-only fields
         // TODO specify R/O fields via an annotation
         accountDescriptor.setId(getId());
         accountDescriptor.setActivated(Optional.of(isActivated()));
-
         OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
@@ -315,6 +333,9 @@ public class Account implements PermissionTarget {
         } catch (InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    private Account performUpdate() throws AccountValidationException {
         assertValid();
         try {
             accountRepository.update(this);
@@ -327,6 +348,22 @@ public class Account implements PermissionTarget {
             throw e;
         }
         return this;
+    }
+
+    /**
+     * Activates account using the given token.
+     *
+     * @param token activation token
+     * @throws TokenInvalidException if token is not valid for activation
+     * @throws AccountValidationException if account is not valid for activation
+     */
+    public void activate(String token) throws TokenInvalidException, AccountValidationException {
+        Token retrieved = tokenFactory.findToken(token, TokenType.EMAIL_VALIDATION);
+        if (retrieved == null || !getId().equals(retrieved.getOwner())) {
+            throw new TokenInvalidException("Token does not exist");
+        }
+        setActivated(true);
+        performUpdate();
     }
 
     private boolean isEmailConflict(JpaSystemException e) {
@@ -348,5 +385,9 @@ public class Account implements PermissionTarget {
 
     public void setAccountFactory(AccountFactory accountFactory) {
         this.accountFactory = accountFactory;
+    }
+
+    public void setTokenFactory(TokenFactory tokenFactory) {
+        this.tokenFactory = tokenFactory;
     }
 }

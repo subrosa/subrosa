@@ -10,6 +10,7 @@ public enum NotificationConstraint {
     // CHECKSTYLE-OFF: JavadocVariable
     REQUIRED("required"),
     UNIQUE("unique"),
+    INVALID("invalid"),
     UNRECOGNIZED("unrecognized");
     // CHECKSTYLE-ON: JavadocVariable
 
