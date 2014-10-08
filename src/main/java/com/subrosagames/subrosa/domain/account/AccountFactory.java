@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
+import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -18,6 +19,9 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
 
     @Autowired
     private AccountRepository accountRepository;
+
+    @Autowired
+    private TokenFactory tokenFactory;
 
     /**
      * Get paginated list of accounts.
@@ -59,5 +63,6 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     public void injectDependencies(Account account) {
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
+        account.setTokenFactory(tokenFactory);
     }
 }

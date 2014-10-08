@@ -14,7 +14,7 @@ import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenType;
 
 /**
- *
+ * Persisted token.
  */
 @Entity
 @Table(name = "token")

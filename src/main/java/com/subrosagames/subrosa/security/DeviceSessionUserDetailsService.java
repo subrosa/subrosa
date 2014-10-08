@@ -28,7 +28,7 @@ public class DeviceSessionUserDetailsService implements AuthenticationUserDetail
 
     @Override
     public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken token) {
-        Token sessionToken = tokenFactory.getToken((String) token.getPrincipal(), TokenType.DEVICE_AUTH);
+        Token sessionToken = tokenFactory.findToken((String) token.getPrincipal(), TokenType.DEVICE_AUTH);
         if (sessionToken != null) {
             LOG.debug("Device session token resolved to user " + sessionToken.getOwner());
             try {

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.google.common.base.Optional;
+import com.subrosagames.subrosa.api.AccountActivation;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.Registration;
@@ -28,6 +29,7 @@ import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
+import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 
@@ -142,6 +144,32 @@ public class ApiAccountController {
         LOG.debug("Saving account with ID {} as {}", accountId, accountDescriptor);
         Account account = accountFactory.getAccount(accountId);
         return account.update(accountDescriptor);
+    }
+
+    /**
+     * Activate the specified account with the given activation details.
+     *
+     * @param accountId account id
+     * @param accountActivation activation details
+     * @return activated account
+     * @throws AccountNotFoundException if account does not exist
+     * @throws BadRequestException if bad activation details are supplied
+     */
+    @RequestMapping(value = { "/{accountId}/activate", "/{accountId}/activate/" }, method = RequestMethod.POST)
+    @ResponseBody
+    public Account activateAccount(@PathVariable("accountId") Integer accountId,
+                                   @RequestBody(required = false) AccountActivation accountActivation)
+            throws AccountNotFoundException, BadRequestException, TokenInvalidException, AccountValidationException {
+        LOG.debug("Activating account with ID {} using token {}", accountId, accountActivation);
+        if (accountActivation == null) {
+            throw new BadRequestException("No POST body supplied");
+        }
+        if (accountActivation.getToken() == null) {
+            throw new BadRequestException("No activation token supplied");
+        }
+        Account account = accountFactory.getAccount(accountId);
+        account.activate(accountActivation.getToken());
+        return account;
     }
 
     /**

@@ -6,10 +6,13 @@ import java.util.Set;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestExecutionListeners;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.subrosagames.subrosa.domain.token.TokenFactory;
+import com.subrosagames.subrosa.domain.token.TokenType;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,6 +36,9 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     // CHECKSTYLE-OFF JavadocMethod
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountControllerTest.class);
+
+    @Autowired
+    private TokenFactory tokenFactory;
 
     @Test
     public void testUnauthenticatedAccountRetrieval() throws Exception {
@@ -167,7 +173,8 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
         String response = mockMvc.perform(
                 get("/account/1")
                         .with(user("bob@user.com")))
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
         mockMvc.perform(
                 put("/account/1")
@@ -188,9 +195,63 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 get("/account/1")
-                .with(user("bob@user.com")))
+                        .with(user("bob@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(newName));
+    }
+
+    @Test
+    public void testUpdateEmailSetsActivatedFalse() throws Exception {
+        mockMvc.perform(
+                get("/account/1")
+                        .with(user("bob@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activated").value(true));
+
+        mockMvc.perform(
+                put("/account/1")
+                        .with(user("bob@user.com"))
+                        .content(jsonBuilder().add("email", "new@email.com").build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activated").value(false));
+
+        mockMvc.perform(
+                get("/account/1")
+                        .with(user("new@email.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activated").value(false));
+    }
+
+    @Test
+    public void testActivateAccount() throws Exception {
+        mockMvc.perform(
+                get("/account/2")
+                        .with(user("notactive@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activated").value(false));
+
+        mockMvc.perform(
+                post("/account/2/activate")
+                        .with(user("notactive@user.com")))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(
+                post("/account/2/activate")
+                        .with(user("notactive@user.com"))
+                        .content(jsonBuilder().add("token", "wrong").build()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("token", "invalid"))));
+
+        String newToken = tokenFactory.generateNewToken(2, TokenType.EMAIL_VALIDATION);
+
+        mockMvc.perform(
+                post("/account/2/activate")
+                        .with(user("notactive@user.com"))
+                        .content(jsonBuilder().add("token", newToken).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("notactive@user.com"))
+                .andExpect(jsonPath("$.activated").value(true));
     }
 
     // CHECKSTYLE-ON JavadocMethod
