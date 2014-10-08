@@ -83,6 +83,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testGameRetrievalInvalidExpansionIsSuccessful() throws Exception {
+        mockMvc.perform(
+                get("/game/fun_times?expand=dne"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Fun Times!"));
+    }
+
+    @Test
     public void testGameNotFound() throws Exception {
         mockMvc.perform(get("/game/does_not_exist"))
                 .andExpect(status().isNotFound());

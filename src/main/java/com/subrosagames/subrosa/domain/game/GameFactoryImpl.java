@@ -1,5 +1,13 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosa.api.actions.list.QueryCriteria;
@@ -7,7 +15,6 @@ import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
-import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -21,16 +28,6 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
-import org.apache.commons.lang.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Factory class for generating game domain objects.
@@ -69,7 +66,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
         return game;
     }
 
-    public void injectDependencies(List<GameEntity> games) {
+    void injectDependencies(List<GameEntity> games) {
         for (GameEntity game : games) {
             injectDependencies(game);
         }
