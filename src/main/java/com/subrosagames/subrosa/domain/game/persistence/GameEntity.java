@@ -283,6 +283,9 @@ public class GameEntity extends BaseEntity implements Game {
         setDefaults();
     }
 
+    /**
+     * Set the default price and max team size if unset.
+     */
     @PreUpdate
     protected void preUpdate() {
         super.preUpdate();

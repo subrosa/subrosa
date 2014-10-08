@@ -6,7 +6,7 @@ if (gradle.startParameter.taskNames.contains("ec2")) {
     }
 } else if (gradle.startParameter.taskNames.contains("local")) {
     ext {
-        apiHost = localhost
+        databaseHost = localhost
     }
 } else {
     ext {
