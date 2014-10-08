@@ -30,6 +30,8 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountControllerTest extends AbstractApiControllerTest {
 
+    // CHECKSTYLE-OFF JavadocMethod
+
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountControllerTest.class);
 
     @Test
@@ -173,4 +175,24 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
                         .content(response))
                 .andExpect(status().isOk());
     }
+
+    @Test
+    public void testUpdateAccount() throws Exception {
+        String newName = "Johnny Hotcakes testUpdateAccount";
+        mockMvc.perform(
+                put("/account/1")
+                        .with(user("bob@user.com"))
+                        .content(jsonBuilder().add("name", newName).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(newName));
+
+        mockMvc.perform(
+                get("/account/1")
+                .with(user("bob@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value(newName));
+    }
+
+    // CHECKSTYLE-ON JavadocMethod
+
 }

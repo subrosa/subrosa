@@ -2,6 +2,8 @@ package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +138,7 @@ public class ApiAccountController {
      */
     @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.PUT)
     @ResponseBody
+    @Transactional
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody AccountDescriptor accountDescriptor)
             throws AccountNotFoundException, AccountValidationException
