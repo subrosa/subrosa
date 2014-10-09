@@ -6,10 +6,19 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
- *
+ * Factory for managing game players.
  */
 public interface PlayerFactory {
 
-    Player createPlayerForGame(Game gameId, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
+    /**
+     * Create a new player in a game.
+     *
+     * @param game game
+     * @param account account
+     * @param playerDescriptor player information
+     * @return created player
+     * @throws PlayerValidationException if player information is invalid
+     */
+    Player createPlayerForGame(Game game, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
 
 }

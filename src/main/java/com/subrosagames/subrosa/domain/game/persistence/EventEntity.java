@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.DiscriminatorOptions;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
@@ -30,7 +31,7 @@ import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "event_type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorOptions(force = true)
-public abstract class EventEntity extends BaseEntity implements GameEvent {
+public class EventEntity extends BaseEntity implements GameEvent {
 
     @Id
     @SequenceGenerator(name = "lifecycleEventSeq", sequenceName = "lifecycle_event_event_id_seq")
@@ -40,10 +41,10 @@ public abstract class EventEntity extends BaseEntity implements GameEvent {
 
     @Column(name = "event_class")
     @NotNull
-    protected String event;
+    private String event;
 
     @JsonIgnore
-    @ManyToOne(targetEntity = GameEntity.class)
+    @ManyToOne(targetEntity = BaseGame.class)
     @JoinColumn(name = "game_id")
     private Game game;
 

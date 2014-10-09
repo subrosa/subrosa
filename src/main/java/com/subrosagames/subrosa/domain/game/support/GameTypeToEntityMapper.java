@@ -1,20 +1,28 @@
-package com.subrosagames.subrosa.domain.gamesupport;
+package com.subrosagames.subrosa.domain.game.support;
 
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
-import com.subrosagames.subrosa.domain.gamesupport.scavenger.ScavengerGame;
+import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGame;
+import com.subrosagames.subrosa.domain.game.support.scavenger.ScavengerGame;
 
 /**
+ * Maps a game type to its entity type.
  */
 public final class GameTypeToEntityMapper {
 
-    private GameTypeToEntityMapper() { }
+    private GameTypeToEntityMapper() {
+    }
 
-    public static GameEntity forType(GameType gameType) {
+    /**
+     * Map the given game type to an entity type.
+     *
+     * @param gameType game type
+     * @return game entity
+     */
+    public static BaseGame forType(GameType gameType) {
         if (gameType == null) {
             // TODO this can't be right
-            return new GameEntity();
+            return new BaseGame();
 //            throw new IllegalArgumentException("Attempt to get entity for null game type.");
         }
         switch (gameType) {

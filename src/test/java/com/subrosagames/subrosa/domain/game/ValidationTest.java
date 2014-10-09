@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.game.persistence;
+package com.subrosagames.subrosa.domain.game;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -10,7 +10,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.event.ScheduledEvent;
@@ -23,11 +25,14 @@ import static com.subrosagames.subrosa.test.matchers.HasConstraintViolation.hasC
 @RunWith(JUnit4.class)
 public class ValidationTest {
 
+    // CHECKSTYLE-OFF: JavadocMethod
+    // CHECKSTYLE-OFF: JavadocVariable
+
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none(); // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Test
-    public void testPrerequisiteGameEntityValid() throws Exception {
+    public void testPrerequisiteBaseGameValid() throws Exception {
         getValidGame().assertValid();
     }
 
@@ -42,7 +47,7 @@ public class ValidationTest {
         expectedException.expect(hasConstraintViolation("name", "required"));
         expectedException.expect(hasConstraintViolation("url", "required"));
         expectedException.expect(hasConstraintViolation("gameType", "required"));
-        GameEntity game = new GameEntity();
+        BaseGame game = new BaseGame();
         game.assertValid();
     }
 
@@ -53,7 +58,7 @@ public class ValidationTest {
         expectedException.expect(hasConstraintViolation("registrationEnd", "required"));
         expectedException.expect(hasConstraintViolation("gameStart", "required"));
         expectedException.expect(hasConstraintViolation("gameEnd", "required"));
-        GameEntity game = new GameEntity();
+        BaseGame game = new BaseGame();
         game.assertValid(PublishAction.class);
     }
 
@@ -62,7 +67,7 @@ public class ValidationTest {
         expectedException.expect(GameValidationException.class);
         expectedException.expect(hasConstraintViolation("registrationStart", "startBeforeEnd"));
         expectedException.expect(hasConstraintViolation("registrationEnd", "startBeforeEnd"));
-        GameEntity game = getPublishableGame();
+        BaseGame game = getPublishableGame();
         game.setRegistrationEnd(Lists.newArrayList(eventXDaysFromNow(1)));
         game.assertValid();
     }
@@ -72,7 +77,7 @@ public class ValidationTest {
         expectedException.expect(GameValidationException.class);
         expectedException.expect(hasConstraintViolation("gameStart", "startBeforeEnd"));
         expectedException.expect(hasConstraintViolation("gameEnd", "startBeforeEnd"));
-        GameEntity game = getPublishableGame();
+        BaseGame game = getPublishableGame();
         game.setGameEnd(Lists.newArrayList(eventXDaysFromNow(25)));
         game.assertValid();
     }
@@ -82,7 +87,7 @@ public class ValidationTest {
         expectedException.expect(GameValidationException.class);
         expectedException.expect(hasConstraintViolation("name", "required"));
         expectedException.expect(not(hasConstraintViolation("url", "required")));
-        GameEntity game = getValidGame();
+        BaseGame game = getValidGame();
         game.setName("");
         game.assertValid();
     }
@@ -92,21 +97,21 @@ public class ValidationTest {
         expectedException.expect(GameValidationException.class);
         expectedException.expect(hasConstraintViolation("url", "required"));
         expectedException.expect(not(hasConstraintViolation("name", "required")));
-        GameEntity game = getValidGame();
+        BaseGame game = getValidGame();
         game.setUrl("");
         game.assertValid();
     }
 
-    private GameEntity getValidGame() {
-        GameEntity game = new GameEntity();
+    private BaseGame getValidGame() {
+        BaseGame game = new BaseGame();
         game.setName("name of the game");
         game.setUrl("abc123");
         game.setGameType(GameType.PAPARAZZI);
         return game;
     }
 
-    private GameEntity getPublishableGame() {
-        GameEntity game = getValidGame();
+    private BaseGame getPublishableGame() {
+        BaseGame game = getValidGame();
         game.setRegistrationStart(Lists.newArrayList(eventXDaysFromNow(10)));
         game.setRegistrationEnd(Lists.newArrayList(eventXDaysFromNow(20)));
         game.setGameStart(Lists.newArrayList(eventXDaysFromNow(30)));
@@ -122,6 +127,8 @@ public class ValidationTest {
         return event;
     }
 
+    // CHECKSTYLE-ON: JavadocMethod
+    // CHECKSTYLE-ON: JavadocVariable
 
 }
 

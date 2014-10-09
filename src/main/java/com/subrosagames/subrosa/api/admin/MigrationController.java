@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
@@ -45,8 +46,8 @@ public class MigrationController {
     @ResponseBody
     public String populateGameLocations() throws DomainObjectNotFoundException, DomainObjectValidationException {
         LOG.debug("Populating game locations");
-        List<GameEntity> games = gameRepository.list(0, 0, "zones");
-        for (GameEntity game : games) {
+        List<BaseGame> games = gameRepository.list(0, 0, "zones");
+        for (BaseGame game : games) {
             Point centroid = getGameCentroid(game);
             if (centroid != null) {
                 LocationEntity location = new LocationEntity();

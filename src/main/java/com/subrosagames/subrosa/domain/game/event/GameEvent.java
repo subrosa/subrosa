@@ -10,17 +10,40 @@ import java.util.Date;
  */
 public interface GameEvent {
 
-    public Integer getId();
+    /**
+     * Get game event id.
+     *
+     * @return game event id
+     */
+    Integer getId();
 
-    public String getEvent();
+    /**
+     * Get game event name.
+     *
+     * @return game event name
+     */
+    String getEvent();
 
-    public Date getCreated();
+    /**
+     * Get created date.
+     *
+     * @return created date
+     */
+    Date getCreated();
 
-    public Date getModified();
+    /**
+     * Get last modified date.
+     *
+     * @return last modified date
+     */
+    Date getModified();
 
-    public void setGame(Game game);
-
-    public Game getGame();
+    /**
+     * Get the game in which event applies.
+     *
+     * @return game
+     */
+    Game getGame();
 
 }
 

@@ -6,8 +6,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.gamesupport.assassin.AssignmentType;
-import com.subrosagames.subrosa.domain.gamesupport.assassin.TargetAssigner;
+import com.subrosagames.subrosa.domain.game.support.assassin.AssignmentType;
+import com.subrosagames.subrosa.domain.game.support.assassin.TargetAssigner;
 
 /**
  * Performs round robin assignments.

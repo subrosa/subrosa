@@ -19,17 +19,16 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
-import com.subrosagames.subrosa.domain.gamesupport.assassin.AssassinGame;
+import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGame;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -65,7 +64,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGameRetrieval() throws Exception {
-        GameEntity game = new AssassinGame();
+        BaseGame game = new AssassinGame();
         game.setName("Test game");
         game.setUrl("test_game_url");
         game.setGameType(GameType.ASSASSIN);
@@ -144,7 +143,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("gameType", "ASSASSIN");
             }
         });
-        GameEntity entity1 = gameRepository.get(active1, "events");
+        BaseGame entity1 = gameRepository.get(active1, "events");
         entity1.setGameRepository(gameRepository);
         addEventToGame(entity1, "registrationStart", new Date(timeDaysInFuture(-1)));
         addEventToGame(entity1, "registrationEnd", new Date(timeDaysInFuture(1)));
@@ -155,7 +154,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("gameType", "ASSASSIN");
             }
         });
-        GameEntity entity2 = gameRepository.get(active2, "events");
+        BaseGame entity2 = gameRepository.get(active2, "events");
         entity2.setGameRepository(gameRepository);
         addEventToGame(entity2, "registrationStart", new Date(timeDaysInFuture(-100)));
         addEventToGame(entity2, "registrationEnd", new Date(timeDaysInFuture(100)));
@@ -168,7 +167,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("registrationEnd", Long.toString(timeDaysInFuture(5)));
             }
         });
-        GameEntity entity3 = gameRepository.get(inactive1, "events");
+        BaseGame entity3 = gameRepository.get(inactive1, "events");
         entity3.setGameRepository(gameRepository);
         addEventToGame(entity3, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(entity3, "registrationEnd", new Date(timeDaysInFuture(5)));
@@ -442,7 +441,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         final Long registrationEnd = timeDaysInFuture(7);
         final Long gameStart = timeDaysInFuture(7);
         final Long gameEnd = timeDaysInFuture(30);
-        GameEntity gameEntity = gameRepository.get(url, "events");
+        BaseGame gameEntity = gameRepository.get(url, "events");
         gameEntity.setGameRepository(gameRepository);
         addEventToGame(gameEntity, "registrationStart", new Date(registrationStart));
         addEventToGame(gameEntity, "registrationEnd", new Date(registrationEnd));
@@ -583,7 +582,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
             }
         });
 
-        GameEntity gameEntity = gameRepository.get(url, "events");
+        BaseGame gameEntity = gameRepository.get(url, "events");
         gameEntity.setGameRepository(gameRepository);
         addEventToGame(gameEntity, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(gameEntity, "registrationEnd", new Date(timeDaysInFuture(2)));
@@ -610,7 +609,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         expectGameStatusIs(url, GameStatus.ARCHIVED);
     }
 
-    private void addEventToGame(GameEntity game, String event, Date date) throws Exception {
+    private void addEventToGame(BaseGame game, String event, Date date) throws Exception {
         ScheduledEventEntity scheduledEvent = new ScheduledEventEntity();
         scheduledEvent.setEvent(event);
         scheduledEvent.setDate(date);
@@ -672,7 +671,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testTest() throws Exception {
-        GameEntity gameEntity = gameRepository.get("with_start");
+        BaseGame gameEntity = gameRepository.get("with_start");
         Date gameStart = gameEntity.getGameStart();
         LOG.debug("Game start: {}", gameStart);
     }

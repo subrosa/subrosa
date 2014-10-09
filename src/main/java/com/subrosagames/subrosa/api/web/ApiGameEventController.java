@@ -48,9 +48,9 @@ public class ApiGameEventController {
      * Get a list of {@link com.subrosagames.subrosa.domain.game.event.GameHistory}s for the specified game.
      *
      * @param gameUrl the game
-     * @param limit   maximum number of {@link com.subrosagames.subrosa.domain.game.Game}s to return.
+     * @param limit   maximum number of {@link Game}s to return.
      * @param offset  offset into the list.
-     * @return a PaginatedList of {@link com.subrosagames.subrosa.domain.game.event.GameHistory}s.
+     * @return a PaginatedList of {@link GameEvent}s.
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
@@ -81,8 +81,8 @@ public class ApiGameEventController {
      *
      * @param gameUrl the game gameUrl
      * @param eventId the game event id
-     * @throws com.subrosagames.subrosa.domain.game.GameNotFoundException            if game is not found
-     * @throws com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException if game event is not found
+     * @throws GameNotFoundException      if game is not found
+     * @throws GameEventNotFoundException if game event is not found
      */
     @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.GET)
     @ResponseBody
@@ -102,11 +102,11 @@ public class ApiGameEventController {
     }
 
     /**
-     * Create a {@link com.subrosagames.subrosa.domain.game.event.GameEvent} for a game.
+     * Create a {@link GameEvent} for a game.
      *
      * @param gameUrl             game identifier
      * @param gameEventDescriptor description of game event
-     * @return {@link com.subrosagames.subrosa.domain.game.event.GameEvent}
+     * @return game event
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
@@ -131,13 +131,13 @@ public class ApiGameEventController {
     }
 
     /**
-     * Update a {@link com.subrosagames.subrosa.domain.game.event.GameEvent} from the provided parameters.
+     * Update a {@link GameEvent} from the provided parameters.
      *
      * @param gameUrl             game id
      * @param gameEventDescriptor game event descriptor
-     * @return {@link com.subrosagames.subrosa.domain.game.event.GameEvent}
-     * @throws com.subrosagames.subrosa.domain.game.GameNotFoundException            if game is not found
-     * @throws com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException if game event is not found
+     * @return updated game event
+     * @throws GameNotFoundException      if game is not found
+     * @throws GameEventNotFoundException if game event is not found
      */
     @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.PUT)
     @ResponseBody
