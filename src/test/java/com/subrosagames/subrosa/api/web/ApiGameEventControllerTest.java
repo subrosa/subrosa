@@ -9,9 +9,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -214,6 +216,57 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.event").value("gameEnd"))
                 .andExpect(jsonPath("$.date").value(date));
+    }
+
+    @Test
+    public void testUpdateEventUnauthorized() throws Exception {
+        mockMvc.perform(
+                put("/game/with_start/event/1")
+                        .content("{}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testUpdateEventForbidden() throws Exception {
+        mockMvc.perform(
+                put("/game/with_start/event/1")
+                        .with(user("new@user.com"))
+                        .content("{}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testUpdateEventBadRequest() throws Exception {
+        mockMvc.perform(
+                put("/game/with_start/event/1")
+                        .with(user("game@owner.com"))
+                        .content(""))
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(
+                put("/game/with_start/event/1")
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("event", null)
+                                .build()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(is(notificationList())))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("event", "required"))))
+                .andExpect(jsonPath("$.notifications").value(not(hasNotification(withDetail("date", "required")))));
+    }
+
+    @Test
+    public void testUpdateEvent() throws Exception {
+        long newDate = timeDaysInFuture(1);
+        mockMvc.perform(
+                put("/game/with_start/event/1")
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("date", newDate)
+                                .build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.event").value("gameStart"))
+                .andExpect(jsonPath("$.date").value(newDate));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

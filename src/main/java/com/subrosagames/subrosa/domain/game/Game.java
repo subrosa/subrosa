@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
@@ -167,10 +168,20 @@ public interface Game extends GameData {
     /**
      * Adds an event to the game events.
      *
-     * @param eventEntity game event to add
+     * @param gameEventDescriptor game event to add
      * @return added game event
      * @throws GameEventValidationException if the game event is invalid
      */
-    GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException;
+    GameEvent addEvent(GameEventDescriptor gameEventDescriptor) throws GameEventValidationException;
 
+    /**
+     * Updates an event.
+     *
+     * @param eventId game event id
+     * @param gameEventDescriptor game event information
+     * @return updated game event
+     * @throws GameEventNotFoundException if game event does not exist
+     * @throws GameEventValidationException if the game event is invalid
+     */
+    GameEvent updateEvent(int eventId, GameEventDescriptor gameEventDescriptor) throws GameEventNotFoundException, GameEventValidationException;
 }

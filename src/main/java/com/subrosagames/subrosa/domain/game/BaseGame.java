@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
+import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
@@ -104,10 +106,15 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public Game update(GameDescriptor game) throws GameValidationException {
+    public Game update(GameDescriptor gameDescriptor) throws GameValidationException {
+        // read-only fields
+        gameDescriptor.setId(getId());
+        gameDescriptor.setUrl(Optional.of(getUrl()));
+        gameDescriptor.setGameType(Optional.of(getGameType()));
+
         OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
         try {
-            beanCopier.copyProperties(this, game);
+            beanCopier.copyProperties(this, gameDescriptor);
         } catch (IllegalAccessException e) {
             throw new IllegalStateException(e);
         } catch (InvocationTargetException e) {
@@ -221,7 +228,8 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException {
+    public GameEvent addEvent(GameEventDescriptor gameEventDescriptor) throws GameEventValidationException {
+        EventEntity eventEntity = gameFactory.forDto(gameEventDescriptor);
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
         if (!violations.isEmpty()) {
@@ -229,6 +237,28 @@ public class BaseGame extends GameEntity implements Game {
         }
         eventEntity.setGame(this);
         return gameRepository.create(eventEntity);
+    }
+
+    @Override
+    public GameEvent updateEvent(int eventId, GameEventDescriptor eventDescriptor) throws GameEventNotFoundException, GameEventValidationException {
+        EventEntity eventEntity = gameRepository.getEvent(eventId);
+        // read-only fields
+        eventDescriptor.setId(eventId);
+
+        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
+        try {
+            beanCopier.copyProperties(eventEntity, eventDescriptor);
+        } catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        } catch (InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
+        if (!violations.isEmpty()) {
+            throw new GameEventValidationException(violations);
+        }
+        return gameRepository.update(eventEntity);
     }
 
     public void setGameFactory(GameFactory gameFactory) {

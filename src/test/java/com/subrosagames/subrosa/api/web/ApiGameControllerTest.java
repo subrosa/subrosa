@@ -17,8 +17,10 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
@@ -610,10 +612,10 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     private void addEventToGame(BaseGame game, String event, Date date) throws Exception {
-        ScheduledEventEntity scheduledEvent = new ScheduledEventEntity();
-        scheduledEvent.setEvent(event);
-        scheduledEvent.setDate(date);
-        game.addEvent(scheduledEvent);
+        GameEventDescriptor eventDescriptor = new GameEventDescriptor();
+        eventDescriptor.setEvent(Optional.of(event));
+        eventDescriptor.setDate(Optional.of(date));
+        game.addEvent(eventDescriptor);
     }
 
     private void updateEvent(ScheduledEvent event, Date date) throws Exception {

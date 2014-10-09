@@ -8,9 +8,6 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
-import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
-import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -89,27 +86,44 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
     /**
      * Set an attribute of a game.
      *
-     * @param gameEntity     persisted game
+     * @param baseGame       persisted game
      * @param attributeType  attribute type
      * @param attributeValue attribute value
      */
-    void setGameAttribute(BaseGame gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
+    void setGameAttribute(BaseGame baseGame, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
-    BaseGame create(BaseGame gameEntity) throws GameValidationException;
+    BaseGame create(BaseGame baseGame) throws GameValidationException;
 
     List<BaseGame> ownedBy(Account user);
 
     PostEntity create(PostEntity postEntity);
 
-    EventEntity create(EventEntity gameEventEntity);
-
     List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException;
 
     LocationEntity create(LocationEntity location);
 
+    /**
+     * Create a game event.
+     *
+     * @param eventEntity event entity
+     * @return created event
+     */
+    EventEntity create(EventEntity eventEntity);
+
+    /**
+     * Retrieve the specified event.
+     *
+     * @param eventId event it
+     * @return game event
+     * @throws GameEventNotFoundException if event does not exist
+     */
     EventEntity getEvent(int eventId) throws GameEventNotFoundException;
 
-    EventEntity update(ScheduledEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException;
-
-    EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException;
+    /**
+     * Update the provided game event.
+     *
+     * @param eventEntity event entity
+     * @return updated event
+     */
+    EventEntity update(EventEntity eventEntity);
 }

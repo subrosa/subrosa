@@ -70,12 +70,6 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public EventEntity create(EventEntity eventEntity) {
-        entityManager.persist(eventEntity);
-        return eventEntity;
-    }
-
-    @Override
     public BaseGame get(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
         expansions = enableExpansions(expansions);
@@ -226,12 +220,13 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public EventEntity update(ScheduledEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
-        return entityManager.merge(eventEntity);
+    public EventEntity create(EventEntity eventEntity) {
+        entityManager.persist(eventEntity);
+        return eventEntity;
     }
 
     @Override
-    public EventEntity update(TriggeredEventEntity eventEntity) throws GameEventNotFoundException, GameEventValidationException {
+    public EventEntity update(EventEntity eventEntity) {
         return entityManager.merge(eventEntity);
     }
 

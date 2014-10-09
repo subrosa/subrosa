@@ -39,10 +39,6 @@ public class GameServiceImpl implements GameService {
         if (!user.getId().equals(game.getOwner().getId())) {
             throw new GameNotFoundException("Could not find game to update at " + gameUrl);
         }
-        // read-only fields
-        gameDescriptor.setId(game.getId());
-        gameDescriptor.setUrl(Optional.of(game.getUrl()));
-        gameDescriptor.setGameType(Optional.of(game.getGameType()));
         return game.update(gameDescriptor);
     }
 
