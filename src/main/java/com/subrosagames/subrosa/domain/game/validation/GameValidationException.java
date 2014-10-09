@@ -4,6 +4,7 @@ import javax.validation.ConstraintViolation;
 import java.util.Set;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 
 /**
@@ -44,7 +45,11 @@ public class GameValidationException extends DomainObjectValidationException {
         super(throwable);
     }
 
-    public GameValidationException(Set<ConstraintViolation<GameEntity>> violations) {
+    /**
+     * Construct with the specified constraint violations.
+     * @param violations constraint violations
+     */
+    public GameValidationException(Set<ConstraintViolation<BaseGame>> violations) {
         super(violations);
     }
 }

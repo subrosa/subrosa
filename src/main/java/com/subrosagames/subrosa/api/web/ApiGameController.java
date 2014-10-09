@@ -37,11 +37,11 @@ import com.subrosagames.subrosa.api.dto.target.TargetDto;
 import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
 import com.subrosagames.subrosa.api.dto.target.TargetList;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
@@ -104,7 +104,7 @@ public class ApiGameController {
                     ? gameFactory.getGamesNear(coordinates, limit, offset)
                     : gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
         }
-        QueryCriteria<GameEntity> queryCriteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, GameEntity.class);
+        QueryCriteria<BaseGame> queryCriteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, BaseGame.class);
         String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
         return gameFactory.fromCriteria(queryCriteria, expansions);
     }
@@ -153,9 +153,9 @@ public class ApiGameController {
         }
         Account user = getAuthenticatedUser();
         LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
-        GameEntity gameEntity = gameFactory.forDto(gameDescriptor);
-        gameEntity.setOwner(user);
-        return gameEntity.create();
+        Game game = gameFactory.forDto(gameDescriptor);
+        game.setOwner(user);
+        return game.create();
     }
 
     /**

@@ -18,11 +18,10 @@ import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
+import com.subrosagames.subrosa.domain.game.support.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.gamesupport.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
@@ -54,26 +53,26 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public Game getGame(int gameId, String... expansions) throws GameNotFoundException {
-        GameEntity game = gameRepository.get(gameId, expansions);
+        BaseGame game = gameRepository.get(gameId, expansions);
         injectDependencies(game);
         return game;
     }
 
     @Override
     public Game getGame(String url, String... expansions) throws GameNotFoundException {
-        GameEntity game = gameRepository.get(url, expansions);
+        BaseGame game = gameRepository.get(url, expansions);
         injectDependencies(game);
         return game;
     }
 
-    void injectDependencies(List<GameEntity> games) {
-        for (GameEntity game : games) {
+    void injectDependencies(List<BaseGame> games) {
+        for (BaseGame game : games) {
             injectDependencies(game);
         }
     }
 
     @Override
-    public void injectDependencies(GameEntity game) {
+    public void injectDependencies(BaseGame game) {
         game.setGameRepository(gameRepository);
         game.setGameFactory(this);
         game.setRuleRepository(ruleRepository);
@@ -83,10 +82,10 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions) {
-        List<GameEntity> gameEntities = gameRepository.list(limit, offset, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
+        List<BaseGame> gameEntities = gameRepository.list(limit, offset, expansions);
+        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
             @Override
-            public Game apply(GameEntity gameEntity) {
+            public Game apply(BaseGame gameEntity) {
                 try {
                     return getGame(gameEntity.getId());
                 } catch (GameNotFoundException e) {
@@ -103,10 +102,10 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public PaginatedList<Game> getGamesNear(Coordinates coordinates, Integer limit, Integer offset, String... expansions) {
-        List<GameEntity> gameEntities = gameRepository.getGamesNear(coordinates, limit, offset, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
+        List<BaseGame> gameEntities = gameRepository.getGamesNear(coordinates, limit, offset, expansions);
+        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
             @Override
-            public Game apply(GameEntity gameEntity) {
+            public Game apply(BaseGame gameEntity) {
                 injectDependencies(gameEntity);
                 return gameEntity;
             }
@@ -118,11 +117,11 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     }
 
     @Override
-    public PaginatedList<Game> fromCriteria(QueryCriteria<GameEntity> queryCriteria, String... expansions) {
-        List<GameEntity> gameEntities = gameRepository.findByCriteria(queryCriteria, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<GameEntity, Game>() {
+    public PaginatedList<Game> fromCriteria(QueryCriteria<BaseGame> queryCriteria, String... expansions) {
+        List<BaseGame> gameEntities = gameRepository.findByCriteria(queryCriteria, expansions);
+        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
             @Override
-            public Game apply(GameEntity gameEntity) {
+            public Game apply(BaseGame gameEntity) {
                 injectDependencies(gameEntity);
                 return gameEntity;
             }
@@ -135,20 +134,20 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public List<? extends Game> ownedBy(Account user) {
-        List<GameEntity> gameEntities = gameRepository.ownedBy(user);
+        List<BaseGame> gameEntities = gameRepository.ownedBy(user);
         injectDependencies(gameEntities);
         return gameEntities;
     }
 
     @Override
-    public GameEntity forDto(GameDescriptor gameDescriptor) throws GameValidationException {
+    public BaseGame forDto(GameDescriptor gameDescriptor) throws GameValidationException {
         GameType gameType;
         if (gameDescriptor.getGameType() == null) {
             gameType = null;
         } else {
             gameType = gameDescriptor.getGameType().orNull();
         }
-        GameEntity gameEntity = GameTypeToEntityMapper.forType(gameType);
+        BaseGame gameEntity = GameTypeToEntityMapper.forType(gameType);
         copyProperties(gameDescriptor, gameEntity);
         if (gameEntity.getUrl() == null) {
             gameEntity.setUrl(generateUrl());

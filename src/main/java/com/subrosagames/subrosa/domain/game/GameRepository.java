@@ -1,11 +1,15 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.List;
+
 import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosagames.subrosa.domain.DomainRepository;
+import com.subrosagames.subrosa.domain.DomainObjectRepository;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
-import com.subrosagames.subrosa.domain.game.persistence.*;
+import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
+import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
+import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
@@ -13,12 +17,10 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
-import java.util.List;
-
 /**
  * Repository for retrieval of game information.
  */
-public interface GameRepository extends DomainRepository<GameEntity, GameEntity> {
+public interface GameRepository extends DomainObjectRepository<BaseGame> {
 
     /**
      * Get a list of games matching the provided criteria.
@@ -27,7 +29,7 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
      * @param expansions game field expansions
      * @return matching games
      */
-    List<GameEntity> findByCriteria(QueryCriteria<GameEntity> criteria, String... expansions);
+    List<BaseGame> findByCriteria(QueryCriteria<BaseGame> criteria, String... expansions);
 
     /**
      * Get a count of games matching the provided criteria.
@@ -35,15 +37,18 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
      * @param criteria query criteria
      * @return count of matching games
      */
-    Long countByCriteria(QueryCriteria<GameEntity> criteria);
+    Long countByCriteria(QueryCriteria<BaseGame> criteria);
 
     /**
      * Get a list of the games that are occurring near the provided geographical location.
      *
-     * @param location geographical location
+     * @param location   geographical location
+     * @param limit      number of games to return
+     * @param offset     offset into games
+     * @param expansions fields to expand
      * @return games near that location
      */
-    List<GameEntity> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions);
+    List<BaseGame> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions);
 
     /**
      * Retrieve the specified game entity by identifying url.
@@ -52,9 +57,17 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
      * @param expansions fields to expand
      * @return game
      */
-    GameEntity get(String url, String... expansions) throws GameNotFoundException;
+    BaseGame get(String url, String... expansions) throws GameNotFoundException;
 
-    GameEntity get(int id, String... expansions) throws GameNotFoundException;
+    /**
+     * Retrieve the specified game entity by id.
+     *
+     * @param id         game id
+     * @param expansions fields to expand
+     * @return game
+     * @throws GameNotFoundException
+     */
+    BaseGame get(int id, String... expansions) throws GameNotFoundException;
 
     /**
      * Load the player of a game for the given user.
@@ -80,11 +93,11 @@ public interface GameRepository extends DomainRepository<GameEntity, GameEntity>
      * @param attributeType  attribute type
      * @param attributeValue attribute value
      */
-    void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
+    void setGameAttribute(BaseGame gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
-    GameEntity create(GameEntity gameEntity) throws GameValidationException;
+    BaseGame create(BaseGame gameEntity) throws GameValidationException;
 
-    List<GameEntity> ownedBy(Account user);
+    List<BaseGame> ownedBy(Account user);
 
     PostEntity create(PostEntity postEntity);
 

@@ -19,7 +19,7 @@ public class ValidationTest {
     // CHECKSTYLE-OFF: JavadocVariable
 
     @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none(); // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Test
     public void testPrerequisiteAccountValid() throws Exception {

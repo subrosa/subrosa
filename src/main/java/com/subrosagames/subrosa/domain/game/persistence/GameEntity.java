@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +35,6 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
@@ -52,44 +50,21 @@ import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosa.api.actions.list.annotation.Filterable;
-import com.subrosagames.subrosa.api.dto.GameDescriptor;
-import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
-import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.GameAttributeType;
-import com.subrosagames.subrosa.domain.game.GameAttributeValue;
-import com.subrosagames.subrosa.domain.game.GameFactory;
-import com.subrosagames.subrosa.domain.game.GameHelper;
-import com.subrosagames.subrosa.domain.game.GameRepository;
-import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.RuleRepository;
 import com.subrosagames.subrosa.domain.game.RuleType;
-import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
-import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
-import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
-import com.subrosagames.subrosa.domain.player.Player;
-import com.subrosagames.subrosa.domain.player.PlayerFactory;
-import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
 
 /**
  * Persisted entity for a game.
@@ -113,7 +88,7 @@ import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
         })
 })
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-public class GameEntity extends BaseEntity implements Game {
+public class GameEntity extends BaseEntity {
 
     /**
      * Default price for entrance to a game.
@@ -123,25 +98,6 @@ public class GameEntity extends BaseEntity implements Game {
      * Default maximum team size.
      */
     public static final Integer DEFAULT_MAX_TEAM_SIZE = 0;
-
-    @JsonIgnore
-    @Transient
-    private RuleRepository ruleRepository;
-    @JsonIgnore
-    @Transient
-    private GameRepository gameRepository;
-    @JsonIgnore
-    @Transient
-    private EventRepository eventRepository;
-    @JsonIgnore
-    @Transient
-    private PlayerFactory playerFactory;
-    @JsonIgnore
-    @Transient
-    private GameHelper gameHelper;
-    @JsonIgnore
-    @Transient
-    private GameFactory gameFactory;
 
     @Id
     @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
@@ -349,68 +305,6 @@ public class GameEntity extends BaseEntity implements Game {
         this.price = price;
     }
 
-    public GameStatus getStatus() {
-        Date now = new Date();
-        if (Lists.asList(published, new Date[]{ getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd() }).contains(null)) {
-            return GameStatus.DRAFT;
-        } else {
-            if (now.before(getRegistrationStart())) {
-                return GameStatus.PREREGISTRATION;
-            } else if (now.before(getRegistrationEnd())) {
-                return GameStatus.REGISTRATION;
-            } else if (now.before(getGameStart())) {
-                return GameStatus.POSTREGISTRATION;
-            } else if (now.before(getGameEnd())) {
-                return GameStatus.RUNNING;
-            }
-        }
-        return GameStatus.ARCHIVED;
-    }
-
-    @Override
-    public Game create() throws GameValidationException {
-        assertValid();
-        gameRepository.create(this);
-        gameFactory.injectDependencies(this);
-        return this;
-    }
-
-    @Override
-    public Game update(GameDescriptor game) throws GameValidationException {
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
-        try {
-            beanCopier.copyProperties(this, game);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
-        assertValid();
-        return this;
-    }
-
-    @Override
-    public Game publish() throws GameValidationException {
-        assertValid(PublishAction.class);
-        setPublished(new Date());
-        try {
-            gameRepository.update(this);
-        } catch (DomainObjectNotFoundException e) {
-            throw new IllegalStateException("Got object not found when updating persisted object");
-        } catch (DomainObjectValidationException e) {
-            throw new GameValidationException(e);
-        }
-        return this;
-    }
-
-    void assertValid(Class... validationGroups) throws GameValidationException {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<GameEntity>> violations = validator.validate(this, validationGroups);
-        if (!violations.isEmpty()) {
-            throw new GameValidationException(violations);
-        }
-    }
-
     public String getTimezone() {
         return timezone;
     }
@@ -480,12 +374,6 @@ public class GameEntity extends BaseEntity implements Game {
         return events;
     }
 
-    public GameEvent getEvent(int eventId) throws GameEventNotFoundException {
-        EventEntity event = gameRepository.getEvent(eventId);
-        // TODO ensure the event is part of this game
-        return event;
-    }
-
     public void setEvents(List<GameEvent> events) {
         this.events = events;
     }
@@ -494,30 +382,8 @@ public class GameEntity extends BaseEntity implements Game {
         return ruleSet;
     }
 
-    public void setRuleSet(Set<Rule> rulesList) {
-        this.ruleSet = rulesList;
-    }
-
-    @Transient
-    protected Function<Rule, String> extractRules = new Function<Rule, String>() {
-        @Override
-        public String apply(Rule input) {
-            return input.getDescription();
-        }
-    };
-
-    public Map<RuleType, List<String>> getRules() {
-        Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
-        rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
-        if (ruleSet != null) {
-            rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
-                    new ArrayList<Rule>(ruleSet.size()) {{
-                        addAll(ruleSet);
-                    }},
-                    extractRules
-            ));
-        }
-        return rules;
+    public void setRuleSet(Set<Rule> ruleSet) {
+        this.ruleSet = ruleSet;
     }
 
     public Map<String, GameAttributeEntity> getAttributes() {
@@ -544,7 +410,6 @@ public class GameEntity extends BaseEntity implements Game {
         this.published = published;
     }
 
-    @Override
     public List<Zone> getZones() {
         return zones;
     }
@@ -617,104 +482,4 @@ public class GameEntity extends BaseEntity implements Game {
         return registrationEnd;
     }
 
-    public RuleRepository getRuleRepository() {
-        return ruleRepository;
-    }
-
-    public void setRuleRepository(RuleRepository ruleRepository) {
-        this.ruleRepository = ruleRepository;
-    }
-
-    @Override
-    public void achieveTarget(Player player, int targetId, String code) throws TargetNotFoundException {
-        getGameHelper().achieveTarget(player, targetId, code);
-    }
-
-    @Override
-    public void startGame() {
-        throw new NotImplementedException("Attempted to start an abstract game");
-    }
-
-    @Override
-    public Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException {
-        if (account == null || playerDescriptor == null) {
-            throw new IllegalArgumentException("account and playerDescriptor cannot be null");
-        }
-        return getGameHelper().addUserAsPlayer(account, playerDescriptor);
-    }
-
-    @Override
-    public Player getPlayer(int accountId) {
-        return getGameHelper().getPlayer(accountId);
-    }
-
-    @JsonIgnore
-    @Override
-    public List<Player> getPlayers() {
-        return getPlayers(getGameHelper().getPlayers());
-    }
-
-    private List<Player> getPlayers(List<? extends Player> players) {
-        return Lists.newArrayList(players);
-    }
-
-    @Override
-    public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
-        getGameHelper().setAttribute(attributeType, attributeValue);
-    }
-
-    @Override
-    public Post addPost(PostEntity postEntity) throws PostValidationException {
-        postEntity.setGameId(getId());
-        postEntity.setPostType(PostType.TEXT);
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<PostEntity>> violations = validator.validate(postEntity);
-        if (!violations.isEmpty()) {
-            throw new PostValidationException(violations);
-        }
-        return gameRepository.create(postEntity);
-    }
-
-    @Override
-    public GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
-        if (!violations.isEmpty()) {
-            throw new GameEventValidationException(violations);
-        }
-        eventEntity.setGame(this);
-        GameEvent gameEvent = gameRepository.create(eventEntity);
-        events.add(eventEntity);
-        return gameEvent;
-    }
-
-    private GameHelper getGameHelper() {
-        if (gameHelper == null) {
-            gameHelper = new GameHelper(this);
-            gameHelper.setGameRepository(gameRepository);
-            gameHelper.setPlayerFactory(playerFactory);
-            gameHelper.setEventRepository(eventRepository);
-        }
-        return gameHelper;
-    }
-
-    public void setGameFactory(GameFactory gameFactory) {
-        this.gameFactory = gameFactory;
-    }
-
-    public void setGameRepository(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
-    }
-
-    public void setPlayerFactory(PlayerFactory playerFactory) {
-        this.playerFactory = playerFactory;
-    }
-
-    public void setEventRepository(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
-
-    public PlayerFactory getPlayerFactory() {
-        return playerFactory;
-    }
 }

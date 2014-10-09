@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.gamesupport.assassin;
+package com.subrosagames.subrosa.domain.game.support.assassin;
 
 import java.util.ArrayList;
 import java.util.Collections;

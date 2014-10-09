@@ -33,6 +33,13 @@ public interface Game extends GameData {
     Account getOwner();
 
     /**
+     * Set the account that owns the game.
+     *
+     * @param account owning account
+     */
+    void setOwner(Account account);
+
+    /**
      * Get the game rules.
      *
      * @return a categorized list of rules
@@ -165,4 +172,5 @@ public interface Game extends GameData {
      * @throws GameEventValidationException if the game event is invalid
      */
     GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException;
+
 }

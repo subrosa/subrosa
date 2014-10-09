@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.subrosa.api.actions.list.QueryBuilder;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
@@ -27,7 +28,6 @@ import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
@@ -52,7 +52,7 @@ public class JpaGameRepository implements GameRepository {
     private EntityManager entityManager;
 
     @Override
-    public GameEntity create(GameEntity game) throws GameValidationException {
+    public BaseGame create(BaseGame game) throws GameValidationException {
         entityManager.persist(game);
         return game;
     }
@@ -76,10 +76,10 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity get(int gameId, String... expansions) throws GameNotFoundException {
+    public BaseGame get(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
         expansions = enableExpansions(expansions);
-        GameEntity gameEntity = entityManager.find(GameEntity.class, gameId);
+        BaseGame gameEntity = entityManager.find(BaseGame.class, gameId);
         if (gameEntity == null) {
             throw new GameNotFoundException("Game for id " + gameId + " not found");
         }
@@ -87,21 +87,21 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public GameEntity update(GameEntity game) throws GameValidationException {
+    public BaseGame update(BaseGame game) throws GameValidationException {
         return entityManager.merge(game);
     }
 
     @Override
-    public GameEntity get(final String url, String... expansions) throws GameNotFoundException {
+    public BaseGame get(final String url, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
-        GameEntity gameEntity;
+        BaseGame gameEntity;
         expansions = enableExpansions(expansions);
         Map<String, Object> conditions = new HashMap<String, Object>(1) {
             {
                 put("url", url);
             }
         };
-        TypedQuery<GameEntity> query = QueryHelper.createQuery(entityManager, GameEntity.class, conditions, expansions);
+        TypedQuery<BaseGame> query = QueryHelper.createQuery(entityManager, BaseGame.class, conditions, expansions);
         try {
             gameEntity = query.getSingleResult();
         } catch (NoResultException e) {
@@ -111,10 +111,10 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<GameEntity> list(int limit, int offset, String... expansions) {
+    public List<BaseGame> list(int limit, int offset, String... expansions) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
         expansions = enableExpansions(expansions);
-        TypedQuery<GameEntity> query = entityManager.createQuery("SELECT g FROM GameEntity g", GameEntity.class);
+        TypedQuery<BaseGame> query = entityManager.createQuery("SELECT g FROM BaseGame g", BaseGame.class);
         if (limit > 0) {
             query.setMaxResults(limit);
         }
@@ -123,32 +123,32 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<GameEntity> findByCriteria(QueryCriteria<GameEntity> criteria, String... expansions) {
+    public List<BaseGame> findByCriteria(QueryCriteria<BaseGame> criteria, String... expansions) {
         expansions = enableExpansions(expansions);
-        QueryBuilder<GameEntity, TypedQuery<GameEntity>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<GameEntity>(entityManager);
-        TypedQuery<GameEntity> query = queryBuilder.getQuery(criteria);
+        QueryBuilder<BaseGame, TypedQuery<BaseGame>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<BaseGame>(entityManager);
+        TypedQuery<BaseGame> query = queryBuilder.getQuery(criteria);
         return query.getResultList();
     }
 
     @Override
-    public Long countByCriteria(QueryCriteria<GameEntity> criteria) {
-        QueryBuilder<GameEntity, TypedQuery<GameEntity>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<GameEntity>(entityManager);
+    public Long countByCriteria(QueryCriteria<BaseGame> criteria) {
+        QueryBuilder<BaseGame, TypedQuery<BaseGame>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<BaseGame>(entityManager);
         TypedQuery<Long> query = queryBuilder.countQuery(criteria);
         return query.getSingleResult();
     }
 
     @Override
-    public List<GameEntity> ownedBy(Account user) {
-        TypedQuery<GameEntity> query = entityManager.createQuery(
-                "SELECT g FROM GameEntity g WHERE g.owner = :owner", GameEntity.class);
+    public List<BaseGame> ownedBy(Account user) {
+        TypedQuery<BaseGame> query = entityManager.createQuery(
+                "SELECT g FROM BaseGame g WHERE g.owner = :owner", BaseGame.class);
         query.setParameter("owner", user);
         return query.getResultList();
     }
 
     @Override
-    public List<GameEntity> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions) {
-        String jpql = "SELECT g FROM GameEntity g ORDER BY 3959 * acos( cos(radians(:latitude)) * cos(radians(g.location.latitude)) * cos(radians(g.location.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(g.location.latitude)) ) ASC\n";
-        TypedQuery<GameEntity> query = entityManager.createQuery(jpql, GameEntity.class);
+    public List<BaseGame> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions) {
+        String jpql = "SELECT g FROM BaseGame g ORDER BY 3959 * acos( cos(radians(:latitude)) * cos(radians(g.location.latitude)) * cos(radians(g.location.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(g.location.latitude)) ) ASC\n";
+        TypedQuery<BaseGame> query = entityManager.createQuery(jpql, BaseGame.class);
         query.setParameter("latitude", location.getLatitude());
         query.setParameter("longitude", location.getLongitude());
         if (limit > 0) {
@@ -160,7 +160,7 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public int count() {
-        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(g) FROM GameEntity g", Long.class);
+        TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(g) FROM BaseGame g", Long.class);
         int count = query.getSingleResult().intValue();
         LOG.debug("Queried for game count, found {}", count);
         return count;
@@ -197,7 +197,7 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public void setGameAttribute(GameEntity gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
+    public void setGameAttribute(BaseGame gameEntity, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
         GameAttributeEntity attributeEntity = entityManager.find(GameAttributeEntity.class, new GameAttributePk(gameEntity.getId(), attributeType.name()));
         if (attributeEntity == null) {
             LOG.debug("Did not find attribute of type {} for game {}. Creating.", attributeType, gameEntity.getId());

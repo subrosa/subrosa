@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.gamesupport.assassin;
+package com.subrosagames.subrosa.domain.game.support.assassin;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.player.Player;
 
 import javax.persistence.DiscriminatorValue;
@@ -22,11 +23,14 @@ import javax.persistence.Transient;
 @JsonIgnoreProperties({ "password" })
 @Entity
 @DiscriminatorValue(AssassinGame.GAME_TYPE_ASSASSIN)
-public class AssassinGame extends GameEntity {
+public class AssassinGame extends BaseGame {
+
+    /**
+     * Game type identifier.
+     */
+    public static final String GAME_TYPE_ASSASSIN = "ASSASSIN";
 
     private static final Logger LOG = LoggerFactory.getLogger(AssassinGame.class);
-
-    public static final String GAME_TYPE_ASSASSIN = "ASSASSIN";
 
     @Transient
     private String[] requiredEvents = {
@@ -35,6 +39,9 @@ public class AssassinGame extends GameEntity {
     @Transient
     private AssignmentType assignmentType;
 
+    /**
+     * Default constructor.
+     */
     public AssassinGame() { }
 
     /**

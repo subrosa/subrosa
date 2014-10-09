@@ -3,12 +3,12 @@ package com.subrosagames.subrosa.domain.account;
 import java.util.List;
 import java.util.Map;
 
-import com.subrosagames.subrosa.domain.DomainRepository;
+import com.subrosagames.subrosa.domain.DomainObjectRepository;
 
 /**
  * Provides CRUD functionality for accounts and their subordinate entities.
  */
-public interface AccountRepository extends DomainRepository<Account, Account> {
+public interface AccountRepository extends DomainObjectRepository<Account> {
 
     /**
      * Get the account with the specified email.
