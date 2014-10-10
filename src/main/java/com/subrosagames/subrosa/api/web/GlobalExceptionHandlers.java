@@ -3,6 +3,8 @@ package com.subrosagames.subrosa.api.web;
 import java.io.EOFException;
 import java.util.EnumMap;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.validation.ConstraintViolation;
 
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.subrosa.api.notification.GeneralCode;
 import com.subrosa.api.notification.Notification;
@@ -37,6 +40,8 @@ public class GlobalExceptionHandlers {
 
     private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandlers.class);
 
+    private static final Pattern CONSTRAINT_VALUE_PATTERN = Pattern.compile("^.*\\[(.*)\\]$");
+
     /**
      * Handle {@link DomainObjectValidationException}.
      *
@@ -58,16 +63,25 @@ public class GlobalExceptionHandlers {
     }
 
     private Notification createInvalidFieldNotification(final ConstraintViolation<?> violation) {
-        final Notification notification = new Notification(
+        Notification notification = new Notification(
                 GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
-        notification.setDetails(new EnumMap<Notification.DetailKey, String>(Notification.DetailKey.class) {
-            {
-                put(Notification.DetailKey.FIELD, violation.getPropertyPath().toString());
-                put(Notification.DetailKey.CONSTRAINT, violation.getMessage());
-            }
-        });
-        LOG.debug("Global exception handler domain object constraint violation: {} => {}", violation.getPropertyPath(), violation.getMessage());
+
+        ImmutableMap.Builder<Notification.DetailKey, String> detailBuilder = new ImmutableMap.Builder<Notification.DetailKey, String>();
+        String field = violation.getPropertyPath().toString();
+        String message = violation.getMessage();
+        String value = null;
+
+        Matcher matcher = CONSTRAINT_VALUE_PATTERN.matcher(message);
+        if (matcher.matches()) {
+            message = message.replace("[" + matcher.group(1) + "]", "");
+            value = matcher.group(1);
+            detailBuilder.put(Notification.DetailKey.VALUE, value);
+        }
+        detailBuilder.put(Notification.DetailKey.FIELD, field);
+        detailBuilder.put(Notification.DetailKey.CONSTRAINT, message);
+        notification.setDetails(detailBuilder.build());
+        LOG.debug("Global exception handler domain object constraint violation: {} => {} : {}", field, message, value);
         return notification;
     }
 

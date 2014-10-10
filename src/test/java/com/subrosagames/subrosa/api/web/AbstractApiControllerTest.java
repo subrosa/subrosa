@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -29,6 +30,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
+import com.subrosagames.subrosa.util.LogResponseServletFilter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -73,6 +75,7 @@ public abstract class AbstractApiControllerTest {
                 .defaultRequest(get("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
+                .alwaysDo(MockMvcResultHandlers.print())
                 .build();
     }
 

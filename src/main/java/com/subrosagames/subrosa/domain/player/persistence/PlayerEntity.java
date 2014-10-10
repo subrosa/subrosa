@@ -2,7 +2,9 @@ package com.subrosagames.subrosa.domain.player.persistence;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import javax.annotation.Nullable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,7 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -24,8 +28,11 @@ import javax.validation.Validator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.GameRole;
@@ -56,6 +63,10 @@ public class PlayerEntity implements Player {
 
     @Column
     private String name;
+
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    @MapKey(name = "primaryKey.name")
+    private Map<String, PlayerAttribute> attributes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
@@ -90,6 +101,23 @@ public class PlayerEntity implements Player {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Map<String, String> getAttributes() {
+        if (attributes == null) {
+            return Maps.newHashMap();
+        }
+        return Maps.transformValues(attributes, new Function<PlayerAttribute, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable PlayerAttribute input) {
+                return input != null ? input.getValue() : null;
+            }
+        });
+    }
+
+    public void setAttributes(Map<String, PlayerAttribute> attributes) {
+        this.attributes = attributes;
     }
 
     public TeamEntity getTeam() {
@@ -134,7 +162,6 @@ public class PlayerEntity implements Player {
 
     @Override
     public Target getTarget(final int targetId) throws TargetNotFoundException {
-        List<? extends Target> targets = getTargets();
         Collection<? extends Target> filtered = Collections2.filter(targets, new Predicate<Target>() {
             @Override
             public boolean apply(Target input) {

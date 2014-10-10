@@ -79,9 +79,11 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * Get all of the players enrolled in the specified game.
      *
      * @param gameId game id
+     * @param limit number of players to return
+     * @param offset offset into list
      * @return list of players
      */
-    List<PlayerEntity> getPlayersForGame(int gameId);
+    List<PlayerEntity> getPlayersForGame(int gameId, Integer limit, Integer offset);
 
     /**
      * Set an attribute of a game.

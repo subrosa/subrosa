@@ -9,7 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.util.validation.constraints.DateRange;
+import com.subrosagames.subrosa.domain.validation.constraints.DateRange;
 
 /**
  * Defines the attributes associated with a game along with their validation constraints.

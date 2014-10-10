@@ -20,7 +20,7 @@ import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.AccountActivation;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
-import com.subrosagames.subrosa.api.dto.Registration;
+import com.subrosagames.subrosa.api.dto.RegistrationRequest;
 import com.subrosagames.subrosa.domain.account.Accolade;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
@@ -51,20 +51,20 @@ public class ApiAccountController {
     /**
      * Get paginated list of accounts.
      *
-     * @param limit  limit
-     * @param offset offset
-     * @param expand fields to expand
+     * @param limitParam  limitParam
+     * @param offsetParam offsetParam
+     * @param expand      fields to expand
      * @return paginated list of accounts
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<Account> listAccounts(@RequestParam(value = "limit", required = false) Integer limit,
-                                               @RequestParam(value = "offset", required = false) Integer offset,
+    public PaginatedList<Account> listAccounts(@RequestParam(value = "limitParam", required = false) Integer limitParam,
+                                               @RequestParam(value = "offsetParam", required = false) Integer offsetParam,
                                                @RequestParam(value = "expand", required = false) String expand)
     {
-        LOG.debug("Getting game list with limit {} and offset {}.", limit, offset);
-        limit = ObjectUtils.defaultIfNull(limit, 10);
-        offset = ObjectUtils.defaultIfNull(offset, 0);
+        LOG.debug("Getting game list with limitParam {} and offsetParam {}.", limitParam, offsetParam);
+        int limit = ObjectUtils.defaultIfNull(limitParam, 10);
+        int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         if (StringUtils.isEmpty(expand)) {
             return accountFactory.getAccounts(limit, offset);
         } else {
@@ -97,7 +97,7 @@ public class ApiAccountController {
     /**
      * Create an {@link Account} from the provided parameters.
      *
-     * @param registration the registration parameters.
+     * @param registrationRequest the registration parameters.
      * @return {@link Account}
      * @throws BadRequestException        if no POST body is supplied
      * @throws AccountValidationException if account data is not valid
@@ -106,24 +106,24 @@ public class ApiAccountController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Account createAccount(@RequestBody(required = false) Registration registration)
+    public Account createAccount(@RequestBody(required = false) RegistrationRequest registrationRequest)
             throws AccountValidationException, BadRequestException, EmailConflictException
     {
         LOG.debug("Creating new account");
-        if (registration == null) {
+        if (registrationRequest == null) {
             throw new BadRequestException("No POST body supplied");
         }
-        if (registration.getAccount() == null) {
+        if (registrationRequest.getAccount() == null) {
             throw new BadRequestException("Missing account information creating account");
         }
         // TODO put some constraints on password
-        if (StringUtils.isEmpty(registration.getPassword())) {
+        if (StringUtils.isEmpty(registrationRequest.getPassword())) {
             throw new BadRequestException("Missing password creating account");
         }
-        AccountDescriptor accountDescriptor = registration.getAccount();
+        AccountDescriptor accountDescriptor = registrationRequest.getAccount();
         accountDescriptor.setActivated(Optional.of(false));
         Account account = accountFactory.forDto(accountDescriptor);
-        return account.create(registration.getPassword());
+        return account.create(registrationRequest.getPassword());
     }
 
     /**
@@ -149,17 +149,20 @@ public class ApiAccountController {
     /**
      * Activate the specified account with the given activation details.
      *
-     * @param accountId account id
+     * @param accountId         account id
      * @param accountActivation activation details
      * @return activated account
-     * @throws AccountNotFoundException if account does not exist
-     * @throws BadRequestException if bad activation details are supplied
+     * @throws AccountNotFoundException   if account does not exist
+     * @throws BadRequestException        if bad activation details are supplied
+     * @throws TokenInvalidException      if activation token is not valid
+     * @throws AccountValidationException if account is invalid for activation
      */
     @RequestMapping(value = { "/{accountId}/activate", "/{accountId}/activate/" }, method = RequestMethod.POST)
     @ResponseBody
     public Account activateAccount(@PathVariable("accountId") Integer accountId,
                                    @RequestBody(required = false) AccountActivation accountActivation)
-            throws AccountNotFoundException, BadRequestException, TokenInvalidException, AccountValidationException {
+            throws AccountNotFoundException, BadRequestException, TokenInvalidException, AccountValidationException
+    {
         LOG.debug("Activating account with ID {} using token {}", accountId, accountActivation);
         if (accountActivation == null) {
             throw new BadRequestException("No POST body supplied");

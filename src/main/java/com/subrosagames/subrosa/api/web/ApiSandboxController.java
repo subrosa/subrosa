@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.BaseGame;
@@ -69,26 +70,25 @@ public class ApiSandboxController {
 
         Account account1 = new Account();
         account1.setId(3);
-        PlayerDescriptor playerDescriptor1 = new PlayerDescriptor();
-        playerDescriptor1.setName("player1");
+        JoinGameRequest joinGameRequest1 = new JoinGameRequest();
+        joinGameRequest1.setName("player1");
         Account account2 = new Account();
         account2.setId(4);
-        PlayerDescriptor playerDescriptor2 = new PlayerDescriptor();
-        playerDescriptor2.setName("player2");
+        JoinGameRequest joinGameRequest2 = new JoinGameRequest();
+        joinGameRequest2.setName("player2");
         Account account3 = new Account();
         account3.setId(5);
-        PlayerDescriptor playerDescriptor3 = new PlayerDescriptor();
-        playerDescriptor1.setName("player1");
+        JoinGameRequest joinGameRequest3 = new JoinGameRequest();
+        joinGameRequest3.setName("player3");
         Account account4 = new Account();
         account4.setId(6);
-        PlayerDescriptor playerDescriptor4 = new PlayerDescriptor();
-        playerDescriptor1.setName("player1");
+        JoinGameRequest joinGameRequest4 = new JoinGameRequest();
+        joinGameRequest4.setName("player4");
 
-
-        game.addUserAsPlayer(account1, playerDescriptor1);
-        game.addUserAsPlayer(account2, playerDescriptor2);
-        game.addUserAsPlayer(account3, playerDescriptor3);
-        game.addUserAsPlayer(account4, playerDescriptor4);
+        game.joinGame(account1, joinGameRequest1);
+        game.joinGame(account2, joinGameRequest2);
+        game.joinGame(account3, joinGameRequest3);
+        game.joinGame(account4, joinGameRequest4);
 
         return gameFactory.getGame(game.getId());
     }

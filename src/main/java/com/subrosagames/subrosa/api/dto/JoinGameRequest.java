@@ -2,13 +2,15 @@ package com.subrosagames.subrosa.api.dto;
 
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
 /**
- * Transport layer model for player information.
+ * Encapsulates information necessary to join a game.
  */
-public class PlayerDescriptor {
+public class JoinGameRequest {
 
     private String name;
-    private Map<String, String> attributes;
+    private Map<String, String> attributes = Maps.newHashMap();
 
     public String getName() {
         return name;
@@ -18,12 +20,11 @@ public class PlayerDescriptor {
         this.name = name;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
-
     public Map<String, String> getAttributes() {
         return attributes;
     }
-}
 
+    public void setAttributes(Map<String, String> attributes) {
+        this.attributes = attributes;
+    }
+}

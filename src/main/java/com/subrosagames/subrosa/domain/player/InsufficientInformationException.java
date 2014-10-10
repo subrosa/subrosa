@@ -3,18 +3,17 @@ package com.subrosagames.subrosa.domain.player;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
- * Exception thrown when player information is invalid.
+ * Player validation involving insufficient user information.
  */
-public class PlayerValidationException extends DomainObjectValidationException {
+public class InsufficientInformationException extends PlayerValidationException {
 
     /**
      * Default constructor.
      */
-    public PlayerValidationException() {
+    public InsufficientInformationException() {
     }
 
     /**
@@ -22,7 +21,7 @@ public class PlayerValidationException extends DomainObjectValidationException {
      *
      * @param s message
      */
-    public PlayerValidationException(String s) {
+    public InsufficientInformationException(String s) {
         super(s);
     }
 
@@ -32,7 +31,7 @@ public class PlayerValidationException extends DomainObjectValidationException {
      * @param s         message
      * @param throwable cause
      */
-    public PlayerValidationException(String s, Throwable throwable) {
+    public InsufficientInformationException(String s, Throwable throwable) {
         super(s, throwable);
     }
 
@@ -41,7 +40,7 @@ public class PlayerValidationException extends DomainObjectValidationException {
      *
      * @param throwable cause
      */
-    public PlayerValidationException(Throwable throwable) {
+    public InsufficientInformationException(Throwable throwable) {
         super(throwable);
     }
 
@@ -50,7 +49,7 @@ public class PlayerValidationException extends DomainObjectValidationException {
      *
      * @param violations constraint violations
      */
-    public PlayerValidationException(Set<ConstraintViolation<PlayerEntity>> violations) {
+    public InsufficientInformationException(Set<ConstraintViolation<PlayerEntity>> violations) {
         super(violations);
     }
 }

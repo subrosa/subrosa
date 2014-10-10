@@ -1,6 +1,6 @@
 package com.subrosa.api.notification;
 
-import java.util.EnumMap;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +15,7 @@ public class Notification {
     private Code code;
     private Severity severity;
     private String text;
-    private EnumMap<DetailKey, String> details;
+    private Map<DetailKey, String> details;
 
     /**
      * Constructs an empty notification.
@@ -93,7 +93,7 @@ public class Notification {
     @JsonSerialize(
             include = JsonSerialize.Inclusion.NON_NULL
     )
-    public EnumMap<DetailKey, String> getDetails() {
+    public Map<DetailKey, String> getDetails() {
         return details;
     }
 
@@ -102,7 +102,7 @@ public class Notification {
      *
      * @param details the collection of notification details
      */
-    public void setDetails(EnumMap<DetailKey, String> details) {
+    public void setDetails(Map<DetailKey, String> details) {
         this.details = details;
     }
 
@@ -145,7 +145,11 @@ public class Notification {
         /**
          * Used when specifying constraint violated.
          */
-        CONSTRAINT("constraint");
+        CONSTRAINT("constraint"),
+        /**
+         * Used when specifying a constraint value.
+         */
+        VALUE("value");
 
         private final String value;
 

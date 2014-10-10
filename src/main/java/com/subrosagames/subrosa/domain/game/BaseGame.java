@@ -22,13 +22,14 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
+import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -39,11 +40,18 @@ import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
 import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
+import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Provides common functionality for games.
@@ -59,9 +67,6 @@ public class BaseGame extends GameEntity implements Game {
     @JsonIgnore
     @Transient
     private GameRepository gameRepository;
-    @JsonIgnore
-    @Transient
-    private EventRepository eventRepository;
     @JsonIgnore
     @Transient
     private PlayerFactory playerFactory;
@@ -187,22 +192,34 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException {
-        if (account == null || playerDescriptor == null) {
-            throw new IllegalArgumentException("account and playerDescriptor cannot be null");
-        }
+    public Player joinGame(final Account account, final JoinGameRequest joinGameRequest) throws PlayerValidationException {
+        checkNotNull(account, "Cannot join game with null account");
+        checkNotNull(joinGameRequest, "Cannot join game with null join game request");
+
+        assertRestrictionsSatisfied(account); // throws PlayRestrictedException
+        assertRequiredAttributesSet(joinGameRequest); // throws InsufficientInformationException
+
+        PlayerDescriptor playerDescriptor = new PlayerDescriptor();
+        playerDescriptor.setName(joinGameRequest.getName());
+        playerDescriptor.setAttributes(joinGameRequest.getAttributes());
         return playerFactory.createPlayerForGame(this, account, playerDescriptor);
     }
 
     @Override
-    public Player getPlayer(int accountId) {
+    public Player getPlayerForUser(int accountId) {
         return gameRepository.getPlayerForUserAndGame(accountId, getId());
     }
 
     @JsonIgnore
     @Override
+    public List<Player> getPlayers(Integer limit, Integer offset) {
+        return getPlayers(gameRepository.getPlayersForGame(getId(), limit, offset));
+    }
+
+    @JsonIgnore
+    @Override
     public List<Player> getPlayers() {
-        return getPlayers(gameRepository.getPlayersForGame(getId()));
+        return getPlayers(0, 0);
     }
 
     private List<Player> getPlayers(List<? extends Player> players) {
@@ -228,8 +245,8 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public GameEvent addEvent(GameEventDescriptor gameEventDescriptor) throws GameEventValidationException {
-        EventEntity eventEntity = gameFactory.forDto(gameEventDescriptor);
+    public GameEvent addEvent(GameEventDescriptor eventDescriptor) throws GameEventValidationException {
+        EventEntity eventEntity = gameFactory.forDto(eventDescriptor);
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
         if (!violations.isEmpty()) {
@@ -261,6 +278,11 @@ public class BaseGame extends GameEntity implements Game {
         return gameRepository.update(eventEntity);
     }
 
+    @Override
+    public Player getPlayer(Integer playerId) throws PlayerNotFoundException {
+        return playerFactory.getPlayer(this, playerId);
+    }
+
     public void setGameFactory(GameFactory gameFactory) {
         this.gameFactory = gameFactory;
     }
@@ -273,20 +295,38 @@ public class BaseGame extends GameEntity implements Game {
         this.playerFactory = playerFactory;
     }
 
-    public void setEventRepository(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
-
-    public PlayerFactory getPlayerFactory() {
-        return playerFactory;
-    }
-
-    public RuleRepository getRuleRepository() {
-        return ruleRepository;
-    }
-
     public void setRuleRepository(RuleRepository ruleRepository) {
         this.ruleRepository = ruleRepository;
+    }
+
+    private void assertRequiredAttributesSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {
+        boolean failed = false;
+        Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
+        for (RequiredAttribute attribute : getRequiredAttributes()) {
+            if (!joinGameRequest.getAttributes().containsKey(attribute.getName())) {
+                failed = true;
+                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", attribute.getName());
+                constraints.add(constraint);
+            }
+        }
+        if (failed) {
+            throw new InsufficientInformationException(constraints);
+        }
+    }
+
+    private void assertRestrictionsSatisfied(Account account) throws PlayRestrictedException {
+        boolean failed = false;
+        Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
+        for (Restriction restriction : getRestrictions()) {
+            if (!restriction.satisfied(account)) {
+                failed = true;
+                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>(restriction.message(), restriction.field());
+                constraints.add(constraint);
+            }
+        }
+        if (failed) {
+            throw new PlayRestrictedException(constraints);
+        }
     }
 
 }

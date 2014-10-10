@@ -29,9 +29,6 @@ import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
-import com.subrosagames.subrosa.domain.game.persistence.TriggeredEventEntity;
-import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -179,15 +176,21 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public List<PlayerEntity> getPlayersForGame(int gameId) {
+    public List<PlayerEntity> getPlayersForGame(int gameId, Integer limit, Integer offset) {
         String jpql = "SELECT p "
                 + " FROM PlayerEntity p "
                 + "     JOIN p.team t "
                 + "     JOIN t.game g "
                 + " WHERE g.id = :gameId";
-        return entityManager.createQuery(jpql, PlayerEntity.class)
-                .setParameter("gameId", gameId)
-                .getResultList();
+        TypedQuery<PlayerEntity> typedQuery = entityManager.createQuery(jpql, PlayerEntity.class)
+                .setParameter("gameId", gameId);
+        if (limit != null && limit > 0) {
+            typedQuery.setMaxResults(limit);
+        }
+        if (offset != null && offset > 0) {
+            typedQuery.setFirstResult(offset);
+        }
+        return typedQuery.getResultList();
     }
 
     @Override

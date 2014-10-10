@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.domain.game.BaseGame;
+import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
@@ -63,6 +64,9 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Autowired
     private GameRepository gameRepository;
+
+    @Autowired
+    private GameFactory gameFactory;
 
     @Test
     public void testGameRetrieval() throws Exception {
@@ -147,6 +151,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         });
         BaseGame entity1 = gameRepository.get(active1, "events");
         entity1.setGameRepository(gameRepository);
+        entity1.setGameFactory(gameFactory);
         addEventToGame(entity1, "registrationStart", new Date(timeDaysInFuture(-1)));
         addEventToGame(entity1, "registrationEnd", new Date(timeDaysInFuture(1)));
         String active2 = createGame(new HashMap<String, String>() {
@@ -158,6 +163,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         });
         BaseGame entity2 = gameRepository.get(active2, "events");
         entity2.setGameRepository(gameRepository);
+        entity2.setGameFactory(gameFactory);
         addEventToGame(entity2, "registrationStart", new Date(timeDaysInFuture(-100)));
         addEventToGame(entity2, "registrationEnd", new Date(timeDaysInFuture(100)));
         String inactive1 = createGame(new HashMap<String, String>() {
@@ -171,6 +177,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         });
         BaseGame entity3 = gameRepository.get(inactive1, "events");
         entity3.setGameRepository(gameRepository);
+        entity3.setGameFactory(gameFactory);
         addEventToGame(entity3, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(entity3, "registrationEnd", new Date(timeDaysInFuture(5)));
 
@@ -445,6 +452,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         final Long gameEnd = timeDaysInFuture(30);
         BaseGame gameEntity = gameRepository.get(url, "events");
         gameEntity.setGameRepository(gameRepository);
+        gameEntity.setGameFactory(gameFactory);
         addEventToGame(gameEntity, "registrationStart", new Date(registrationStart));
         addEventToGame(gameEntity, "registrationEnd", new Date(registrationEnd));
         addEventToGame(gameEntity, "gameStart", new Date(gameStart));
@@ -584,12 +592,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
             }
         });
 
-        BaseGame gameEntity = gameRepository.get(url, "events");
-        gameEntity.setGameRepository(gameRepository);
-        addEventToGame(gameEntity, "registrationStart", new Date(timeDaysInFuture(1)));
-        addEventToGame(gameEntity, "registrationEnd", new Date(timeDaysInFuture(2)));
-        addEventToGame(gameEntity, "gameStart", new Date(timeDaysInFuture(2)));
-        addEventToGame(gameEntity, "gameEnd", new Date(timeDaysInFuture(3)));
+        BaseGame baseGame = gameRepository.get(url, "events");
+        baseGame.setGameRepository(gameRepository);
+        baseGame.setGameFactory(gameFactory);
+        addEventToGame(baseGame, "registrationStart", new Date(timeDaysInFuture(1)));
+        addEventToGame(baseGame, "registrationEnd", new Date(timeDaysInFuture(2)));
+        addEventToGame(baseGame, "gameStart", new Date(timeDaysInFuture(2)));
+        addEventToGame(baseGame, "gameEnd", new Date(timeDaysInFuture(3)));
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
