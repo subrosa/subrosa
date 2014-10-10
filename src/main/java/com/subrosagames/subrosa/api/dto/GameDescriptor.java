@@ -2,11 +2,13 @@ package com.subrosagames.subrosa.api.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.RequiredAttribute;
 import com.subrosagames.subrosa.domain.image.Image;
 
 /**
@@ -24,7 +26,7 @@ public class GameDescriptor { //implements GameData {
     private Optional<Integer> maximumTeamSize;
     private Optional<String> password;
     private Optional<Image> image;
-    private Optional<Integer> minimumAge;
+    private Optional<Set<String>> requiredAttributes;
     private Optional<Date> gameStart;
     private Optional<Date> gameEnd;
     private Optional<Date> registrationStart;
@@ -111,12 +113,12 @@ public class GameDescriptor { //implements GameData {
         this.image = image;
     }
 
-    public Optional<Integer> getMinimumAge() {
-        return minimumAge;
+    public Optional<Set<String>> getRequiredAttributes() {
+        return requiredAttributes;
     }
 
-    public void setMinimumAge(Optional<Integer> minimumAge) {
-        this.minimumAge = minimumAge;
+    public void setRequiredAttributes(Optional<Set<String>> requiredAttributes) {
+        this.requiredAttributes = requiredAttributes;
     }
 
     public Optional<Date> getGameStart() {
@@ -172,12 +174,12 @@ public class GameDescriptor { //implements GameData {
                 .add("maximumTeamSize", maximumTeamSize)
                 .add("password", password)
                 .add("image", image)
-                .add("minimumAge", minimumAge)
+                .add("requiredAttributes", requiredAttributes)
                 .add("gameStart", gameStart)
                 .add("gameEnd", gameEnd)
                 .add("registrationStart", registrationStart)
                 .add("registrationEnd", registrationEnd)
+                .add("status", status)
                 .toString();
     }
-
 }

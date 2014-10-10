@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain;
 
 import java.lang.reflect.InvocationTargetException;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**
  * Base class for domain object factories.
@@ -15,7 +15,7 @@ public abstract class BaseDomainObjectFactory {
      * @param entity domain object
      */
     protected void copyProperties(Object dto, Object entity) {
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(entity, dto);
         } catch (IllegalAccessException e) {

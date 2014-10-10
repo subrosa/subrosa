@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -32,6 +33,7 @@ import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
@@ -313,6 +315,41 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
+    }
+
+    @Test
+    public void testCreateAndUpdateGameWithRequiredAttributes() throws Exception {
+        String response = mockMvc.perform(
+                post("/game")
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("name", "attribute tester")
+                                .add("gameType", "SCAVENGER")
+                                .add("requiredAttributes", Lists.newArrayList("first", "second"))
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("first", "second")))
+                .andReturn().getResponse().getContentAsString();
+        String url = JsonPath.compile("$.url").read(response);
+
+        mockMvc.perform(
+                get("/game/{url}", url))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("first", "second")));
+
+        mockMvc.perform(
+                put("/game/{url}", url)
+                        .with(user("game@owner.com"))
+                        .content(jsonBuilder()
+                                .add("requiredAttributes", Lists.newArrayList("this", "that", "the other"))
+                                .build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("this", "that", "the other")));
+
+        mockMvc.perform(
+                get("/game/{url}", url))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("this", "that", "the other")));
     }
 
     @Test

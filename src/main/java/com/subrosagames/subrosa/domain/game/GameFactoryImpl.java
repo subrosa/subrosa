@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
@@ -9,16 +10,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.game.event.EventRepository;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.RequiredAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.support.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
@@ -137,23 +140,21 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public BaseGame forDto(GameDescriptor gameDescriptor) throws GameValidationException {
-        GameType gameType;
-        if (gameDescriptor.getGameType() == null) {
-            gameType = null;
-        } else {
-            gameType = gameDescriptor.getGameType().orNull();
+        GameType gameType = gameDescriptor.getGameType() == null ? null : gameDescriptor.getGameType().orNull();
+        BaseGame game = GameTypeToEntityMapper.forType(gameType);
+
+        GameDescriptorTranslator.ingest(game, gameDescriptor);
+
+        if (game.getUrl() == null) {
+            game.setUrl(generateUrl());
         }
-        BaseGame gameEntity = GameTypeToEntityMapper.forType(gameType);
-        copyProperties(gameDescriptor, gameEntity);
-        if (gameEntity.getUrl() == null) {
-            gameEntity.setUrl(generateUrl());
-        }
-        if (gameEntity.getTimezone() == null) {
+        if (game.getTimezone() == null) {
             // TODO set timezone for realz
-            gameEntity.setTimezone("America/New_York");
+            game.setTimezone("America/New_York");
         }
-        injectDependencies(gameEntity);
-        return gameEntity;
+
+        injectDependencies(game);
+        return game;
     }
 
     private String generateUrl() {
@@ -178,4 +179,5 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     public List<Zone> getGameZones(String gameUrl) throws GameNotFoundException {
         return gameRepository.getZonesForGame(gameUrl);
     }
+
 }

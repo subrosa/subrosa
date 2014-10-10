@@ -21,7 +21,7 @@ import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
  */
 @Entity
 @Table(name = "required_attribute")
-class RequiredAttributeEntity extends BaseEntity implements RequiredAttribute {
+public class RequiredAttributeEntity extends BaseEntity implements RequiredAttribute {
 
     @Id
     @SequenceGenerator(name = "requiredAttributeSeq", sequenceName = "required_attribute_required_attribute_id_seq")

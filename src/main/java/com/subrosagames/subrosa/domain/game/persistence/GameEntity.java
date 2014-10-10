@@ -57,6 +57,7 @@ import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Persisted entity for a game.
@@ -183,8 +184,14 @@ public class GameEntity extends BaseEntity {
     @OneToMany(targetEntity = RestrictionEntity.class, mappedBy = "game")
     private Set<Restriction> restrictions;
 
-    @OneToMany(targetEntity = RequiredAttributeEntity.class, mappedBy = "game", fetch = FetchType.EAGER)
-    private Set<RequiredAttribute> requiredAttributes;
+    @OneToMany(
+            targetEntity = RequiredAttributeEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private Set<RequiredAttribute> requiredAttributes = Sets.newHashSet();
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
@@ -437,8 +444,8 @@ public class GameEntity extends BaseEntity {
         return requiredAttributes;
     }
 
-    public void setRequiredAttributes(Set<RequiredAttribute> requiredAttributes) {
-        this.requiredAttributes = requiredAttributes;
+    public void addRequiredAttribute(RequiredAttribute requiredAttribute) {
+        requiredAttributes.add(requiredAttribute);
     }
 
     public Date getGameStart() {

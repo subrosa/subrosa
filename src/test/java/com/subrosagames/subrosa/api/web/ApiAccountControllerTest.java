@@ -33,7 +33,7 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountControllerTest extends AbstractApiControllerTest {
 
-    // CHECKSTYLE-OFF JavadocMethod
+    // CHECKSTYLE-OFF: JavadocMethod
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountControllerTest.class);
 
@@ -254,6 +254,6 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.activated").value(true));
     }
 
-    // CHECKSTYLE-ON JavadocMethod
+    // CHECKSTYLE-ON: JavadocMethod
 
 }

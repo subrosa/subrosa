@@ -53,6 +53,7 @@ public class MockGoogleGeocoder extends GoogleGeocoder {
      * Enumeration of address component types.
      */
     public static enum Component {
+        // CHECKSTYLE-OFF: JavadocVariable
         FULL_ADDRESS
                 {
                     @Override
@@ -116,6 +117,7 @@ public class MockGoogleGeocoder extends GoogleGeocoder {
                         result.getGeometry().getLocation().setLng(new BigDecimal(value));
                     }
                 };
+        // CHECKSTYLE-ON: JavadocVariable
 
         private static GeocoderAddressComponent newAddressComponent(String value, List<String> types) {
             GeocoderAddressComponent component = new GeocoderAddressComponent();

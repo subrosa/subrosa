@@ -35,6 +35,7 @@ import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.RequiredAttributeEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
@@ -49,7 +50,7 @@ import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -117,14 +118,8 @@ public class BaseGame extends GameEntity implements Game {
         gameDescriptor.setUrl(Optional.of(getUrl()));
         gameDescriptor.setGameType(Optional.of(getGameType()));
 
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
-        try {
-            beanCopier.copyProperties(this, gameDescriptor);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        }
+        GameDescriptorTranslator.ingest(this, gameDescriptor);
+
         assertValid();
         return this;
     }
@@ -262,7 +257,7 @@ public class BaseGame extends GameEntity implements Game {
         // read-only fields
         eventDescriptor.setId(eventId);
 
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(eventEntity, eventDescriptor);
         } catch (IllegalAccessException e) {
