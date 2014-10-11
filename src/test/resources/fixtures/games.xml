@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <account account_id="10000" activated="true" email="new@user.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <account account_id="10001" activated="true" email="game@owner.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <account account_id="10002" activated="true" email="player1@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <account account_id="10003" activated="true" email="player2@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+  <account account_id="10000" activated="true" email="new@user.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+           dob="1980-01-01"/>
+  <account account_id="10001" activated="true" email="game@owner.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+           dob="1980-01-01"/>
+  <account account_id="10002" activated="true" email="player1@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+           dob="1980-01-01"/>
+  <account account_id="10003" activated="true" email="player2@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+           dob="1980-01-01"/>
+  <account account_id="10004" activated="true" email="young@player.com" password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+           dob="2000-01-01"/>
 
-  <game game_id="11111" owner_id="10001" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
+  <game game_id="1" owner_id="10001" name="Fun Times!" url="fun_times" game_type="ASSASSIN"/>
 
-  <game game_id="22222" owner_id="10001" name="Fun Times!" url="with_start" game_type="ASSASSIN"/>
-  <!--<lifecycle_event event_id="1" game_id="22222" event_type="SCHEDULED" event_class="gameStart"/>-->
-  <!--<scheduled_event event_id="1" event_date="2015-01-01"/>-->
-  <lifecycle_event event_id="1" event_type="SCHEDULED" game_id="22222" event_class="gameStart" event_date="2015-01-01"/>
+  <game game_id="2" owner_id="10001" name="Fun Times!" url="with_start" game_type="ASSASSIN"/>
+  <lifecycle_event event_id="1" event_type="SCHEDULED" game_id="2" event_class="gameStart" event_date="2015-01-01"/>
 
-  <game game_id="33333" owner_id="10001" name="Fun Times!" url="fun_times3" game_type="ASSASSIN"/>
-  <game game_id="44444" owner_id="10001" name="Fun Times!" url="fun_times4" game_type="ASSASSIN"/>
-  <game game_id="55555" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
-  <game game_id="66666" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>
-  <game game_id="77777" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
-  <game game_id="88888" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>
-  <game game_id="99999" owner_id="10001" name="Fun Times!" url="fun_times9" game_type="ASSASSIN"/>
-  <game game_id="10000" owner_id="10001" name="Fun Times!" url="fun_times10" game_type="ASSASSIN"/>
-  <game game_id="10001" owner_id="10001" name="Fun Times!" url="fun_times11" game_type="ASSASSIN"/>
-  <game game_id="10002" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
+  <game game_id="3" owner_id="10001" name="Fun Times!" url="must_be_18" game_type="ASSASSIN"/>
+  <restriction restriction_id="1" game_id="3" type="AGE" value="18"/>
 
-  <team team_id="10000" game_id="11111"/>
-  <team team_id="10001" game_id="11111"/>
-  <player player_id="10000" team_id="10000" account_id="10002" name="peter" kill_code="12345" game_role="PLAYER"/>
-  <player player_id="10001" team_id="10001" account_id="10003" name="paul" kill_code="12345" game_role="PLAYER"/>
-  <history history_id="10000" game_id="11111" history_type="KILL" assassin_id="10000" victim_id="10001" obituary="Tom got capped"/>
+  <game game_id="4" owner_id="10001" name="Fun Times!" url="last_wish_required" game_type="ASSASSIN"/>
+  <restriction restriction_id="2" game_id="4" type="AGE" value="18"/>
+  <required_attribute required_attribute_id="1" game_id="4" name="Last Wish"/>
 
-  <post post_id="10000" game_id="11111" post_type="TEXT" account_id="10001" content="This is a message"/>
-  <post post_id="10001" game_id="11111" post_type="KILL_EVENT" history_id="10000" account_id="10001" content="This is a message"/>
+  <game game_id="5" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
+  <game game_id="6" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>
+  <game game_id="7" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
+  <game game_id="8" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>
+  <game game_id="9" owner_id="10001" name="Fun Times!" url="fun_times9" game_type="ASSASSIN"/>
+  <game game_id="100" owner_id="10001" name="Fun Times!" url="fun_times10" game_type="ASSASSIN"/>
+  <game game_id="101" owner_id="10001" name="Fun Times!" url="fun_times11" game_type="ASSASSIN"/>
+  <game game_id="102" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
+
+  <team team_id="100" game_id="1"/>
+  <team team_id="101" game_id="1"/>
+  <player player_id="10" team_id="100" account_id="10002" name="peter" kill_code="12345" game_role="PLAYER"/>
+  <player player_id="11" team_id="101" account_id="10003" name="paul" kill_code="12345" game_role="PLAYER"/>
+  <history history_id="1" game_id="1" history_type="KILL" assassin_id="10" victim_id="11" obituary="Peter got capped"/>
+
+  <post post_id="1" game_id="1" post_type="TEXT" account_id="10001" content="This is a message"/>
+  <post post_id="2" game_id="1" post_type="KILL_EVENT" history_id="1" account_id="10001" content="This is a message"/>
 
 </dataset>

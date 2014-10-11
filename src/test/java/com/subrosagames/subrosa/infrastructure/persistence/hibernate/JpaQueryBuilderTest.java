@@ -47,6 +47,8 @@ import static org.junit.Assert.assertThat;
  */
 public class JpaQueryBuilderTest {
 
+    // CHECKSTYLE-OFF: JavadocMethod
+
     private static final Logger LOG = LoggerFactory.getLogger(JpaQueryBuilderTest.class);
 
     private EntityManagerFactory entityManagerFactory;
@@ -439,4 +441,5 @@ public class JpaQueryBuilderTest {
         }
     }
 
+    // CHECKSTYLE-ON: JavadocMethod
 }

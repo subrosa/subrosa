@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -47,24 +48,31 @@ public class ApiGameEventController {
     /**
      * Get a list of {@link com.subrosagames.subrosa.domain.game.event.GameHistory}s for the specified game.
      *
-     * @param gameUrl the game
-     * @param limit   maximum number of {@link Game}s to return.
-     * @param offset  offset into the list.
-     * @return a PaginatedList of {@link GameEvent}s.
+     * @param gameUrl     the game
+     * @param limitParam  maximum number of {@link GameEvent}s to return.
+     * @param offsetParam offset into the list.
+     * @return a {@link PaginatedList} of {@link GameEvent}s.
+     * @throws GameNotFoundException     if game is not found
+     * @throws NotAuthenticatedException if request is not authenticated
+     * @throws NotAuthorizedException    if user does not have permissions list events
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<GameEvent> listEvents(@PathVariable("gameUrl") String gameUrl,
-                                               @RequestParam(value = "limit", required = false) Integer limit,
-                                               @RequestParam(value = "offset", required = false) Integer offset)
-            throws GameNotFoundException, NotAuthenticatedException
+                                               @RequestParam(value = "limitParam", required = false) Integer limitParam,
+                                               @RequestParam(value = "offsetParam", required = false) Integer offsetParam)
+            throws GameNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game events.");
         }
-        limit = ObjectUtils.defaultIfNull(limit, 0);
-        offset = ObjectUtils.defaultIfNull(offset, 0);
         Game game = gameFactory.getGame(gameUrl, "events");
+        if (!SecurityHelper.getAuthenticatedUser().getId().equals(game.getOwner().getId())) {
+            throw new NotAuthorizedException("Incorrect permissions.");
+        }
+
+        int limit = ObjectUtils.defaultIfNull(limitParam, 0);
+        int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         List<GameEvent> events = game.getEvents();
         if (CollectionUtils.isEmpty(events)) {
             return new PaginatedList<GameEvent>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
@@ -77,12 +85,14 @@ public class ApiGameEventController {
     }
 
     /**
-     * Get a {@link com.subrosagames.subrosa.domain.game.event.GameEvent}.
+     * Get a {@link GameEvent}.
      *
      * @param gameUrl the game gameUrl
      * @param eventId the game event id
      * @throws GameNotFoundException      if game is not found
      * @throws GameEventNotFoundException if game event is not found
+     * @throws NotAuthenticatedException  if request is not authenticated
+     * @throws NotAuthorizedException     if user does not have permissions to update event
      */
     @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.GET)
     @ResponseBody
@@ -106,15 +116,23 @@ public class ApiGameEventController {
      *
      * @param gameUrl             game identifier
      * @param gameEventDescriptor description of game event
+     * @param response            http servlet response
      * @return game event
+     * @throws GameNotFoundException        if game is not found
+     * @throws GameEventValidationException if game event is invalid
+     * @throws NotAuthenticatedException    if request is not authenticated
+     * @throws NotAuthorizedException       if user does not have permissions to update event
+     * @throws BadRequestException          if event information is not supplied
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     @Transactional
     public GameEvent createEvent(@PathVariable("gameUrl") String gameUrl,
-                                 @RequestBody(required = false) GameEventDescriptor gameEventDescriptor)
-            throws GameNotFoundException, NotAuthenticatedException, BadRequestException, GameEventValidationException, NotAuthorizedException
+                                 @RequestBody(required = false) GameEventDescriptor gameEventDescriptor,
+                                 HttpServletResponse response)
+            throws GameNotFoundException, GameEventValidationException,
+            NotAuthenticatedException, NotAuthorizedException, BadRequestException
     {
         if (gameEventDescriptor == null) {
             throw new BadRequestException("No POST body supplied");
@@ -127,7 +145,9 @@ public class ApiGameEventController {
             throw new NotAuthorizedException("Unauthenticated attempt to get game event.");
         }
         LOG.debug("Creating new event for game {}: {}", game.getUrl(), gameEventDescriptor);
-        return game.addEvent(gameFactory.forDto(gameEventDescriptor));
+        GameEvent gameEvent = game.addEvent(gameEventDescriptor);
+        response.setHeader("Location", "/game/" + gameUrl + "/event/" + gameEvent.getId());
+        return gameEvent;
     }
 
     /**
@@ -136,16 +156,24 @@ public class ApiGameEventController {
      * @param gameUrl             game id
      * @param gameEventDescriptor game event descriptor
      * @return updated game event
-     * @throws GameNotFoundException      if game is not found
-     * @throws GameEventNotFoundException if game event is not found
+     * @throws GameNotFoundException        if game is not found
+     * @throws GameEventNotFoundException   if game event is not found
+     * @throws GameEventValidationException if game event is invalid
+     * @throws NotAuthenticatedException    if request is not authenticated
+     * @throws NotAuthorizedException       if user does not have permissions to update event
+     * @throws BadRequestException          if event information is not supplied
      */
     @RequestMapping(value = { "/{eventId}", "/{eventId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    public Game updateEvent(@PathVariable("gameUrl") String gameUrl,
-                            @PathVariable("eventId") Integer eventId,
-                            @RequestBody GameEventDescriptor gameEventDescriptor)
-            throws GameNotFoundException, GameEventNotFoundException, NotAuthenticatedException, NotAuthorizedException
+    public GameEvent updateEvent(@PathVariable("gameUrl") String gameUrl,
+                                 @PathVariable("eventId") Integer eventId,
+                                 @RequestBody(required = false) GameEventDescriptor gameEventDescriptor)
+            throws GameNotFoundException, GameEventNotFoundException, GameEventValidationException,
+            NotAuthenticatedException, NotAuthorizedException, BadRequestException
     {
+        if (gameEventDescriptor == null) {
+            throw new BadRequestException("No POST body supplied");
+        }
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
@@ -153,8 +181,7 @@ public class ApiGameEventController {
         if (!SecurityHelper.getAuthenticatedUser().getId().equals(game.getOwner().getId())) {
             throw new NotAuthorizedException("Unauthenticated attempt to get game event.");
         }
-//        return game.updateEvent(gameEventDescriptor);
-        return null;
+        return game.updateEvent(eventId, gameEventDescriptor);
     }
 
 }

@@ -54,7 +54,8 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
      */
     public static class NotificationWithDetailsMatcher extends TypeSafeDiagnosingMatcher<JSONObject> {
 
-        private NotificationWithDetailsMatcher() {  }
+        private NotificationWithDetailsMatcher() {
+        }
 
         @Factory
         public static NotificationWithDetailsMatcher withDetails() {
@@ -125,36 +126,58 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
         }
     }
 
+    /**
+     * Matcher for a notification containing specific constraint details.
+     */
     public static class NotificationDetail extends NotificationDetailField {
 
         private final String field;
         private final String constraint;
+        private final Object value;
 
-        private NotificationDetail(String field, String constraint) {
+        private NotificationDetail(String field, String constraint, Object value) {
             super(field);
             this.field = field;
             this.constraint = constraint;
+            this.value = value;
         }
 
         /**
          * Factory for matching notification with a detail and constraint.
          *
-         * @param detailKey field
-         * @param detailValue constraint
-         * @return
+         * @param field      field
+         * @param constraint constraint
+         * @return notification with detail matcher
          */
         @Factory
-        public static NotificationWithDetailsMatcher withDetail(String detailKey, String detailValue) {
-            return new NotificationDetail(detailKey, detailValue);
+        public static NotificationWithDetailsMatcher withDetail(String field, String constraint) {
+            return new NotificationDetail(field, constraint, null);
         }
 
-         @Override
+        /**
+         * Factory for matching notification with a detail and constraint with a constraint value.
+         *
+         * @param field      field
+         * @param constraint constraint
+         * @param value      value
+         * @return notification with detail matcher
+         */
+        @Factory
+        public static NotificationWithDetailsMatcher withDetail(String field, String constraint, Object value) {
+            return new NotificationDetail(field, constraint, value);
+        }
+
+        @Override
         protected boolean matchesSafely(JSONObject jsonObject, Description description) {
             boolean matches = super.matchesSafely(jsonObject, description);
             if (matches) {
                 JSONObject details = (JSONObject) jsonObject.get("details");
                 if (!constraint.equals(details.get("constraint"))) {
                     description.appendText("| field " + field + " does not have constraint " + constraint + " ");
+                    matches = false;
+                }
+                if (value != null && !value.equals(details.get("value"))) {
+                    description.appendText("| field " + field + " does not have constraint value " + value + " (found " + details.get("value") + ") ");
                     matches = false;
                 }
             }

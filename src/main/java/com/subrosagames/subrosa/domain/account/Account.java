@@ -50,7 +50,7 @@ import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
-import com.subrosagames.subrosa.util.bean.OptionalAwareBeanUtilsBean;
+import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**
  * Represents an account in the Subrosa application.
@@ -325,7 +325,7 @@ public class Account implements PermissionTarget {
         // TODO specify R/O fields via an annotation
         accountDescriptor.setId(getId());
         accountDescriptor.setActivated(Optional.of(isActivated()));
-        OptionalAwareBeanUtilsBean beanCopier = new OptionalAwareBeanUtilsBean();
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
         } catch (IllegalAccessException e) {

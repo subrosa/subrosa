@@ -4,19 +4,22 @@ import java.util.List;
 import java.util.Map;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
-import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
+import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
+import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
-import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
+import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 
@@ -62,26 +65,26 @@ public interface Game extends GameData {
     void startGame();
 
     /**
-     * Add the provided account as a player in this game.
-     *
-     * @param account          account
-     * @param playerDescriptor player information
-     * @return game player
-     */
-    Player addUserAsPlayer(Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
-
-    /**
      * Get the player associated with the provided account id.
      *
      * @param accountId account id
      * @return player
      */
-    Player getPlayer(int accountId);
+    Player getPlayerForUser(int accountId);
 
     /**
-     * Get all of the players enrolled in the game.
+     * Get list of the players enrolled in the game.
      *
+     * @param limit  number of players to return
+     * @param offset offset into list
      * @return set of players in the game
+     */
+    List<Player> getPlayers(Integer limit, Integer offset);
+
+    /**
+     * Get list of all players enrolled in the game.
+     *
+     * @return list of players in the game
      */
     List<Player> getPlayers();
 
@@ -167,10 +170,43 @@ public interface Game extends GameData {
     /**
      * Adds an event to the game events.
      *
-     * @param eventEntity game event to add
+     * @param gameEventDescriptor game event to add
      * @return added game event
      * @throws GameEventValidationException if the game event is invalid
      */
-    GameEvent addEvent(EventEntity eventEntity) throws GameEventValidationException;
+    GameEvent addEvent(GameEventDescriptor gameEventDescriptor) throws GameEventValidationException;
+
+    /**
+     * Updates an event.
+     *
+     * @param eventId             game event id
+     * @param gameEventDescriptor game event information
+     * @return updated game event
+     * @throws GameEventNotFoundException   if game event does not exist
+     * @throws GameEventValidationException if the game event is invalid
+     */
+    GameEvent updateEvent(int eventId, GameEventDescriptor gameEventDescriptor) throws GameEventNotFoundException, GameEventValidationException;
+
+    /**
+     * Get specified player.
+     *
+     * @param playerId player id
+     * @return player
+     * @throws PlayerNotFoundException if specified player is not in game
+     */
+    Player getPlayer(Integer playerId) throws PlayerNotFoundException;
+
+    /**
+     * Add the provided account as a player in this game.
+     *
+     * @param account         account
+     * @param joinGameRequest player information
+     * @return game player
+     * @throws InsufficientInformationException if game requires more information to join
+     * @throws PlayRestrictedException          if player does not meet requirements to play
+     * @throws PlayerValidationException        if player information is invalid
+     * @throws IllegalArgumentException         if either parameter is null
+     */
+    Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException;
 
 }

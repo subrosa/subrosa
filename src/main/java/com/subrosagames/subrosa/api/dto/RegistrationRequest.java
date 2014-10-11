@@ -5,7 +5,7 @@ package com.subrosagames.subrosa.api.dto;
  * <p/>
  * This includes the account data, along with a password for authenticating with that account.
  */
-public class Registration {
+public class RegistrationRequest {
 
     private AccountDescriptor account;
     private String password;

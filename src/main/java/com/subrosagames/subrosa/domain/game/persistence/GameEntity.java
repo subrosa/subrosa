@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +29,6 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
@@ -43,20 +38,17 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.RequiredAttribute;
+import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
-import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -65,6 +57,7 @@ import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Persisted entity for a game.
@@ -186,6 +179,19 @@ public class GameEntity extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "location_id")
     )
     private Location location;
+
+    @JsonIgnore
+    @OneToMany(targetEntity = RestrictionEntity.class, mappedBy = "game")
+    private Set<Restriction> restrictions;
+
+    @OneToMany(
+            targetEntity = RequiredAttributeEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private Set<RequiredAttribute> requiredAttributes = Sets.newHashSet();
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
@@ -424,6 +430,22 @@ public class GameEntity extends BaseEntity {
 
     public void setLocation(Location location) {
         this.location = location;
+    }
+
+    public Set<Restriction> getRestrictions() {
+        return restrictions;
+    }
+
+    public void setRestrictions(Set<Restriction> restrictions) {
+        this.restrictions = restrictions;
+    }
+
+    public Set<RequiredAttribute> getRequiredAttributes() {
+        return requiredAttributes;
+    }
+
+    public void addRequiredAttribute(RequiredAttribute requiredAttribute) {
+        requiredAttributes.add(requiredAttribute);
     }
 
     public Date getGameStart() {

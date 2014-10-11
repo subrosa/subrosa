@@ -21,4 +21,13 @@ public interface PlayerFactory {
      */
     Player createPlayerForGame(Game game, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
 
+    /**
+     * Get player in game.
+     *
+     * @param game game
+     * @param playerId player id
+     * @return player in game
+     * @throws PlayerNotFoundException if specified player is not in game
+     */
+    Player getPlayer(Game game, Integer playerId) throws PlayerNotFoundException;
 }
