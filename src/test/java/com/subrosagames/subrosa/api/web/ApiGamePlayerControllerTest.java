@@ -51,13 +51,13 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testJoinGameMissingRequiredPlayerAttributes() throws Exception {
+    public void testJoinGameMissingRequiredPlayerInfo() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
                         .with(user("player1@player.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("Last Wish", "required"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("lastWish", "required"))));
     }
 
     @Test

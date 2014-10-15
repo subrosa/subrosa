@@ -318,38 +318,63 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testCreateAndUpdateGameWithRequiredAttributes() throws Exception {
+    public void testCreateAndUpdateGamePlayerInfoRequirements() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("game@owner.com"))
+                        .with(user("new@user.com"))
                         .content(jsonBuilder()
-                                .add("name", "attribute tester")
+                                .add("name", "Game with Player Info")
                                 .add("gameType", "SCAVENGER")
-                                .add("requiredAttributes", Lists.newArrayList("first", "second"))
-                                .build()))
+                                .addArray("playerInfo",
+                                        jsonBuilder().add("name", "Last Wish").add("description", "Your dying request").add("type", "text"),
+                                        jsonBuilder().add("name", "Nude Photo").add("description", "We need more of these").add("type", "image")
+                                ).build()))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("first", "second")))
+                .andExpect(jsonPath("$.playerInfo").value(hasSize(2)))
+                .andExpect(jsonPath("$.playerInfo[0].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[0].name").value("Last Wish"))
+                .andExpect(jsonPath("$.playerInfo[1].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[1].name").value("Nude Photo"))
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
+        String lastWishId = JsonPath.compile("$.playerInfo[0].fieldId").read(response);
+        String nudePhotoId = JsonPath.compile("$.playerInfo[1].fieldId").read(response);
 
-        mockMvc.perform(
-                get("/game/{url}", url))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("first", "second")));
+        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
+                .andExpect(jsonPath("$.playerInfo").value(hasSize(2)))
+                .andExpect(jsonPath("$.playerInfo[0].fieldId").value(lastWishId))
+                .andExpect(jsonPath("$.playerInfo[0].name").value("Last Wish"))
+                .andExpect(jsonPath("$.playerInfo[1].fieldId").value(nudePhotoId))
+                .andExpect(jsonPath("$.playerInfo[1].name").value("Nude Photo"));
 
         mockMvc.perform(
                 put("/game/{url}", url)
-                        .with(user("game@owner.com"))
+                        .with(user("new@user.com"))
                         .content(jsonBuilder()
-                                .add("requiredAttributes", Lists.newArrayList("this", "that", "the other"))
-                                .build()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("this", "that", "the other")));
+                                .add("name", "Game with Player Info")
+                                .add("gameType", "SCAVENGER")
+                                .addArray("playerInfo",
+                                        jsonBuilder().add("name", "Nude Photo").add("description", "We need more of these").add("type", "image"),
+                                        jsonBuilder().add("name", "Home Address")
+                                                .add("description", "Yes, we are asking for a nudey and your home address").add("type", "address"),
+                                        jsonBuilder().add("name", "事務所").add("description", "働く所").add("type", "address")
+                                ).build())).andExpect(status().isOk())
+                .andExpect(jsonPath("$.playerInfo").value(hasSize(3)))
+                .andExpect(jsonPath("$.playerInfo[0].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[0].name").value("Nude Photo"))
+                .andExpect(jsonPath("$.playerInfo[1].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[1].name").value("Home Address"))
+                .andExpect(jsonPath("$.playerInfo[2].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[2].name").value("事務所"));
 
-        mockMvc.perform(
-                get("/game/{url}", url))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.requiredAttributes").value(containsInAnyOrder("this", "that", "the other")));
+        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
+                .andExpect(jsonPath("$.playerInfo").value(hasSize(3)))
+                .andExpect(jsonPath("$.playerInfo[0].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[0].name").value("Nude Photo"))
+                .andExpect(jsonPath("$.playerInfo[1].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[1].name").value("Home Address"))
+                .andExpect(jsonPath("$.playerInfo[2].fieldId").exists())
+                .andExpect(jsonPath("$.playerInfo[2].name").value("事務所"));
     }
 
     @Test
@@ -677,7 +702,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.status").value(gameStatus.name()));
     }
 
-    private ResultActions performGameCreation(HashMap<String, Object> attributes) throws Exception {
+    private ResultActions performGameCreation(Map<String, Object> attributes) throws Exception {
         JsonBuilder builder = jsonBuilder();
         for (Map.Entry<String, Object> update : attributes.entrySet()) {
             builder.add(update.getKey(), update.getValue());
@@ -715,13 +740,6 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.compile("$.url").read(response);
-    }
-
-    @Test
-    public void testTest() throws Exception {
-        BaseGame gameEntity = gameRepository.get("with_start");
-        Date gameStart = gameEntity.getGameStart();
-        LOG.debug("Game start: {}", gameStart);
     }
 
     // CHECKSTYLE-ON: JavadocMethod

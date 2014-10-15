@@ -21,7 +21,7 @@
 
   <game game_id="4" owner_id="10001" name="Fun Times!" url="last_wish_required" game_type="ASSASSIN"/>
   <restriction restriction_id="2" game_id="4" type="AGE" value="18"/>
-  <required_attribute required_attribute_id="1" game_id="4" name="Last Wish"/>
+  <enrollment_field game_id="4" field_id="lastWish" index="0" name="Last Wish" description="Dying request" type="TEXT"/>
 
   <game game_id="5" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
   <game game_id="6" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>

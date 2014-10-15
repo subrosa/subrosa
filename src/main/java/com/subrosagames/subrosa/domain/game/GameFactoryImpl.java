@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
@@ -10,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -21,7 +18,6 @@ import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
-import com.subrosagames.subrosa.domain.game.persistence.RequiredAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.support.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;

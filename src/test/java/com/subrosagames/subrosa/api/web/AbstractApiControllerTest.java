@@ -1,8 +1,15 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Nullable;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
@@ -26,11 +33,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
-import com.subrosagames.subrosa.util.LogResponseServletFilter;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -145,6 +153,18 @@ public abstract class AbstractApiControllerTest {
 
         public String build() {
             return jsonMap.toString();
+        }
+
+        public JsonBuilder addArray(String key, final JsonBuilder... jsonBuilders) {
+            Collection<Map<String, Object>> jsonArray = Collections2.transform(Arrays.asList(jsonBuilders), new Function<JsonBuilder, Map<String, Object>>() {
+                @Nullable
+                @Override
+                public Map<String, Object> apply(@Nullable JsonBuilder input) {
+                    return input != null ? input.jsonMap : null;
+                }
+            });
+            jsonMap.put(key, jsonArray);
+            return this;
         }
     }
 

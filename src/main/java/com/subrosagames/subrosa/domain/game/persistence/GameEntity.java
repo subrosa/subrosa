@@ -25,6 +25,7 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
@@ -38,13 +39,14 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.RequiredAttribute;
 import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
@@ -57,7 +59,6 @@ import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
-import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Persisted entity for a game.
@@ -185,13 +186,14 @@ public class GameEntity extends BaseEntity {
     private Set<Restriction> restrictions;
 
     @OneToMany(
-            targetEntity = RequiredAttributeEntity.class,
+            targetEntity = EnrollmentFieldEntity.class,
             mappedBy = "game",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER
     )
-    private Set<RequiredAttribute> requiredAttributes = Sets.newHashSet();
+    @OrderColumn(name = "index")
+    private List<EnrollmentField> playerInfo = Lists.newArrayList();
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
@@ -440,12 +442,12 @@ public class GameEntity extends BaseEntity {
         this.restrictions = restrictions;
     }
 
-    public Set<RequiredAttribute> getRequiredAttributes() {
-        return requiredAttributes;
+    public List<EnrollmentField> getPlayerInfo() {
+        return playerInfo;
     }
 
-    public void addRequiredAttribute(RequiredAttribute requiredAttribute) {
-        requiredAttributes.add(requiredAttribute);
+    public void addEnrollmentField(EnrollmentField enrollmentField) {
+        playerInfo.add(enrollmentField);
     }
 
     public Date getGameStart() {

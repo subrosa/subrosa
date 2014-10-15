@@ -2,13 +2,13 @@ package com.subrosagames.subrosa.api.dto;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.RequiredAttribute;
 import com.subrosagames.subrosa.domain.image.Image;
 
 /**
@@ -26,7 +26,7 @@ public class GameDescriptor { //implements GameData {
     private Optional<Integer> maximumTeamSize;
     private Optional<String> password;
     private Optional<Image> image;
-    private Optional<Set<String>> requiredAttributes;
+    private Optional<List<EnrollmentFieldDto>> playerInfo;
     private Optional<Date> gameStart;
     private Optional<Date> gameEnd;
     private Optional<Date> registrationStart;
@@ -113,12 +113,12 @@ public class GameDescriptor { //implements GameData {
         this.image = image;
     }
 
-    public Optional<Set<String>> getRequiredAttributes() {
-        return requiredAttributes;
+    public Optional<List<EnrollmentFieldDto>> getPlayerInfo() {
+        return playerInfo;
     }
 
-    public void setRequiredAttributes(Optional<Set<String>> requiredAttributes) {
-        this.requiredAttributes = requiredAttributes;
+    public void setPlayerInfo(Optional<List<EnrollmentFieldDto>> playerInfo) {
+        this.playerInfo = playerInfo;
     }
 
     public Optional<Date> getGameStart() {
@@ -174,7 +174,7 @@ public class GameDescriptor { //implements GameData {
                 .add("maximumTeamSize", maximumTeamSize)
                 .add("password", password)
                 .add("image", image)
-                .add("requiredAttributes", requiredAttributes)
+                .add("playerInfo", playerInfo)
                 .add("gameStart", gameStart)
                 .add("gameEnd", gameEnd)
                 .add("registrationStart", registrationStart)
