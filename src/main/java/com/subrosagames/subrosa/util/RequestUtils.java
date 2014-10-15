@@ -2,10 +2,11 @@ package com.subrosagames.subrosa.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.subrosa.api.actions.list.QueryCriteria;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.subrosa.api.actions.list.QueryCriteria;
 
 /**
  * Provides common functionality for handling API requests.
@@ -14,20 +15,21 @@ public final class RequestUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(RequestUtils.class);
 
-    private RequestUtils() { }
+    private RequestUtils() {
+    }
 
     /**
      * Creates and populates the criteria for a query based on the request parameters.
-     *
+     * <p/>
      * Any of the valid filter keys supported by the provided type that are encountered in the request
      * parameters will be added to the criteria object.
-     *
+     * <p/>
      * If any of limit, offset, or sort are supplied in the request, they too will be set on the
      * criteria object.
      *
      * @param request http servlet request
-     * @param clazz type of object for which the query is being built
-     * @param <T> type of object for which the query is being built
+     * @param clazz   type of object for which the query is being built
+     * @param <T>     type of object for which the query is being built
      * @return a query criteria object populated with filters
      */
     public static <T> QueryCriteria<T> createQueryCriteriaFromRequestParameters(HttpServletRequest request, Class<T> clazz) {

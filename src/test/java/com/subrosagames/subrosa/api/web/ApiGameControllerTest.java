@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -33,7 +32,6 @@ import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;

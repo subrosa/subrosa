@@ -15,7 +15,6 @@ import javax.persistence.Persistence;
 import javax.persistence.Table;
 import javax.persistence.TypedQuery;
 
-import org.hamcrest.Matchers;
 import org.hamcrest.beans.HasPropertyWithValue;
 import org.joda.time.DateTime;
 import org.junit.After;
@@ -294,6 +293,9 @@ public class JpaQueryBuilderTest {
         return query.getResultList();
     }
 
+    /**
+     * Test entity.
+     */
     @Entity
     @Table(name = "test")
     public static class TestObject {
@@ -406,6 +408,9 @@ public class JpaQueryBuilderTest {
         }
     }
 
+    /**
+     * Test child entity.
+     */
     @Entity
     @Table(name = "event")
     public static class EventObject {

@@ -158,10 +158,10 @@ public class BaseGame extends GameEntity implements Game {
         rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
         final Set<Rule> ruleSet = getRuleSet();
         if (ruleSet != null) {
+            List<Rule> rulesList = new ArrayList<Rule>(ruleSet.size());
+            rulesList.addAll(ruleSet);
             rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
-                    new ArrayList<Rule>(ruleSet.size()) {{
-                        addAll(ruleSet);
-                    }},
+                    rulesList,
                     extractRules
             ));
         }

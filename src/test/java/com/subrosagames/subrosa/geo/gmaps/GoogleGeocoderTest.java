@@ -10,7 +10,6 @@ import org.junit.Test;
 import com.google.code.geocoder.model.GeocoderResult;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test {@link GoogleGeocoder}.

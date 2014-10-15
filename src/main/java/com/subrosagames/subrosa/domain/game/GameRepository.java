@@ -53,6 +53,7 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * @param url        game url
      * @param expansions fields to expand
      * @return game
+     * @throws GameNotFoundException if game is not found
      */
     BaseGame get(String url, String... expansions) throws GameNotFoundException;
 
@@ -62,7 +63,7 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * @param id         game id
      * @param expansions fields to expand
      * @return game
-     * @throws GameNotFoundException
+     * @throws GameNotFoundException if game is not found
      */
     BaseGame get(int id, String... expansions) throws GameNotFoundException;
 
@@ -79,7 +80,7 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * Get all of the players enrolled in the specified game.
      *
      * @param gameId game id
-     * @param limit number of players to return
+     * @param limit  number of players to return
      * @param offset offset into list
      * @return list of players
      */
@@ -94,14 +95,46 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      */
     void setGameAttribute(BaseGame baseGame, Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue);
 
+    /**
+     * Create a game.
+     *
+     * @param baseGame game to create
+     * @return created game
+     * @throws GameValidationException if game is invalid for creation
+     */
     BaseGame create(BaseGame baseGame) throws GameValidationException;
 
+    /**
+     * Get games owned by provided user.
+     *
+     * @param user owning account
+     * @return list of games
+     */
     List<BaseGame> ownedBy(Account user);
 
+    /**
+     * Create a game feed post.
+     *
+     * @param postEntity post entity
+     * @return created post
+     */
     PostEntity create(PostEntity postEntity);
 
+    /**
+     * Get game zones for the given game.
+     *
+     * @param gameUrl game url
+     * @return list of game zones
+     * @throws GameNotFoundException if game is not found
+     */
     List<Zone> getZonesForGame(String gameUrl) throws GameNotFoundException;
 
+    /**
+     * Create a location entity.
+     *
+     * @param location location entity
+     * @return created location
+     */
     LocationEntity create(LocationEntity location);
 
     /**

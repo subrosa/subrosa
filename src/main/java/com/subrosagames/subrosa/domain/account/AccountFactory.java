@@ -53,6 +53,12 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         return account;
     }
 
+    /**
+     * Create account object for account descriptor.
+     *
+     * @param accountDescriptor account descriptor
+     * @return account object
+     */
     public Account forDto(AccountDescriptor accountDescriptor) {
         Account account = new Account();
         copyProperties(accountDescriptor, account);
@@ -60,6 +66,11 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         return account;
     }
 
+    /**
+     * Inject account object with its dependencies.
+     *
+     * @param account account
+     */
     public void injectDependencies(Account account) {
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);

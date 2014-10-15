@@ -1,10 +1,8 @@
 package com.subrosagames.subrosa.geo.gmaps;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -20,7 +18,6 @@ import com.google.code.geocoder.model.GeocoderAddressComponent;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.common.collect.Lists;
-import com.jayway.jsonpath.Filter;
 
 
 /**
@@ -41,6 +38,7 @@ public class GoogleGeocoder {
 
     /**
      * Geocodes the provided address.
+     *
      * @param address address string
      * @return address components
      * @throws IOException if

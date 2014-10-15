@@ -15,7 +15,6 @@ import javax.persistence.Table;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.RestrictionType;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
 /**

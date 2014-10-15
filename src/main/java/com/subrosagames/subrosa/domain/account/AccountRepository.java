@@ -59,7 +59,19 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
      */
     Account getUnauthenticated(int id, String... expansions) throws AccountNotFoundException;
 
+    /**
+     * Get addresses matching provided conditions.
+     *
+     * @param conditions search conditions
+     * @return list of matching addresses
+     */
     List<Address> addressesWhere(Map<String, Object> conditions);
 
+    /**
+     * Update the given address.
+     *
+     * @param address address to update
+     * @return updated address
+     */
     Address update(Address address);
 }

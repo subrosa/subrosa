@@ -38,6 +38,11 @@ public enum EnrollmentFieldType {
         this.name = name;
     }
 
+    /**
+     * Get the user-facing representation of the type.
+     *
+     * @return type name
+     */
     @JsonValue
     public String getName() {
         return name;

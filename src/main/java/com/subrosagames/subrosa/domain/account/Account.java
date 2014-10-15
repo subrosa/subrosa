@@ -284,14 +284,14 @@ public class Account implements PermissionTarget {
     /**
      * Create an account with the specified password.
      *
-     * @param password password
+     * @param userPassword password
      * @return created account
      * @throws AccountValidationException if account is invalid for creation
      */
-    public Account create(String password) throws AccountValidationException {
+    public Account create(String userPassword) throws AccountValidationException {
         assertValid();
         try {
-            accountRepository.create(this, password);
+            accountRepository.create(this, userPassword);
         } catch (JpaSystemException e) {
             if (isEmailConflict(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);

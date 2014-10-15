@@ -1,8 +1,7 @@
 package com.subrosagames.subrosa.domain.account;
 
-import javax.validation.ConstraintViolation;
-
 import java.util.Set;
+import javax.validation.ConstraintViolation;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 
@@ -21,6 +20,7 @@ public class AccountValidationException extends DomainObjectValidationException 
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public AccountValidationException(String s) {
@@ -29,7 +29,8 @@ public class AccountValidationException extends DomainObjectValidationException 
 
     /**
      * Construct with message and cause.
-     * @param s message
+     *
+     * @param s         message
      * @param throwable cause
      */
     public AccountValidationException(String s, Throwable throwable) {
@@ -38,6 +39,7 @@ public class AccountValidationException extends DomainObjectValidationException 
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public AccountValidationException(Throwable throwable) {
@@ -46,6 +48,7 @@ public class AccountValidationException extends DomainObjectValidationException 
 
     /**
      * Construct with a set of {@link ConstraintViolation}s.
+     *
      * @param violations constraint violations
      */
     public AccountValidationException(Set<ConstraintViolation<Account>> violations) {
