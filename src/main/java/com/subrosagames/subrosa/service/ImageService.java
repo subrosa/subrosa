@@ -60,7 +60,7 @@ public class ImageService {
      * @throws FileUploadException        if file upload fails to meet restrictions
      */
     public Image uploadImageForAccount(Integer accountId, MultipartFile multipartFile)
-            throws AccountNotFoundException, AccountValidationException, IOException, FileUploadException
+            throws AccountNotFoundException, AccountValidationException, IOException, FileUploadException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
     {
         LOG.debug("Handling image upload for accountId {}", accountId);
         Account account = accountFactory.getAccount(accountId);

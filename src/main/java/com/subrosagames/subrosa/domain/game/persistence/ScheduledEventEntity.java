@@ -15,6 +15,9 @@ import com.subrosagames.subrosa.event.ScheduledEvent;
 @DiscriminatorValue(ScheduledEventEntity.EVENT_TYPE_SCHEDULED)
 public class ScheduledEventEntity extends EventEntity implements ScheduledEvent {
 
+    /**
+     * Discriminator type.
+     */
     public static final String EVENT_TYPE_SCHEDULED = "SCHEDULED";
 
     @Column(name = "event_date")

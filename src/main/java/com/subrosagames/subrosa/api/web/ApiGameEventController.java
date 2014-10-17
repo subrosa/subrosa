@@ -154,6 +154,7 @@ public class ApiGameEventController {
      * Update a {@link GameEvent} from the provided parameters.
      *
      * @param gameUrl             game id
+     * @param eventId             event id
      * @param gameEventDescriptor game event descriptor
      * @return updated game event
      * @throws GameNotFoundException        if game is not found

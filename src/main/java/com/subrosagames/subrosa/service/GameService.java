@@ -6,8 +6,6 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
-import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
-import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Team;
@@ -64,10 +62,10 @@ public interface GameService {
      * @param account         account to enroll
      * @param joinGameRequest join game request
      * @return created player
-     * @throws GameNotFoundException            if game is not found
-     * @throws InsufficientInformationException if required player information is missing
-     * @throws PlayRestrictedException          if account does not satisfy game requirements
-     * @throws PlayerValidationException        if player information is not valid
+     * @throws GameNotFoundException                                                   if game is not found
+     * @throws com.subrosagames.subrosa.domain.player.InsufficientInformationException if required player information is missing
+     * @throws com.subrosagames.subrosa.domain.player.PlayRestrictedException          if account does not satisfy game requirements
+     * @throws PlayerValidationException                                               if player information is not valid
      */
     Player joinGame(String gameUrl, Account account, JoinGameRequest joinGameRequest) throws GameNotFoundException, PlayerValidationException;
 }

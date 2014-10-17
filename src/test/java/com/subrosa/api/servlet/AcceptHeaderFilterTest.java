@@ -1,11 +1,9 @@
 package com.subrosa.api.servlet;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -56,10 +54,9 @@ public class AcceptHeaderFilterTest {
 
     /**
      * Test init method when the defaultMimeType init parameter is not set.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void initNoParam() throws ServletException {
+    public void initNoParam() {
         when(filterConfig.getInitParameter(AcceptHeaderFilter.DEFAULT_MIMETYPE_PARAM))
                 .thenReturn(null);
 
@@ -70,10 +67,9 @@ public class AcceptHeaderFilterTest {
 
     /**
      * Test init method when the defaultMimeType init parameter is set.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void initWithParam() throws ServletException {
+    public void initWithParam() {
         when(filterConfig.getInitParameter(AcceptHeaderFilter.DEFAULT_MIMETYPE_PARAM))
                 .thenReturn("application/xml");
 
@@ -85,7 +81,6 @@ public class AcceptHeaderFilterTest {
     /**
      * Test getAcceptMimeType method when passed a GET request. Expected result
      * is JSON.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
     public void getAcceptMimeTypeWithGetRequest() {
@@ -98,7 +93,6 @@ public class AcceptHeaderFilterTest {
     /**
      * Test getAcceptMimeType method when passed a POST request. Expected result
      * is whatever is in the Content-type of the request.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
     public void getAcceptMimeTypeWithPostRequest() {
@@ -112,7 +106,6 @@ public class AcceptHeaderFilterTest {
     /**
      * Test getAcceptMimeType method when passed a POST request without a
      * Content-type header. Expected result is JSON.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
     public void getAcceptMimeTypeWithNoContentType() {
@@ -126,7 +119,6 @@ public class AcceptHeaderFilterTest {
     /**
      * Test getAcceptMimeType method when passed a POST request with a
      * Content-type that isn't XML or JSON. Expected result is JSON.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
     public void getAcceptMimeTypeWithOtherContentType() {
@@ -140,10 +132,9 @@ public class AcceptHeaderFilterTest {
     /**
      * Test doFilter method with a request that includes an Accept header.
      * Expect that the filter chain is called with the original request.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithExistingAccept() throws IOException, ServletException {
+    public void doFilterWithExistingAccept() throws Exception {
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn("application/xml");
 
         instance.doFilter(request, response, chain);
@@ -154,10 +145,9 @@ public class AcceptHeaderFilterTest {
      * Test doFilter method with a request lacking an Accept header. Expect that
      * the filter chain is called with a wrapped request which returns an
      * Accept header of JSON.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithoutAccept() throws IOException, ServletException {
+    public void doFilterWithoutAccept() throws Exception {
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn(null);
         when(request.getMethod()).thenReturn("GET");
 
@@ -174,10 +164,9 @@ public class AcceptHeaderFilterTest {
      * getAcceptMimeType method returns null, as might happen in subclasses
      * which override getAcceptMimeType. Simulated here by setting the default
      * to null. Expect that the filter does not wrap the request.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithNullDefault() throws IOException, ServletException {
+    public void doFilterWithNullDefault() throws Exception {
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn(null);
         when(request.getMethod()).thenReturn("GET");
 
@@ -190,10 +179,9 @@ public class AcceptHeaderFilterTest {
      * Test doFilter method with a request with an unsupported MIME type in the
      * Accept header. Expect that the filter rejects the request and sends a
      * HTTP 406 with a notification list in the response.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithUnsupportedType() throws IOException, ServletException {
+    public void doFilterWithUnsupportedType() throws Exception {
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn("bogus/type");
         when(request.getMethod()).thenReturn("GET");
 
@@ -215,10 +203,9 @@ public class AcceptHeaderFilterTest {
      * Accept header, first configuring the supported MIME types.
      * Expect that the filter rejects the request and sends a
      * HTTP 406 with a notification list in the response.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithUnsupportedTypeAndCustomSupported() throws IOException, ServletException {
+    public void doFilterWithUnsupportedTypeAndCustomSupported() throws Exception {
         when(filterConfig.getInitParameter(AcceptHeaderFilter.SUPPORTED_MIMETYPES_PARAM))
                 .thenReturn("application/json,application/xml, image/*  foo/bar");
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn("bogus/type");
@@ -241,10 +228,9 @@ public class AcceptHeaderFilterTest {
      * Accept header, with the rejectOnUnsupported error overridden to return
      * false. Expect that the filter wraps the request as though the Accept
      * header were absent.
-     * @throws ServletException when unexpected failure occurs
      */
     @Test
-    public void doFilterWithUnsupportedTypeNoReject() throws IOException, ServletException {
+    public void doFilterWithUnsupportedTypeNoReject() throws Exception {
         when(request.getHeader(AcceptHeaderFilter.ACCEPT_HEADER)).thenReturn("bogus/type");
         when(request.getMethod()).thenReturn("GET");
 

@@ -5,12 +5,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.subrosagames.subrosa.domain.token.TokenFactory;
-import com.subrosagames.subrosa.domain.token.TokenType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.subrosagames.subrosa.domain.token.TokenFactory;
+import com.subrosagames.subrosa.domain.token.TokenType;
 
 /**
  * Authentication success handler that sets an auth token cookie for use by mobile devices.
@@ -22,7 +23,7 @@ public class JsonResponseAuthenticationSuccessHandler implements AuthenticationS
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
-            throws IOException, ServletException
+            throws IOException, ServletException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
     {
         int accountId = ((SubrosaUser) authentication.getPrincipal()).getAccount().getId();
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();

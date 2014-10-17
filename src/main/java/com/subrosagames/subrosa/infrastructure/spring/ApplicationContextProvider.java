@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.infrastructure.spring;
 
-import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -15,6 +14,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
 
     /**
      * Get the application context.
+     *
      * @return application context
      */
     public static ApplicationContext getApplicationContext() {
@@ -22,7 +22,7 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) {
         ApplicationContextProvider.applicationContext = applicationContext;
     }
 }

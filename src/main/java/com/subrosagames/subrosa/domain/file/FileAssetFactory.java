@@ -3,8 +3,6 @@ package com.subrosagames.subrosa.domain.file;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
@@ -50,7 +48,7 @@ public class FileAssetFactory {
      * @throws IOException         if file transfer fails
      * @throws FileUploadException if file upload fails to meet restrictions
      */
-    public FileAsset fileAssetForMultipartFile(MultipartFile multipartFile) throws IOException, FileUploadException {
+    public FileAsset fileAssetForMultipartFile(MultipartFile multipartFile) throws IOException, FileUploadException { // SUPPRESS CHECKSTYLE RedundantThrowsCheck
         File physicalFile;
         FileAsset fileAsset = new FileAsset();
 

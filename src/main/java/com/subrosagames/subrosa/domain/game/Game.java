@@ -16,8 +16,6 @@ import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
-import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
-import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
@@ -202,10 +200,10 @@ public interface Game extends GameData {
      * @param account         account
      * @param joinGameRequest player information
      * @return game player
-     * @throws InsufficientInformationException if game requires more information to join
-     * @throws PlayRestrictedException          if player does not meet requirements to play
-     * @throws PlayerValidationException        if player information is invalid
-     * @throws IllegalArgumentException         if either parameter is null
+     * @throws com.subrosagames.subrosa.domain.player.InsufficientInformationException if game requires more information to join
+     * @throws com.subrosagames.subrosa.domain.player.PlayRestrictedException          if player does not meet requirements to play
+     * @throws PlayerValidationException                                               if player information is invalid
+     * @throws IllegalArgumentException                                                if either parameter is null
      */
     Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException;
 

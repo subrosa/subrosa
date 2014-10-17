@@ -1,18 +1,24 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import com.subrosa.api.actions.list.Filter;
 import com.subrosa.api.actions.list.QueryBuilder;
 import com.subrosa.api.actions.list.QueryCriteria;
-
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
 
 /**
  * Manages the creation of a JPA {@link TypedQuery} from a {@link QueryCriteria}.
  * <p/>
  * Requires the provision of an {@link EntityManager} instance, as it relies on on the {@link CriteriaBuilder} API
  * to create the query.
+ *
+ * @param <T> entity type
  */
 public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQuery<Long>> {
 

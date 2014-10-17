@@ -5,7 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 /**
- *
+ * Compound primary key for game attributes.
  */
 @Embeddable
 public class GameAttributePk implements Serializable {
@@ -18,9 +18,18 @@ public class GameAttributePk implements Serializable {
     @Column(name = "attribute_type")
     private String attributeType;
 
+    /**
+     * Default constructor.
+     */
     public GameAttributePk() {
     }
 
+    /**
+     * Construct with game id and attribute type.
+     *
+     * @param gameId game id
+     * @param attributeType attribute type
+     */
     public GameAttributePk(Integer gameId, String attributeType) {
         this.gameId = gameId;
         this.attributeType = attributeType;

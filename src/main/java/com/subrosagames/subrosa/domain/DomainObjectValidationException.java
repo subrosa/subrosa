@@ -7,7 +7,7 @@ import javax.validation.ConstraintViolation;
 /**
  * Generic domain object validation exception.
  */
-public abstract class DomainObjectValidationException extends Exception {
+public class DomainObjectValidationException extends Exception {
 
     private static final long serialVersionUID = 797174315554348934L;
 
@@ -21,6 +21,7 @@ public abstract class DomainObjectValidationException extends Exception {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public DomainObjectValidationException(String s) {
@@ -29,6 +30,7 @@ public abstract class DomainObjectValidationException extends Exception {
 
     /**
      * Construct with message and cause.
+     *
      * @param s         message
      * @param throwable cause
      */
@@ -38,6 +40,7 @@ public abstract class DomainObjectValidationException extends Exception {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public DomainObjectValidationException(Throwable throwable) {
@@ -46,6 +49,7 @@ public abstract class DomainObjectValidationException extends Exception {
 
     /**
      * Construct with constraint violations.
+     *
      * @param violations constrain violations
      */
     public DomainObjectValidationException(Set<? extends ConstraintViolation<?>> violations) {
@@ -54,6 +58,7 @@ public abstract class DomainObjectValidationException extends Exception {
 
     /**
      * Get constraint violations.
+     *
      * @return constraint violations
      */
     public Set<? extends ConstraintViolation<?>> getViolations() {

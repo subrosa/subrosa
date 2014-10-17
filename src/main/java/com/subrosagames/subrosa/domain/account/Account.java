@@ -44,14 +44,11 @@ import org.springframework.orm.jpa.JpaSystemException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
-import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
@@ -332,7 +329,7 @@ public class Account implements PermissionTarget {
      * Activates account using the given token.
      *
      * @param token activation token
-     * @throws TokenInvalidException if token is not valid for activation
+     * @throws TokenInvalidException      if token is not valid for activation
      * @throws AccountValidationException if account is not valid for activation
      */
     public void activate(String token) throws TokenInvalidException, AccountValidationException {

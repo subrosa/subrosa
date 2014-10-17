@@ -1,12 +1,13 @@
 package com.subrosagames.subrosa.security;
 
-import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountRole;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRole;
 
 /**
  * Overrides default spring security user to manipulate salted passwords handling.
@@ -19,6 +20,7 @@ public class SubrosaUser extends User {
 
     /**
      * Construct with given subrosa account.
+     *
      * @param account subrosa account
      */
     public SubrosaUser(Account account) {
@@ -33,6 +35,7 @@ public class SubrosaUser extends User {
 
     /**
      * Get the password portion of the stored salted password.
+     *
      * @return password
      */
     public String getPassword() {
@@ -42,6 +45,7 @@ public class SubrosaUser extends User {
 
     /**
      * Get the salt portion of the stored salted password.
+     *
      * @return salt
      */
     public String getSalt() {

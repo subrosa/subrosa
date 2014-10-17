@@ -3,7 +3,6 @@ package com.subrosagames.subrosa.api.web;
 import java.math.BigDecimal;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -88,7 +87,8 @@ public class ApiGameController extends BaseApiController {
                                          @RequestParam(value = "longitude", required = false) Double longitude,
                                          HttpServletRequest request)
     {
-        LOG.debug("Getting game list with limitParam {}, offsetParam {}, expand {}, latitude {}, longitude {}.", limitParam, offsetParam, expand, latitude, longitude);
+        LOG.debug("Getting game list with limitParam {}, offsetParam {}, expand {}, latitude {}, longitude {}.",
+                limitParam, offsetParam, expand, latitude, longitude);
         if (latitude != null && longitude != null) {
             Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
             int limit = ObjectUtils.defaultIfNull(limitParam, 10);
@@ -128,7 +128,7 @@ public class ApiGameController extends BaseApiController {
     /**
      * Create a {@link Game} from the provided parameters.
      *
-     * @param gameDescriptor description of game
+     * @param gameDescriptorParam description of game
      * @return {@link Game}
      * @throws GameValidationException   if game is invalid for creation
      * @throws NotAuthenticatedException if request is not authenticated
@@ -136,13 +136,13 @@ public class ApiGameController extends BaseApiController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptor)
+    public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptorParam)
             throws GameValidationException, NotAuthenticatedException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a game.");
         }
-        gameDescriptor = ObjectUtils.defaultIfNull(gameDescriptor, new GameDescriptor());
+        GameDescriptor gameDescriptor = ObjectUtils.defaultIfNull(gameDescriptorParam, new GameDescriptor());
         Account user = getAuthenticatedUser();
         LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
         Game game = gameFactory.forDto(gameDescriptor);
@@ -226,7 +226,7 @@ public class ApiGameController extends BaseApiController {
      * Create new post for game.
      *
      * @param gameUrl        game url
-     * @param postDescriptor post descriptor
+     * @param postDescriptorParam post descriptor
      * @return created post
      * @throws GameNotFoundException     if game is not found
      * @throws NotAuthenticatedException if user is not authenticated
@@ -236,13 +236,13 @@ public class ApiGameController extends BaseApiController {
     @ResponseBody
     @Transactional
     public Post createPost(@PathVariable("gameUrl") String gameUrl,
-                           @RequestBody(required = false) PostDescriptor postDescriptor)
+                           @RequestBody(required = false) PostDescriptor postDescriptorParam)
             throws GameNotFoundException, NotAuthenticatedException, PostValidationException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
         }
-        postDescriptor = ObjectUtils.defaultIfNull(postDescriptor, new PostDescriptor());
+        PostDescriptor postDescriptor = ObjectUtils.defaultIfNull(postDescriptorParam, new PostDescriptor());
         Game game = gameFactory.getGame(gameUrl);
         PostEntity postEntity = gameFactory.forDto(postDescriptor);
         postEntity.setAccount(SecurityHelper.getAuthenticatedUser());
@@ -344,9 +344,9 @@ public class ApiGameController extends BaseApiController {
     /**
      * Achieve the specified target.
      *
-     * @param gameUrl             game url
-     * @param targetId            target id
-     * @param targetAchievement   information about the target achieval
+     * @param gameUrl           game url
+     * @param targetId          target id
+     * @param targetAchievement information about the target achieval
      * @throws GameNotFoundException   if game is not found
      * @throws TargetNotFoundException if target is not found
      */

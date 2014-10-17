@@ -353,6 +353,11 @@ public class GameEntity extends BaseEntity {
         this.maximumTeamSize = maximumTeamSize;
     }
 
+    /**
+     * Get game posts, guarding against lazy load exceptions.
+     *
+     * @return game posts
+     */
     public List<Post> getPosts() {
         if (!Hibernate.isInitialized(posts)) {
             return null;
@@ -364,6 +369,11 @@ public class GameEntity extends BaseEntity {
         this.posts = posts;
     }
 
+    /**
+     * Get game history, guarding against lazy load exceptions.
+     *
+     * @return game history
+     */
     public List<GameHistory> getHistory() {
         if (!Hibernate.isInitialized(history)) {
             return null;
@@ -375,6 +385,11 @@ public class GameEntity extends BaseEntity {
         this.history = history;
     }
 
+    /**
+     * Get game events, guarding against lazy load exceptions.
+     *
+     * @return game events
+     */
     public List<GameEvent> getEvents() {
         if (!Hibernate.isInitialized(events)) {
             return null;
@@ -446,13 +461,24 @@ public class GameEntity extends BaseEntity {
         return playerInfo;
     }
 
+    /**
+     * Add an enrollment field to the game's required fields.
+     *
+     * @param enrollmentField enrollment field
+     */
     public void addEnrollmentField(EnrollmentField enrollmentField) {
         playerInfo.add(enrollmentField);
     }
 
+    /**
+     * Get game start date.
+     *
+     * @return game start date
+     */
     public Date getGameStart() {
-        return gameStart == null ? null :
-                gameStart.isEmpty() ? null : gameStart.get(0).getDate();
+        return gameStart == null ? null
+                : gameStart.isEmpty() ? null
+                : gameStart.get(0).getDate();
     }
 
     public void setGameStart(List<ScheduledEvent> gameStart) {
@@ -464,9 +490,15 @@ public class GameEntity extends BaseEntity {
         return gameStart;
     }
 
+    /**
+     * Get game end date.
+     *
+     * @return game end date
+     */
     public Date getGameEnd() {
-        return gameEnd == null ? null :
-                gameEnd.isEmpty() ? null : gameEnd.get(0).getDate();
+        return gameEnd == null ? null
+                : gameEnd.isEmpty() ? null
+                : gameEnd.get(0).getDate();
     }
 
     public void setGameEnd(List<ScheduledEvent> gameEnd) {
@@ -478,9 +510,15 @@ public class GameEntity extends BaseEntity {
         return gameEnd;
     }
 
+    /**
+     * Get game registration start date.
+     *
+     * @return game registration start date
+     */
     public Date getRegistrationStart() {
-        return registrationStart == null ? null :
-                registrationStart.isEmpty() ? null : registrationStart.get(0).getDate();
+        return registrationStart == null ? null
+                : registrationStart.isEmpty() ? null
+                : registrationStart.get(0).getDate();
     }
 
     public void setRegistrationStart(List<ScheduledEvent> registrationStart) {
@@ -492,9 +530,15 @@ public class GameEntity extends BaseEntity {
         return registrationStart;
     }
 
+    /**
+     * Get game registration end date.
+     *
+     * @return game registration end date
+     */
     public Date getRegistrationEnd() {
-        return registrationEnd == null ? null :
-                registrationEnd.isEmpty() ? null : registrationEnd.get(0).getDate();
+        return registrationEnd == null ? null
+                : registrationEnd.isEmpty() ? null
+                : registrationEnd.get(0).getDate();
     }
 
     public void setRegistrationEnd(List<ScheduledEvent> registrationEnd) {

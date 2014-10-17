@@ -63,9 +63,6 @@ public class BaseGame extends GameEntity implements Game {
 
     @JsonIgnore
     @Transient
-    private RuleRepository ruleRepository;
-    @JsonIgnore
-    @Transient
     private GameRepository gameRepository;
     @JsonIgnore
     @Transient
@@ -155,7 +152,7 @@ public class BaseGame extends GameEntity implements Game {
     @Override
     public Map<RuleType, List<String>> getRules() {
         Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
-        rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
+        rules.put(RuleType.ALL_GAMES, Lists.transform(gameRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
         final Set<Rule> ruleSet = getRuleSet();
         if (ruleSet != null) {
             List<Rule> rulesList = new ArrayList<Rule>(ruleSet.size());
@@ -287,10 +284,6 @@ public class BaseGame extends GameEntity implements Game {
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
         this.playerFactory = playerFactory;
-    }
-
-    public void setRuleRepository(RuleRepository ruleRepository) {
-        this.ruleRepository = ruleRepository;
     }
 
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {

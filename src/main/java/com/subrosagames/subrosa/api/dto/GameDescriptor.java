@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.image.Image;

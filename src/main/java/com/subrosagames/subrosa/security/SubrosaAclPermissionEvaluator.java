@@ -2,11 +2,12 @@ package com.subrosagames.subrosa.security;
 
 import java.io.Serializable;
 
-import com.subrosagames.subrosa.domain.PermissionTarget;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+
+import com.subrosagames.subrosa.domain.PermissionTarget;
 
 /**
  * Implements ACL-based permission decisions based on subrosa's roles and ownership rules.
@@ -35,6 +36,9 @@ public class SubrosaAclPermissionEvaluator implements PermissionEvaluator {
 
         // CHECKSTYLE-OFF: JavadocMethod
 
+        /**
+         * View account permission.
+         */
         VIEW_ACCOUNT
                 {
                     @Override

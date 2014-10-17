@@ -161,4 +161,12 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * @return updated event
      */
     EventEntity update(EventEntity eventEntity);
+
+    /**
+     * Retrieves rules for the given type.
+     *
+     * @param ruleType rule type
+     * @return rules for type
+     */
+    List<? extends Rule> getRulesForType(RuleType ruleType);
 }

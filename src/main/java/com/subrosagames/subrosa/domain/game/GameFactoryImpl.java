@@ -39,9 +39,6 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     private GameRepository gameRepository;
 
     @Autowired
-    private RuleRepository ruleRepository;
-
-    @Autowired
     private EventScheduler eventScheduler;
 
     @Autowired
@@ -71,7 +68,6 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     public void injectDependencies(BaseGame game) {
         game.setGameRepository(gameRepository);
         game.setGameFactory(this);
-        game.setRuleRepository(ruleRepository);
         game.setPlayerFactory(playerFactory);
     }
 

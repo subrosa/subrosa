@@ -24,11 +24,14 @@ import com.subrosagames.subrosa.domain.game.GameAttributeType;
 import com.subrosagames.subrosa.domain.game.GameAttributeValue;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.GameRepository;
+import com.subrosagames.subrosa.domain.game.Rule;
+import com.subrosagames.subrosa.domain.game.RuleType;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributePk;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.RuleEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
@@ -231,6 +234,13 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public EventEntity update(EventEntity eventEntity) {
         return entityManager.merge(eventEntity);
+    }
+
+    @Override
+    public List<? extends Rule> getRulesForType(RuleType ruleType) {
+        return entityManager.createQuery("SELECT r FROM RuleEntity r WHERE r.ruleType = :ruleType", RuleEntity.class)
+                .setParameter("ruleType", ruleType)
+                .getResultList();
     }
 
     private String[] enableExpansions(String... expansions) {

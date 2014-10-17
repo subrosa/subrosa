@@ -1,16 +1,19 @@
 package com.subrosagames.subrosa.domain.game.persistence;
 
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
+/**
+ * Persisted game history event.
+ */
 @Entity
 @Table(name = "history")
-public class GameHistoryEntity implements GameHistory {
+public class GameHistoryEntity extends BaseEntity implements GameHistory {
 
     @Id
     @Column(name = "history_id")
@@ -30,12 +33,6 @@ public class GameHistoryEntity implements GameHistory {
 
     @Column(name = "history_type")
     private String type;
-
-    @Column(name = "created")
-    private Date created;
-
-    @Column(name = "modified")
-    private Date modified;
 
     @Override
     public Integer getHistoryId() {
@@ -91,21 +88,4 @@ public class GameHistoryEntity implements GameHistory {
         this.type = type;
     }
 
-    @Override
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    @Override
-    public Date getModified() {
-        return modified;
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified;
-    }
 }
