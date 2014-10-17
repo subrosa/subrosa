@@ -213,10 +213,10 @@ public class ApiGameController extends BaseApiController {
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         List<Post> posts = gameFactory.getGame(gameUrl, "posts").getPosts();
         if (CollectionUtils.isEmpty(posts)) {
-            return new PaginatedList<Post>(Lists.<Post>newArrayList(), 0, limit, offset);
+            return new PaginatedList<>(Lists.<Post>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<Post>(
-                    posts.subList(offset, Math.min(posts.size() - 1, offset + limit)),
+            return new PaginatedList<>(
+                    posts.subList(offset, Math.min(posts.size(), offset + limit)),
                     posts.size(),
                     limit, offset);
         }

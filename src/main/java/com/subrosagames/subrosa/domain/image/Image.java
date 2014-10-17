@@ -2,16 +2,18 @@ package com.subrosagames.subrosa.domain.image;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.hibernate.annotations.Type;
-import com.subrosagames.subrosa.infrastructure.persistence.hibernate.UriUserType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.file.FileAsset;
 
 /**
  * Model class for images.
@@ -25,13 +27,34 @@ public class Image {
     @Column(name = "image_id")
     private Integer id;
 
-    @Column(name = "image_type")
-    @Enumerated(EnumType.STRING)
-    private ImageType imageType;
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "file_asset_id")
+    private FileAsset fileAsset;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "account_id")
+    private Account account;
+
+    @JsonIgnore
     @Column
-//    @Type(type = UriUserType.HIBERNATE_TYPE_NAME)
-    private String uri;
+    private Integer index;
+
+    @JsonProperty
+    public String getName() {
+        return fileAsset.getName();
+    }
+
+    @JsonProperty
+    public Long getSize() {
+        return fileAsset.getSize();
+    }
+
+    @JsonProperty
+    public String getMimeType() {
+        return fileAsset.getMimeType();
+    }
 
     public Integer getId() {
         return id;
@@ -41,20 +64,27 @@ public class Image {
         this.id = id;
     }
 
-    public ImageType getImageType() {
-        return imageType;
+    public Integer getIndex() {
+        return index;
     }
 
-    public void setImageType(ImageType imageType) {
-        this.imageType = imageType;
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
-    @JsonValue
-    public String getUri() {
-        return uri;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setUri(String uri) {
-        this.uri = uri;
+    public void setAccount(Account account) {
+        this.account = account;
+    }
+
+    public FileAsset getFileAsset() {
+        return fileAsset;
+    }
+
+    public void setFileAsset(FileAsset fileAsset) {
+        this.fileAsset = fileAsset;
     }
 }

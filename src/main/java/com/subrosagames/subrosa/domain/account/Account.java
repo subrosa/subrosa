@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -21,6 +22,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.MapKey;
 import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -42,9 +44,13 @@ import org.springframework.orm.jpa.JpaSystemException;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
@@ -126,16 +132,10 @@ public class Account implements PermissionTarget {
     @MapKeyEnumerated(EnumType.STRING)
     private Map<AddressType, Address> addresses;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "account_image",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "image_id")
-    )
-    @MapKey(name = "imageType")
-    @MapKeyEnumerated(EnumType.STRING)
-    private Map<ImageType, Image> images;
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OrderColumn(name = "index")
+    private List<Image> images = Lists.newArrayList();
 
     /**
      * Get accolades for this account.
@@ -245,30 +245,8 @@ public class Account implements PermissionTarget {
      *
      * @return images if loaded or {@code null}
      */
-    public Map<ImageType, Image> getImages() {
-        if (!Hibernate.isInitialized(images)) {
-            return null;
-        }
+    public List<Image> getImages() {
         return images;
-    }
-
-    /**
-     * Set images.
-     *
-     * @param images images
-     */
-    public void setImages(Map<ImageType, Image> images) {
-        this.images = images;
-    }
-
-    /**
-     * Get image of the specified type.
-     *
-     * @param imageType image type
-     * @return image
-     */
-    public Image getImage(ImageType imageType) {
-        return images.get(imageType);
     }
 
     /**
@@ -366,6 +344,26 @@ public class Account implements PermissionTarget {
         performUpdate();
     }
 
+    /**
+     * Add image to account images.
+     *
+     * @param image image
+     */
+    public void addImage(Image image) {
+        images.add(image);
+    }
+
+    /**
+     * Get specified account image.
+     *
+     * @param imageId image id
+     * @return account image
+     * @throws ImageNotFoundException if image does not exist
+     */
+    public Image getImage(int imageId) throws ImageNotFoundException {
+        return accountRepository.getImage(this, imageId);
+    }
+
     private boolean isEmailConflict(JpaSystemException e) {
         String message = e.getMostSpecificCause().getMessage();
         return message.contains("unique constraint");
@@ -390,4 +388,5 @@ public class Account implements PermissionTarget {
     public void setTokenFactory(TokenFactory tokenFactory) {
         this.tokenFactory = tokenFactory;
     }
+
 }

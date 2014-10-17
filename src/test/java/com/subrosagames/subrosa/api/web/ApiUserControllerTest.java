@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.api.web;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestExecutionListeners;
@@ -9,6 +10,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -68,16 +70,8 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
 
+    @Ignore
     @Test
-    public void testCurrentUserIncludesAvatar() throws Exception {
-        mockMvc.perform(
-                get("/user")
-                        .with(user("bob@user.com")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.images").value(hasEntry("AVATAR", "/avatar_uri")));
-    }
-
-    //    @Test
     public void testLogout() throws Exception {
     }
 

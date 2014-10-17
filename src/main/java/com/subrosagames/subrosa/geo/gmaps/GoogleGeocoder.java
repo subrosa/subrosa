@@ -8,7 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.code.geocoder.Geocoder;
@@ -30,10 +30,10 @@ public class GoogleGeocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoder.class);
 
-    @Autowired
+    @Value("${google.geocode.endpoint}")
     private String geocodeEndpoint;
 
-    @Autowired
+    @Value("${google.geocode.apiKey}")
     private String geocodeApiKey;
 
     /**

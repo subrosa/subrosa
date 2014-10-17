@@ -25,10 +25,12 @@
 
   <import resource="subrosa-security.xml"/>
   <import resource="subrosa-persistence.xml"/>
-  <!--<import resource="subrosa-caching.xml"/>-->
   <import resource="subrosa-scheduling.xml"/>
   <import resource="subrosa-messaging.xml"/>
-  <import resource="subrosa-android.xml"/>
+  <!--<import resource="subrosa-caching.xml"/>-->
+
+  <!--<import resource="subrosa-aws.xml"/>-->
+  <!--<import resource="subrosa-android.xml"/>-->
   <import resource="subrosa-google.xml"/>
 
   <bean id="customizableTraceInterceptor"

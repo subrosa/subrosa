@@ -17,6 +17,8 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageType;
+import com.subrosagames.subrosa.domain.player.Participant;
 
 /**
  * Persisted team entity.
@@ -67,8 +69,8 @@ public class TeamEntity {
         return game;
     }
 
-    public void setGame(GameEntity gameId) {
-        this.game = gameId;
+    public void setGame(GameEntity game) {
+        this.game = game;
     }
 
     public List<PlayerEntity> getPlayers() {
