@@ -13,7 +13,7 @@
         <constructor-arg value="${amazon.aws.secretKey}"/>
     </bean>
 
-    <bean id="s3BucketName" class="java.lang.String">
+    <bean id="imageBucketName" class="java.lang.String">
         <constructor-arg value="${amazon.s3.bucket.image}"/>
     </bean>
 </beans>

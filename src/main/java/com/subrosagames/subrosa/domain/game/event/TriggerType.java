@@ -5,5 +5,4 @@ package com.subrosagames.subrosa.domain.game.event;
  */
 public enum TriggerType {
 
-    PREREQUISITE
 }

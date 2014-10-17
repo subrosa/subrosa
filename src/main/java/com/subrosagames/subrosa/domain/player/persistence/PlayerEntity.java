@@ -17,6 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -34,6 +36,8 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.GameRole;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -87,6 +91,11 @@ public class PlayerEntity implements Player {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<TargetEntity> targets;
 
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    @MapKey(name = "imageType")
+    @MapKeyEnumerated(EnumType.STRING)
+    private Map<ImageType, PlayerImage> images;
+
     public Integer getId() {
         return id;
     }
@@ -101,6 +110,18 @@ public class PlayerEntity implements Player {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Image getImage(ImageType imageType) {
+        return images.get(imageType).getImage();
+    }
+
+    public Map<ImageType, PlayerImage> getImages() {
+        return images;
+    }
+
+    public void setImage(ImageType imageType, PlayerImage image) {
+        images.put(imageType, image);
     }
 
     public Map<String, String> getAttributes() {

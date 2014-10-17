@@ -81,7 +81,9 @@ public class AcceptHeaderFilter implements Filter {
     }
 
     @Override
-    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
+    {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         String incomingAcceptHeader = httpRequest.getHeader(ACCEPT_HEADER);
         LOG.debug("Accept header is '{}'", incomingAcceptHeader);

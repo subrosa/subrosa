@@ -3,12 +3,20 @@
   <account account_id="1" activated="true" email="bob@user.com"
            name="Bob T. User"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <image image_id="1" uri="/avatar_uri" image_type="AVATAR"/>
-  <account_image account_id="1" image_id="1"/>
 
   <account account_id="2" activated="false" email="notactive@user.com"
            name="Not Activated"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+
+  <account account_id="3" activated="true" email="lotsopics@user.com"
+           name="Like N. Pics"
+           password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+  <image image_id="1" account_id="3" file_asset_id="1" index="0"/>
+  <file_asset file_asset_id="1" name="pic1.png" mime_type="image/png" size="100"/>
+  <image image_id="2" account_id="3" file_asset_id="2" index="1"/>
+  <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
+  <image image_id="3" account_id="3" file_asset_id="3" index="2"/>
+  <file_asset file_asset_id="3" name="pic3.png" mime_type="image/png" size="300"/>
 
   <account account_id="1000" activated="true" email="joe@admin.com"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>

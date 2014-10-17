@@ -21,13 +21,14 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
 /**
- * Persisted post.
+ * Persisted game post.
  */
 @Entity
 @Table(name = "post")
-public class PostEntity implements Post {
+public class PostEntity extends BaseEntity implements Post {
 
     @Id
     @SequenceGenerator(name = "postSeq", sequenceName = "post_post_id_seq")
@@ -58,23 +59,6 @@ public class PostEntity implements Post {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
     private Image image;
-
-    @Column
-    private Date created;
-
-    @Column
-    private Date modified;
-
-    @PrePersist
-    protected void prePersist() {
-        created = new Date();
-        modified = new Date();
-    }
-
-    @PreUpdate
-    protected void preUpdate() {
-        modified = new Date();
-    }
 
     public Integer getPostId() {
         return postId;
@@ -138,22 +122,6 @@ public class PostEntity implements Post {
 
     public void setImage(Image image) {
         this.image = image;
-    }
-
-    public Date getModified() {
-        return modified == null ? null : new Date(modified.getTime());
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified == null ? null : new Date(modified.getTime());
-    }
-
-    public Date getCreated() {
-        return created == null ? null : new Date(created.getTime());
-    }
-
-    public void setCreated(Date created) {
-        this.created = created == null ? null : new Date(created.getTime());
     }
 
 }

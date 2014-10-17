@@ -1,16 +1,14 @@
 package com.subrosagames.subrosa.geo.gmaps;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.code.geocoder.Geocoder;
@@ -20,7 +18,6 @@ import com.google.code.geocoder.model.GeocoderAddressComponent;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.common.collect.Lists;
-import com.jayway.jsonpath.Filter;
 
 
 /**
@@ -33,14 +30,15 @@ public class GoogleGeocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoder.class);
 
-    @Autowired
+    @Value("${google.geocode.endpoint}")
     private String geocodeEndpoint;
 
-    @Autowired
+    @Value("${google.geocode.apiKey}")
     private String geocodeApiKey;
 
     /**
      * Geocodes the provided address.
+     *
      * @param address address string
      * @return address components
      * @throws IOException if

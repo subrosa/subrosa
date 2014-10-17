@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
-import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
@@ -38,19 +37,13 @@ public class ApiSandboxController {
      * Test endpoint, creates a random game.
      *
      * @return created game
-     * @throws GameValidationException if something goes wrong
-     * @throws GameNotFoundException   if game is not found
+     * @throws GameValidationException   if something goes wrong
+     * @throws GameNotFoundException     if game is not found
+     * @throws PlayerValidationException if player validation fails
      */
     @RequestMapping(value = "/android")
     @ResponseBody
     public Game doIt() throws GameValidationException, GameNotFoundException, PlayerValidationException {
-        //@RequestBody GameDescriptor gameDescriptor) {
-//        GameEntity entity = gameDescriptor.getInfo();
-//        List<GameHistory> events = gameDescriptor.getEvents();
-
-//        LifecycleEntity lifecycleEntity = new LifecycleEntity();
-//        lifecycleEntity.addScheduledEvent(EventMessage.MUTUAL_INTEREST_ASSIGNMENT, lifecycleEntity.getGameStart());
-
         BaseGame gameEntity = new AssassinGame();
         gameEntity.setName("game name" + random.nextLong());
         gameEntity.setUrl("game-url-" + random.nextLong());
@@ -59,10 +52,6 @@ public class ApiSandboxController {
         gameEntity.setMaximumTeamSize(5);
         gameEntity.setGameType(GameType.ASSASSIN);
         gameEntity.setTimezone(TimeZone.getDefault().getDisplayName());
-//        gameEntity.setRegistrationStart(new Timestamp(new Date().getTime() + 2500)); // SUPPRESS CHECKSTYLE MagicNumber
-//        gameEntity.setRegistrationEnd(new Timestamp(new Date().getTime() + 5000)); // SUPPRESS CHECKSTYLE MagicNumber
-//        gameEntity.setGameStart(new Timestamp(new Date().getTime() + 10000)); // SUPPRESS CHECKSTYLE MagicNumber
-//        gameEntity.setGameEnd(new Timestamp(new Date().getTime() + 40000)); // SUPPRESS CHECKSTYLE MagicNumber
 
         Game game = gameEntity.create();
 

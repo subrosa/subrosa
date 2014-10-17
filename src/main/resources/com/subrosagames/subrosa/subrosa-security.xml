@@ -20,7 +20,6 @@
   <http auto-config="false" use-expressions="true" entry-point-ref="http403ForbiddenEntryPoint">
     <custom-filter ref="usernamePasswordAuthenticationFilter" after="EXCEPTION_TRANSLATION_FILTER"/>
     <custom-filter ref="deviceSessionAuthenticationFilter" position="PRE_AUTH_FILTER"/>
-    <intercept-url pattern="/v1/authenticate" access="isAnonymous()"/>
     <intercept-url pattern="/v1/session" access="isAnonymous()"/>
     <intercept-url pattern="/v1/game/**" access="permitAll"/>
     <intercept-url pattern="/v1/test/**" access="isAuthenticated()"/>

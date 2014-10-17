@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.infrastructure.storage.s3;
+package com.subrosagames.subrosa.domain.file;
 
 /**
  * Interface for a file storage mechanism.

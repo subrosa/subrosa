@@ -26,6 +26,8 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 import com.subrosagames.subrosa.security.PasswordUtility;
 
@@ -74,6 +76,19 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     public Address update(Address address) {
         return entityManager.merge(address);
+    }
+
+    @Override
+    public Image getImage(Account account, int imageId) throws ImageNotFoundException {
+        try {
+            return entityManager.createQuery("SELECT i FROM Image i WHERE i.account = :account AND i.id = :id", Image.class)
+                    .setParameter("account", account)
+                    .setParameter("id", imageId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            LOG.warn("Attempted to find non-existing image - account {} image {}", account.getId(), imageId);
+            throw new ImageNotFoundException(e);
+        }
     }
 
     @Override

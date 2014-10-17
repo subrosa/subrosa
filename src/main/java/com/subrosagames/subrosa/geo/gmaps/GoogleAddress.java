@@ -2,12 +2,14 @@ package com.subrosagames.subrosa.geo.gmaps;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.ObjectUtils;
-
 import com.google.code.geocoder.model.GeocoderLocationType;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
+/**
+ * POJO for holding address information from google's geocoding API.
+ *
+ * @see GoogleGeocoder
+ */
 public class GoogleAddress {
 
     private String fullAddress;

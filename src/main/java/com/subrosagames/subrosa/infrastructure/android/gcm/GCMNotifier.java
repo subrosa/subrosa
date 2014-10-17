@@ -6,7 +6,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
 import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
@@ -24,7 +26,7 @@ public class GCMNotifier implements Notifier {
 
     private static final Logger LOG = LoggerFactory.getLogger(GCMNotifier.class);
 
-    @Autowired
+    @Value("${android.gcm.apiKey}")
     private String gcmApiKey;
 
     @Autowired

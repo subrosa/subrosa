@@ -5,12 +5,13 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.subrosagames.subrosa.domain.player.PlayerRepository;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttribute;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttributePk;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.player.persistence.TargetEntity;
-import com.subrosagames.subrosa.domain.player.PlayerRepository;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**

@@ -1,8 +1,9 @@
 package com.subrosagames.subrosa.security;
 
-import com.subrosagames.subrosa.domain.account.Account;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.subrosagames.subrosa.domain.account.Account;
 
 /**
  * Helper class for determining authentication status and retrieving authenticated user.
@@ -14,6 +15,7 @@ public final class SecurityHelper {
 
     /**
      * Whether current user is anonymous.
+     *
      * @return whether anonymous
      */
     public static boolean isAnonymous() {
@@ -22,6 +24,7 @@ public final class SecurityHelper {
 
     /**
      * Whether specified authentication is anonymous.
+     *
      * @param authentication authentication
      * @return whether anonymous
      */
@@ -31,6 +34,7 @@ public final class SecurityHelper {
 
     /**
      * Whether current user is authenticated.
+     *
      * @return whether authenticated
      */
     public static boolean isAuthenticated() {
@@ -39,6 +43,7 @@ public final class SecurityHelper {
 
     /**
      * Whether specified authentication is authenticated.
+     *
      * @param authentication authentication
      * @return whether authenticated
      */
@@ -48,6 +53,7 @@ public final class SecurityHelper {
 
     /**
      * Retrieve the currently logged in user.
+     *
      * @return logged in user, or {@code null} if not authenticated.
      */
     public static Account getAuthenticatedUser() {

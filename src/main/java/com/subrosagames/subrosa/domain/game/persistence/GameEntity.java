@@ -25,6 +25,7 @@ import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
@@ -38,13 +39,14 @@ import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.Operator;
 import com.subrosa.api.actions.list.TimestampToDateTranslator;
 import com.subrosa.api.actions.list.annotation.Filterable;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.RequiredAttribute;
 import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.Rule;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
@@ -57,7 +59,6 @@ import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
-import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
  * Persisted entity for a game.
@@ -185,13 +186,14 @@ public class GameEntity extends BaseEntity {
     private Set<Restriction> restrictions;
 
     @OneToMany(
-            targetEntity = RequiredAttributeEntity.class,
+            targetEntity = EnrollmentFieldEntity.class,
             mappedBy = "game",
             cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.EAGER
     )
-    private Set<RequiredAttribute> requiredAttributes = Sets.newHashSet();
+    @OrderColumn(name = "index")
+    private List<EnrollmentField> playerInfo = Lists.newArrayList();
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
@@ -351,6 +353,11 @@ public class GameEntity extends BaseEntity {
         this.maximumTeamSize = maximumTeamSize;
     }
 
+    /**
+     * Get game posts, guarding against lazy load exceptions.
+     *
+     * @return game posts
+     */
     public List<Post> getPosts() {
         if (!Hibernate.isInitialized(posts)) {
             return null;
@@ -362,6 +369,11 @@ public class GameEntity extends BaseEntity {
         this.posts = posts;
     }
 
+    /**
+     * Get game history, guarding against lazy load exceptions.
+     *
+     * @return game history
+     */
     public List<GameHistory> getHistory() {
         if (!Hibernate.isInitialized(history)) {
             return null;
@@ -373,6 +385,11 @@ public class GameEntity extends BaseEntity {
         this.history = history;
     }
 
+    /**
+     * Get game events, guarding against lazy load exceptions.
+     *
+     * @return game events
+     */
     public List<GameEvent> getEvents() {
         if (!Hibernate.isInitialized(events)) {
             return null;
@@ -440,17 +457,28 @@ public class GameEntity extends BaseEntity {
         this.restrictions = restrictions;
     }
 
-    public Set<RequiredAttribute> getRequiredAttributes() {
-        return requiredAttributes;
+    public List<EnrollmentField> getPlayerInfo() {
+        return playerInfo;
     }
 
-    public void addRequiredAttribute(RequiredAttribute requiredAttribute) {
-        requiredAttributes.add(requiredAttribute);
+    /**
+     * Add an enrollment field to the game's required fields.
+     *
+     * @param enrollmentField enrollment field
+     */
+    public void addEnrollmentField(EnrollmentField enrollmentField) {
+        playerInfo.add(enrollmentField);
     }
 
+    /**
+     * Get game start date.
+     *
+     * @return game start date
+     */
     public Date getGameStart() {
-        return gameStart == null ? null :
-                gameStart.isEmpty() ? null : gameStart.get(0).getDate();
+        return gameStart == null ? null
+                : gameStart.isEmpty() ? null
+                : gameStart.get(0).getDate();
     }
 
     public void setGameStart(List<ScheduledEvent> gameStart) {
@@ -462,9 +490,15 @@ public class GameEntity extends BaseEntity {
         return gameStart;
     }
 
+    /**
+     * Get game end date.
+     *
+     * @return game end date
+     */
     public Date getGameEnd() {
-        return gameEnd == null ? null :
-                gameEnd.isEmpty() ? null : gameEnd.get(0).getDate();
+        return gameEnd == null ? null
+                : gameEnd.isEmpty() ? null
+                : gameEnd.get(0).getDate();
     }
 
     public void setGameEnd(List<ScheduledEvent> gameEnd) {
@@ -476,9 +510,15 @@ public class GameEntity extends BaseEntity {
         return gameEnd;
     }
 
+    /**
+     * Get game registration start date.
+     *
+     * @return game registration start date
+     */
     public Date getRegistrationStart() {
-        return registrationStart == null ? null :
-                registrationStart.isEmpty() ? null : registrationStart.get(0).getDate();
+        return registrationStart == null ? null
+                : registrationStart.isEmpty() ? null
+                : registrationStart.get(0).getDate();
     }
 
     public void setRegistrationStart(List<ScheduledEvent> registrationStart) {
@@ -490,9 +530,15 @@ public class GameEntity extends BaseEntity {
         return registrationStart;
     }
 
+    /**
+     * Get game registration end date.
+     *
+     * @return game registration end date
+     */
     public Date getRegistrationEnd() {
-        return registrationEnd == null ? null :
-                registrationEnd.isEmpty() ? null : registrationEnd.get(0).getDate();
+        return registrationEnd == null ? null
+                : registrationEnd.isEmpty() ? null
+                : registrationEnd.get(0).getDate();
     }
 
     public void setRegistrationEnd(List<ScheduledEvent> registrationEnd) {

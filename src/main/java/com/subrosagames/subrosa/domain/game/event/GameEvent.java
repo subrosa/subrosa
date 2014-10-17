@@ -1,8 +1,8 @@
 package com.subrosagames.subrosa.domain.game.event;
 
-import com.subrosagames.subrosa.domain.game.Game;
-
 import java.util.Date;
+
+import com.subrosagames.subrosa.domain.game.Game;
 
 /**
  * Model for game events.

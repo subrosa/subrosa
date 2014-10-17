@@ -35,7 +35,6 @@ import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
-import com.subrosagames.subrosa.domain.game.persistence.RequiredAttributeEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
@@ -62,9 +61,6 @@ public class BaseGame extends GameEntity implements Game {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseGame.class);
 
-    @JsonIgnore
-    @Transient
-    private RuleRepository ruleRepository;
     @JsonIgnore
     @Transient
     private GameRepository gameRepository;
@@ -156,13 +152,13 @@ public class BaseGame extends GameEntity implements Game {
     @Override
     public Map<RuleType, List<String>> getRules() {
         Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
-        rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
+        rules.put(RuleType.ALL_GAMES, Lists.transform(gameRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
         final Set<Rule> ruleSet = getRuleSet();
         if (ruleSet != null) {
+            List<Rule> rulesList = new ArrayList<Rule>(ruleSet.size());
+            rulesList.addAll(ruleSet);
             rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
-                    new ArrayList<Rule>(ruleSet.size()) {{
-                        addAll(ruleSet);
-                    }},
+                    rulesList,
                     extractRules
             ));
         }
@@ -192,7 +188,7 @@ public class BaseGame extends GameEntity implements Game {
         checkNotNull(joinGameRequest, "Cannot join game with null join game request");
 
         assertRestrictionsSatisfied(account); // throws PlayRestrictedException
-        assertRequiredAttributesSet(joinGameRequest); // throws InsufficientInformationException
+        assertEnrollmentFieldsSet(joinGameRequest); // throws InsufficientInformationException
 
         PlayerDescriptor playerDescriptor = new PlayerDescriptor();
         playerDescriptor.setName(joinGameRequest.getName());
@@ -290,19 +286,18 @@ public class BaseGame extends GameEntity implements Game {
         this.playerFactory = playerFactory;
     }
 
-    public void setRuleRepository(RuleRepository ruleRepository) {
-        this.ruleRepository = ruleRepository;
-    }
-
-    private void assertRequiredAttributesSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {
+    private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {
         boolean failed = false;
         Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
-        for (RequiredAttribute attribute : getRequiredAttributes()) {
-            if (!joinGameRequest.getAttributes().containsKey(attribute.getName())) {
+        for (EnrollmentField enrollmentField : getPlayerInfo()) {
+            if (!joinGameRequest.getAttributes().containsKey(enrollmentField.getName())) {
                 failed = true;
-                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", attribute.getName());
+                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", enrollmentField.getFieldId());
                 constraints.add(constraint);
+                continue;
             }
+            // TODO build out join game with player info requirements
+            joinGameRequest.getAttributes().get(enrollmentField.getName());
         }
         if (failed) {
             throw new InsufficientInformationException(constraints);

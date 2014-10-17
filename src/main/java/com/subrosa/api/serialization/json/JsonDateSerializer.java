@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.subrosa.api.serialization.DateSerialization;
@@ -27,8 +26,7 @@ public class JsonDateSerializer extends JsonSerializer<Date> {
      * @param date      the date
      * @param generator the json generator
      * @param provider  the serializer provider
-     * @throws JsonProcessingException when a JSON processing error occurs
-     * @throws java.io.IOException     when an IO error occurs
+     * @throws java.io.IOException when an IO error occurs
      */
     @Override
     public void serialize(Date date, JsonGenerator generator, SerializerProvider provider) throws IOException {

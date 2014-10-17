@@ -15,7 +15,7 @@ import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
 
 /**
- *
+ * Persisted targeted player.
  */
 @Entity
 @Table(name = "target_player")
@@ -37,17 +37,17 @@ public class TargetPlayerEntity extends TargetEntity implements TargetPlayer {
 
     @Override
     public Image getPhotoId() {
-        return target.getAccount().getImage(ImageType.PHOTO_ID);
+        return target.getImage(ImageType.PHOTO_ID);
     }
 
     @Override
     public Image getActionPhoto() {
-        return target.getAccount().getImage(ImageType.ACTION_PHOTO);
+        return target.getImage(ImageType.ACTION_PHOTO);
     }
 
     @Override
     public Image getAvatar() {
-        return target.getAccount().getImage(ImageType.AVATAR);
+        return target.getImage(ImageType.AVATAR);
     }
 
     @Override

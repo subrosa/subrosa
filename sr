@@ -6,7 +6,7 @@ case "$1" in
     init)
         vagrant up
         vagrant ssh -c "sudo /vagrant/script/env.sh update"
-        vagrant ssh -c "sudo /vagrant/script/env.sh start"
+        vagrant ssh -c "sudo /vagrant/script/env.sh restart"
         gradle flywayMigrate war cargoDeployRemote
     ;;
     deploy)

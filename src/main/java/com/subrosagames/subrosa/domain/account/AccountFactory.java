@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
+import com.subrosagames.subrosa.domain.file.FileAsset;
+import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.service.PaginatedList;
 
@@ -47,12 +49,18 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      * @return account
      * @throws AccountNotFoundException if account with specified id does not exist
      */
-    public Account getAccount(Integer id, String... expansions) throws AccountNotFoundException {
+    public Account getAccount(int id, String... expansions) throws AccountNotFoundException {
         Account account = accountRepository.get(id, expansions);
         injectDependencies(account);
         return account;
     }
 
+    /**
+     * Create account object for account descriptor.
+     *
+     * @param accountDescriptor account descriptor
+     * @return account object
+     */
     public Account forDto(AccountDescriptor accountDescriptor) {
         Account account = new Account();
         copyProperties(accountDescriptor, account);
@@ -60,9 +68,28 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         return account;
     }
 
+    /**
+     * Inject account object with its dependencies.
+     *
+     * @param account account
+     */
     public void injectDependencies(Account account) {
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
         account.setTokenFactory(tokenFactory);
+    }
+
+    /**
+     * Create an account image for the given file asset.
+     *
+     * @param account account
+     * @param fileAsset file asset
+     * @return account image
+     */
+    public Image imageForFileAsset(Account account, FileAsset fileAsset) {
+        Image image = new Image();
+        image.setFileAsset(fileAsset);
+        image.setAccount(account);
+        return image;
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.subrosagames.subrosa.domain.DomainObjectRepository;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 
 /**
  * Provides CRUD functionality for accounts and their subordinate entities.
@@ -59,7 +61,29 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
      */
     Account getUnauthenticated(int id, String... expansions) throws AccountNotFoundException;
 
+    /**
+     * Get addresses matching provided conditions.
+     *
+     * @param conditions search conditions
+     * @return list of matching addresses
+     */
     List<Address> addressesWhere(Map<String, Object> conditions);
 
+    /**
+     * Update the given address.
+     *
+     * @param address address to update
+     * @return updated address
+     */
     Address update(Address address);
+
+    /**
+     * Retrieve an account image.
+     *
+     * @param account account
+     * @param imageId image id
+     * @return account image
+     * @throws ImageNotFoundException if image does not exist
+     */
+    Image getImage(Account account, int imageId) throws ImageNotFoundException;
 }

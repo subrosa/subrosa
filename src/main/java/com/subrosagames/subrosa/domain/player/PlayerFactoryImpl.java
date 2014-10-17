@@ -53,7 +53,8 @@ public class PlayerFactoryImpl implements PlayerFactory {
                 playerAttribute.setPlayer(playerEntity);
                 playerAttribute.setValue(entry.getValue());
             } else {
-                LOG.debug("Updating player attribute {} => {} for player {}", playerAttribute.getPrimaryKey().getName(), playerAttribute.getValue(), playerEntity.getId());
+                LOG.debug("Updating player attribute {} => {} for player {}",
+                        playerAttribute.getPrimaryKey().getName(), playerAttribute.getValue(), playerEntity.getId());
                 playerAttribute.setValue(entry.getValue());
             }
             playerAttributes.put(entry.getKey(), playerAttribute);

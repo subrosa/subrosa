@@ -30,26 +30,15 @@ public class LogResponseBodyInterceptor implements HandlerInterceptor {
             final StringBuilder stringBuilder = new StringBuilder();
             final ServletOutputStream outputStream = new ServletOutputStream() {
                 @Override
-                public void write(int b) throws IOException {
-                    stringBuilder.append((char) b);
-                }
+                public void write(int b) throws IOException { stringBuilder.append((char) b); }
                 @Override
-                public void write(byte[] b, int off, int len) throws IOException {
-                    stringBuilder.append(new String(b, off, len, "UTF-8"));
-                }
+                public void write(byte[] b, int off, int len) throws IOException { stringBuilder.append(new String(b, off, len, "UTF-8")); }
                 @Override
-                public String toString() {
-                    return stringBuilder.toString();
-                }
-
+                public String toString() { return stringBuilder.toString(); }
                 @Override
-                public boolean isReady() {
-                    return true;
-                }
-
+                public boolean isReady() { return true; }
                 @Override
-                public void setWriteListener(WriteListener writeListener) {
-                }
+                public void setWriteListener(WriteListener writeListener) { }
             };
             HttpServletResponseWrapper responseWrapper = new HttpServletResponseWrapper(httpServletResponse) {
                 @Override

@@ -1,56 +1,37 @@
 package com.subrosagames.subrosa.domain.player;
 
-import java.util.List;
-
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**
  * Model for Teams.
  */
-public class Team implements Participant {
-
-    private TeamEntity teamEntity;
-
-    public Team(TeamEntity teamEntity) {
-        this.teamEntity = teamEntity;
-    }
-
-    public Integer getId() {
-        return teamEntity.getId();
-    }
-
-    @Override
-    public String getName() {
-        return teamEntity.getName();
-    }
-
-    @Override
-    public List<? extends Target> getTargets() {
-        return teamEntity.getTargets();
-    }
+public class Team extends TeamEntity implements Participant {
 
     @Override
     public Target getTarget(int targetId) throws TargetNotFoundException {
-        return null;  // TODO
+        return null;
     }
 
     @Override
     public void addTarget(Player target) {
-        // TODO
+
     }
 
     @Override
     public void addTarget(Team target) {
-        // TODO
+
     }
 
     @Override
     public void addTarget(Location target) {
-        // TODO
+
     }
 
-    public List<? extends Player> getPlayers() {
-        return teamEntity.getPlayers();
+    @Override
+    public Image getImage(ImageType imageType) {
+        return null;
     }
 }

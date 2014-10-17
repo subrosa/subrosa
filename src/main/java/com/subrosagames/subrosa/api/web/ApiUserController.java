@@ -36,6 +36,7 @@ public class ApiUserController {
     /**
      * Get the currently logged in user's account info.
      *
+     * @return logged in user
      * @throws com.subrosagames.subrosa.api.NotAuthenticatedException if user is not authenticated
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)

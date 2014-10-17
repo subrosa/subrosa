@@ -23,8 +23,6 @@ import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
-import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
@@ -51,9 +49,9 @@ public class ApiGamePlayerController extends BaseApiController {
     /**
      * Get a list of the {@link Player}s in the specified game.
      *
-     * @param gameUrl the game
-     * @param limit   maximum number of {@link Player}s to return.
-     * @param offset  offset into the list.
+     * @param gameUrl     the game
+     * @param limitParam  maximum number of {@link Player}s to return.
+     * @param offsetParam offset into the list.
      * @return a PaginatedList of {@link Player}s.
      * @throws GameNotFoundException     if game is not found
      * @throws NotAuthenticatedException if request is not authenticated
@@ -62,8 +60,8 @@ public class ApiGamePlayerController extends BaseApiController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Player> listPlayers(@PathVariable("gameUrl") final String gameUrl,
-                                             @RequestParam(value = "limit", required = false) Integer limit,
-                                             @RequestParam(value = "offset", required = false) Integer offset)
+                                             @RequestParam(value = "limitParam", required = false) Integer limitParam,
+                                             @RequestParam(value = "offset", required = false) Integer offsetParam)
             throws GameNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
@@ -74,13 +72,13 @@ public class ApiGamePlayerController extends BaseApiController {
             throw new NotAuthorizedException("Incorrect permissions.");
         }
 
-        limit = ObjectUtils.defaultIfNull(limit, 0);
-        offset = ObjectUtils.defaultIfNull(offset, 0);
+        int limit = ObjectUtils.defaultIfNull(limitParam, 0);
+        int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         List<Player> players = game.getPlayers(limit, offset);
         if (CollectionUtils.isEmpty(players)) {
-            return new PaginatedList<Player>(Lists.<Player>newArrayList(), 0, limit, offset);
+            return new PaginatedList<>(Lists.<Player>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<Player>(
+            return new PaginatedList<>(
                     players.subList(offset, Math.min(players.size() - 1, offset + limit)),
                     players.size(),
                     limit, offset);
@@ -117,28 +115,28 @@ public class ApiGamePlayerController extends BaseApiController {
     /**
      * Creates a game player for the user.
      *
-     * @param gameUrl         game url
-     * @param joinGameRequest join game information
+     * @param gameUrl              game url
+     * @param joinGameRequestParam join game information
      * @return created player
-     * @throws GameNotFoundException            if the game is not found
-     * @throws PlayerValidationException        if the player information is invalid
-     * @throws InsufficientInformationException if required player information is missing
-     * @throws PlayRestrictedException          if account does not satisfy game requirements
-     * @throws NotAuthenticatedException        if the request is not authenticated
-     * @throws NotAuthorizedException           if the user does not have correct permissions
+     * @throws GameNotFoundException                                                   if the game is not found
+     * @throws PlayerValidationException                                               if the player information is invalid
+     * @throws com.subrosagames.subrosa.domain.player.InsufficientInformationException if required player information is missing
+     * @throws com.subrosagames.subrosa.domain.player.PlayRestrictedException          if account does not satisfy game requirements
+     * @throws NotAuthenticatedException                                               if the request is not authenticated
+     * @throws NotAuthorizedException                                                  if the user does not have correct permissions
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Player joinGame(@PathVariable("gameUrl") String gameUrl,
-                           @RequestBody(required = false) JoinGameRequest joinGameRequest)
+                           @RequestBody(required = false) JoinGameRequest joinGameRequestParam)
             throws GameNotFoundException, PlayerValidationException,
             NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
         }
-        joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequest, new JoinGameRequest());
+        JoinGameRequest joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequestParam, new JoinGameRequest());
         return gameService.joinGame(gameUrl, getAuthenticatedUser(), joinGameRequest);
     }
 }
