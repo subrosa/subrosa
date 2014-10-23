@@ -9,8 +9,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.EnrollmentFieldType;
 
@@ -39,8 +42,17 @@ public class EnrollmentFieldEntity implements EnrollmentField {
     @Enumerated(EnumType.STRING)
     private EnrollmentFieldType type;
 
+    @JsonIgnore
     @Column
     private Integer index;
+
+    @PrePersist
+    @PreUpdate
+    private void prepareIndex() {
+        if (game != null) {
+            index = game.getPlayerInfo().indexOf(this);
+        }
+    }
 
     @Override
     public String getFieldId() {
