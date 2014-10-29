@@ -8,6 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates a method as requiring authentication.
+ *
+ * TODO XXX implement enforcement of this annotation
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

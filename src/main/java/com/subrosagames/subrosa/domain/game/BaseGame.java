@@ -219,7 +219,7 @@ public class BaseGame extends GameEntity implements Game {
 
     @Override
     public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
-        LOG.debug("Setting attribute {} to {} for game {}", new Object[]{ attributeType, attributeValue, getId() });
+        LOG.debug("Setting attribute {} to {} for game {}", attributeType, attributeValue, getId());
         gameRepository.setGameAttribute(this, attributeType, attributeValue);
     }
 
@@ -256,9 +256,7 @@ public class BaseGame extends GameEntity implements Game {
         OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(eventEntity, eventDescriptor);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();

@@ -35,7 +35,7 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      */
     public PaginatedList<Account> getAccounts(Integer limit, Integer offset, String... expansions) {
         List<Account> accounts = accountRepository.list(limit, offset, expansions);
-        return new PaginatedList<Account>(
+        return new PaginatedList<>(
                 accounts,
                 accountRepository.count(),
                 limit, offset);

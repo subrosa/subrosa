@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-EC2_HOST="ec2-54-69-137-20.us-west-2.compute.amazonaws.com"
+EC2_HOST="ec2-54-187-143-54.us-west-2.compute.amazonaws.com"
 
 killz(){
 	echo "Killing all docker containers:"
@@ -30,7 +30,7 @@ start(){
         -d \
         -p 5432:5432 \
         --name db \
-        ${EC2_HOST}:5000/db)
+        ${EC2_HOST}:5000/subrosa/db)
     echo "Started PostgreSQL in container $POSTGRESQL"
 
     RABBITMQ=$(sudo docker run \
@@ -56,7 +56,7 @@ start(){
 
 update(){
     echo "Updating docker containers"
-    sudo docker pull ${EC2_HOST}:5000/db
+    sudo docker pull ${EC2_HOST}:5000/subrosa/db
     sudo docker pull tutum/rabbitmq:latest
     sudo docker pull tutum/tomcat:8.0
 }
