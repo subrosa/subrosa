@@ -10,14 +10,42 @@ import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
  */
 public interface PlayerRepository {
 
+    /**
+     * Persist a new target.
+     *
+     * @param targetEntity target entity
+     */
     void createTarget(TargetEntity targetEntity);
 
+    /**
+     * Get the player for the given id.
+     *
+     * @param id player id
+     * @return player
+     */
     PlayerEntity getPlayer(Integer id);
 
+    /**
+     * Get the team for the given id.
+     *
+     * @param id team id
+     * @return team
+     */
     TeamEntity getTeam(Integer id);
 
+    /**
+     * Persist a new team.
+     *
+     * @param teamEntity team entity
+     */
     void createTeam(TeamEntity teamEntity);
 
+    /**
+     * Persist a new player.
+     *
+     * @param playerEntity player entity
+     * @throws PlayerValidationException if player is not valid for creation
+     */
     void createPlayer(PlayerEntity playerEntity) throws PlayerValidationException;
 
     /**

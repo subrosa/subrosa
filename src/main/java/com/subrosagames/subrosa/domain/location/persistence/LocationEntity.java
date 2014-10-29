@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import com.subrosagames.subrosa.domain.location.Location;
 
 /**
- *
+ * Persisted location.
  */
 @Entity
 @Table(name = "location")

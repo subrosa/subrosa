@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.api.web;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.security.SubrosaUser;
 
@@ -11,9 +12,12 @@ import com.subrosagames.subrosa.security.SubrosaUser;
  */
 public class BaseApiController {
 
-    Account getAuthenticatedUser() {
+    Account getAuthenticatedUser() throws NotAuthenticatedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ((SubrosaUser) authentication.getPrincipal()).getAccount();
+        if (authentication.getPrincipal() instanceof SubrosaUser) {
+            return ((SubrosaUser) authentication.getPrincipal()).getAccount();
+        }
+        throw new NotAuthenticatedException("Request is not authenticated");
     }
 
 }

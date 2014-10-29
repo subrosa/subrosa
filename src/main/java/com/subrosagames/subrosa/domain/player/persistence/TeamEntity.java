@@ -15,10 +15,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.image.ImageType;
-import com.subrosagames.subrosa.domain.player.Participant;
 
 /**
  * Persisted team entity.

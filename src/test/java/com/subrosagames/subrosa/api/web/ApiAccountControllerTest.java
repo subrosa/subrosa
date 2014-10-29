@@ -44,7 +44,7 @@ public class ApiAccountControllerTest extends AbstractApiControllerTest {
     public void testUnauthenticatedAccountRetrieval() throws Exception {
         mockMvc.perform(
                 get("/account/1"))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

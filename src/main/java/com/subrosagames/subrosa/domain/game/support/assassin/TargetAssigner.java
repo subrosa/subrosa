@@ -3,32 +3,44 @@ package com.subrosagames.subrosa.domain.game.support.assassin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Function;
 import com.subrosagames.subrosa.domain.player.Player;
 
 /**
- *
+ * Handles assignment of targets.
  */
 public final class TargetAssigner {
 
     private static final Logger LOG = LoggerFactory.getLogger(TargetAssigner.class);
 
-    private TargetAssigner() { }
+    private TargetAssigner() {
+    }
 
+    /**
+     * Assign players targets according to the given assignment type.
+     *
+     * @param players        players
+     * @param assignmentType assignment type
+     */
     public static void assignTargets(List<Player> players, AssignmentType assignmentType) {
         LOG.debug("Assigning targets for {} players using {} assignment type", players.size(), assignmentType);
         switch (assignmentType) {
             case ROUND_ROBIN:
-                performRoundRobinAssignment(players); break;
+                performRoundRobinAssignment(players);
+                break;
             case MUTUAL_INTEREST:
-                performMutualInterestAssignment(players); break;
+                performMutualInterestAssignment(players);
+                break;
             case MELEE:
-                performMeleeAssignment(players); break;
+                performMeleeAssignment(players);
+                break;
+            default:
+                // throw new InvalidAssignmentTypeException("Bad assignment type given");
         }
     }
 
@@ -61,15 +73,15 @@ public final class TargetAssigner {
     }
 
     private static void shuffleAndAssign(List<Player> playerList, Function<Player[], Void> assignFunction) {
-        ArrayList<Player> players = new ArrayList<Player>(playerList);
+        List<Player> players = new ArrayList<Player>(playerList);
         Collections.shuffle(players);
         Player previous = null;
         for (Player player : players) {
             if (previous == null) {
                 Player last = players.get(players.size() - 1);
-                assignFunction.apply(new Player[] { player, last });
+                assignFunction.apply(new Player[]{ player, last });
             } else {
-                assignFunction.apply(new Player[] { player, previous });
+                assignFunction.apply(new Player[]{ player, previous });
             }
             previous = player;
         }

@@ -3,10 +3,9 @@ package com.subrosagames.subrosa.domain.token;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
-import javax.persistence.NoResultException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
 
 /**
@@ -15,6 +14,8 @@ import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
 @Component
 public class TokenFactoryImpl implements TokenFactory {
 
+    private static final int NUM_BITS = 130;
+
     @Autowired
     private TokenRepository tokenRepository;
 
@@ -22,7 +23,7 @@ public class TokenFactoryImpl implements TokenFactory {
 
     @Override
     public String generateNewToken(int accountId, TokenType tokenType) {
-        String token = new BigInteger(130, secureRandom).toString(32);
+        String token = new BigInteger(NUM_BITS, secureRandom).toString(32);
         TokenEntity tokenEntity = new TokenEntity();
         tokenEntity.setAccountId(accountId);
         tokenEntity.setTokenType(tokenType);

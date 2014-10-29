@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.geo.gmaps;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,7 +65,7 @@ public class GoogleGeocoder {
     }
 
     String getAddressComponentAsString(GeocoderResult result, final String component) {
-        ArrayList<GeocoderAddressComponent> addressComponents = Lists.newArrayList(result.getAddressComponents());
+        List<GeocoderAddressComponent> addressComponents = Lists.newArrayList(result.getAddressComponents());
         CollectionUtils.filter(
                 addressComponents,
                 new Predicate<GeocoderAddressComponent>() {

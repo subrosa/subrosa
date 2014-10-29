@@ -23,7 +23,6 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
-import com.subrosagames.subrosa.security.SecurityHelper;
 import com.subrosagames.subrosa.service.ImageService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
@@ -32,7 +31,6 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  * Controller for {@link Image} related CRUD operations.
  */
 @Controller
-@RequestMapping("/account/{accountId}/image")
 public class ApiAccountImageController extends BaseApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountImageController.class);
@@ -50,22 +48,35 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws NotAuthenticatedException if request is unauthenticated
      * @throws AccountNotFoundException  if account is not found
      */
-    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account/{accountId}/image", "/account/{accountId}/image/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<Image> listImages(@PathVariable("accountId") final Integer accountId,
+    public PaginatedList<Image> listImages(@PathVariable("accountId") Integer accountId,
                                            @RequestParam(value = "limit", required = false) Integer limitParam,
                                            @RequestParam(value = "offset", required = false) Integer offsetParam)
             throws NotAuthenticatedException, AccountNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to list account images.");
-        }
-        if (accountId == null) {
-            throw new AccountNotFoundException("Missing account id");
-        }
+        LOG.debug("{}: listing images for {}", getAuthenticatedUser().getId(), accountId);
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         return imageService.listImages(accountId, limit, offset);
+    }
+
+    /**
+     * Get a paginated list of account images.
+     *
+     * @param limit  limit
+     * @param offset offset
+     * @return paginated list of images
+     * @throws NotAuthenticatedException if request is unauthenticated
+     * @throws AccountNotFoundException  if account is not found
+     */
+    @RequestMapping(value = { "/user/image", "/user/image/" }, method = RequestMethod.GET)
+    @ResponseBody
+    public PaginatedList<Image> listImagesForAuthenticatedUser(@RequestParam(value = "limit", required = false) Integer limit,
+                                                               @RequestParam(value = "offset", required = false) Integer offset)
+            throws NotAuthenticatedException, AccountNotFoundException
+    {
+        return listImages(getAuthenticatedUser().getId(), limit, offset);
     }
 
     /**
@@ -78,19 +89,31 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws AccountNotFoundException  if account is not found
      * @throws ImageNotFoundException    if image is not found
      */
-    @RequestMapping(value = { "/{imageId}", "/{imageId}/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account/{accountId}/image/{imageId}", "/account/{accountId}/image/{imageId}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Image getImage(@PathVariable("accountId") Integer accountId,
                           @PathVariable("imageId") Integer imageId)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to get an account image.");
-        }
-        if (accountId == null) {
-            throw new AccountNotFoundException("Missing account id");
-        }
+        LOG.debug("{}: get image {} for {}", getAuthenticatedUser().getId(), imageId, accountId);
         return imageService.getImage(accountId, imageId);
+    }
+
+    /**
+     * Get an account image.
+     *
+     * @param imageId image id
+     * @return account image
+     * @throws NotAuthenticatedException if request is not authenticated
+     * @throws AccountNotFoundException  if account is not found
+     * @throws ImageNotFoundException    if image is not found
+     */
+    @RequestMapping(value = { "/user/image/{imageId}", "/user/image/{imageId}/" }, method = RequestMethod.GET)
+    @ResponseBody
+    public Image getImageForAuthenticatedUser(@PathVariable("imageId") Integer imageId)
+            throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException
+    {
+        return getImage(getAuthenticatedUser().getId(), imageId);
     }
 
     /**
@@ -106,21 +129,42 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws FileUploadException        if file could not be accepted
      * @throws AccountValidationException if account is invalid for image storage
      */
-    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/account/{accountId}/image", "/account/{accountId}/image/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Image uploadImage(@RequestPart MultipartFile file,
-                             @PathVariable("accountId") Integer accountId,
+    public Image uploadImage(@PathVariable("accountId") Integer accountId,
+                             @RequestPart MultipartFile file,
                              HttpServletResponse response)
             throws NotAuthenticatedException, AccountNotFoundException,
             IOException, FileUploadException, AccountValidationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
     {
-        if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to upload an account image.");
-        }
+        LOG.debug("{}: uploading image for {}", getAuthenticatedUser().getId(), accountId);
         Image image = imageService.uploadImageForAccount(accountId, file);
         response.setHeader("Location", "/account/" + accountId + "/image/" + image.getId());
         return image;
+    }
+
+    /**
+     * Upload an account image.
+     *
+     * @param file     multipart file
+     * @param response http servlet response
+     * @return created image
+     * @throws NotAuthenticatedException  if request is not authenticated
+     * @throws AccountNotFoundException   if account is not found
+     * @throws IOException                if transfer fails
+     * @throws FileUploadException        if file could not be accepted
+     * @throws AccountValidationException if account is invalid for image storage
+     */
+    @RequestMapping(value = { "/user/image", "/user/image/" }, method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public Image uploadImageForAuthenticatedUser(@RequestPart MultipartFile file,
+                                                 HttpServletResponse response)
+            throws NotAuthenticatedException, AccountNotFoundException,
+            IOException, FileUploadException, AccountValidationException // SUPPRESS CHECKSTYLE RedundantThrowsCheck
+    {
+        return uploadImage(getAuthenticatedUser().getId(), file, response);
     }
 
     /**
@@ -136,7 +180,7 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws ImageNotFoundException    if image is not found
      * @throws IOException               if transfer fails
      */
-    @RequestMapping(value = { "/{imageId}/{size}.{format}" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account/{accountId}/image/{imageId}/{size}.{format}" }, method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void downloadImage(@PathVariable("accountId") Integer accountId,
@@ -146,10 +190,32 @@ public class ApiAccountImageController extends BaseApiController {
                               HttpServletResponse response)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, IOException
     {
-        if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to download an account image.");
-        }
-        imageService.streamImageData(imageId, response);
+        LOG.debug("{}: downloading image {} for {}", getAuthenticatedUser().getId(), imageId, accountId);
+        imageService.streamImageData(accountId, imageId, response);
+    }
+
+    /**
+     * Download file data for account image.
+     *
+     * @param imageId  image id
+     * @param size     image dimensions
+     * @param format   image format
+     * @param response http servlet response
+     * @throws NotAuthenticatedException if request is not authenticated
+     * @throws AccountNotFoundException  if account is not found
+     * @throws ImageNotFoundException    if image is not found
+     * @throws IOException               if transfer fails
+     */
+    @RequestMapping(value = { "/user/image/{imageId}/{size}.{format}" }, method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void downloadImageForAuthenticatedUser(@PathVariable("imageId") Integer imageId,
+                                                  @PathVariable("size") String size,
+                                                  @PathVariable("format") String format,
+                                                  HttpServletResponse response)
+            throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, IOException
+    {
+        downloadImage(getAuthenticatedUser().getId(), imageId, size, format, response);
     }
 
 }

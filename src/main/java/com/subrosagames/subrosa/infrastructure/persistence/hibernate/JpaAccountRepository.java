@@ -47,7 +47,6 @@ public class JpaAccountRepository implements AccountRepository {
     private PasswordUtility passwordUtility;
 
     @Override
-    @PostAuthorize("hasPermission(returnObject, 'VIEW_ACCOUNT')")
     public Account get(int accountId, String... expansions) throws AccountNotFoundException {
         return getUnauthenticated(accountId, expansions);
     }
@@ -68,7 +67,7 @@ public class JpaAccountRepository implements AccountRepository {
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
             criteria.addFilter(entry.getKey(), entry.getValue());
         }
-        QueryBuilder<Address, TypedQuery<Address>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<Address>(entityManager);
+        QueryBuilder<Address, TypedQuery<Address>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<>(entityManager);
         TypedQuery<Address> query = queryBuilder.getQuery(criteria);
         return query.getResultList();
     }

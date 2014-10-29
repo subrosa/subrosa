@@ -10,12 +10,15 @@ case "$1" in
         gradle flywayMigrate war cargoDeployRemote
     ;;
     deploy)
+	vagrant up
         gradle flywayMigrate war cargoRedeployRemote
     ;;
     ssh)
+	vagrant up
         vagrant ssh
     ;;
     *)
+	vagrant up
         vagrant ssh -c "sudo /vagrant/script/env.sh $1"
     ;;
 esac

@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -225,7 +224,7 @@ public class ApiGameController extends BaseApiController {
     /**
      * Create new post for game.
      *
-     * @param gameUrl        game url
+     * @param gameUrl             game url
      * @param postDescriptorParam post descriptor
      * @return created post
      * @throws GameNotFoundException     if game is not found
@@ -270,9 +269,9 @@ public class ApiGameController extends BaseApiController {
         LOG.debug("Retrieving history for game {}", gameUrl);
         List<GameHistory> events = gameFactory.getGame(gameUrl).getHistory();
         if (CollectionUtils.isEmpty(events)) {
-            return new PaginatedList<GameHistory>(Lists.<GameHistory>newArrayList(), 0, limit, offset);
+            return new PaginatedList<>(Lists.<GameHistory>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<GameHistory>(
+            return new PaginatedList<>(
                     events.subList(offset, offset + limit),
                     events.size(),
                     limit, offset);
@@ -284,12 +283,12 @@ public class ApiGameController extends BaseApiController {
      *
      * @param gameUrl game id
      * @return list of targets
-     * @throws GameNotFoundException if game is not found
+     * @throws GameNotFoundException     if game is not found
+     * @throws NotAuthenticatedException if request is unauthenticated
      */
-    @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{gameUrl}/target", method = RequestMethod.GET)
     @ResponseBody
-    public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException {
+    public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException {
         int accountId = getAuthenticatedUser().getId();
         LOG.debug("Retrieving targets for game {} and account {}", gameUrl, accountId);
         Game game = gameFactory.getGame(gameUrl);
@@ -325,14 +324,14 @@ public class ApiGameController extends BaseApiController {
      * @param gameUrl  game url
      * @param targetId target id
      * @return target
-     * @throws GameNotFoundException   if game is not found
-     * @throws TargetNotFoundException if target is not found
+     * @throws GameNotFoundException     if game is not found
+     * @throws TargetNotFoundException   if target is not found
+     * @throws NotAuthenticatedException if request is unauthenticated
      */
-    @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.GET)
     @ResponseBody
     public TargetDto getTarget(@PathVariable("gameUrl") String gameUrl,
-                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException
+                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException
     {
         int accountId = getAuthenticatedUser().getId();
         Game game = gameFactory.getGame(gameUrl);
@@ -347,16 +346,16 @@ public class ApiGameController extends BaseApiController {
      * @param gameUrl           game url
      * @param targetId          target id
      * @param targetAchievement information about the target achieval
-     * @throws GameNotFoundException   if game is not found
-     * @throws TargetNotFoundException if target is not found
+     * @throws GameNotFoundException     if game is not found
+     * @throws TargetNotFoundException   if target is not found
+     * @throws NotAuthenticatedException if request is unauthenticated
      */
-    @PreAuthorize("isAuthenticated()")
     @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.POST)
     @ResponseBody
     public void achieveTarget(@PathVariable("gameUrl") String gameUrl,
                               @PathVariable("targetId") Integer targetId,
                               @RequestBody TargetAchievement targetAchievement)
-            throws GameNotFoundException, TargetNotFoundException
+            throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException
     {
         int accountId = getAuthenticatedUser().getId();
         Game game = gameFactory.getGame(gameUrl);

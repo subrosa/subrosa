@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.domain.game.validation;
 
-import javax.validation.ConstraintViolation;
 import java.util.Set;
+import javax.validation.ConstraintViolation;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
@@ -19,6 +19,7 @@ public class PostValidationException extends DomainObjectValidationException {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public PostValidationException(String s) {
@@ -27,6 +28,7 @@ public class PostValidationException extends DomainObjectValidationException {
 
     /**
      * Construct with message and cause.
+     *
      * @param s         message
      * @param throwable cause
      */
@@ -36,12 +38,18 @@ public class PostValidationException extends DomainObjectValidationException {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public PostValidationException(Throwable throwable) {
         super(throwable);
     }
 
+    /**
+     * Construct with constraint violations.
+     *
+     * @param violations constraint violations
+     */
     public PostValidationException(Set<ConstraintViolation<PostEntity>> violations) {
         super(violations);
     }

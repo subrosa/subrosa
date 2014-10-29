@@ -1,8 +1,6 @@
 package com.subrosa.api.servlet;
 
-import java.io.IOException;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,7 +44,7 @@ public class ResponseNoCacheFilterTest {
      * Test that a GET request has its headers set.
      */
     @Test
-    public void getRequest() throws IOException, ServletException {
+    public void getRequest() throws Exception {
         when(request.getMethod()).thenReturn("GET");
 
         instance.doFilter(request, response, chain);
@@ -61,7 +59,7 @@ public class ResponseNoCacheFilterTest {
      * Test that a POST request does not have its headers set.
      */
     @Test
-    public void postRequest() throws IOException, ServletException {
+    public void postRequest() throws Exception {
         when(request.getMethod()).thenReturn("POST");
 
         instance.doFilter(request, response, chain);

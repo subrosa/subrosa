@@ -9,13 +9,14 @@ import org.junit.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultActions;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.io.CharStreams;
+import com.jayway.jsonpath.JsonPath;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
@@ -42,15 +43,31 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUploadImage() throws Exception {
-        mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 1)
                         .file(getMock1x1Gif())
-                        .with(user("bob@user.com")))
+                        .with(user("bob@user.com")));
+        checkUploadImageAssertions(resultActions);
+    }
+
+    void checkUploadImageAssertions(ResultActions resultActions) throws Exception {
+        String response = resultActions.andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.compile("$.id").read(response);
+        resultActions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("1x1.gif"))
                 .andExpect(jsonPath("$.mimeType").value("image/gif"))
                 .andExpect(jsonPath("$.size").value(42))
-                .andExpect(header().string("Location", "/account/1/image/50"));
+                .andExpect(header().string("Location", "/account/1/image/" + id));
+    }
+
+    @Test
+    public void testUploadImageForCurrentUser() throws Exception {
+        ResultActions resultActions = mockMvc.perform(
+                fileUpload("/user/image", 1)
+                        .file(getMock1x1Gif())
+                        .with(user("bob@user.com")));
+        checkUploadImageAssertions(resultActions);
     }
 
     @Test
@@ -81,13 +98,26 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testListImages() throws Exception {
-        mockMvc.perform(
+        ResultActions resultActions = mockMvc.perform(
                 get("/account/{accountId}/image", 3)
-                        .with(user("lotsopics@user.com")))
+                        .with(user("lotsopics@user.com")));
+        checkListImagesAssertions(resultActions);
+    }
+
+    void checkListImagesAssertions(ResultActions resultActions) throws Exception {
+        resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(3)))
                 .andExpect(jsonPath("$.results[*].name").value(contains("pic1.png", "pic2.png", "pic3.png")));
+    }
+
+    @Test
+    public void testListImagesForCurrentUser() throws Exception {
+        ResultActions resultActions = mockMvc.perform(
+                get("/user/image", 3)
+                        .with(user("lotsopics@user.com")));
+        checkListImagesAssertions(resultActions);
     }
 
     @Test

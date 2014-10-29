@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.AccountActivation;
 import com.subrosagames.subrosa.api.BadRequestException;
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.RegistrationRequest;
 import com.subrosagames.subrosa.domain.account.Accolade;
@@ -30,6 +31,7 @@ import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
+import com.subrosagames.subrosa.service.AccountService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 
@@ -37,8 +39,7 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  * Controller responsible for account related CRUD actions.
  */
 @Controller
-@RequestMapping("/account")
-public class ApiAccountController {
+public class ApiAccountController extends BaseApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountController.class);
 
@@ -48,50 +49,66 @@ public class ApiAccountController {
     @Autowired
     private AccountFactory accountFactory;
 
+    @Autowired
+    private AccountService accountService;
+
     /**
      * Get paginated list of accounts.
      *
      * @param limitParam  limitParam
      * @param offsetParam offsetParam
-     * @param expand      fields to expand
+     * @param expandParam fields to expand
      * @return paginated list of accounts
+     * @throws NotAuthenticatedException if request is unauthenticated
      */
-    @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account", "/account/" }, method = RequestMethod.GET)
     @ResponseBody
     public PaginatedList<Account> listAccounts(@RequestParam(value = "limitParam", required = false) Integer limitParam,
                                                @RequestParam(value = "offsetParam", required = false) Integer offsetParam,
-                                               @RequestParam(value = "expand", required = false) String expand)
+                                               @RequestParam(value = "expand", required = false) String expandParam)
+            throws NotAuthenticatedException
     {
-        LOG.debug("Getting game list with limitParam {} and offsetParam {}.", limitParam, offsetParam);
+        LOG.debug("{}: Getting account list with limitParam {} and offsetParam {}.", getAuthenticatedUser().getId(), limitParam, offsetParam);
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        if (StringUtils.isEmpty(expand)) {
-            return accountFactory.getAccounts(limit, offset);
-        } else {
-            return accountFactory.getAccounts(limit, offset, expand.split(","));
-        }
+        String expand = ObjectUtils.defaultIfNull(expandParam, "");
+        return accountFactory.getAccounts(limit, offset, expand.split(","));
     }
 
     /**
      * Get an {@link Account} using the provided accountId.
      *
-     * @param accountId the accountId from the path.
-     * @param expand    fields to expand
+     * @param accountId   the accountId from the path.
+     * @param expandParam fields to expand
      * @return {@link Account}
-     * @throws AccountNotFoundException if account not found
+     * @throws AccountNotFoundException  if account not found
+     * @throws NotAuthenticatedException if request is unauthenticated
      */
-    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account/{accountId}", "/account/{accountId}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Account getAccount(@PathVariable("accountId") Integer accountId,
-                              @RequestParam(value = "expand", required = false) String expand)
-            throws AccountNotFoundException
+                              @RequestParam(value = "expand", required = false) String expandParam)
+            throws AccountNotFoundException, NotAuthenticatedException
     {
-        LOG.debug("Getting account {} info with expansions {}", accountId, expand);
-        if (StringUtils.isEmpty(expand)) {
-            return accountFactory.getAccount(accountId);
-        } else {
-            return accountFactory.getAccount(accountId, expand.split(","));
-        }
+        String expand = ObjectUtils.defaultIfNull(expandParam, "");
+        LOG.debug("{}: Getting account {} info with expansions {}", getAuthenticatedUser().getId(), accountId, expand);
+        return accountService.getAccount(accountId, expand.split(","));
+    }
+
+    /**
+     * Get an {@link Account} using the provided accountId.
+     *
+     * @param expand fields to expand
+     * @return {@link Account}
+     * @throws AccountNotFoundException  if account not found
+     * @throws NotAuthenticatedException if request is unauthenticated
+     */
+    @RequestMapping(value = { "/user", "/user/" }, method = RequestMethod.GET)
+    @ResponseBody
+    public Account getAccountForUser(@RequestParam(value = "expand", required = false) String expand)
+            throws AccountNotFoundException, NotAuthenticatedException
+    {
+        return getAccount(getAuthenticatedUser().getId(), expand);
     }
 
     /**
@@ -102,12 +119,13 @@ public class ApiAccountController {
      * @throws BadRequestException        if no POST body is supplied
      * @throws AccountValidationException if account data is not valid
      * @throws EmailConflictException     if supplied email is already in use
+     * @throws NotAuthenticatedException  if request is unauthenticated
      */
-    @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/account", "/account/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Account createAccount(@RequestBody(required = false) RegistrationRequest registrationRequest)
-            throws AccountValidationException, BadRequestException, EmailConflictException
+            throws AccountValidationException, BadRequestException, EmailConflictException, NotAuthenticatedException
     {
         LOG.debug("Creating new account");
         if (registrationRequest == null) {
@@ -134,16 +152,34 @@ public class ApiAccountController {
      * @return {@link Account}
      * @throws AccountNotFoundException   if account not found
      * @throws AccountValidationException if account data is not valid
+     * @throws NotAuthenticatedException  if request is unauthenticated
      */
-    @RequestMapping(value = { "/{accountId}", "/{accountId}/" }, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/account/{accountId}", "/account/{accountId}/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAccount(@PathVariable("accountId") Integer accountId,
                                  @RequestBody AccountDescriptor accountDescriptor)
-            throws AccountNotFoundException, AccountValidationException
+            throws AccountNotFoundException, AccountValidationException, NotAuthenticatedException
     {
-        LOG.debug("Saving account with ID {} as {}", accountId, accountDescriptor);
+        LOG.debug("{}: Saving account with ID {} as {}", getAuthenticatedUser().getId(), accountId, accountDescriptor);
         Account account = accountFactory.getAccount(accountId);
         return account.update(accountDescriptor);
+    }
+
+    /**
+     * Update an {@link Account} from the provided parameters.
+     *
+     * @param accountDescriptor the {@link AccountDescriptor} data to update.
+     * @return {@link Account}
+     * @throws AccountNotFoundException   if account not found
+     * @throws AccountValidationException if account data is not valid
+     * @throws NotAuthenticatedException  if request is unauthenticated
+     */
+    @RequestMapping(value = { "/user", "/user/" }, method = RequestMethod.PUT)
+    @ResponseBody
+    public Account updateAccountForUser(@RequestBody AccountDescriptor accountDescriptor)
+            throws AccountNotFoundException, AccountValidationException, NotAuthenticatedException
+    {
+        return updateAccount(getAuthenticatedUser().getId(), accountDescriptor);
     }
 
     /**
@@ -157,7 +193,7 @@ public class ApiAccountController {
      * @throws TokenInvalidException      if activation token is not valid
      * @throws AccountValidationException if account is invalid for activation
      */
-    @RequestMapping(value = { "/{accountId}/activate", "/{accountId}/activate/" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/account/{accountId}/activate", "/account/{accountId}/activate/" }, method = RequestMethod.POST)
     @ResponseBody
     public Account activateAccount(@PathVariable("accountId") Integer accountId,
                                    @RequestBody(required = false) AccountActivation accountActivation)
@@ -182,7 +218,7 @@ public class ApiAccountController {
      * @return a list of {@link Accolade}s.
      * @throws AccountNotFoundException if account not found
      */
-    @RequestMapping(value = { "/{accountId}/accolade", "/{accountId}/accolade/" }, method = RequestMethod.GET)
+    @RequestMapping(value = { "/account/{accountId}/accolade", "/account/{accountId}/accolade/" }, method = RequestMethod.GET)
     @ResponseBody
     public List<Accolade> getAccolades(@PathVariable("accountId") Integer accountId)
             throws AccountNotFoundException
@@ -200,7 +236,7 @@ public class ApiAccountController {
      * @return {@link Account}
      * @throws AccountNotFoundException if account not found
      */
-    @RequestMapping(value = { "/{accountId}/address", "/{accountId}/address/" }, method = RequestMethod.PUT)
+    @RequestMapping(value = { "/account/{accountId}/address", "/account/{accountId}/address/" }, method = RequestMethod.PUT)
     @ResponseBody
     public Account updateAddress(@PathVariable("accountId") Integer accountId,
                                  @RequestBody Address address)

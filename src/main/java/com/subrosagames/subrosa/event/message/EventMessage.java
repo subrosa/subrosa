@@ -1,7 +1,7 @@
 package com.subrosagames.subrosa.event.message;
 
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
 import com.subrosagames.subrosa.event.Event;
 import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
@@ -13,7 +13,7 @@ import com.subrosagames.subrosa.infrastructure.spring.ApplicationContextProvider
 
 /**
  * Enumeration of supported event-based JMS messages.
- *
+ * <p/>
  * Each supported event has an associated message queue name and type of message expected to be sent on it.
  */
 public enum EventMessage implements Event {
@@ -34,7 +34,8 @@ public enum EventMessage implements Event {
 
     /**
      * Construct with queue and message class.
-     * @param queue message queue
+     *
+     * @param queue        message queue
      * @param messageClass type of message to be sent
      * @param handlerClass type of handler for event
      */
@@ -46,6 +47,7 @@ public enum EventMessage implements Event {
 
     /**
      * Get the message queue for this event.
+     *
      * @return message queue
      */
     public String getQueue() {
@@ -54,6 +56,7 @@ public enum EventMessage implements Event {
 
     /**
      * Get an message instance to be sent on the message queue.
+     *
      * @return instantiated message
      */
     public GameEventMessage getMessage() {

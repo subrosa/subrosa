@@ -39,19 +39,36 @@ public class SubrosaAclPermissionEvaluator implements PermissionEvaluator {
         /**
          * View account permission.
          */
-        VIEW_ACCOUNT
+        READ_ACCOUNT
                 {
                     @Override
                     boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
-                        return authenticationHasRole(authentication, "ADMIN")
-                                || ((SubrosaUser) authentication.getPrincipal()).getAccount().getId().equals(targetId);
+                        return isAdmin(authentication) || ("Account".equals(targetType) && hasAccountId(authentication, targetId));
+                    }
+                },
+        /**
+         * Update account permission.
+         */
+        WRITE_ACCOUNT
+                {
+                    @Override
+                    boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
+                        return isAdmin(authentication) || ("Account".equals(targetType) && hasAccountId(authentication, targetId));
                     }
                 };
 
         // CHECKSTYLE-ON: JavadocMethod
 
+        private static boolean isAdmin(Authentication authentication) {
+            return authenticationHasRole(authentication, "ADMIN");
+        }
+
         private static boolean authenticationHasRole(Authentication authentication, String role) {
             return authentication.getAuthorities().contains(new SimpleGrantedAuthority(role));
+        }
+
+        private static boolean hasAccountId(Authentication authentication, Serializable targetId) {
+            return ((SubrosaUser) authentication.getPrincipal()).getAccount().getId().equals(targetId);
         }
 
         abstract boolean evaluate(Authentication authentication, Serializable targetId, String targetType);
