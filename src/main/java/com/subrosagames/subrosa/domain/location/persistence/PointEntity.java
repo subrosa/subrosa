@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.location.Point;
 
 /**
+ * Persisted geographical point.
  */
 @Entity
 @Table(name = "point")

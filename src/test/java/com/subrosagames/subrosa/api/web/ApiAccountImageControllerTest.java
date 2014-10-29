@@ -17,7 +17,6 @@ import com.google.common.io.CharStreams;
 import com.jayway.jsonpath.JsonPath;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;

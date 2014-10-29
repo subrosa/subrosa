@@ -16,6 +16,7 @@ import com.subrosagames.subrosa.domain.location.Point;
 import com.subrosagames.subrosa.domain.location.Zone;
 
 /**
+ * Persisted game zone.
  */
 @Entity
 @Table(name = "zone")

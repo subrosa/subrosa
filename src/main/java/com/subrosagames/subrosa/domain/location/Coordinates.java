@@ -10,6 +10,12 @@ public class Coordinates {
     private BigDecimal latitude;
     private BigDecimal longitude;
 
+    /**
+     * Construct with latitude and longitude.
+     *
+     * @param latitude latitude
+     * @param longitude longitude
+     */
     public Coordinates(BigDecimal latitude, BigDecimal longitude) {
         this.latitude = latitude;
         this.longitude = longitude;

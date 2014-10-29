@@ -119,6 +119,7 @@ public class ApiAccountController extends BaseApiController {
      * @throws BadRequestException        if no POST body is supplied
      * @throws AccountValidationException if account data is not valid
      * @throws EmailConflictException     if supplied email is already in use
+     * @throws NotAuthenticatedException  if request is unauthenticated
      */
     @RequestMapping(value = { "/account", "/account/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)

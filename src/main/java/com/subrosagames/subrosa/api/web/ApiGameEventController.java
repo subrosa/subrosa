@@ -89,6 +89,7 @@ public class ApiGameEventController {
      *
      * @param gameUrl the game gameUrl
      * @param eventId the game event id
+     * @return game event
      * @throws GameNotFoundException      if game is not found
      * @throws GameEventNotFoundException if game event is not found
      * @throws NotAuthenticatedException  if request is not authenticated

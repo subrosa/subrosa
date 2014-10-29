@@ -8,11 +8,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
-import com.subrosagames.subrosa.domain.player.TargetTeam;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.player.TargetTeam;
 
 /**
- *
+ * Persisted targeted team.
  */
 @Entity
 @Table(name = "target_team")

@@ -42,8 +42,9 @@ public class ImageService {
     /**
      * Stream image data to the given HTTP servlet response.
      *
-     * @param imageId  image id
-     * @param response http servlet response
+     * @param accountId account id
+     * @param imageId   image id
+     * @param response  http servlet response
      */
     public void streamImageData(int accountId, int imageId, HttpServletResponse response) {
         LOG.debug("Handling download for image {}", imageId);
@@ -104,10 +105,10 @@ public class ImageService {
      * Retrieve an account image.
      *
      * @param accountId account id
-     * @param imageId image id
+     * @param imageId   image id
      * @return account image
      * @throws AccountNotFoundException if account does not exist
-     * @throws ImageNotFoundException if image does not exist
+     * @throws ImageNotFoundException   if image does not exist
      */
     @PostAuthorize("hasPermission(#accountId, 'Account', 'READ_ACCOUNT')")
     public Image getImage(int accountId, int imageId) throws AccountNotFoundException, ImageNotFoundException {

@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.game;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,8 +9,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import com.google.common.collect.Lists;
-import com.subrosagames.subrosa.domain.game.BaseGame;
-import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
@@ -22,6 +19,9 @@ import static org.hamcrest.Matchers.not;
 import static com.subrosagames.subrosa.test.matchers.HasConstraintViolation.hasConstraintViolation;
 
 
+/**
+ * Tests validation scenarios for a @{link BaseGame} entity.
+ */
 @RunWith(JUnit4.class)
 public class ValidationTest {
 

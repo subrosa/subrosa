@@ -22,22 +22,22 @@ public class GoogleGeocoderTest {
     public void setUp() throws Exception {
         googleGeocoder = new MockGoogleGeocoder(new HashMap<String, GeocoderResult>() {
             {
-                put("my address", MockGoogleGeocoder.resultForAddressComponents(new EnumMap<MockGoogleGeocoder.Component, String>(MockGoogleGeocoder.Component.class) {
-                    {
-                        put(MockGoogleGeocoder.Component.FULL_ADDRESS, "1010 Pamlico Drive, Cary, NC 27511, USA");
-                        put(MockGoogleGeocoder.Component.NUMBER, "1010");
-                        put(MockGoogleGeocoder.Component.ROUTE, "Pamlico Dr");
-                        put(MockGoogleGeocoder.Component.CITY, "Cary");
-                        put(MockGoogleGeocoder.Component.STATE, "NC");
-                        put(MockGoogleGeocoder.Component.COUNTRY, "US");
-                        put(MockGoogleGeocoder.Component.POSTAL_CODE, "27511");
-                        put(MockGoogleGeocoder.Component.LATITUDE, "35.7709959");
-                        put(MockGoogleGeocoder.Component.LONGITUDE, "-78.797066");
-                    }
-                }));
+                put("my address", MockGoogleGeocoder.resultForAddressComponents(
+                        new EnumMap<MockGoogleGeocoder.Component, String>(MockGoogleGeocoder.Component.class) {
+                            {
+                                put(MockGoogleGeocoder.Component.FULL_ADDRESS, "1010 Pamlico Drive, Cary, NC 27511, USA");
+                                put(MockGoogleGeocoder.Component.NUMBER, "1010");
+                                put(MockGoogleGeocoder.Component.ROUTE, "Pamlico Dr");
+                                put(MockGoogleGeocoder.Component.CITY, "Cary");
+                                put(MockGoogleGeocoder.Component.STATE, "NC");
+                                put(MockGoogleGeocoder.Component.COUNTRY, "US");
+                                put(MockGoogleGeocoder.Component.POSTAL_CODE, "27511");
+                                put(MockGoogleGeocoder.Component.LATITUDE, "35.7709959");
+                                put(MockGoogleGeocoder.Component.LONGITUDE, "-78.797066");
+                            }
+                        }));
             }
         });
-
     }
 
     @Test

@@ -1,13 +1,17 @@
 package com.subrosagames.subrosa.event;
 
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
-import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 
 /**
- * TODO.
+ * Event triggered by another event.
  */
 public interface TriggeredEvent extends Event {
 
-    public GameEvent getTriggerEvent();
+    /**
+     * Get event trigger.
+     *
+     * @return event trigger
+     */
+    GameEvent getTriggerEvent();
 
 }

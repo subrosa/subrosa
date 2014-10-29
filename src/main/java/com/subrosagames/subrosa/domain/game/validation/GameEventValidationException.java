@@ -47,6 +47,11 @@ public class GameEventValidationException extends DomainObjectValidationExceptio
         super(throwable);
     }
 
+    /**
+     * Construct with constraint violations.
+     *
+     * @param violations constraint violations
+     */
     public GameEventValidationException(Set<ConstraintViolation<EventEntity>> violations) {
         super(violations);
     }

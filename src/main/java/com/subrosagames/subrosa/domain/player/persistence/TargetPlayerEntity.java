@@ -10,9 +10,9 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.AddressType;
-import com.subrosagames.subrosa.domain.player.TargetPlayer;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
+import com.subrosagames.subrosa.domain.player.TargetPlayer;
 
 /**
  * Persisted targeted player.
