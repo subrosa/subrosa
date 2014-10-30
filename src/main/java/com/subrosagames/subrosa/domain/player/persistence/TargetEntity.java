@@ -18,7 +18,6 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetType;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * Parent entity for game targets.

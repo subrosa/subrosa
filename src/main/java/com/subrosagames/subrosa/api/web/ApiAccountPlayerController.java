@@ -237,3 +237,4 @@ public class ApiAccountPlayerController extends BaseApiController {
         return deletePlayer(getAuthenticatedUser().getId(), playerId);
     }
 }
+

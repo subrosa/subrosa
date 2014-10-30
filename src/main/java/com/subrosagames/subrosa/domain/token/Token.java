@@ -5,10 +5,25 @@ package com.subrosagames.subrosa.domain.token;
  */
 public interface Token {
 
+    /**
+     * Get token owner id.
+     *
+     * @return owner id
+     */
     int getOwner();
 
+    /**
+     * Get token value.
+     *
+     * @return token value
+     */
     String getValue();
 
+    /**
+     * Get token type.
+     *
+     * @return token type
+     */
     TokenType getType();
 
 }

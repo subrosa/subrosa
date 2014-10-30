@@ -142,7 +142,8 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUpdatePlayer() throws Exception {
-        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/account/3/player/2").with(user("lotsopics@user.com")).content(playerProfileJson("new name", 3))),
+        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/account/3/player/2").with(user("lotsopics@user.com"))
+                        .content(playerProfileJson("new name", 3))),
                 "new name", "pic3.png");
     }
 

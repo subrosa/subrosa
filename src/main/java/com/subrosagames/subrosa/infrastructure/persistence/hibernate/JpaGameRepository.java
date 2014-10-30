@@ -141,7 +141,12 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public List<BaseGame> getGamesNear(Coordinates location, Integer limit, Integer offset, String... expansions) {
-        String jpql = "SELECT g FROM BaseGame g ORDER BY 3959 * acos( cos(radians(:latitude)) * cos(radians(g.location.latitude)) * cos(radians(g.location.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(g.location.latitude)) ) ASC\n";
+        String jpql = "SELECT g " +
+                "FROM BaseGame g " +
+                "ORDER BY 3959 * acos( " +
+                "   cos(radians(:latitude)) * cos(radians(g.location.latitude)) " +
+                "       * cos(radians(g.location.longitude) - radians(:longitude)) " +
+                "       + sin(radians(:latitude)) * sin(radians(g.location.latitude)) ) ASC";
         TypedQuery<BaseGame> query = entityManager.createQuery(jpql, BaseGame.class);
         query.setParameter("latitude", location.getLatitude());
         query.setParameter("longitude", location.getLongitude());
