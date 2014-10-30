@@ -68,4 +68,14 @@ public interface GameService {
      * @throws PlayerValidationException                                               if player information is not valid
      */
     Player joinGame(String gameUrl, Account account, JoinGameRequest joinGameRequest) throws GameNotFoundException, PlayerValidationException;
+
+    /**
+     * Get game with expansions.
+     *
+     * @param gameUrl game url
+     * @param expansions fields to expand
+     * @return game
+     * @throws GameNotFoundException if game does not exist
+     */
+    Game getGame(String gameUrl, String... expansions) throws GameNotFoundException;
 }

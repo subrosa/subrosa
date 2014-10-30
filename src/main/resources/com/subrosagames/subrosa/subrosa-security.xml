@@ -13,7 +13,16 @@
   <beans:bean id="expressionHandler"
         class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
     <beans:property name="permissionEvaluator">
-      <beans:bean class="com.subrosagames.subrosa.security.SubrosaAclPermissionEvaluator"/>
+      <beans:bean class="com.subrosagames.subrosa.security.SubrosaAclPermissionEvaluator">
+        <beans:property name="permissionMap">
+          <beans:map>
+            <beans:entry key="READ_ACCOUNT" value-ref="readAccountPermission"/>
+            <beans:entry key="WRITE_ACCOUNT" value-ref="writeAccountPermission"/>
+            <beans:entry key="READ_GAME" value-ref="readGamePermission"/>
+            <beans:entry key="WRITE_GAME" value-ref="writeGamePermission"/>
+          </beans:map>
+        </beans:property>
+      </beans:bean>
     </beans:property>
   </beans:bean>
 

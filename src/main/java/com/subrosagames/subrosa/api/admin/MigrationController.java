@@ -65,7 +65,8 @@ public class MigrationController {
     private Point getGameCentroid(GameEntity game) throws GameNotFoundException {
         GeometryFactory geometryFactory = new GeometryFactory();
         List<Zone> zones = gameRepository.getZonesForGame(game.getUrl());
-        for (Zone zone : zones) {
+        if (zones.size() > 0) {
+            Zone zone = zones.get(0);
             Coordinate[] coordinates = new Coordinate[zone.getPoints().size() + 1];
             List<com.subrosagames.subrosa.domain.location.Point> points = zone.getPoints();
             int i = 0;
@@ -75,8 +76,9 @@ public class MigrationController {
             coordinates[i] = new Coordinate(zone.getPoints().get(0).getLatitude().doubleValue(), zone.getPoints().get(0).getLongitude().doubleValue());
             Polygon polygon = geometryFactory.createPolygon(geometryFactory.createLinearRing(coordinates), null);
             return polygon.getCentroid();
+        } else {
+            return null;
         }
-        return null;
     }
 
 }

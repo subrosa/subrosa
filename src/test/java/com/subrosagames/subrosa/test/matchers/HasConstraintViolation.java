@@ -16,7 +16,7 @@ import static com.subrosagames.subrosa.test.matchers.HasConstraintViolation.IsCo
 /**
  * Matcher for a {@link DomainObjectValidationException} containing a specific {@link ConstraintViolation}.
  */
-public class HasConstraintViolation extends TypeSafeDiagnosingMatcher<DomainObjectValidationException> {
+public final class HasConstraintViolation extends TypeSafeDiagnosingMatcher<DomainObjectValidationException> {
 
     private final String property;
     private final String message;
@@ -60,7 +60,10 @@ public class HasConstraintViolation extends TypeSafeDiagnosingMatcher<DomainObje
 
     }
 
-    public static class IsConstraintViolation extends TypeSafeDiagnosingMatcher<ConstraintViolation> {
+    /**
+     * Matcher for a {@link ConstraintViolation}.
+     */
+    public static final class IsConstraintViolation extends TypeSafeDiagnosingMatcher<ConstraintViolation> {
 
         private final String property;
         private final String message;
@@ -70,6 +73,13 @@ public class HasConstraintViolation extends TypeSafeDiagnosingMatcher<DomainObje
             this.message = message;
         }
 
+        /**
+         * Factory for matching a constraint violation for a property and violation message.
+         *
+         * @param property constraint violation property name
+         * @param message constraint violation message
+         * @return constraint violation matcher
+         */
         @Factory
         public static Matcher<ConstraintViolation> isConstraintViolation(String property, String message) {
             return new IsConstraintViolation(property, message);

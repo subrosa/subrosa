@@ -316,6 +316,16 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testGameUpdateByAdmin() throws Exception {
+        mockMvc.perform(
+                put("/game/{url}", "fun_times")
+                        .with(user("admin@user.com"))
+                        .content(jsonBuilder().add("name", "this is now the name").build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("this is now the name"));
+    }
+
+    @Test
     public void testCreateAndUpdateGamePlayerInfoRequirements() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
