@@ -53,16 +53,6 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
     Account update(Account account) throws AccountNotFoundException, AccountValidationException;
 
     /**
-     * Get an account with checking permissions.
-     *
-     * @param id         account id
-     * @param expansions fields to expand
-     * @return account
-     * @throws AccountNotFoundException if no account row exists for given id
-     */
-    Account getUnauthenticated(int id, String... expansions) throws AccountNotFoundException;
-
-    /**
      * Get addresses matching provided conditions.
      *
      * @param conditions search conditions

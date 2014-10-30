@@ -207,4 +207,10 @@ public interface Game extends GameData {
      */
     Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException;
 
+    /**
+     * Whether game is published.
+     *
+     * @return whether game is published
+     */
+    boolean isPublished();
 }

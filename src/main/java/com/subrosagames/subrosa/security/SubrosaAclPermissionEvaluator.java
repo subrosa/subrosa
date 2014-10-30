@@ -1,13 +1,13 @@
 package com.subrosagames.subrosa.security;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import com.subrosagames.subrosa.domain.PermissionTarget;
+import com.subrosagames.subrosa.security.permission.Permission;
 
 /**
  * Implements ACL-based permission decisions based on subrosa's roles and ownership rules.
@@ -15,63 +15,49 @@ import com.subrosagames.subrosa.domain.PermissionTarget;
 @Component
 public class SubrosaAclPermissionEvaluator implements PermissionEvaluator {
 
+    private Map<String, Permission> permissionMap;
+
     @Override
     public boolean hasPermission(Authentication authentication, Object target, Object permission) {
-        if (!(target instanceof PermissionTarget)) {
-            throw new IllegalStateException("Attempted to evaluate permission on a non-identifiable object");
+        boolean hasPermission = false;
+        if (canHandle(authentication, target, permission)) {
+            hasPermission = checkPermission(authentication, target, (String) permission);
         }
-        return hasPermission(authentication, ((PermissionTarget) target).getId(), target.getClass().getSimpleName(), permission);
+        return hasPermission;
     }
 
     @Override
     public boolean hasPermission(Authentication authentication, Serializable targetId, String targetType, Object permission) {
-        return authentication.getPrincipal() instanceof SubrosaUser
-                && SubrosaPermission.valueOf(permission.toString()).evaluate(authentication, targetId, targetType);
+        boolean hasPermission = false;
+        if (canHandle(authentication, targetId, targetType, permission)) {
+            hasPermission = checkPermission(authentication, targetId, targetType, (String) permission);
+        }
+        return hasPermission;
     }
 
-    /**
-     * Enumerates possible permissions, along with the implementation of their evaluations.
-     */
-    public enum SubrosaPermission {
+    private boolean canHandle(Authentication authentication, Object target, Object permission) {
+        return authentication != null && target != null && permission instanceof String && permissionMap.containsKey(permission);
+    }
 
-        // CHECKSTYLE-OFF: JavadocMethod
+    private boolean canHandle(Authentication authentication, Serializable targetId, String targetType, Object permission) {
+        return authentication != null && targetId != null && targetType != null && permission instanceof String && permissionMap.containsKey(permission);
+    }
 
-        /**
-         * View account permission.
-         */
-        READ_ACCOUNT
-                {
-                    @Override
-                    boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
-                        return isAdmin(authentication) || ("Account".equals(targetType) && hasAccountId(authentication, targetId));
-                    }
-                },
-        /**
-         * Update account permission.
-         */
-        WRITE_ACCOUNT
-                {
-                    @Override
-                    boolean evaluate(Authentication authentication, Serializable targetId, String targetType) {
-                        return isAdmin(authentication) || ("Account".equals(targetType) && hasAccountId(authentication, targetId));
-                    }
-                };
+    private boolean checkPermission(Authentication authentication, Object target, String permissionKey) {
+        Permission permission = permissionMap.get(permissionKey);
+        return permission.isAllowed(authentication, target);
+    }
 
-        // CHECKSTYLE-ON: JavadocMethod
+    private boolean checkPermission(Authentication authentication, Serializable targetId, String targetType, String permissionKey) {
+        Permission permission = permissionMap.get(permissionKey);
+        return permission.isAllowed(authentication, targetId, targetType);
+    }
 
-        private static boolean isAdmin(Authentication authentication) {
-            return authenticationHasRole(authentication, "ADMIN");
-        }
+    public void setPermissionMap(Map<String, Permission> permissionMap) {
+        this.permissionMap = permissionMap;
+    }
 
-        private static boolean authenticationHasRole(Authentication authentication, String role) {
-            return authentication.getAuthorities().contains(new SimpleGrantedAuthority(role));
-        }
-
-        private static boolean hasAccountId(Authentication authentication, Serializable targetId) {
-            return ((SubrosaUser) authentication.getPrincipal()).getAccount().getId().equals(targetId);
-        }
-
-        abstract boolean evaluate(Authentication authentication, Serializable targetId, String targetType);
-
+    Map<String, Permission> getPermissionMap() {
+        return permissionMap;
     }
 }

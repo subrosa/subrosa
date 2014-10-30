@@ -197,6 +197,11 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
+    public boolean isPublished() {
+        return getPublished() != null;
+    }
+
+    @Override
     public Player getPlayerForUser(int accountId) {
         return gameRepository.getPlayerForUserAndGame(accountId, getId());
     }

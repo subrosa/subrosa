@@ -14,7 +14,6 @@ import org.hibernate.UnknownProfileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,10 +49,6 @@ public class JpaAccountRepository implements AccountRepository {
 
     @Override
     public Account get(int accountId, String... expansions) throws AccountNotFoundException {
-        return getUnauthenticated(accountId, expansions);
-    }
-
-    public Account getUnauthenticated(int accountId, String... expansions) throws AccountNotFoundException {
         expansions = enableExpansions(expansions);
         Account account = entityManager.find(Account.class, accountId);
         if (account == null) {
@@ -64,7 +59,7 @@ public class JpaAccountRepository implements AccountRepository {
 
     @Override
     public List<Address> addressesWhere(Map<String, Object> conditions) {
-        QueryCriteria<Address> criteria = new QueryCriteria<Address>(Address.class);
+        QueryCriteria<Address> criteria = new QueryCriteria<>(Address.class);
         criteria.setBypassFilterableChecks(true);
         for (Map.Entry<String, Object> entry : conditions.entrySet()) {
             criteria.addFilter(entry.getKey(), entry.getValue());

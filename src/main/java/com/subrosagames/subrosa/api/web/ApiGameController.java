@@ -104,24 +104,20 @@ public class ApiGameController extends BaseApiController {
     /**
      * Get a {@link Game} representation.
      *
-     * @param gameUrl the game gameUrl
-     * @param expand  fields to expand
+     * @param gameUrl     the game gameUrl
+     * @param expandParam fields to expand
      * @return {@link Game}
      * @throws GameNotFoundException if game is not found
      */
     @RequestMapping(value = { "/{gameUrl}", "/{gameUrl}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Game getGameByUrl(@PathVariable("gameUrl") String gameUrl,
-                             @RequestParam(value = "expand", required = false) String expand)
+                             @RequestParam(value = "expand", required = false) String expandParam)
             throws GameNotFoundException
     {
+        String expand = ObjectUtils.defaultIfNull(expandParam, "");
         LOG.debug("Getting game at {} with expansions {}", gameUrl, expand);
-
-        if (StringUtils.isEmpty(expand)) {
-            return gameFactory.getGame(gameUrl);
-        } else {
-            return gameFactory.getGame(gameUrl, expand.split(","));
-        }
+        return gameService.getGame(gameUrl, expand.split(","));
     }
 
     /**

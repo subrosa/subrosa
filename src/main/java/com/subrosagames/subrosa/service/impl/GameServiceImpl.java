@@ -32,19 +32,15 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() && hasPermission(#gameUrl, 'Game', 'WRITE_GAME')")
     public Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException {
-        Account user = getAuthenticatedUser();
         Game game = gameFactory.getGame(gameUrl);
-        if (!user.getId().equals(game.getOwner().getId())) {
-            throw new GameNotFoundException("Could not find game to update at " + gameUrl);
-        }
         return game.update(gameDescriptor);
     }
 
     @Override
     @Transactional
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() && hasPermission(#gameUrl, 'Game', 'WRITE_GAME')")
     public Game publishGame(String gameUrl) throws GameValidationException, GameNotFoundException {
         return gameFactory.getGame(gameUrl).publish();
     }
@@ -64,6 +60,11 @@ public class GameServiceImpl implements GameService {
     public Player joinGame(String gameUrl, Account account, JoinGameRequest joinGameRequest) throws GameNotFoundException, PlayerValidationException {
         Game game = gameFactory.getGame(gameUrl);
         return game.joinGame(getAuthenticatedUser(), joinGameRequest);
+    }
+
+    @Override
+    public Game getGame(String gameUrl, String... expansions) throws GameNotFoundException {
+        return gameFactory.getGame(gameUrl, expansions);
     }
 
     private Account getAuthenticatedUser() {
