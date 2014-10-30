@@ -24,6 +24,7 @@ compileJava.dependsOn(processResources)
 compileJava {
 //    options.compilerArgs << '-Xlint:unchecked'
 //    options.compilerArgs << '-Xlint:deprecation'
+    options.encoding = "UTF-8"
 }
 
 ext {

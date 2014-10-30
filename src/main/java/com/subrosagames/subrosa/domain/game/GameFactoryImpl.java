@@ -101,7 +101,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
                 return gameEntity;
             }
         });
-        return new PaginatedList<Game>(
+        return new PaginatedList<>(
                 games,
                 gameRepository.count(),
                 limit, offset);
@@ -117,7 +117,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
                 return gameEntity;
             }
         });
-        return new PaginatedList<Game>(
+        return new PaginatedList<>(
                 games,
                 gameRepository.countByCriteria(queryCriteria).intValue(),
                 queryCriteria.getLimit(), queryCriteria.getOffset());

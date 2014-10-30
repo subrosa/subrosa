@@ -26,6 +26,8 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.account.PlayerProfile;
+import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
@@ -88,6 +90,24 @@ public class JpaAccountRepository implements AccountRepository {
             LOG.warn("Attempted to find non-existing image - account {} image {}", account.getId(), imageId);
             throw new ImageNotFoundException(e);
         }
+    }
+
+    @Override
+    public PlayerProfile getPlayerProfile(Account account, int playerId) throws PlayerProfileNotFoundException {
+        try {
+            return entityManager.createQuery("SELECT pp FROM PlayerProfile pp WHERE pp.account = :account AND pp.id = :id", PlayerProfile.class)
+                    .setParameter("account", account)
+                    .setParameter("id", playerId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            LOG.warn("Attempted to find non-existing player profile - account {} player {}", account.getId(), playerId);
+            throw new PlayerProfileNotFoundException(e);
+        }
+    }
+
+    @Override
+    public void delete(PlayerProfile playerProfile) {
+        entityManager.remove(playerProfile);
     }
 
     @Override

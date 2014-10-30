@@ -46,6 +46,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
+import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
@@ -133,6 +134,10 @@ public class Account implements PermissionTarget {
     @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
     @OrderColumn(name = "index")
     private List<Image> images = Lists.newArrayList();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    private List<PlayerProfile> playerProfiles = Lists.newArrayList();
 
     /**
      * Get accolades for this account.
@@ -364,6 +369,107 @@ public class Account implements PermissionTarget {
     private boolean isEmailConflict(JpaSystemException e) {
         String message = e.getMostSpecificCause().getMessage();
         return message.contains("unique constraint");
+    }
+
+    /**
+     * Get player profiles.
+     *
+     * @return player profiles
+     */
+    public List<PlayerProfile> getPlayerProfiles() {
+        return playerProfiles;
+    }
+
+    /**
+     * Add player profile.
+     *
+     * @param playerProfile player profile
+     */
+    public void addPlayerProfile(PlayerProfile playerProfile) {
+        playerProfiles.add(playerProfile);
+    }
+
+    /**
+     * Get the specified player profile.
+     *
+     * @param playerId player profile id
+     * @return player profile
+     * @throws PlayerProfileNotFoundException if player profile does not exist
+     */
+    public PlayerProfile getPlayerProfile(int playerId) throws PlayerProfileNotFoundException {
+        return accountRepository.getPlayerProfile(this, playerId);
+    }
+
+    /**
+     * Create a new player profile for this account.
+     *
+     * @param playerProfileDescriptor player profile information
+     * @return created player profile
+     * @throws ImageNotFoundException           if specified image is not found
+     * @throws PlayerProfileValidationException if player profile is not valid for creation
+     */
+    public PlayerProfile createPlayerProfile(PlayerProfileDescriptor playerProfileDescriptor)
+            throws ImageNotFoundException, PlayerProfileValidationException
+    {
+        PlayerProfile playerProfile = new PlayerProfile();
+        playerProfile.setAccount(this);
+        copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
+        assertPlayerProfileValid(playerProfile);
+        addPlayerProfile(playerProfile);
+        return playerProfile;
+    }
+
+    void assertPlayerProfileValid(PlayerProfile playerProfile) throws PlayerProfileValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<PlayerProfile>> violations = validator.validate(playerProfile);
+        if (!violations.isEmpty()) {
+            throw new PlayerProfileValidationException(violations);
+        }
+    }
+
+    /**
+     * Delete the specified player profile.
+     *
+     * @param playerId player profile id
+     * @return deleted player profile
+     * @throws PlayerProfileNotFoundException if player profile does not exist
+     */
+    public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException {
+        PlayerProfile playerProfile = getPlayerProfile(playerId);
+        accountRepository.delete(playerProfile);
+        return playerProfile;
+    }
+
+    /**
+     * Update the specified player profile.
+     *
+     * @param playerId                player profile id
+     * @param playerProfileDescriptor player profile information
+     * @return updated player profile
+     * @throws PlayerProfileNotFoundException   if player profile does not exist
+     * @throws ImageNotFoundException           if specified image is not found
+     * @throws PlayerProfileValidationException if player profile is not valid for saving
+     */
+    public PlayerProfile updatePlayerProfile(int playerId, PlayerProfileDescriptor playerProfileDescriptor)
+            throws PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException
+    {
+        PlayerProfile playerProfile = getPlayerProfile(playerId);
+        copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
+        assertPlayerProfileValid(playerProfile);
+        return playerProfile;
+    }
+
+    void copyPlayerProfileProperties(PlayerProfileDescriptor playerProfileDescriptor, PlayerProfile playerProfile) throws ImageNotFoundException {
+        if (playerProfileDescriptor.getName() != null) {
+            playerProfile.setName(playerProfileDescriptor.getName().orNull());
+        }
+        if (playerProfileDescriptor.getImage() != null) {
+            if (playerProfileDescriptor.getImage().isPresent()) {
+                playerProfile.setImage(getImage(playerProfileDescriptor.getImage().get()));
+            } else {
+                playerProfile.setImage(null);
+            }
+        }
     }
 
     void assertValid(Class... validationGroups) throws AccountValidationException {

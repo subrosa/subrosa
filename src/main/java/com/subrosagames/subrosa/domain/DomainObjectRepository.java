@@ -11,6 +11,7 @@ public interface DomainObjectRepository<T> {
 
     /**
      * Create domain object.
+     *
      * @param object domain object
      * @return created object
      * @throws DomainObjectValidationException if domain object is not valid
@@ -19,8 +20,9 @@ public interface DomainObjectRepository<T> {
 
     /**
      * List domain objects.
-     * @param limit limit
-     * @param offset offset
+     *
+     * @param limit      limit
+     * @param offset     offset
      * @param expansions fields to expand
      * @return list of domain objects
      */
@@ -28,13 +30,15 @@ public interface DomainObjectRepository<T> {
 
     /**
      * Total count of domain objects.
+     *
      * @return object count
      */
     int count();
 
     /**
      * Get domain object.
-     * @param id object id
+     *
+     * @param id         object id
      * @param expansions fields to expand
      * @return domain object
      * @throws DomainObjectNotFoundException if object is not found
@@ -43,10 +47,13 @@ public interface DomainObjectRepository<T> {
 
     /**
      * Update domain object.
+     *
      * @param object domain object
      * @return updated object
-     * @throws DomainObjectNotFoundException is object is not found
+     * @throws DomainObjectNotFoundException   is object is not found
      * @throws DomainObjectValidationException if object is not valid
      */
     T update(T object) throws DomainObjectNotFoundException, DomainObjectValidationException;
+
 }
+

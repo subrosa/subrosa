@@ -82,7 +82,7 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     /**
      * Create an account image for the given file asset.
      *
-     * @param account account
+     * @param account   account
      * @param fileAsset file asset
      * @return account image
      */

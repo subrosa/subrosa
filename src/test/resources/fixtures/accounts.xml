@@ -3,6 +3,8 @@
   <account account_id="1" activated="true" email="bob@user.com"
            name="Bob T. User"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+  <image image_id="5" account_id="1" file_asset_id="5" index="0"/>
+  <file_asset file_asset_id="5" name="img5.jpg" mime_type="image/jpg" size="500"/>
 
   <account account_id="2" activated="false" email="notactive@user.com"
            name="Not Activated"
@@ -17,6 +19,12 @@
   <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
   <image image_id="3" account_id="3" file_asset_id="3" index="2"/>
   <file_asset file_asset_id="3" name="pic3.png" mime_type="image/png" size="300"/>
+  <player_profile player_profile_id="1" account_id="3"
+                  name="Player One!"
+                  image_id="1"/>
+  <player_profile player_profile_id="2" account_id="3"
+                  name="Secret Santa"
+                  image_id="2"/>
 
   <account account_id="1000" activated="true" email="joe@admin.com"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
