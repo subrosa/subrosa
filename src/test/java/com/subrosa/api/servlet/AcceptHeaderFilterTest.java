@@ -1,6 +1,7 @@
 package com.subrosa.api.servlet;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -186,12 +187,12 @@ public class AcceptHeaderFilterTest {
         when(request.getMethod()).thenReturn("GET");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        when(response.getWriter()).thenReturn(new PrintWriter(baos));
+        when(response.getWriter()).thenReturn(new PrintWriter(new OutputStreamWriter(baos, "UTF-8")));
 
         instance.doFilter(request, response, chain);
         verify(chain, never()).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        String responseBody = baos.toString();
+        String responseBody = baos.toString("UTF-8");
         String mimeTypeString = AcceptHeaderFilter.MIMETYPE_JSON + ", "
                 + AcceptHeaderFilter.MIMETYPE_XML + ", "
                 + AcceptHeaderFilter.MIMETYPE_TEXT_XML;
@@ -212,13 +213,13 @@ public class AcceptHeaderFilterTest {
         when(request.getMethod()).thenReturn("GET");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        when(response.getWriter()).thenReturn(new PrintWriter(baos));
+        when(response.getWriter()).thenReturn(new PrintWriter(new OutputStreamWriter(baos, "UTF-8")));
 
         instance.init(filterConfig);
         instance.doFilter(request, response, chain);
         verify(chain, never()).doFilter(any(HttpServletRequest.class), any(HttpServletResponse.class));
         verify(response).setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-        String responseBody = baos.toString();
+        String responseBody = baos.toString("UTF-8");
         String mimeTypeString = "application/json, application/xml, image/*, foo/bar";
         assertTrue("Response body lists supported types", responseBody.contains(mimeTypeString));
     }
@@ -235,7 +236,7 @@ public class AcceptHeaderFilterTest {
         when(request.getMethod()).thenReturn("GET");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        when(response.getWriter()).thenReturn(new PrintWriter(baos));
+        when(response.getWriter()).thenReturn(new PrintWriter(new OutputStreamWriter(baos, "UTF-8")));
 
         instance = new AcceptHeaderFilter() {
             @Override
