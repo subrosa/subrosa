@@ -137,8 +137,8 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     @Test
     public void testListImagesEmpty() throws Exception {
         mockMvc.perform(
-                get("/account/{accountId}/image", 1)
-                        .with(user("bob@user.com")))
+                get("/account/{accountId}/image", 2)
+                        .with(user("notactive@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));

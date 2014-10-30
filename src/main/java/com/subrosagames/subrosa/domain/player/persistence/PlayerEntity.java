@@ -110,6 +110,12 @@ public class PlayerEntity implements Player {
         this.name = name;
     }
 
+    /**
+     * Get image for the given type.
+     *
+     * @param imageType image type
+     * @return image
+     */
     public Image getImage(ImageType imageType) {
         return images.get(imageType).getImage();
     }
@@ -118,10 +124,21 @@ public class PlayerEntity implements Player {
         return images;
     }
 
+    /**
+     * Set image for the given type.
+     *
+     * @param imageType image type
+     * @param image player image
+     */
     public void setImage(ImageType imageType, PlayerImage image) {
         images.put(imageType, image);
     }
 
+    /**
+     * Get player attributes.
+     *
+     * @return player attributes
+     */
     public Map<String, String> getAttributes() {
         if (attributes == null) {
             return Maps.newHashMap();

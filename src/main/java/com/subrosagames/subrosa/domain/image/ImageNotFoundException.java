@@ -1,9 +1,11 @@
 package com.subrosagames.subrosa.domain.image;
 
+import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
+
 /**
  * Thrown when a requested image does not exist.
  */
-public class ImageNotFoundException extends Exception {
+public class ImageNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Default constructor.
@@ -24,7 +26,7 @@ public class ImageNotFoundException extends Exception {
      * Construct with message and cause.
      *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public ImageNotFoundException(String message, Throwable cause) {
         super(message, cause);

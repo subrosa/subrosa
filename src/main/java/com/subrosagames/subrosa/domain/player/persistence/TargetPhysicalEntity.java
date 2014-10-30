@@ -12,7 +12,7 @@ import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.TargetPhysical;
 
 /**
- *
+ * Persisted physical target.
  */
 @Entity
 @Table(name = "target_physical")
