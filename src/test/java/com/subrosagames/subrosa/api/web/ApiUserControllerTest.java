@@ -71,10 +71,6 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testLastLoginUpdated() throws Exception {
-        mockMvc.perform(get("/account/1").with(user("joe@admin.com")))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lastLoggedIn").value(946702800000L));
-
         DateTimeUtils.setCurrentMillisFixed(946702899999L);
         mockMvc.perform(post("/v1/session")
                 .content(jsonBuilder().add("email", "bob@user.com").add("password", "password").build()))
