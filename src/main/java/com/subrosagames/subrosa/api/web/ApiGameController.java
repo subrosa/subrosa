@@ -39,6 +39,7 @@ import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
@@ -126,13 +127,14 @@ public class ApiGameController extends BaseApiController {
      * @param gameDescriptorParam description of game
      * @return {@link Game}
      * @throws GameValidationException   if game is invalid for creation
+     * @throws ImageNotFoundException    if image is not found
      * @throws NotAuthenticatedException if request is not authenticated
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptorParam)
-            throws GameValidationException, NotAuthenticatedException
+            throws GameValidationException, NotAuthenticatedException, ImageNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a game.");
@@ -140,9 +142,7 @@ public class ApiGameController extends BaseApiController {
         GameDescriptor gameDescriptor = ObjectUtils.defaultIfNull(gameDescriptorParam, new GameDescriptor());
         Account user = getAuthenticatedUser();
         LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
-        Game game = gameFactory.forDto(gameDescriptor);
-        game.setOwner(user);
-        return game.create();
+        return gameService.createGame(gameDescriptor, user);
     }
 
     /**
@@ -153,6 +153,7 @@ public class ApiGameController extends BaseApiController {
      * @return {@link Game}
      * @throws GameNotFoundException     if game is not found
      * @throws GameValidationException   if game is invalid for updating
+     * @throws ImageNotFoundException    if image is not found
      * @throws NotAuthenticatedException if request is not authenticated
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
@@ -160,7 +161,7 @@ public class ApiGameController extends BaseApiController {
     @Transactional
     public Game updateGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody GameDescriptor gameDescriptor)
-            throws GameValidationException, GameNotFoundException, NotAuthenticatedException
+            throws GameValidationException, GameNotFoundException, NotAuthenticatedException, ImageNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");

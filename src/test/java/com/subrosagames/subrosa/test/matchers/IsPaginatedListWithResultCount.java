@@ -9,7 +9,7 @@ import net.minidev.json.JSONObject;
 /**
  * Matcher for paginated lists with a certain {@code resultCount}.
  */
-public class IsPaginatedListWithResultCount extends IsPaginatedList {
+public final class IsPaginatedListWithResultCount extends IsPaginatedList {
 
     private final int count;
 

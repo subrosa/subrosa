@@ -25,7 +25,12 @@
   <restriction restriction_id="2" game_id="4" type="AGE" value="18"/>
   <enrollment_field game_id="4" field_id="lastWish" index="0" name="Last Wish" description="Dying request" type="TEXT"/>
 
-  <game game_id="5" owner_id="10001" name="Fun Times!" url="fun_times5" game_type="ASSASSIN"/>
+  <game game_id="5" owner_id="10001" name="Fun Times!" url="with_image" game_type="ASSASSIN" image_id="1"/>
+  <image image_id="1" account_id="10001" file_asset_id="1" index="0"/>
+  <file_asset file_asset_id="1" name="pic1.png" mime_type="image/png" size="100"/>
+  <image image_id="2" account_id="10001" file_asset_id="2" index="0"/>
+  <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
+
   <game game_id="6" owner_id="10001" name="Fun Times!" url="fun_times6" game_type="ASSASSIN"/>
   <game game_id="7" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
   <game game_id="8" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>

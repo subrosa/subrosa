@@ -16,11 +16,13 @@ import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.support.GameTypeToEntityMapper;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
@@ -43,6 +45,9 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Autowired
     private PlayerFactory playerFactory;
+
+    @Autowired
+    private AccountFactory accountFactory;
 
     @Override
     public Game getGame(int gameId, String... expansions) throws GameNotFoundException {
@@ -69,6 +74,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
         game.setGameRepository(gameRepository);
         game.setGameFactory(this);
         game.setPlayerFactory(playerFactory);
+        game.setAccountFactory(accountFactory);
     }
 
     @Override
@@ -85,7 +91,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
                 }
             }
         });
-        return new PaginatedList<Game>(
+        return new PaginatedList<>(
                 games,
                 gameRepository.count(),
                 limit, offset);
@@ -131,9 +137,11 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     }
 
     @Override
-    public BaseGame forDto(GameDescriptor gameDescriptor) throws GameValidationException {
+    public BaseGame forDto(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException {
         GameType gameType = gameDescriptor.getGameType() == null ? null : gameDescriptor.getGameType().orNull();
         BaseGame game = GameTypeToEntityMapper.forType(gameType);
+        game.setOwner(account);
+        injectDependencies(game);
 
         GameDescriptorTranslator.ingest(game, gameDescriptor);
 
@@ -145,7 +153,6 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
             game.setTimezone("America/New_York");
         }
 
-        injectDependencies(game);
         return game;
     }
 

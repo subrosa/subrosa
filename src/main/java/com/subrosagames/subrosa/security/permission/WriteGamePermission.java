@@ -9,8 +9,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.security.SubrosaUser;
 
 /**
@@ -22,7 +22,7 @@ public class WriteGamePermission extends AbstractPermission {
     private static final Logger LOG = LoggerFactory.getLogger(WriteGamePermission.class);
 
     @Autowired
-    private GameRepository gameRepository;
+    private GameFactory gameFactory;
 
     @Override
     public boolean isAllowed(Authentication authentication, Object target) {
@@ -42,6 +42,6 @@ public class WriteGamePermission extends AbstractPermission {
     }
 
     private Game getGame(Serializable id) throws GameNotFoundException {
-        return gameRepository.get((String) id);
+        return gameFactory.getGame((String) id);
     }
 }

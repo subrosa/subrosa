@@ -6,6 +6,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Team;
@@ -16,6 +17,17 @@ import com.subrosagames.subrosa.domain.player.Team;
 public interface GameService {
 
     /**
+     * Create a game with the given information.
+     *
+     * @param gameDescriptor game information
+     * @param account        game creator
+     * @return created game
+     * @throws GameValidationException if game is invalid for creation
+     * @throws ImageNotFoundException  if image is not found
+     */
+    Game createGame(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException;
+
+    /**
      * Update game with the given information.
      *
      * @param gameUrl        game url
@@ -23,8 +35,9 @@ public interface GameService {
      * @return updated game
      * @throws GameNotFoundException   if game is not found
      * @throws GameValidationException if game information is invalid
+     * @throws ImageNotFoundException  if image is not found
      */
-    Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException;
+    Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException, ImageNotFoundException;
 
     /**
      * Publish the indicated game.
@@ -72,7 +85,7 @@ public interface GameService {
     /**
      * Get game with expansions.
      *
-     * @param gameUrl game url
+     * @param gameUrl    game url
      * @param expansions fields to expand
      * @return game
      * @throws GameNotFoundException if game does not exist

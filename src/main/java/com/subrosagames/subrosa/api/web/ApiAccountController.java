@@ -26,7 +26,6 @@ import com.subrosagames.subrosa.domain.account.Accolade;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
@@ -42,9 +41,6 @@ import com.subrosagames.subrosa.util.ObjectUtils;
 public class ApiAccountController extends BaseApiController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountController.class);
-
-    @Autowired
-    private AccountRepository accountRepository;
 
     @Autowired
     private AccountFactory accountFactory;
@@ -224,7 +220,7 @@ public class ApiAccountController extends BaseApiController {
             throws AccountNotFoundException
     {
         LOG.debug("Getting accolades for account ID {}", accountId);
-        Account account = accountRepository.get(accountId);
+        Account account = accountFactory.getAccount(accountId);
         return account.getAccolades();
     }
 
@@ -243,7 +239,7 @@ public class ApiAccountController extends BaseApiController {
             throws AccountNotFoundException
     {
         LOG.debug("Saving address of type {} for account ID {}", address.getAddressType(), accountId);
-        return accountRepository.get(accountId);
+        return accountFactory.getAccount(accountId);
     }
 
 }
