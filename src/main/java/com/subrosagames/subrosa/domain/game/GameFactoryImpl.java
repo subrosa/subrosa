@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
+import javax.validation.ConstraintViolation;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -26,6 +28,7 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
+import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
 
@@ -139,7 +142,13 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     @Override
     public BaseGame forDto(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException {
         GameType gameType = gameDescriptor.getGameType() == null ? null : gameDescriptor.getGameType().orNull();
-        BaseGame game = GameTypeToEntityMapper.forType(gameType);
+        BaseGame game;
+        try {
+            game = GameTypeToEntityMapper.forType(gameType);
+        } catch (GameTypeUnknownException e) {
+            ConstraintViolation<BaseGame> violation = new VirtualConstraintViolation<>("unknown", "gameType");
+            throw new GameValidationException(Sets.newHashSet(violation));
+        }
         game.setOwner(account);
         injectDependencies(game);
 

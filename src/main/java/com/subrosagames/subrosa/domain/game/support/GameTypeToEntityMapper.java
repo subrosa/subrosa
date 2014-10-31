@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.domain.game.support;
 
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.domain.game.GameTypeUnknownException;
 import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.game.support.scavenger.ScavengerGame;
 
@@ -18,20 +19,21 @@ public final class GameTypeToEntityMapper {
      *
      * @param gameType game type
      * @return game entity
+     * @throws GameTypeUnknownException if game type is not supported
      */
-    public static BaseGame forType(GameType gameType) {
+    public static BaseGame forType(GameType gameType) throws GameTypeUnknownException {
         if (gameType == null) {
-            // TODO this can't be right
+            // this will fail later validation
             return new BaseGame();
-//            throw new IllegalArgumentException("Attempt to get entity for null game type.");
         }
         switch (gameType) {
             case ASSASSIN:
                 return new AssassinGame();
             case SCAVENGER:
                 return new ScavengerGame();
+            case UNKNOWN:
             default:
-                throw new IllegalStateException("Entity not defined for game type " + gameType.name());
+                throw new GameTypeUnknownException("Entity not defined for game type " + gameType.name());
         }
     }
 

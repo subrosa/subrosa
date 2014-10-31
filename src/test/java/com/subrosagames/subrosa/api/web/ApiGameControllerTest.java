@@ -363,6 +363,15 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testCreateWithInvalidGameType() throws Exception {
+        mockMvc.perform(post("/game").with(user("game@owner.com"))
+                .content(jsonBuilder().add("name", "my favorite game").add("gameType", "WTF_IS_THIS").build()))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("gameType", "unknown"))));
+    }
+
+    @Test
     public void testCreateAndUpdateGamePlayerInfoRequirements() throws Exception {
         String response = mockMvc.perform(
                 post("/game")

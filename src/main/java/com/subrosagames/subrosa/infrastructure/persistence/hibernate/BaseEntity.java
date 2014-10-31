@@ -20,12 +20,18 @@ public class BaseEntity {
     @Column
     private Date modified;
 
+    /**
+     * Set created and modified dates on creation.
+     */
     @PrePersist
     protected void prePersist() {
         created = new Date();
         modified = new Date();
     }
 
+    /**
+     * Update the modified date on update.
+     */
     @PreUpdate
     protected void preUpdate() {
         modified = new Date();

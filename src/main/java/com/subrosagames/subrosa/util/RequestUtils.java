@@ -33,7 +33,7 @@ public final class RequestUtils {
      * @return a query criteria object populated with filters
      */
     public static <T> QueryCriteria<T> createQueryCriteriaFromRequestParameters(HttpServletRequest request, Class<T> clazz) {
-        QueryCriteria<T> queryCriteria = new QueryCriteria<T>(clazz);
+        QueryCriteria<T> queryCriteria = new QueryCriteria<>(clazz);
 
         for (String key : queryCriteria.getValidFilterKeys()) {
             String[] parameterValues = request.getParameterValues(key);
@@ -54,12 +54,12 @@ public final class RequestUtils {
         String limit = request.getParameter("limit");
         if (!StringUtils.isBlank(limit)) {
             LOG.debug("Setting a query limit of {}", limit);
-            queryCriteria.setLimit(Integer.valueOf(limit));
+            queryCriteria.setLimit(Integer.parseInt(limit));
         }
         String offset = request.getParameter("offset");
         if (!StringUtils.isBlank(offset)) {
             LOG.debug("Setting a query offset of {}", offset);
-            queryCriteria.setOffset(Integer.valueOf(offset));
+            queryCriteria.setOffset(Integer.parseInt(offset));
         }
         String sort = request.getParameter("sort");
         if (!StringUtils.isBlank(sort)) {
