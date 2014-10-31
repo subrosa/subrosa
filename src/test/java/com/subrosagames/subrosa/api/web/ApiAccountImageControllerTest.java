@@ -206,7 +206,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
                         .with(user("bob@user.com")))
                 .andExpect(status().isOk())
                 .andReturn();
-        String gifString = CharStreams.toString(new InputStreamReader(getMock1x1Gif().getInputStream()));
+        String gifString = CharStreams.toString(new InputStreamReader(getMock1x1Gif().getInputStream(), "UTF-8"));
         assertEquals(gifString, mvcResult.getResponse().getContentAsString());
     }
 

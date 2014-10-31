@@ -139,6 +139,9 @@ public class Account implements PermissionTarget {
     @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
     private List<PlayerProfile> playerProfiles = Lists.newArrayList();
 
+    @Column(name = "last_logged_in")
+    private Date lastLoggedIn;
+
     /**
      * Get accolades for this account.
      *
@@ -219,6 +222,14 @@ public class Account implements PermissionTarget {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Date getLastLoggedIn() {
+        return lastLoggedIn;
+    }
+
+    public void setLastLoggedIn(Date lastLoggedIn) {
+        this.lastLoggedIn = lastLoggedIn;
     }
 
     /**

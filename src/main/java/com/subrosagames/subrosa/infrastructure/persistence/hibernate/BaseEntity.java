@@ -37,20 +37,41 @@ public class BaseEntity {
         modified = new Date();
     }
 
+    /**
+     * Get created date.
+     *
+     * @return created date
+     */
     public Date getCreated() {
-        return created;
+        return created == null ? null : new Date(created.getTime());
     }
 
+    /**
+     * Set created date.
+     *
+     * @param created created date
+     */
     public void setCreated(Date created) {
-        this.created = created;
+        this.created = created == null ? null : new Date(created.getTime());
     }
 
+    /**
+     * Get last modified date.
+     *
+     * @return modified date
+     */
     public Date getModified() {
-        return modified;
+        return modified == null ? null : new Date(modified.getTime());
     }
 
+    /**
+     * Set last modified date.
+     *
+     * @param modified modified date
+     */
     public void setModified(Date modified) {
-        this.modified = modified;
+        this.modified = modified == null ? null : new Date(modified.getTime());
     }
 
 }
+

@@ -30,14 +30,14 @@ flyway {
 
 task flywayNew << {
     def now = Calendar.getInstance()
-    def version = String.format("%04d%02d%02d%02d%02d%02d.sql", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
+    def version = String.format("%04d%02d%02d%02d%02d%02d.sql", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
     def f = new File(sqlDir, version)
     f.createNewFile()
 }
 
 task flywayNewJava << {
     def now = Calendar.getInstance()
-    def version = String.format("V%04d%02d%02d%02d%02d%02d.java", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
+    def version = String.format("V%04d%02d%02d%02d%02d%02d.java", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
     def f = new File(javaDir, version)
     f.createNewFile()
 }

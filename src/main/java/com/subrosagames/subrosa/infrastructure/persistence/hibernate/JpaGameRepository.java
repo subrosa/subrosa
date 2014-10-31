@@ -72,7 +72,7 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public BaseGame get(int gameId, String... expansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with id {} from the database", gameId);
-        expansions = enableExpansions(expansions);
+        enableExpansions(expansions);
         BaseGame gameEntity = entityManager.find(BaseGame.class, gameId);
         if (gameEntity == null) {
             throw new GameNotFoundException("Game for id " + gameId + " not found");
@@ -86,10 +86,10 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
-    public BaseGame get(final String url, String... expansions) throws GameNotFoundException {
+    public BaseGame get(final String url, String... requestedExpansions) throws GameNotFoundException {
         LOG.debug("Retrieving game with url {} from the database", url);
         BaseGame gameEntity;
-        expansions = enableExpansions(expansions);
+        String[] expansions = enableExpansions(requestedExpansions);
         Map<String, Object> conditions = new HashMap<String, Object>(1) {
             {
                 put("url", url);
@@ -107,7 +107,7 @@ public class JpaGameRepository implements GameRepository {
     @Override
     public List<BaseGame> list(int limit, int offset, String... expansions) {
         LOG.debug("Retrieving game list with limit {} and offset {}", limit, offset);
-        expansions = enableExpansions(expansions);
+        enableExpansions(expansions);
         TypedQuery<BaseGame> query = entityManager.createQuery("SELECT g FROM BaseGame g", BaseGame.class);
         if (limit > 0) {
             query.setMaxResults(limit);
@@ -118,7 +118,7 @@ public class JpaGameRepository implements GameRepository {
 
     @Override
     public List<BaseGame> findByCriteria(QueryCriteria<BaseGame> criteria, String... expansions) {
-        expansions = enableExpansions(expansions);
+        enableExpansions(expansions);
         QueryBuilder<BaseGame, TypedQuery<BaseGame>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<BaseGame>(entityManager);
         TypedQuery<BaseGame> query = queryBuilder.getQuery(criteria);
         return query.getResultList();

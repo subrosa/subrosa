@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.api.web;
 
+import org.joda.time.DateTimeUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
@@ -66,6 +67,18 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
                 get("/user"))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$").value(is(notificationList())));
+    }
+
+    @Test
+    public void testLastLoginUpdated() throws Exception {
+        DateTimeUtils.setCurrentMillisFixed(946702899999L);
+        mockMvc.perform(post("/v1/session")
+                .content(jsonBuilder().add("email", "bob@user.com").add("password", "password").build()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/account/1").with(user("joe@admin.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.lastLoggedIn").value(946702899999L));
     }
 
     @Ignore
