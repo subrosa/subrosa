@@ -134,7 +134,7 @@ public abstract class AbstractApiControllerTest {
         return resultActions;
     }
 
-    protected class JsonBuilder {
+    protected static class JsonBuilder {
         private final JsonMap jsonMap;
 
         public JsonBuilder() {
@@ -168,7 +168,7 @@ public abstract class AbstractApiControllerTest {
         }
     }
 
-    protected class JsonMap extends HashMap<String, Object> {
+    protected static class JsonMap extends HashMap<String, Object> {
         public String toString() {
             try {
                 return new ObjectMapper().writeValueAsString(this);

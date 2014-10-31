@@ -49,7 +49,7 @@ public class JpaAccountRepository implements AccountRepository {
 
     @Override
     public Account get(int accountId, String... expansions) throws AccountNotFoundException {
-        expansions = enableExpansions(expansions);
+        enableExpansions(expansions);
         Account account = entityManager.find(Account.class, accountId);
         if (account == null) {
             throw new AccountNotFoundException("Account with id " + accountId + " not found");

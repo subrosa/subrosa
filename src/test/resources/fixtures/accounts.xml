@@ -2,7 +2,8 @@
 <dataset>
   <account account_id="1" activated="true" email="bob@user.com"
            name="Bob T. User"
-           password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+           last_logged_in="2000-01-01"
+           password="14e573d5ae03790afe14a176208b2cf47babb4acb7d3cf0ec1338e71f6de0d8ee56fb49a76a5f82bf7b1bdc07b1ee0ca8a04ff9abc6f3e6e4bc9035da17a5058690aceb61fc12ab7ad0970d9da38ab30d2387c768a92715366383afa5511a21ccba60b95160c04c855af2bec5fb2b5505f13c28d8e069fc321fbb6482f9dcc7c"/>
   <image image_id="5" account_id="1" file_asset_id="5" index="0"/>
   <file_asset file_asset_id="5" name="img5.jpg" mime_type="image/jpg" size="500"/>
 
