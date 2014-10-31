@@ -30,10 +30,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.test.util.ColumnSensingFlatXmlDataSetLoader;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 
@@ -57,6 +59,7 @@ import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.u
         TransactionalTestExecutionListener.class,
         ForeignKeyDisablingTestListener.class
 })
+@DbUnitConfiguration(dataSetLoader = ColumnSensingFlatXmlDataSetLoader.class)
 public abstract class AbstractApiControllerTest {
 
     // CHECKSTYLE-OFF: JavadocMethod

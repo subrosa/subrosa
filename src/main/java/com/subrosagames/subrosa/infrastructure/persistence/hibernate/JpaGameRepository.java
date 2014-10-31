@@ -249,7 +249,10 @@ public class JpaGameRepository implements GameRepository {
     }
 
     private String[] enableExpansions(String... expansions) {
-        List<String> enabled = new ArrayList<String>(expansions.length);
+        if (expansions.length == 0) {
+            return expansions;
+        }
+        List<String> enabled = new ArrayList<>(expansions.length);
         for (String expansion : expansions) {
             try {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);

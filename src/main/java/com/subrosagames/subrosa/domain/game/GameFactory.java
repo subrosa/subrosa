@@ -11,6 +11,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.service.PaginatedList;
@@ -51,7 +52,7 @@ public interface GameFactory extends DomainObjectFactory<BaseGame> {
     PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
 
     /**
-     * Get the games that the given user has created.
+     * Get the games that the given account has created.
      *
      * @param user game owner
      * @return list of games
@@ -62,10 +63,12 @@ public interface GameFactory extends DomainObjectFactory<BaseGame> {
      * Creates a game entity for the given game information.
      *
      * @param gameDescriptor game information
+     * @param account        game owner
      * @return game entity
      * @throws GameValidationException if the entity cannot be created
+     * @throws ImageNotFoundException  if image is not found
      */
-    BaseGame forDto(GameDescriptor gameDescriptor) throws GameValidationException;
+    BaseGame forDto(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException;
 
     /**
      * Creates a post entity for the given post information.

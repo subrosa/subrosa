@@ -57,6 +57,11 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
         private NotificationWithDetailsMatcher() {
         }
 
+        /**
+         * Factory for matching notification with constraint details.
+         *
+         * @return notification with constraint matcher
+         */
         @Factory
         public static NotificationWithDetailsMatcher withDetails() {
             return new NotificationWithDetailsMatcher();

@@ -3,7 +3,7 @@ package com.subrosagames.subrosa.geo.gmaps;
 import java.math.BigDecimal;
 
 import com.google.code.geocoder.model.GeocoderLocationType;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 
 /**
  * POJO for holding address information from google's geocoding API.
@@ -105,7 +105,7 @@ public class GoogleAddress {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("fullAddress", fullAddress)
                 .add("streetAddress", streetAddress)
                 .add("city", city)

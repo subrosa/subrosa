@@ -11,6 +11,8 @@ import com.subrosagames.subrosa.api.dto.EnrollmentFieldDto;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.domain.game.persistence.EnrollmentFieldEntity;
 import com.subrosagames.subrosa.domain.game.persistence.EnrollmentFieldPk;
+import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**
@@ -26,8 +28,9 @@ public final class GameDescriptorTranslator {
      *
      * @param game           game entity
      * @param gameDescriptor game descriptor
+     * @throws ImageNotFoundException if specified image does not exist
      */
-    public static void ingest(BaseGame game, GameDescriptor gameDescriptor) {
+    public static void ingest(BaseGame game, GameDescriptor gameDescriptor) throws ImageNotFoundException {
         copyProperties(gameDescriptor, game);
 
         game.getPlayerInfo().clear();
@@ -44,6 +47,15 @@ public final class GameDescriptorTranslator {
             entity.setDescription(field.getDescription());
             entity.setType(field.getType());
             game.addEnrollmentField(entity);
+        }
+
+        if (gameDescriptor.getImageId() != null) {
+            if (gameDescriptor.getImageId().isPresent()) {
+                Image image = game.getOwner().getImage(gameDescriptor.getImageId().get());
+                game.setImage(image);
+            } else {
+                game.setImage(null);
+            }
         }
     }
 

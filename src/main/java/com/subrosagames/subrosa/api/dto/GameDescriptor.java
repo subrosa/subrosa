@@ -4,16 +4,15 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Optional;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.image.Image;
 
 /**
  * Encapsulates the necessary information to create or update a game.
  */
-public class GameDescriptor { //implements GameData {
+public class GameDescriptor {
 
     private Integer id;
     private Optional<String> name;
@@ -24,7 +23,7 @@ public class GameDescriptor { //implements GameData {
     private Optional<String> timezone;
     private Optional<Integer> maximumTeamSize;
     private Optional<String> password;
-    private Optional<Image> image;
+    private Optional<Integer> imageId;
     private Optional<List<EnrollmentFieldDto>> playerInfo;
     private Optional<Date> gameStart;
     private Optional<Date> gameEnd;
@@ -104,12 +103,12 @@ public class GameDescriptor { //implements GameData {
         this.password = password;
     }
 
-    public Optional<Image> getImage() {
-        return image;
+    public Optional<Integer> getImageId() {
+        return imageId;
     }
 
-    public void setImage(Optional<Image> image) {
-        this.image = image;
+    public void setImageId(Optional<Integer> imageId) {
+        this.imageId = imageId;
     }
 
     public Optional<List<EnrollmentFieldDto>> getPlayerInfo() {
@@ -162,7 +161,7 @@ public class GameDescriptor { //implements GameData {
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
+        return MoreObjects.toStringHelper(this)
                 .add("id", id)
                 .add("name", name)
                 .add("url", url)
@@ -172,7 +171,7 @@ public class GameDescriptor { //implements GameData {
                 .add("timezone", timezone)
                 .add("maximumTeamSize", maximumTeamSize)
                 .add("password", password)
-                .add("image", image)
+                .add("image", imageId)
                 .add("playerInfo", playerInfo)
                 .add("gameStart", gameStart)
                 .add("gameEnd", gameEnd)

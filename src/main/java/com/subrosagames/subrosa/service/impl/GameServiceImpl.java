@@ -15,6 +15,7 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Team;
@@ -32,8 +33,15 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
+    public Game createGame(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException {
+        Game game = gameFactory.forDto(gameDescriptor, account);
+        return game.create();
+    }
+
+    @Override
+    @Transactional
     @PreAuthorize("isAuthenticated() && hasPermission(#gameUrl, 'Game', 'WRITE_GAME')")
-    public Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException {
+    public Game updateGame(String gameUrl, GameDescriptor gameDescriptor) throws GameValidationException, GameNotFoundException, ImageNotFoundException {
         Game game = gameFactory.getGame(gameUrl);
         return game.update(gameDescriptor);
     }

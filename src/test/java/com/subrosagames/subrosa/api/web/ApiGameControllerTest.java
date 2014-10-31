@@ -291,9 +291,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGameUpdate() throws Exception {
-        String response = mockMvc.perform(
-                post("/game")
-                        .with(user("new@user.com"))
+        String response = mockMvc.perform(post("/game").with(user("new@user.com"))
                         .content(jsonBuilder().add("name", "game to update").add("gameType", "SCAVENGER").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("game to update"))
@@ -301,28 +299,67 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
-        mockMvc.perform(
-                put("/game/{url}", url)
-                        .with(user("new@user.com"))
+        mockMvc.perform(put("/game/{url}", url).with(user("new@user.com"))
                         .content(jsonBuilder().add("name", "renamed game").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
 
-        mockMvc.perform(
-                get("/game/{url}", url)
-                        .with(user("new@user.com")))
+        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
     }
 
     @Test
     public void testGameUpdateByAdmin() throws Exception {
-        mockMvc.perform(
-                put("/game/{url}", "fun_times")
-                        .with(user("admin@user.com"))
+        mockMvc.perform(put("/game/{url}", "fun_times").with(user("admin@user.com"))
                         .content(jsonBuilder().add("name", "this is now the name").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("this is now the name"));
+    }
+
+    @Test
+    public void testUpdateWithImage() throws Exception {
+        String game = mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+                .andReturn().getResponse().getContentAsString();
+
+        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com")).content(game))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image.name").value("pic1.png"));
+
+        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com"))
+                .content(jsonBuilder().add("imageId", 2).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image.name").value("pic2.png"));
+
+        mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+                .andExpect(jsonPath("$.image.name").value("pic2.png"));
+    }
+
+    @Test
+    public void testUpdateRemoveImage() throws Exception {
+        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com"))
+                .content(jsonBuilder().add("imageId", null).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image").doesNotExist());
+
+        mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image").doesNotExist());
+    }
+
+    @Test
+    public void testCreateWithImage() throws Exception {
+        mockMvc.perform(post("/game").with(user("game@owner.com"))
+                .content(jsonBuilder().add("name", "my favorite game").add("gameType", "ASSASSIN").add("imageId", 1).build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.image.name").value("pic1.png"));
+    }
+
+    @Test
+    public void testCreateWithImageNotFound() throws Exception {
+        mockMvc.perform(post("/game").with(user("game@owner.com"))
+                .content(jsonBuilder().add("name", "my favorite game").add("gameType", "ASSASSIN").add("imageId", 666).build()))
+                .andExpect(status().isNotFound());
     }
 
     @Test

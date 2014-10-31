@@ -14,6 +14,7 @@ import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -145,8 +146,9 @@ public interface Game extends GameData {
      * @param game game information
      * @return updated game
      * @throws GameValidationException if the game state is invalid
+     * @throws ImageNotFoundException  if image is not found
      */
-    Game update(GameDescriptor game) throws GameValidationException;
+    Game update(GameDescriptor game) throws GameValidationException, ImageNotFoundException;
 
     /**
      * Publish the game.

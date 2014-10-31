@@ -30,6 +30,7 @@ import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -39,6 +40,7 @@ import com.subrosagames.subrosa.domain.game.validation.GameEventValidationExcept
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.InsufficientInformationException;
 import com.subrosagames.subrosa.domain.player.PlayRestrictedException;
@@ -70,7 +72,9 @@ public class BaseGame extends GameEntity implements Game {
     @JsonIgnore
     @Transient
     private GameFactory gameFactory;
-
+    @JsonIgnore
+    @Transient
+    private AccountFactory accountFactory;
 
     @Transient
     private final Function<Rule, String> extractRules = new Function<Rule, String>() {
@@ -79,6 +83,15 @@ public class BaseGame extends GameEntity implements Game {
             return input.getDescription();
         }
     };
+
+
+    @Override
+    public Account getOwner() {
+        // TODO we need a more reliable means of domain object DI
+        Account owner = super.getOwner();
+        accountFactory.injectDependencies(owner);
+        return owner;
+    }
 
     @Override
     public GameStatus getStatus() {
@@ -108,7 +121,7 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public Game update(GameDescriptor gameDescriptor) throws GameValidationException {
+    public Game update(GameDescriptor gameDescriptor) throws GameValidationException, ImageNotFoundException {
         // read-only fields
         gameDescriptor.setId(getId());
         gameDescriptor.setUrl(Optional.of(getUrl()));
@@ -287,6 +300,10 @@ public class BaseGame extends GameEntity implements Game {
 
     public void setPlayerFactory(PlayerFactory playerFactory) {
         this.playerFactory = playerFactory;
+    }
+
+    public void setAccountFactory(AccountFactory accountFactory) {
+        this.accountFactory = accountFactory;
     }
 
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {

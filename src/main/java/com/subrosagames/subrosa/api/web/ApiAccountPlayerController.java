@@ -20,13 +20,12 @@ import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
-import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.service.AccountService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 
 /**
- * Controller for {@link Player} related CRUD operations.
+ * Controller for {@link PlayerProfile} related CRUD operations.
  */
 @Controller
 public class ApiAccountPlayerController extends BaseApiController {

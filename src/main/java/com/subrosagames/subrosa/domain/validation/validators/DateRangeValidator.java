@@ -47,9 +47,9 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
         if (!isValid) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(message)
-                    .addNode(startField).addConstraintViolation()
+                    .addPropertyNode(startField).addConstraintViolation()
                     .buildConstraintViolationWithTemplate(message)
-                    .addNode(endField).addConstraintViolation();
+                    .addPropertyNode(endField).addConstraintViolation();
         }
         return isValid;
     }
