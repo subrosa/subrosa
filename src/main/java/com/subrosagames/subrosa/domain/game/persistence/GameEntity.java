@@ -136,10 +136,6 @@ public class GameEntity extends BaseEntity {
     @JoinColumn(name = "image_id")
     private Image image;
 
-    // TODO move this out of the base model class
-    @Column(name = "min_age")
-    private Integer minimumAge;
-
     @OneToMany(targetEntity = PostEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created DESC")
@@ -335,14 +331,6 @@ public class GameEntity extends BaseEntity {
 
     public void setImage(Image image) {
         this.image = image;
-    }
-
-    public Integer getMinimumAge() {
-        return minimumAge;
-    }
-
-    public void setMinimumAge(Integer minimumAge) {
-        this.minimumAge = minimumAge;
     }
 
     public Integer getMaximumTeamSize() {

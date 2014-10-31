@@ -79,12 +79,6 @@ public interface GameData {
     Image getImage();
 
     /**
-     * Minimum age to play game.
-     * @return minimum age to play
-     */
-    Integer getMinimumAge();
-
-    /**
      * Maximum team size for game.
      * @return maximum team size
      */
