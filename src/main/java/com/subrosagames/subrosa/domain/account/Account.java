@@ -48,7 +48,6 @@ import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
-import com.subrosagames.subrosa.domain.game.persistence.EnrollmentFieldEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.token.Token;
