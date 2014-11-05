@@ -48,6 +48,7 @@ import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
+import com.subrosagames.subrosa.domain.game.persistence.EnrollmentFieldEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.token.Token;
@@ -131,7 +132,12 @@ public class Account implements PermissionTarget {
     private Map<AddressType, Address> addresses;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
     @OrderColumn(name = "index")
     private List<Image> images = Lists.newArrayList();
 
@@ -148,7 +154,7 @@ public class Account implements PermissionTarget {
      * @return list of accolades
      */
     public List<Accolade> getAccolades() {
-        return new ArrayList<Accolade>();
+        return new ArrayList<>();
     }
 
     public Integer getId() {

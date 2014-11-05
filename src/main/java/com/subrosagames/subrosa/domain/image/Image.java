@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -42,6 +44,14 @@ public class Image {
     @JsonIgnore
     @Column
     private Integer index;
+
+    @PrePersist
+    @PreUpdate
+    private void prepareIndex() {
+        if (account != null) {
+            index = account.getImages().indexOf(this);
+        }
+    }
 
     @JsonProperty
     public String getName() {
