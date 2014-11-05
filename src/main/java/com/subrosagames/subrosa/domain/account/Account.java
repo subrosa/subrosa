@@ -131,7 +131,12 @@ public class Account implements PermissionTarget {
     private Map<AddressType, Address> addresses;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
     @OrderColumn(name = "index")
     private List<Image> images = Lists.newArrayList();
 
@@ -148,7 +153,7 @@ public class Account implements PermissionTarget {
      * @return list of accolades
      */
     public List<Accolade> getAccolades() {
-        return new ArrayList<Accolade>();
+        return new ArrayList<>();
     }
 
     public Integer getId() {
