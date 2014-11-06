@@ -8,7 +8,7 @@ import com.google.common.base.Optional;
 public class PlayerProfileDescriptor {
 
     private Optional<String> name;
-    private Optional<Integer> image;
+    private Optional<Integer> imageId;
 
     public Optional<String> getName() {
         return name;
@@ -18,11 +18,11 @@ public class PlayerProfileDescriptor {
         this.name = name;
     }
 
-    public Optional<Integer> getImage() {
-        return image;
+    public Optional<Integer> getImageId() {
+        return imageId;
     }
 
-    public void setImage(Optional<Integer> image) {
-        this.image = image;
+    public void setImageId(Optional<Integer> imageId) {
+        this.imageId = imageId;
     }
 }
