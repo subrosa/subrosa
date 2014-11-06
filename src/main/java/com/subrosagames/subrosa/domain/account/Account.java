@@ -230,11 +230,11 @@ public class Account implements PermissionTarget {
     }
 
     public Date getLastLoggedIn() {
-        return lastLoggedIn;
+        return lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
     }
 
     public void setLastLoggedIn(Date lastLoggedIn) {
-        this.lastLoggedIn = lastLoggedIn;
+        this.lastLoggedIn = lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
     }
 
     /**
@@ -479,9 +479,9 @@ public class Account implements PermissionTarget {
         if (playerProfileDescriptor.getName() != null) {
             playerProfile.setName(playerProfileDescriptor.getName().orNull());
         }
-        if (playerProfileDescriptor.getImage() != null) {
-            if (playerProfileDescriptor.getImage().isPresent()) {
-                playerProfile.setImage(getImage(playerProfileDescriptor.getImage().get()));
+        if (playerProfileDescriptor.getImageId() != null) {
+            if (playerProfileDescriptor.getImageId().isPresent()) {
+                playerProfile.setImage(getImage(playerProfileDescriptor.getImageId().get()));
             } else {
                 playerProfile.setImage(null);
             }

@@ -105,6 +105,7 @@ public class JpaQueryBuilderTest {
         }
         LOG.info("Stopping in-memory HSQL database.");
         connection.createStatement().execute("SHUTDOWN");
+        connection.close();
     }
 
     @Test
@@ -343,7 +344,7 @@ public class JpaQueryBuilderTest {
             this.id = id;
             this.score = score;
             this.text = text;
-            this.time = time;
+            this.time = time == null ? null : new Date(time.getTime());
             this.notAnnotated = notAnnotated;
             this.nullable = nullable;
         }
@@ -376,11 +377,11 @@ public class JpaQueryBuilderTest {
         }
 
         public Date getTime() {
-            return time;
+            return time == null ? null : new Date(time.getTime());
         }
 
         public void setTime(Date time) {
-            this.time = time;
+            this.time = time == null ? null : new Date(time.getTime());
         }
 
         public List<EventObject> getEvent() {
@@ -426,7 +427,7 @@ public class JpaQueryBuilderTest {
 
         public EventObject(Integer id, Date innerDate) {
             this.id = id;
-            this.innerDate = innerDate;
+            this.innerDate = innerDate == null ? null : new Date(innerDate.getTime());
         }
 
         public Integer getId() {
@@ -438,11 +439,11 @@ public class JpaQueryBuilderTest {
         }
 
         public Date getInnerDate() {
-            return innerDate;
+            return innerDate == null ? null : new Date(innerDate.getTime());
         }
 
         public void setInnerDate(Date innerDate) {
-            this.innerDate = innerDate;
+            this.innerDate = innerDate == null ? null : new Date(innerDate.getTime());
         }
     }
 

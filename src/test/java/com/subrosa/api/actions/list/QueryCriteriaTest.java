@@ -71,7 +71,7 @@ public class QueryCriteriaTest {
         public QueriableModelObject(String name, Integer age, Date createDate, EntityObject entityObject, String notAnnotated) {
             this.name = name;
             this.age = age;
-            this.createDate = createDate;
+            this.createDate = createDate == null ? null : new Date(createDate.getTime());
             this.entityObject = entityObject;
             this.notAnnotated = notAnnotated;
         }
@@ -85,7 +85,7 @@ public class QueryCriteriaTest {
         private Date innerDate;
 
         public EntityObject(Date innerDate) {
-            this.innerDate = innerDate;
+            this.innerDate = innerDate == null ? null : new Date(innerDate.getTime());
         }
     }
 

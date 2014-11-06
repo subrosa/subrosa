@@ -414,11 +414,11 @@ public class GameEntity extends BaseEntity {
     }
 
     public Date getPublished() {
-        return published;
+        return published == null ? null : new Date(published.getTime());
     }
 
     public void setPublished(Date published) {
-        this.published = published;
+        this.published = published == null ? null : new Date(published.getTime());
     }
 
     public List<Zone> getZones() {

@@ -6,6 +6,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.jayway.jsonpath.JsonPath;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -136,7 +137,7 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     String playerProfileJson(String name, Integer image) {
         return jsonBuilder()
                 .add("name", name)
-                .add("image", image)
+                .add("imageId", image)
                 .build();
     }
 
@@ -165,6 +166,18 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     public void testUpdatePlayerImageNotFound() throws Exception {
         mockMvc.perform(put("/account/3/player/2").with(user("lotsopics@user.com")).content(playerProfileJson("player name", 666)))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testUpdatePlayerWithCreateResponse() throws Exception {
+        String createdPlayer = mockMvc.perform(post("/user/player").with(user("bob@user.com")).content(playerProfileJson("my player", 5)))
+                .andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.compile("$.id").read(createdPlayer);
+        mockMvc.perform(put("/user/player/{id}", id).with(user("bob@user.com")).content(createdPlayer))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.name").value("my player"))
+                .andExpect(jsonPath("$.image.id").value(5));
     }
 
     @Test
