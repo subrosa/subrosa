@@ -33,7 +33,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -243,9 +242,6 @@ public class Account implements PermissionTarget {
      * @return addresses if loaded or {@code null}
      */
     public Map<AddressType, Address> getAddresses() {
-        if (!Hibernate.isInitialized(addresses)) {
-            return null;
-        }
         return addresses;
     }
 

@@ -52,7 +52,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
     /**
      * Matches notification with a details map.
      */
-    public static class NotificationWithDetailsMatcher extends TypeSafeDiagnosingMatcher<JSONObject> {
+    public static class NotificationWithDetailsMatcher extends TypeSafeDiagnosingMatcher<JSONObject> { // SUPPRESS CHECKSTYLE FinalClassCheck
 
         private NotificationWithDetailsMatcher() {
         }
@@ -93,7 +93,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
     /**
      * Matches notification with a details map containing a specified field.
      */
-    public static class NotificationDetailField extends NotificationWithDetailsMatcher {
+    public static class NotificationDetailField extends NotificationWithDetailsMatcher { // SUPPRESS CHECKSTYLE FinalClassCheck
 
         private final String field;
 
@@ -134,7 +134,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
     /**
      * Matcher for a notification containing specific constraint details.
      */
-    public static class NotificationDetail extends NotificationDetailField {
+    public static class NotificationDetail extends NotificationDetailField { // SUPPRESS CHECKSTYLE FinalClassCheck
 
         private final String field;
         private final String constraint;

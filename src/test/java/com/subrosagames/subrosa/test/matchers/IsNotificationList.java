@@ -50,6 +50,9 @@ public class IsNotificationList extends TypeSafeDiagnosingMatcher<JSONObject> {
         description.appendText("notification list");
     }
 
+    /**
+     * Matcher for a notification.
+     */
     static class IsNotification extends TypeSafeDiagnosingMatcher<JSONObject> {
 
         @Factory

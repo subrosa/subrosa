@@ -100,11 +100,11 @@ public final class SecurityRequestPostProcessors {
          * <p>By default a lookup of {@link UserDetailsService} is performed by type. This
          * can be problematic if multiple {@link UserDetailsService} beans are declared.
          *
-         * @param userDetailsServiceBeanId user details service bean id
+         * @param beanId user details service bean id
          * @return {@code this}
          */
-        public UserDetailsRequestPostProcessor userDetailsServiceBeanId(String userDetailsServiceBeanId) {
-            this.userDetailsServiceBeanId = userDetailsServiceBeanId;
+        public UserDetailsRequestPostProcessor userDetailsServiceBeanId(String beanId) {
+            this.userDetailsServiceBeanId = beanId;
             return this;
         }
 
@@ -124,10 +124,10 @@ public final class SecurityRequestPostProcessors {
         }
 
         private UserDetailsService userDetailsService(ApplicationContext context) {
-            if (this.userDetailsServiceBeanId == null) {
+            if (userDetailsServiceBeanId == null) {
                 return context.getBean(UserDetailsService.class);
             }
-            return context.getBean(this.userDetailsServiceBeanId, UserDetailsService.class);
+            return context.getBean(userDetailsServiceBeanId, UserDetailsService.class);
         }
     }
 
