@@ -16,6 +16,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class GoogleGeocoderTest {
 
+    // CHECKSTYLE-OFF: JavadocMethod
+
     private GoogleGeocoder googleGeocoder;
 
     @Before
@@ -53,5 +55,6 @@ public class GoogleGeocoderTest {
         assertEquals(address.getLongitude(), new BigDecimal("-78.797066"));
     }
 
+    // CHECKSTYLE-ON: JavadocMethod
 
 }

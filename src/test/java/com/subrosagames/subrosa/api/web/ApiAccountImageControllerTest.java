@@ -25,12 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
-import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link ApiAccountImageControllerTest}.
@@ -185,7 +182,6 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isForbidden());
     }
 
-    @Ignore
     @Test
     public void testUploadImageUnrecognizedMimeType() throws Exception {
         MockMultipartFile file = new MockMultipartFile("file", "pic.png", "image/png", "not a real image".getBytes("UTF-8"));
@@ -193,9 +189,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
                 fileUpload("/account/{accountId}/image", 1)
                         .file(file)
                         .with(user("bob@user.com")))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$").value(notificationList()))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("file", "unsupportedType"))));
+                .andExpect(status().isCreated());
     }
 
     @Ignore

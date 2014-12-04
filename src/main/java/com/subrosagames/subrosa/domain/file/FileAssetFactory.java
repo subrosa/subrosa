@@ -68,10 +68,10 @@ public class FileAssetFactory {
         MagicMatch match;
         try {
             match = Magic.getMagicMatch(physicalFile, true);
+            fileAsset.setMimeType(match.getMimeType());
         } catch (MagicParseException | MagicMatchNotFoundException | MagicException e) {
-            throw new FileUploadException("Could not determine mime type.", e);
+            LOG.error("Could not determine mime type.", e);
         }
-        fileAsset.setMimeType(match.getMimeType());
         fileAsset.setSize(physicalFile.length());
         fileAssetRepository.update(fileAsset);
 

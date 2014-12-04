@@ -8,6 +8,8 @@ import org.junit.Test;
  */
 public class PlayerCodeGeneratorTest {
 
+    // CHECKSTYLE-OFF: JavadocMethod
+
     @Test
     public void testGenerate() throws Exception {
         for (int i = 0; i < 100; ++i) {
@@ -21,4 +23,6 @@ public class PlayerCodeGeneratorTest {
             Assert.assertTrue(Character.isLetterOrDigit(c));
         }
     }
+
+    // CHECKSTYLE-ON: JavadocMethod
 }
