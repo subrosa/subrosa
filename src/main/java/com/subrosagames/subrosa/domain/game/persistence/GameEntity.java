@@ -31,7 +31,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.Hibernate;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -347,9 +346,6 @@ public class GameEntity extends BaseEntity {
      * @return game posts
      */
     public List<Post> getPosts() {
-        if (!Hibernate.isInitialized(posts)) {
-            return null;
-        }
         return posts;
     }
 
@@ -363,9 +359,6 @@ public class GameEntity extends BaseEntity {
      * @return game history
      */
     public List<GameHistory> getHistory() {
-        if (!Hibernate.isInitialized(history)) {
-            return null;
-        }
         return history;
     }
 
@@ -379,9 +372,6 @@ public class GameEntity extends BaseEntity {
      * @return game events
      */
     public List<GameEvent> getEvents() {
-        if (!Hibernate.isInitialized(events)) {
-            return null;
-        }
         return events;
     }
 

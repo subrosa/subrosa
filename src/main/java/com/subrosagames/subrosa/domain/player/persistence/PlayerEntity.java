@@ -231,10 +231,11 @@ public class PlayerEntity implements Player {
     public void addTarget(Location target) {
     }
 
-    public void setPlayerRepository(PlayerRepository playerRepository) {
-        this.playerRepository = playerRepository;
-    }
-
+    /**
+     * Assert player is valid for storage.
+     *
+     * @throws PlayerValidationException if player is invalid for storage
+     */
     public void assertValid() throws PlayerValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<PlayerEntity>> violations = validator.validate(this);
@@ -242,4 +243,9 @@ public class PlayerEntity implements Player {
             throw new PlayerValidationException(violations);
         }
     }
+
+    public void setPlayerRepository(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
+
 }

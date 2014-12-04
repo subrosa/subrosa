@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
 import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
 import com.subrosagames.subrosa.event.message.MessageQueueFactory;
@@ -28,13 +29,14 @@ public class EventExecutor {
     @Autowired
     private MessageQueueFactory messageQueueFactory;
 
-//    @Autowired
+    //    @Autowired
     private JmsTemplate jmsTemplate;
 
     /**
      * Execute the event of the specified type for the specified game.
+     *
      * @param eventClass event identifier
-     * @param gameId game id
+     * @param gameId     game id
      */
     public void execute(String eventClass, int gameId) {
         execute(eventClass, gameId, null);
@@ -42,8 +44,9 @@ public class EventExecutor {
 
     /**
      * Execute the event of the specified type for the specified game.
+     *
      * @param eventClass event identifier
-     * @param gameId game id
+     * @param gameId     game id
      * @param properties event properties
      */
     public void execute(String eventClass, int gameId, Map<String, Serializable> properties) {
@@ -57,10 +60,17 @@ public class EventExecutor {
         try {
             handler.process(messageForName);
         } catch (Exception e) {
-            LOG.error("Exception processing event {}", new Object[] { eventClass, gameId }, e);
+            LOG.error("Exception processing event {}", new Object[]{ eventClass, gameId }, e);
         }
     }
 
+    /**
+     * Put a message on the queue for the given event.
+     *
+     * @param eventClass event identifier
+     * @param gameId     game id
+     * @param properties event properties
+     */
     public void executeAsync(String eventClass, int gameId, Map<String, Serializable> properties) {
         String queueForName = messageQueueFactory.getQueueForName(eventClass);
         GameEventMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
@@ -69,6 +79,4 @@ public class EventExecutor {
         jmsTemplate.convertAndSend(queueForName, messageForName);
     }
 
-    public void test() {
-    }
 }
