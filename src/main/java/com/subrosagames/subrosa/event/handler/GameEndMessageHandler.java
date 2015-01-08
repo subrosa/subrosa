@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.event.handler;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -24,13 +25,17 @@ public class GameEndMessageHandler extends AbstractMessageHandler {
     private Notifier notifier;
 
     @Override
-    public void process(Game game, Map<String, Serializable> properties) throws Exception {
+    public void process(Game game, Map<String, Serializable> properties) throws MessageHandlingException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Handling game end message for game {}", game.getId());
         }
         NotificationDetails notificationDetails = new NotificationDetails();
         notificationDetails.setGameId(game.getId());
         notificationDetails.setCode(NotificationCode.GAME_END);
-        notifier.sendNotification(notificationDetails);
+        try {
+            notifier.sendNotification(notificationDetails);
+        } catch (IOException e) {
+            throw new MessageHandlingException(e);
+        }
     }
 }

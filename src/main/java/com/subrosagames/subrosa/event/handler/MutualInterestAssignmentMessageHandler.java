@@ -17,7 +17,7 @@ public class MutualInterestAssignmentMessageHandler extends AbstractMessageHandl
     private static final Logger LOG = LoggerFactory.getLogger(MutualInterestAssignmentMessageHandler.class);
 
     @Override
-    public void process(Game game, Map<String, Serializable> properties) throws Exception {
+    public void process(Game game, Map<String, Serializable> properties) {
         LOG.debug("Performing mutual interest assignment of players for game {}", game.getId());
         TargetAssigner.assignTargets(game.getPlayers(), AssignmentType.MUTUAL_INTEREST);
     }

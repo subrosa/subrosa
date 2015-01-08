@@ -69,6 +69,13 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
     Address update(Address address);
 
     /**
+     * Delete an address.
+     *
+     * @param address address to delete
+     */
+    void delete(Address address);
+
+    /**
      * Retrieve an account image.
      *
      * @param account account
@@ -94,4 +101,14 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
      * @param playerProfile player profile
      */
     void delete(PlayerProfile playerProfile);
+
+    /**
+     * Retrieve an account address.
+     * @param account account
+     * @param addressId address id
+     * @return account address
+     * @throws AddressNotFoundException if address does not exist
+     */
+    Address getAddress(Account account, int addressId) throws AddressNotFoundException;
+
 }
