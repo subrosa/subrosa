@@ -31,6 +31,7 @@ import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -63,6 +64,14 @@ public class BaseGame extends GameEntity implements Game {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseGame.class);
 
+    @Transient
+    private final Function<Rule, String> extractRules = new Function<Rule, String>() {
+        @Override
+        public String apply(Rule input) {
+            return input.getDescription();
+        }
+    };
+
     @JsonIgnore
     @Transient
     private GameRepository gameRepository;
@@ -76,15 +85,6 @@ public class BaseGame extends GameEntity implements Game {
     @Transient
     private AccountFactory accountFactory;
 
-    @Transient
-    private final Function<Rule, String> extractRules = new Function<Rule, String>() {
-        @Override
-        public String apply(Rule input) {
-            return input.getDescription();
-        }
-    };
-
-
     @Override
     public Account getOwner() {
         // TODO we need a more reliable means of domain object DI
@@ -96,7 +96,7 @@ public class BaseGame extends GameEntity implements Game {
     @Override
     public GameStatus getStatus() {
         Date now = new Date();
-        if (Lists.asList(getPublished(), new Date[]{ getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd() }).contains(null)) {
+        if (Lists.asList(getPublished(), new Date[] { getRegistrationStart(), getRegistrationEnd(), getGameStart(), getGameEnd() }).contains(null)) {
             return GameStatus.DRAFT;
         } else {
             if (now.before(getRegistrationStart())) {
@@ -196,17 +196,36 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public Player joinGame(final Account account, final JoinGameRequest joinGameRequest) throws PlayerValidationException {
+    public Player joinGame(final Account account, final JoinGameRequest joinGameRequest) throws PlayerValidationException, AddressNotFoundException,
+            ImageNotFoundException
+    {
         checkNotNull(account, "Cannot join game with null account");
         checkNotNull(joinGameRequest, "Cannot join game with null join game request");
 
         assertRestrictionsSatisfied(account); // throws PlayRestrictedException
         assertEnrollmentFieldsSet(joinGameRequest); // throws InsufficientInformationException
 
-        PlayerDescriptor playerDescriptor = new PlayerDescriptor();
+        PlayerDescriptor playerDescriptor = PlayerDescriptor.forEnrollmentFields(getPlayerInfo());
         playerDescriptor.setName(joinGameRequest.getName());
         playerDescriptor.setAttributes(joinGameRequest.getAttributes());
         return playerFactory.createPlayerForGame(this, account, playerDescriptor);
+    }
+
+    @Override
+    public Player getPlayer(Integer playerId) throws PlayerNotFoundException {
+        return playerFactory.getPlayer(this, playerId);
+    }
+
+    @Override
+    public Player updatePlayer(Integer playerId, JoinGameRequest joinGameRequest) throws PlayerNotFoundException, AddressNotFoundException,
+            ImageNotFoundException
+    {
+        Player player = getPlayer(playerId);
+        PlayerDescriptor playerDescriptor = PlayerDescriptor.forEnrollmentFields(getPlayerInfo());
+        playerDescriptor.setName(joinGameRequest.getName());
+        playerDescriptor.setAttributes(joinGameRequest.getAttributes());
+        player.update(playerDescriptor);
+        return player;
     }
 
     @Override
@@ -285,11 +304,6 @@ public class BaseGame extends GameEntity implements Game {
         return gameRepository.update(eventEntity);
     }
 
-    @Override
-    public Player getPlayer(Integer playerId) throws PlayerNotFoundException {
-        return playerFactory.getPlayer(this, playerId);
-    }
-
     public void setGameFactory(GameFactory gameFactory) {
         this.gameFactory = gameFactory;
     }
@@ -310,14 +324,11 @@ public class BaseGame extends GameEntity implements Game {
         boolean failed = false;
         Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
         for (EnrollmentField enrollmentField : getPlayerInfo()) {
-            if (!joinGameRequest.getAttributes().containsKey(enrollmentField.getName())) {
+            if (!joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
                 failed = true;
                 ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", enrollmentField.getFieldId());
                 constraints.add(constraint);
-                continue;
             }
-            // TODO build out join game with player info requirements
-            joinGameRequest.getAttributes().get(enrollmentField.getName());
         }
         if (failed) {
             throw new InsufficientInformationException(constraints);

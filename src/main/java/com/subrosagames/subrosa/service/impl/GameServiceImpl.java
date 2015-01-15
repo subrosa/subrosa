@@ -3,23 +3,24 @@ package com.subrosagames.subrosa.service.impl;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountFactory;
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import com.subrosagames.subrosa.domain.player.Team;
-import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.service.GameService;
 
 /**
@@ -30,6 +31,9 @@ public class GameServiceImpl implements GameService {
 
     @Autowired
     private GameFactory gameFactory;
+
+    @Autowired
+    private AccountFactory accountFactory;
 
     @Override
     @Transactional
@@ -54,20 +58,13 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Player enrollInTeam(Account account, Team team, String teamPassword) {
-        return null;
-    }
-
-    @Override
-    public Player enrollInGame(Account account, Game game) {
-        return null;
-    }
-
-    @Override
     @Transactional
-    public Player joinGame(String gameUrl, Account account, JoinGameRequest joinGameRequest) throws GameNotFoundException, PlayerValidationException {
+    public Player joinGame(String gameUrl, Integer accountId, JoinGameRequest joinGameRequest)
+            throws GameNotFoundException, PlayerValidationException, AddressNotFoundException, ImageNotFoundException, AccountNotFoundException
+    {
         Game game = gameFactory.getGame(gameUrl);
-        return game.joinGame(getAuthenticatedUser(), joinGameRequest);
+        Account account = accountFactory.getAccount(accountId);
+        return game.joinGame(account, joinGameRequest);
     }
 
     @Override
@@ -75,8 +72,21 @@ public class GameServiceImpl implements GameService {
         return gameFactory.getGame(gameUrl, expansions);
     }
 
-    private Account getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ((SubrosaUser) authentication.getPrincipal()).getAccount();
+    @Override
+    @Transactional
+    @PostAuthorize("isAuthenticated() && hasPermission(returnObject, 'READ_PLAYER')")
+    public Player getGamePlayer(String gameUrl, Integer playerId) throws GameNotFoundException, PlayerNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.getPlayer(playerId);
     }
+
+    @Override
+    @Transactional
+    @PostAuthorize("isAuthenticated() && hasPermission(returnObject.getAccount(), 'WRITE_ACCOUNT')")
+    public Player updateGamePlayer(String gameUrl, Integer playerId, JoinGameRequest joinGameRequest) throws GameNotFoundException, AddressNotFoundException,
+            PlayerNotFoundException, ImageNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.updatePlayer(playerId, joinGameRequest);
+    }
+
 }

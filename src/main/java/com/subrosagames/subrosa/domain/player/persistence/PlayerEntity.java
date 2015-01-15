@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,20 +25,24 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
+import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.GameRole;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.PlayerRepository;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Target;
@@ -56,6 +60,9 @@ public class PlayerEntity implements Player {
     @JsonIgnore
     @Transient
     private PlayerRepository playerRepository;
+    @JsonIgnore
+    @Transient
+    private PlayerFactory playerFactory;
 
     @Id
     @SequenceGenerator(name = "playerSeq", sequenceName = "player_player_id_seq")
@@ -66,10 +73,16 @@ public class PlayerEntity implements Player {
     @Column
     private String name;
 
-    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
+    @OneToMany(
+            mappedBy = "player",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
     @MapKey(name = "primaryKey.name")
-    private Map<String, PlayerAttribute> attributes;
+    private Map<String, PlayerAttribute> attributes = Maps.newHashMap();
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private TeamEntity team;
@@ -93,6 +106,18 @@ public class PlayerEntity implements Player {
     @MapKey(name = "imageType")
     @MapKeyEnumerated(EnumType.STRING)
     private Map<ImageType, PlayerImage> images;
+
+    @Override
+    public void update(PlayerDescriptor playerDescriptor) throws AddressNotFoundException, ImageNotFoundException {
+        copyPlayerProperties(playerDescriptor);
+    }
+
+    void copyPlayerProperties(PlayerDescriptor playerDescriptor) throws AddressNotFoundException, ImageNotFoundException {
+        if (StringUtils.isNotBlank(playerDescriptor.getName())) {
+            setName(playerDescriptor.getName());
+        }
+        playerFactory.processPlayerAttributes(this, playerDescriptor);
+    }
 
     public Integer getId() {
         return id;
@@ -128,32 +153,28 @@ public class PlayerEntity implements Player {
      * Set image for the given type.
      *
      * @param imageType image type
-     * @param image player image
+     * @param image     player image
      */
     public void setImage(ImageType imageType, PlayerImage image) {
         images.put(imageType, image);
     }
 
-    /**
-     * Get player attributes.
-     *
-     * @return player attributes
-     */
-    public Map<String, String> getAttributes() {
-        if (attributes == null) {
-            return Maps.newHashMap();
-        }
-        return Maps.transformValues(attributes, new Function<PlayerAttribute, String>() {
-            @Nullable
-            @Override
-            public String apply(@Nullable PlayerAttribute input) {
-                return input != null ? input.getValue() : null;
-            }
-        });
+    public Map<String, PlayerAttribute> getAttributes() {
+        return attributes;
     }
 
     public void setAttributes(Map<String, PlayerAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    /**
+     * Set the given player attribute.
+     *
+     * @param fieldId attribute field it
+     * @param playerAttribute attribute to set
+     */
+    public void setAttribute(String fieldId, PlayerAttribute playerAttribute) {
+        attributes.put(fieldId, playerAttribute);
     }
 
     public TeamEntity getTeam() {
@@ -246,6 +267,10 @@ public class PlayerEntity implements Player {
 
     public void setPlayerRepository(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
+    }
+
+    public void setPlayerFactory(PlayerFactory playerFactory) {
+        this.playerFactory = playerFactory;
     }
 
 }

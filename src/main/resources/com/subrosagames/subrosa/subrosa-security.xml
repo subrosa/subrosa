@@ -20,6 +20,7 @@
             <beans:entry key="WRITE_ACCOUNT" value-ref="writeAccountPermission"/>
             <beans:entry key="READ_GAME" value-ref="readGamePermission"/>
             <beans:entry key="WRITE_GAME" value-ref="writeGamePermission"/>
+            <beans:entry key="READ_PLAYER" value-ref="readPlayerPermission"/>
           </beans:map>
         </beans:property>
       </beans:bean>

@@ -51,25 +51,9 @@ public class JpaPlayerRepository implements PlayerRepository {
     }
 
     @Override
-    public PlayerAttribute setPlayerAttribute(PlayerEntity playerEntity, String key, String value) {
-        PlayerAttributePk primaryKey = new PlayerAttributePk(playerEntity.getId(), key);
-        PlayerAttribute attribute = entityManager.find(PlayerAttribute.class, primaryKey);
-        if (attribute == null) {
-            attribute = new PlayerAttribute();
-            attribute.setPrimaryKey(primaryKey);
-            attribute.setPlayer(playerEntity);
-            attribute.setValue(value);
-            entityManager.persist(attribute);
-        } else {
-            attribute.setValue(value);
-            entityManager.merge(attribute);
-        }
-        return attribute;
-    }
-
-    @Override
     public PlayerAttribute getPlayerAttribute(PlayerEntity playerEntity, String key) {
         PlayerAttributePk primaryKey = new PlayerAttributePk(playerEntity.getId(), key);
         return entityManager.find(PlayerAttribute.class, primaryKey);
     }
+
 }

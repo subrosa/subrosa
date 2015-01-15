@@ -33,12 +33,13 @@ public class Address {
     @SequenceGenerator(name = "addressSeq", sequenceName = "address_address_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressSeq")
     @Column(name = "address_id")
-    private int id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "address_type")
     private AddressType addressType;
 
+    @JsonIgnore
     @ManyToOne
     @JoinTable(
             name = "account_address",
@@ -77,7 +78,7 @@ public class Address {
     @Column(name = "postal_code")
     private String postalCode;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

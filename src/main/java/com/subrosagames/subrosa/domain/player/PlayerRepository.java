@@ -49,16 +49,6 @@ public interface PlayerRepository {
     void createPlayer(PlayerEntity playerEntity) throws PlayerValidationException;
 
     /**
-     * Creates or updates, as appropriate, the given player attribute.
-     *
-     * @param playerEntity player entity
-     * @param key          attribute name
-     * @param value        attribute value
-     * @return player attribute
-     */
-    PlayerAttribute setPlayerAttribute(PlayerEntity playerEntity, String key, String value);
-
-    /**
      * Retrieve an existing player attribute.
      *
      * @param playerEntity player entity
@@ -66,4 +56,5 @@ public interface PlayerRepository {
      * @return player attribute
      */
     PlayerAttribute getPlayerAttribute(PlayerEntity playerEntity, String key);
+
 }

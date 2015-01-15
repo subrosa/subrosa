@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
@@ -20,6 +21,7 @@ import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGame;
 import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGameAttributeType;
 import com.subrosagames.subrosa.domain.game.support.assassin.OrdnanceType;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 
 /**
@@ -40,10 +42,12 @@ public class ApiSandboxController {
      * @throws GameValidationException   if something goes wrong
      * @throws GameNotFoundException     if game is not found
      * @throws PlayerValidationException if player validation fails
+     * @throws AddressNotFoundException if address is not found
+     * @throws ImageNotFoundException if image is not found
      */
     @RequestMapping(value = "/android")
     @ResponseBody
-    public Game doIt() throws GameValidationException, GameNotFoundException, PlayerValidationException {
+    public Game doIt() throws GameValidationException, GameNotFoundException, PlayerValidationException, AddressNotFoundException, ImageNotFoundException {
         BaseGame gameEntity = new AssassinGame();
         gameEntity.setName("game name" + random.nextLong());
         gameEntity.setUrl("game-url-" + random.nextLong());
