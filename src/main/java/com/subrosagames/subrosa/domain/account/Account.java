@@ -1,10 +1,10 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -18,9 +18,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.MapKey;
-import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -38,6 +35,8 @@ import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,6 +44,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
+import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -53,6 +53,7 @@ import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
+import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**
@@ -71,6 +72,8 @@ import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 })
 public class Account implements PermissionTarget {
 
+    private static final Logger LOG = LoggerFactory.getLogger(Account.class);
+
     @JsonIgnore
     @Transient
     private AccountRepository accountRepository;
@@ -80,6 +83,9 @@ public class Account implements PermissionTarget {
     @JsonIgnore
     @Transient
     private TokenFactory tokenFactory;
+    @JsonIgnore
+    @Transient
+    private GoogleGeocoder geocoder;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -119,15 +125,9 @@ public class Account implements PermissionTarget {
     @Column(length = 256)
     private String password;
 
-    @OneToMany
-    @JoinTable(
-            name = "account_address",
-            joinColumns = @JoinColumn(name = "account_id"),
-            inverseJoinColumns = @JoinColumn(name = "address_id")
-    )
-    @MapKey(name = "addressType")
-    @MapKeyEnumerated(EnumType.STRING)
-    private Map<AddressType, Address> addresses;
+    @JsonIgnore
+    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    private List<Address> addresses;
 
     @JsonIgnore
     @OneToMany(
@@ -241,7 +241,7 @@ public class Account implements PermissionTarget {
      *
      * @return addresses if loaded or {@code null}
      */
-    public Map<AddressType, Address> getAddresses() {
+    public List<Address> getAddresses() {
         return addresses;
     }
 
@@ -250,8 +250,86 @@ public class Account implements PermissionTarget {
      *
      * @param addresses addresses
      */
-    public void setAddresses(Map<AddressType, Address> addresses) {
+    public void setAddresses(List<Address> addresses) {
         this.addresses = addresses;
+    }
+
+    /**
+     * Get address for id.
+     *
+     * @param addressId address id
+     * @return address
+     * @throws AddressNotFoundException if address is not found
+     */
+    public Address getAddress(int addressId) throws AddressNotFoundException {
+        Address address = accountRepository.getAddress(this, addressId);
+        // TODO oddly placed DI. move address creation into its own factory?
+        address.setGeocoder(geocoder);
+        return address;
+    }
+
+    /**
+     * Create an address.
+     *
+     * @param addressDescriptor address information
+     * @return created address
+     * @throws AddressValidationException if address is invalid
+     */
+    public Address createAddress(AddressDescriptor addressDescriptor) throws AddressValidationException {
+        Address address = new Address();
+        address.setGeocoder(geocoder);
+        populateAddress(addressDescriptor, address);
+        assertAddressValid(address);
+        addAddress(address);
+        return address;
+    }
+
+    private void populateAddress(AddressDescriptor addressDescriptor, Address address) {
+        address.setAccount(this);
+        address.setFullAddress(addressDescriptor.getFullAddress().orNull());
+        try {
+            address.geocode();
+        } catch (IOException e) {
+            LOG.error("THIS NEEDS TO BE HANDLED");
+            LOG.error("Failed to geocode address {}", address.getFullAddress());
+            LOG.error("THIS NEEDS TO BE HANDLED");
+        }
+    }
+
+    private void addAddress(Address address) {
+        addresses.add(address);
+    }
+
+    /**
+     * Update specified address.
+     *
+     * @param addressId         address id
+     * @param addressDescriptor account information
+     * @return updated address
+     * @throws AddressValidationException if address is invalid
+     * @throws AddressNotFoundException   if address is not found
+     */
+    public Address updateAddress(int addressId, AddressDescriptor addressDescriptor) throws AddressValidationException, AddressNotFoundException {
+        Address address = getAddress(addressId);
+        populateAddress(addressDescriptor, address);
+        assertAddressValid(address);
+        return address;
+    }
+
+    private void assertAddressValid(Address address) {
+    }
+
+    /**
+     * Delete specified address.
+     *
+     * @param addressId address id
+     * @return deleted address
+     * @throws AddressNotFoundException if address is not found
+     */
+    public Address deleteAddress(int addressId) throws AddressNotFoundException {
+        Address address = getAddress(addressId);
+        accountRepository.delete(address);
+        return address;
     }
 
     /**
@@ -261,16 +339,6 @@ public class Account implements PermissionTarget {
      */
     public List<Image> getImages() {
         return images;
-    }
-
-    /**
-     * Get address of the specified type.
-     *
-     * @param addressType address type
-     * @return address
-     */
-    public Address getAddress(AddressType addressType) {
-        return addresses.get(addressType);
     }
 
     /**
@@ -320,9 +388,7 @@ public class Account implements PermissionTarget {
         OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -421,8 +487,7 @@ public class Account implements PermissionTarget {
      * @throws PlayerProfileValidationException if player profile is not valid for creation
      */
     public PlayerProfile createPlayerProfile(PlayerProfileDescriptor playerProfileDescriptor)
-            throws ImageNotFoundException, PlayerProfileValidationException
-    {
+            throws ImageNotFoundException, PlayerProfileValidationException {
         PlayerProfile playerProfile = new PlayerProfile();
         playerProfile.setAccount(this);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
@@ -463,8 +528,7 @@ public class Account implements PermissionTarget {
      * @throws PlayerProfileValidationException if player profile is not valid for saving
      */
     public PlayerProfile updatePlayerProfile(int playerId, PlayerProfileDescriptor playerProfileDescriptor)
-            throws PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException
-    {
+            throws PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
         assertPlayerProfileValid(playerProfile);
@@ -504,4 +568,7 @@ public class Account implements PermissionTarget {
         this.tokenFactory = tokenFactory;
     }
 
+    public void setGeocoder(GoogleGeocoder geocoder) {
+        this.geocoder = geocoder;
+    }
 }

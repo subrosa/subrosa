@@ -9,10 +9,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.AddressValidationException;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
@@ -22,6 +26,7 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
  * Service layer for account operations.
  */
 @Service
+@Transactional
 public class AccountService {
 
     @Autowired
@@ -49,7 +54,6 @@ public class AccountService {
      * @return list of players
      * @throws AccountNotFoundException if account is not found
      */
-    @Transactional
     @PreAuthorize("hasPermission(#accountId, 'Account', 'READ_ACCOUNT')")
     public PaginatedList<PlayerProfile> listPlayerProfiles(Integer accountId, int limit, int offset) throws AccountNotFoundException {
         Account account = accountFactory.getAccount(accountId);
@@ -72,7 +76,6 @@ public class AccountService {
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
      */
-    @Transactional
     @PreAuthorize("hasPermission(#accountId, 'Account', 'READ_ACCOUNT')")
     public PlayerProfile getPlayerProfile(int accountId, int playerProfileId) throws AccountNotFoundException, PlayerProfileNotFoundException {
         Account account = accountFactory.getAccount(accountId);
@@ -110,7 +113,6 @@ public class AccountService {
      * @throws PlayerProfileNotFoundException   if player profile is not found
      * @throws PlayerProfileValidationException if player profile is not valid for saving
      */
-    @Transactional
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
     public PlayerProfile updatePlayerProfile(int accountId, int playerId, PlayerProfileDescriptor playerProfileDescriptor)
             throws AccountNotFoundException, PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException
@@ -128,10 +130,97 @@ public class AccountService {
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
      */
-    @Transactional
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
     public PlayerProfile deletePlayerProfile(int accountId, int playerId) throws AccountNotFoundException, PlayerProfileNotFoundException {
         Account account = accountFactory.getAccount(accountId);
         return account.deletePlayerProfile(playerId);
+    }
+
+    /**
+     * Get paginated list of addresses.
+     *
+     * @param accountId account id
+     * @param limit     number of results
+     * @param offset    offset into results
+     * @return list of addresses
+     * @throws AccountNotFoundException if account is not found
+     */
+    @PreAuthorize("hasPermission(#accountId, 'Account', 'READ_ACCOUNT')")
+    public PaginatedList<Address> listAddresses(int accountId, int limit, int offset) throws AccountNotFoundException {
+        Account account = accountFactory.getAccount(accountId);
+        List<Address> addresses = account.getAddresses();
+        if (CollectionUtils.isEmpty(addresses)) {
+            return new PaginatedList<>(Lists.<Address>newArrayList(), 0, limit, offset);
+        } else {
+            return new PaginatedList<>(
+                    addresses.subList(offset, Math.min(addresses.size(), offset + limit)),
+                    addresses.size(), limit, offset);
+        }
+    }
+
+    /**
+     * Get an account address.
+     *
+     * @param accountId account id
+     * @param addressId address id
+     * @return address
+     * @throws AccountNotFoundException if account is not found
+     * @throws AddressNotFoundException if address is not found
+     */
+    @PreAuthorize("hasPermission(#accountId, 'Account', 'READ_ACCOUNT')")
+    public Address getAddress(int accountId, int addressId) throws AccountNotFoundException, AddressNotFoundException {
+        Account account = accountFactory.getAccount(accountId);
+        return account.getAddress(addressId);
+    }
+
+    /**
+     * Create an address.
+     *
+     * @param accountId account id
+     * @param addressDescriptor account information
+     * @return created account
+     * @throws AccountNotFoundException if account is not found
+     * @throws AddressValidationException if address is invalid
+     */
+    @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
+    public Address createAddress(int accountId, AddressDescriptor addressDescriptor)
+            throws AccountNotFoundException, AddressValidationException
+    {
+        Account account = accountFactory.getAccount(accountId);
+        return account.createAddress(addressDescriptor);
+    }
+
+    /**
+     * Update an address.
+     *
+     * @param accountId account id
+     * @param addressId address id
+     * @param addressDescriptor address information
+     * @return updated address
+     * @throws AccountNotFoundException if account is not found
+     * @throws AddressValidationException if address is invalid
+     * @throws AddressNotFoundException if address is not found
+     */
+    @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
+    public Address updateAddress(int accountId, int addressId, AddressDescriptor addressDescriptor)
+            throws AccountNotFoundException, AddressValidationException, AddressNotFoundException
+    {
+        Account account = accountFactory.getAccount(accountId);
+        return account.updateAddress(addressId, addressDescriptor);
+    }
+
+    /**
+     * Delete an address.
+     *
+     * @param accountId account id
+     * @param addressId address id
+     * @return deleted address
+     * @throws AccountNotFoundException if account is not found
+     * @throws AddressNotFoundException if address is not found
+     */
+    @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
+    public Address deleteAddress(int accountId, int addressId) throws AccountNotFoundException, AddressNotFoundException {
+        Account account = accountFactory.getAccount(accountId);
+        return account.deleteAddress(addressId);
     }
 }

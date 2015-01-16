@@ -2,7 +2,10 @@ package com.subrosagames.subrosa.domain.player;
 
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * Factory for managing game players.
@@ -17,8 +20,11 @@ public interface PlayerFactory {
      * @param playerDescriptor player information
      * @return created player
      * @throws PlayerValidationException if player information is invalid
+     * @throws AddressNotFoundException  if address is not found
+     * @throws ImageNotFoundException    if image is not found
      */
-    Player createPlayerForGame(Game game, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException;
+    Player createPlayerForGame(Game game, Account account, PlayerDescriptor playerDescriptor) throws PlayerValidationException, AddressNotFoundException,
+            ImageNotFoundException;
 
     /**
      * Get player in game.
@@ -29,4 +35,14 @@ public interface PlayerFactory {
      * @throws PlayerNotFoundException if specified player is not in game
      */
     Player getPlayer(Game game, Integer playerId) throws PlayerNotFoundException;
+
+    /**
+     * Handles transformation of player attributes into persistable entities on the player.
+     *
+     * @param playerEntity     player entity
+     * @param playerDescriptor player information
+     * @throws ImageNotFoundException   if image is not found
+     * @throws AddressNotFoundException if address is not found
+     */
+    void processPlayerAttributes(PlayerEntity playerEntity, PlayerDescriptor playerDescriptor) throws ImageNotFoundException, AddressNotFoundException;
 }

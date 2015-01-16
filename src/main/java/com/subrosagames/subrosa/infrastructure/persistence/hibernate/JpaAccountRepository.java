@@ -25,6 +25,7 @@ import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
 import com.subrosagames.subrosa.domain.account.Address;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -58,23 +59,6 @@ public class JpaAccountRepository implements AccountRepository {
     }
 
     @Override
-    public List<Address> addressesWhere(Map<String, Object> conditions) {
-        QueryCriteria<Address> criteria = new QueryCriteria<>(Address.class);
-        criteria.setBypassFilterableChecks(true);
-        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
-            criteria.addFilter(entry.getKey(), entry.getValue());
-        }
-        QueryBuilder<Address, TypedQuery<Address>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<>(entityManager);
-        TypedQuery<Address> query = queryBuilder.getQuery(criteria);
-        return query.getResultList();
-    }
-
-    @Override
-    public Address update(Address address) {
-        return entityManager.merge(address);
-    }
-
-    @Override
     public Image getImage(Account account, int imageId) throws ImageNotFoundException {
         try {
             return entityManager.createQuery("SELECT i FROM Image i WHERE i.account = :account AND i.id = :id", Image.class)
@@ -103,6 +87,24 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     public void delete(PlayerProfile playerProfile) {
         entityManager.remove(playerProfile);
+    }
+
+    @Override
+    public Address getAddress(Account account, int addressId) throws AddressNotFoundException {
+        try {
+            return entityManager.createQuery("SELECT a FROM Address a WHERE a.account = :account AND a.id = :id", Address.class)
+                    .setParameter("account", account)
+                    .setParameter("id", addressId)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            LOG.warn("Attempted to find non-existing address - account {} address {}", account.getId(), addressId);
+            throw new AddressNotFoundException(e);
+        }
+    }
+
+    @Override
+    public void delete(Address address) {
+        entityManager.remove(address);
     }
 
     @Override
@@ -151,6 +153,23 @@ public class JpaAccountRepository implements AccountRepository {
     @Override
     public int count() {
         return 0;
+    }
+
+    @Override
+    public List<Address> addressesWhere(Map<String, Object> conditions) {
+        QueryCriteria<Address> criteria = new QueryCriteria<>(Address.class);
+        criteria.setBypassFilterableChecks(true);
+        for (Map.Entry<String, Object> entry : conditions.entrySet()) {
+            criteria.addFilter(entry.getKey(), entry.getValue());
+        }
+        QueryBuilder<Address, TypedQuery<Address>, TypedQuery<Long>> queryBuilder = new JpaQueryBuilder<>(entityManager);
+        TypedQuery<Address> query = queryBuilder.getQuery(criteria);
+        return query.getResultList();
+    }
+
+    @Override
+    public Address update(Address address) {
+        return entityManager.merge(address);
     }
 
     private Account getSingleResult(TypedQuery<Account> query) throws AccountNotFoundException {

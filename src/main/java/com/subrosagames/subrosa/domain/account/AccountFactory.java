@@ -11,6 +11,7 @@ import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
+import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -24,6 +25,9 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
 
     @Autowired
     private TokenFactory tokenFactory;
+
+    @Autowired
+    private GoogleGeocoder geocoder;
 
     /**
      * Get paginated list of accounts.
@@ -77,6 +81,7 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
         account.setTokenFactory(tokenFactory);
+        account.setGeocoder(geocoder);
     }
 
     /**
@@ -91,5 +96,9 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         image.setFileAsset(fileAsset);
         image.setAccount(account);
         return image;
+    }
+
+    public void setGeocoder(GoogleGeocoder geocoder) {
+        this.geocoder = geocoder;
     }
 }

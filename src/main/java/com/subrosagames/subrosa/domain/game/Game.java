@@ -7,6 +7,7 @@ import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
@@ -188,15 +189,6 @@ public interface Game extends GameData {
     GameEvent updateEvent(int eventId, GameEventDescriptor gameEventDescriptor) throws GameEventNotFoundException, GameEventValidationException;
 
     /**
-     * Get specified player.
-     *
-     * @param playerId player id
-     * @return player
-     * @throws PlayerNotFoundException if specified player is not in game
-     */
-    Player getPlayer(Integer playerId) throws PlayerNotFoundException;
-
-    /**
      * Add the provided account as a player in this game.
      *
      * @param account         account
@@ -206,8 +198,31 @@ public interface Game extends GameData {
      * @throws com.subrosagames.subrosa.domain.player.PlayRestrictedException          if player does not meet requirements to play
      * @throws PlayerValidationException                                               if player information is invalid
      * @throws IllegalArgumentException                                                if either parameter is null
+     * @throws AddressNotFoundException                                                if address is not found
+     * @throws ImageNotFoundException                                                  if image is not found
      */
-    Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException;
+    Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException, AddressNotFoundException, ImageNotFoundException;
+
+    /**
+     * Get specified player.
+     *
+     * @param playerId player id
+     * @return player
+     * @throws PlayerNotFoundException if specified player is not in game
+     */
+    Player getPlayer(Integer playerId) throws PlayerNotFoundException;
+
+    /**
+     * Updates specified player.
+     *
+     * @param playerId        player id
+     * @param joinGameRequest player information
+     * @return updated player
+     * @throws PlayerNotFoundException  if player is not found
+     * @throws AddressNotFoundException if address is not found
+     * @throws ImageNotFoundException   if image is not found
+     */
+    Player updatePlayer(Integer playerId, JoinGameRequest joinGameRequest) throws PlayerNotFoundException, AddressNotFoundException, ImageNotFoundException;
 
     /**
      * Whether game is published.
@@ -215,4 +230,5 @@ public interface Game extends GameData {
      * @return whether game is published
      */
     boolean isPublished();
+
 }

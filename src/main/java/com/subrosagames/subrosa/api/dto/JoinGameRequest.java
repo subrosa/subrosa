@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 public class JoinGameRequest {
 
     private String name;
-    private Map<String, String> attributes = Maps.newHashMap();
+    private Map<String, Object> attributes = Maps.newHashMap();
 
     public String getName() {
         return name;
@@ -20,11 +20,12 @@ public class JoinGameRequest {
         this.name = name;
     }
 
-    public Map<String, String> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(Map<String, String> attributes) {
+    public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
+
 }

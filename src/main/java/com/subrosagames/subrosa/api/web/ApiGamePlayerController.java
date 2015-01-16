@@ -20,9 +20,12 @@ import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.NotAuthorizedException;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
@@ -105,11 +108,7 @@ public class ApiGamePlayerController extends BaseApiController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
         }
-        Game game = gameFactory.getGame(gameUrl);
-        if (!SecurityHelper.getAuthenticatedUser().getId().equals(game.getOwner().getId())) {
-            throw new NotAuthorizedException("Incorrect permissions.");
-        }
-        return game.getPlayer(playerId);
+        return gameService.getGamePlayer(gameUrl, playerId);
     }
 
     /**
@@ -122,6 +121,9 @@ public class ApiGamePlayerController extends BaseApiController {
      * @throws PlayerValidationException                                               if the player information is invalid
      * @throws com.subrosagames.subrosa.domain.player.InsufficientInformationException if required player information is missing
      * @throws com.subrosagames.subrosa.domain.player.PlayRestrictedException          if account does not satisfy game requirements
+     * @throws AccountNotFoundException                                                if account is not found
+     * @throws AddressNotFoundException                                                if address is not found
+     * @throws ImageNotFoundException                                                  if image is not found
      * @throws NotAuthenticatedException                                               if the request is not authenticated
      * @throws NotAuthorizedException                                                  if the user does not have correct permissions
      */
@@ -130,13 +132,41 @@ public class ApiGamePlayerController extends BaseApiController {
     @ResponseBody
     public Player joinGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) JoinGameRequest joinGameRequestParam)
-            throws GameNotFoundException, PlayerValidationException,
-            NotAuthenticatedException, NotAuthorizedException
+            throws NotAuthenticatedException, NotAuthorizedException, GameNotFoundException, PlayerValidationException, AccountNotFoundException,
+            AddressNotFoundException, ImageNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
         }
         JoinGameRequest joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequestParam, new JoinGameRequest());
-        return gameService.joinGame(gameUrl, getAuthenticatedUser(), joinGameRequest);
+        return gameService.joinGame(gameUrl, getAuthenticatedUser().getId(), joinGameRequest);
     }
+
+    /**
+     * Update an game player.
+     *
+     * @param gameUrl         game url
+     * @param playerId        player id
+     * @param joinGameRequest player information
+     * @return updated player profile
+     * @throws NotAuthenticatedException if request is unauthenticated
+     * @throws AccountNotFoundException  if account is not found
+     * @throws GameNotFoundException     if game is not found
+     * @throws PlayerNotFoundException   if player is not found
+     * @throws ImageNotFoundException    if image is not found
+     * @throws AddressNotFoundException  if address is not found
+     * @throws PlayerValidationException if player is not valid for saving
+     */
+    @RequestMapping(value = { "{playerId}", "{playerId}/" }, method = RequestMethod.PUT)
+    @ResponseBody
+    public Player updatePlayer(@PathVariable("gameUrl") String gameUrl,
+                               @PathVariable("playerId") Integer playerId,
+                               @RequestBody JoinGameRequest joinGameRequest)
+            throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerNotFoundException, PlayerValidationException,
+            AddressNotFoundException, GameNotFoundException
+    {
+        LOG.debug("{}: updating game player {} for game {}", getAuthenticatedUser().getId(), playerId, gameUrl);
+        return gameService.updateGamePlayer(gameUrl, playerId, joinGameRequest);
+    }
+
 }

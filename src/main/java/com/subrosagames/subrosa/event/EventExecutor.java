@@ -10,7 +10,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
-import com.subrosagames.subrosa.event.handler.AbstractMessageHandler;
+import com.subrosagames.subrosa.event.handler.MessageHandler;
+import com.subrosagames.subrosa.event.handler.MessageHandlingException;
 import com.subrosagames.subrosa.event.message.MessageQueueFactory;
 
 /**
@@ -56,11 +57,11 @@ public class EventExecutor {
         GameEventMessage messageForName = messageQueueFactory.getMessageForName(eventClass);
         messageForName.setGameId(gameId);
         messageForName.setProperties(properties);
-        AbstractMessageHandler handler = messageQueueFactory.getHandlerForName(eventClass);
+        MessageHandler handler = messageQueueFactory.getHandlerForName(eventClass);
         try {
             handler.process(messageForName);
-        } catch (Exception e) {
-            LOG.error("Exception processing event {}", new Object[]{ eventClass, gameId }, e);
+        } catch (MessageHandlingException e) {
+            LOG.error("Exception processing event {}", new Object[] { eventClass, gameId }, e);
         }
     }
 

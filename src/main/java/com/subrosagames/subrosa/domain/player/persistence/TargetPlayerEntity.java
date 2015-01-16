@@ -9,7 +9,6 @@ import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Address;
-import com.subrosagames.subrosa.domain.account.AddressType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.player.TargetPlayer;
@@ -52,11 +51,11 @@ public class TargetPlayerEntity extends TargetEntity implements TargetPlayer {
 
     @Override
     public Address getHomeAddress() {
-        return target.getAccount().getAddress(AddressType.HOME);
+        return null;
     }
 
     @Override
     public Address getWorkAddress() {
-        return target.getAccount().getAddress(AddressType.WORK);
+        return null;
     }
 }

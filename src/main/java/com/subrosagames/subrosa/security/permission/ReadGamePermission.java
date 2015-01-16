@@ -37,7 +37,7 @@ public class ReadGamePermission extends AbstractPermission {
         try {
             return isAdmin(authentication) || type.equals("Game") && isAllowed(authentication, getGame(id));
         } catch (GameNotFoundException e) {
-            LOG.warn("Failed to find game is permissions evaluation", e);
+            LOG.warn("Failed to find game in permissions evaluation", e);
             return false;
         }
     }

@@ -13,10 +13,22 @@ apply plugin: 'findbugs'
 findbugs {
     ignoreFailures = true
 }
+tasks.withType(FindBugs) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
 
 apply plugin: 'pmd'
 pmd {
     ignoreFailures = true
+}
+tasks.withType(Pmd) {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
 }
 
 apply plugin: 'sonar-runner'

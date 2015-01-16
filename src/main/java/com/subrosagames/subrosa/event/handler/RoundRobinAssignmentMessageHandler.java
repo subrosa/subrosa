@@ -17,7 +17,7 @@ public class RoundRobinAssignmentMessageHandler extends AbstractMessageHandler {
     private static final Logger LOG = LoggerFactory.getLogger(RoundRobinAssignmentMessageHandler.class);
 
     @Override
-    public void process(Game game, Map<String, Serializable> properties) throws Exception {
+    public void process(Game game, Map<String, Serializable> properties) {
         LOG.debug("Performing round robin assignments for game {}", game.getId());
         TargetAssigner.assignTargets(game.getPlayers(), AssignmentType.ROUND_ROBIN);
     }
