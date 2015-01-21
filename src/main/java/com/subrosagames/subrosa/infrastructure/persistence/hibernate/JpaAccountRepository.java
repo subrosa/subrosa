@@ -183,7 +183,7 @@ public class JpaAccountRepository implements AccountRepository {
     }
 
     private String[] enableExpansions(String... expansions) {
-        List<String> enabled = new ArrayList<String>(expansions.length);
+        List<String> enabled = new ArrayList<>(expansions.length);
         for (String expansion : expansions) {
             try {
                 ((Session) entityManager.getDelegate()).enableFetchProfile(expansion);
