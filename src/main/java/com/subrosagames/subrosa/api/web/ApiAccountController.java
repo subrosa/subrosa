@@ -89,7 +89,7 @@ public class ApiAccountController extends BaseApiController {
         String expand = ObjectUtils.defaultIfNull(expandParam, "");
         LOG.debug("{}: Getting account {} info with expansions {}", getAuthenticatedUser().getId(), accountId, expand);
         String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
-        return accountFactory.getAccount(accountId, expansions);
+        return accountService.getAccount(accountId, expansions);
     }
 
     /**
