@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -14,6 +12,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
+
+import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.geo.gmaps.GoogleAddress;
@@ -35,9 +35,9 @@ public class Address {
     @Column(name = "address_id")
     private Integer id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "address_type")
-    private AddressType addressType;
+    @Column
+    @Length(max = 128)
+    private String label;
 
     @JsonIgnore
     @ManyToOne
@@ -86,12 +86,12 @@ public class Address {
         this.id = id;
     }
 
-    public AddressType getAddressType() {
-        return addressType;
+    public String getLabel() {
+        return label;
     }
 
-    public void setAddressType(AddressType addressType) {
-        this.addressType = addressType;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public Account getAccount() {
@@ -200,4 +200,5 @@ public class Address {
     public void setGeocoder(GoogleGeocoder geocoder) {
         this.geocoder = geocoder;
     }
+
 }
