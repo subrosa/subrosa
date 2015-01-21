@@ -53,7 +53,7 @@ public class ApiAccountController extends BaseApiController {
      *
      * @param limitParam  limitParam
      * @param offsetParam offsetParam
-     * @param expandParam fields to expand
+     * @param expand      fields to expand
      * @return paginated list of accounts
      * @throws NotAuthenticatedException if request is unauthenticated
      */
@@ -61,14 +61,14 @@ public class ApiAccountController extends BaseApiController {
     @ResponseBody
     public PaginatedList<Account> listAccounts(@RequestParam(value = "limitParam", required = false) Integer limitParam,
                                                @RequestParam(value = "offsetParam", required = false) Integer offsetParam,
-                                               @RequestParam(value = "expand", required = false) String expandParam)
+                                               @RequestParam(value = "expand", required = false) String expand)
             throws NotAuthenticatedException
     {
         LOG.debug("{}: Getting account list with limitParam {} and offsetParam {}.", getAuthenticatedUser().getId(), limitParam, offsetParam);
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        String expand = ObjectUtils.defaultIfNull(expandParam, "");
-        return accountFactory.getAccounts(limit, offset, expand.split(","));
+        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
+        return accountFactory.getAccounts(limit, offset, expansions);
     }
 
     /**
@@ -88,7 +88,8 @@ public class ApiAccountController extends BaseApiController {
     {
         String expand = ObjectUtils.defaultIfNull(expandParam, "");
         LOG.debug("{}: Getting account {} info with expansions {}", getAuthenticatedUser().getId(), accountId, expand);
-        return accountService.getAccount(accountId, expand.split(","));
+        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
+        return accountService.getAccount(accountId, expansions);
     }
 
     /**

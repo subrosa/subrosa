@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageConversionException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -129,6 +130,23 @@ public class GlobalExceptionHandlers {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ResponseBody
     public NotificationList handleNotAuthorizedException(NotAuthorizedException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.FORBIDDEN, Severity.ERROR,
+                e.getMessage());
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link AccessDeniedException}.
+     *
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseBody
+    public NotificationList handleAccessDeniedException(AccessDeniedException e) {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Notification notification = new Notification(
                 GeneralCode.FORBIDDEN, Severity.ERROR,

@@ -89,36 +89,34 @@ public class ApiGameController extends BaseApiController {
     {
         LOG.debug("Getting game list with limitParam {}, offsetParam {}, expand {}, latitude {}, longitude {}.",
                 limitParam, offsetParam, expand, latitude, longitude);
+        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
         if (latitude != null && longitude != null) {
             Coordinates coordinates = new Coordinates(new BigDecimal(latitude), new BigDecimal(longitude));
             int limit = ObjectUtils.defaultIfNull(limitParam, 10);
             int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-            return StringUtils.isEmpty(expand)
-                    ? gameFactory.getGamesNear(coordinates, limit, offset)
-                    : gameFactory.getGamesNear(coordinates, limit, offset, expand.split(","));
+            return gameFactory.getGamesNear(coordinates, limit, offset, expansions);
         }
         QueryCriteria<BaseGame> queryCriteria = RequestUtils.createQueryCriteriaFromRequestParameters(request, BaseGame.class);
-        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
         return gameFactory.fromCriteria(queryCriteria, expansions);
     }
 
     /**
      * Get a {@link Game} representation.
      *
-     * @param gameUrl     the game gameUrl
-     * @param expandParam fields to expand
+     * @param gameUrl the game gameUrl
+     * @param expand  fields to expand
      * @return {@link Game}
      * @throws GameNotFoundException if game is not found
      */
     @RequestMapping(value = { "/{gameUrl}", "/{gameUrl}/" }, method = RequestMethod.GET)
     @ResponseBody
     public Game getGameByUrl(@PathVariable("gameUrl") String gameUrl,
-                             @RequestParam(value = "expand", required = false) String expandParam)
+                             @RequestParam(value = "expand", required = false) String expand)
             throws GameNotFoundException
     {
-        String expand = ObjectUtils.defaultIfNull(expandParam, "");
-        LOG.debug("Getting game at {} with expansions {}", gameUrl, expand);
-        return gameService.getGame(gameUrl, expand.split(","));
+        String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
+        LOG.debug("Getting game at {} with expansions {}", gameUrl, expansions);
+        return gameService.getGame(gameUrl, expansions);
     }
 
     /**
