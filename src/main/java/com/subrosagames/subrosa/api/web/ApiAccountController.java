@@ -225,22 +225,4 @@ public class ApiAccountController extends BaseApiController {
         return account.getAccolades();
     }
 
-    /**
-     * Update the {@link Address} for an {@link Account}.
-     *
-     * @param accountId the accountId from the path.
-     * @param address   the {@link Address} parameters.
-     * @return {@link Account}
-     * @throws AccountNotFoundException if account not found
-     */
-    @RequestMapping(value = { "/account/{accountId}/address", "/account/{accountId}/address/" }, method = RequestMethod.PUT)
-    @ResponseBody
-    public Account updateAddress(@PathVariable("accountId") Integer accountId,
-                                 @RequestBody Address address)
-            throws AccountNotFoundException
-    {
-        LOG.debug("Saving address of type {} for account ID {}", address.getAddressType(), accountId);
-        return accountFactory.getAccount(accountId);
-    }
-
 }
