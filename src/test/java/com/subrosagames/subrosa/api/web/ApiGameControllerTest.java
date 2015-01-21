@@ -318,6 +318,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testGameUpdateWithWrongAccount() throws Exception {
+        mockMvc.perform(put("/game/{url}", "fun_times").with(user("new@user.com"))
+                .content(jsonBuilder().add("name", "this is now the name").build()))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$").value(notificationList()));
+    }
+
+    @Test
     public void testUpdateWithImage() throws Exception {
         String game = mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
                 .andReturn().getResponse().getContentAsString();
