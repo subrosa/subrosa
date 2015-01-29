@@ -1,24 +1,40 @@
 #!/bin/bash
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
+JAR=${DIR}/build/libs/subrosa-1.0.0-SNAPSHOT.jar
+
+init_config() {
+    echo "Initializing environment..."
+    echo -n "LDAP Username: "
+    read ldapUser
+    echo -n "LDAP Password: "
+    read -s ldapPass
+    echo
+
+    cat << FILE > ${DIR}/gradle.properties
+nexusUsername=${ldapUser}
+nexusPassword=${ldapPass}
+FILE
+}
 
 case "$1" in
     init)
+        [ ! -f ${DIR}/gradle.properties ] && init_config
         vagrant up
         vagrant ssh -c "sudo /vagrant/script/env.sh update"
         vagrant ssh -c "sudo /vagrant/script/env.sh restart"
-        gradle flywayMigrate war cargoDeployRemote
+        gradle flywayMigrate run
     ;;
     deploy)
-	vagrant up
-        gradle flywayMigrate war cargoRedeployRemote
+        vagrant up
+        gradle flywayMigrate run
     ;;
     ssh)
-	vagrant up
+        vagrant up
         vagrant ssh
     ;;
     *)
-	vagrant up
+        vagrant up
         vagrant ssh -c "sudo /vagrant/script/env.sh $1"
     ;;
 esac

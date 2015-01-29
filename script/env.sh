@@ -42,23 +42,12 @@ start(){
         tutum/rabbitmq)
     echo "Started RabbitMQ in container $RABBITMQ"
 
-    TOMCAT=$(sudo docker run \
-        -d \
-        -p 8080:8080 \
-        --name api \
-        --link db:db \
-        --link mq:mq \
-        -e TOMCAT_PASS="admin" \
-        tutum/tomcat:8.0)
-    echo "Started Tomcat in container $TOMCAT"
-
 }
 
 update(){
     echo "Updating docker containers"
     sudo docker pull ${EC2_HOST}:5000/subrosa/db
     sudo docker pull tutum/rabbitmq:latest
-    sudo docker pull tutum/tomcat:8.0
 }
 
 case "$1" in
