@@ -21,6 +21,7 @@ import com.google.code.geocoder.model.GeocoderResult;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.geo.gmaps.MockGoogleGeocoder;
+import com.subrosagames.subrosa.test.TestConfiguration;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 
 import static org.junit.Assert.assertEquals;
@@ -29,7 +30,7 @@ import static org.junit.Assert.assertEquals;
  * Test {@link AddressGeocodingTask}.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/test-context.xml" })
+@ContextConfiguration(classes = TestConfiguration.class)
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,

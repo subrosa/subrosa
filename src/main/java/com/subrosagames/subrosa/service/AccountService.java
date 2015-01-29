@@ -46,6 +46,19 @@ public class AccountService {
     }
 
     /**
+     * List accounts.
+     *
+     * @param limit limit
+     * @param offset offset
+     * @param expansions field expansions
+     * @return list of accounts
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    public PaginatedList<Account> listAccounts(int limit, int offset, String... expansions) {
+        return accountFactory.getAccounts(limit, offset, expansions);
+    }
+
+    /**
      * Get player profiles for account.
      *
      * @param accountId account id
@@ -176,10 +189,10 @@ public class AccountService {
     /**
      * Create an address.
      *
-     * @param accountId account id
+     * @param accountId         account id
      * @param addressDescriptor account information
      * @return created account
-     * @throws AccountNotFoundException if account is not found
+     * @throws AccountNotFoundException   if account is not found
      * @throws AddressValidationException if address is invalid
      */
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
@@ -193,13 +206,13 @@ public class AccountService {
     /**
      * Update an address.
      *
-     * @param accountId account id
-     * @param addressId address id
+     * @param accountId         account id
+     * @param addressId         address id
      * @param addressDescriptor address information
      * @return updated address
-     * @throws AccountNotFoundException if account is not found
+     * @throws AccountNotFoundException   if account is not found
      * @throws AddressValidationException if address is invalid
-     * @throws AddressNotFoundException if address is not found
+     * @throws AddressNotFoundException   if address is not found
      */
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
     public Address updateAddress(int accountId, int addressId, AddressDescriptor addressDescriptor)
@@ -223,4 +236,5 @@ public class AccountService {
         Account account = accountFactory.getAccount(accountId);
         return account.deleteAddress(addressId);
     }
+
 }

@@ -28,7 +28,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends AbstractAuthentica
     /**
      * Default constructor.
      */
-    protected JsonUsernamePasswordAuthenticationFilter() {
+    public JsonUsernamePasswordAuthenticationFilter() {
         super("/j_spring_security_check");
     }
 

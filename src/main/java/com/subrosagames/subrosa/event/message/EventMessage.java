@@ -1,6 +1,11 @@
 package com.subrosagames.subrosa.event.message;
 
+import java.util.EnumSet;
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.game.event.GameEventMessage;
 import com.subrosagames.subrosa.event.Event;
@@ -9,7 +14,6 @@ import com.subrosagames.subrosa.event.handler.GameEndMessageHandler;
 import com.subrosagames.subrosa.event.handler.GameStartMessageHandler;
 import com.subrosagames.subrosa.event.handler.MutualInterestAssignmentMessageHandler;
 import com.subrosagames.subrosa.event.handler.RoundRobinAssignmentMessageHandler;
-import com.subrosagames.subrosa.infrastructure.spring.ApplicationContextProvider;
 
 /**
  * Enumeration of supported event-based JMS messages.
@@ -31,6 +35,7 @@ public enum EventMessage implements Event {
     private final String queue;
     private final Class<? extends GameEventMessage> messageClass;
     private final Class<? extends AbstractMessageHandler> handlerClass;
+    private transient ApplicationContext applicationContext;
 
     /**
      * Construct with queue and message class.
@@ -62,21 +67,42 @@ public enum EventMessage implements Event {
     public GameEventMessage getMessage() {
         try {
             return messageClass.newInstance();
-        } catch (InstantiationException e) {
-            throw new IllegalStateException("Uninstantiable game event message " + messageClass + " encountered", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Uninstantiable game event message " + messageClass + " encountered", e);
         }
     }
 
     public AbstractMessageHandler getHandler() { // SUPPRESS CHECKSTYLE IllegalType
-        ApplicationContext applicationContext = ApplicationContextProvider.getApplicationContext();
         return applicationContext.getBean(handlerClass);
     }
 
     @Override
     public String getEvent() {
         return name();
+    }
+
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    /**
+     * Static inner class to help spring inject the application context into the enum values.
+     */
+    @Component
+    public static class ApplicationContextProvider {
+
+        @Autowired
+        private ApplicationContext applicationContext;
+
+        /**
+         * Sets application context on each enum value.
+         */
+        @PostConstruct
+        public void postConstruct() {
+            for (EventMessage eventMessage : EnumSet.allOf(EventMessage.class)) {
+                eventMessage.setApplicationContext(applicationContext);
+            }
+        }
     }
 
 }

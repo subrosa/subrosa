@@ -18,9 +18,7 @@ public abstract class BaseDomainObjectFactory {
         OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(entity, dto);
-        } catch (IllegalAccessException e) {
-            throw new IllegalStateException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalAccessException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         }
     }

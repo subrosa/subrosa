@@ -12,6 +12,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,7 +35,11 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.SubrosaApplication;
+import com.subrosagames.subrosa.bootstrap.SubrosaConfiguration;
+import com.subrosagames.subrosa.bootstrap.WebSecurityConfiguration;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.test.TestConfiguration;
 import com.subrosagames.subrosa.test.util.ColumnSensingFlatXmlDataSetLoader;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
@@ -42,7 +47,6 @@ import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
 
 /**
@@ -52,7 +56,8 @@ import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.u
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = { "/test-context.xml" })
+@SpringApplicationConfiguration(classes = SubrosaApplication.class)
+@ContextConfiguration(classes = { SubrosaConfiguration.class, WebSecurityConfiguration.class, TestConfiguration.class })
 @TestExecutionListeners({
         DependencyInjectionTestExecutionListener.class,
         DirtiesContextTestExecutionListener.class,
@@ -71,15 +76,15 @@ public abstract class AbstractApiControllerTest {
     protected MockMvc mockMvc; // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Autowired
-    private FilterChainProxy springSecurityFilterChain;
+    private FilterChainProxy filterChainProxy;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Before
-    public void setup() {
+    public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(springSecurityFilterChain)
+                .addFilter(filterChainProxy)
                 .defaultRequest(get("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

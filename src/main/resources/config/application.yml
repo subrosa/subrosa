@@ -1,0 +1,25 @@
+server:
+  context-path: /subrosa
+  servlet-path: /v1
+
+spring:
+  datasource:
+    url: jdbc:postgresql://db:5432/engine
+    username: engine
+    password: engine
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    show-sql: true
+    properties:
+      javax.persistence.validation.group.pre-persist: com.subrosagames.subrosa.domain.game.validation.Always
+      javax.persistence.validation.group.pre-update: com.subrosagames.subrosa.domain.game.validation.Always
+    hibernate:
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      ddl-auto: validate
+
+logging:
+  level:
+    org.springframework: DEBUG
+

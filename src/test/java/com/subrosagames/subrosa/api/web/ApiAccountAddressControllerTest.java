@@ -40,7 +40,7 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 
     @Before
     public void setUp() {
-        super.setup();
+        super.setUp();
         accountFactory.setGeocoder(new ApiAccountAddressControllerTest.MockGeocoder());
     }
 

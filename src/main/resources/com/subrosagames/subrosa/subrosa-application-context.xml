@@ -21,14 +21,14 @@
     <property name="ignoreResourceNotFound" value="true"/>
   </bean>
 
-  <context:component-scan base-package="com.subrosagames.subrosa"/>
+  <!--<context:component-scan base-package="com.subrosagames.subrosa"/>-->
 
   <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
     <property name="maxUploadSize" value="${file.upload.maxSize}"/>
   </bean>
 
-  <import resource="subrosa-security.xml"/>
-  <import resource="subrosa-persistence.xml"/>
+  <!--<import resource="subrosa-security.xml"/>-->
+  <!--<import resource="subrosa-persistence.xml"/>-->
   <import resource="subrosa-scheduling.xml"/>
   <import resource="subrosa-messaging.xml"/>
   <!--<import resource="subrosa-caching.xml"/>-->

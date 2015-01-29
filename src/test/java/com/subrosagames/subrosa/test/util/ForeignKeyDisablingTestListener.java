@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.test.util;
 
+import java.sql.PreparedStatement;
 import javax.sql.DataSource;
 
 import org.dbunit.database.DatabaseDataSourceConnection;
@@ -17,6 +18,8 @@ public class ForeignKeyDisablingTestListener extends AbstractTestExecutionListen
         IDatabaseConnection dbConn = new DatabaseDataSourceConnection(
                 testContext.getApplicationContext().getBean(DataSource.class)
         );
-        dbConn.getConnection().prepareStatement("SET DATABASE REFERENTIAL INTEGRITY FALSE").execute();
+        try (PreparedStatement statement = dbConn.getConnection().prepareStatement("SET DATABASE REFERENTIAL INTEGRITY FALSE")) {
+            statement.execute();
+        }
     }
 }
