@@ -10,19 +10,18 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Entry point to subrosa application.
  */
-// SUPPRESS CHECKSTYLE HideUtilityClassConstructor
 @SpringBootApplication
 @EnableAutoConfiguration
 @ComponentScan
-// SUPPRESS CHECKSTYLE HideUtilityClassConstructor
-public class SubrosaApplication { // SUPPRESS CHECKSTYLE HideUtilityClassConstructor
+public class SubrosaApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(SubrosaApplication.class);
 
     /**
      * This is not a utility class!
      *
-     * Spring boot requires that the default constructor exist.
+     * Spring boot requires that the default constructor exist, and this is my dumb way of telling
+     * checkstyle that this class should be instantiable.
      */
     public void noOp() {
     }

@@ -37,6 +37,8 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -352,7 +354,7 @@ public class Account implements PermissionTarget {
         assertValid();
         try {
             accountRepository.create(this, userPassword);
-        } catch (JpaSystemException e) {
+        } catch (JpaSystemException | DataIntegrityViolationException e) {
             if (isEmailConflict(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
@@ -399,7 +401,7 @@ public class Account implements PermissionTarget {
             accountRepository.update(this);
         } catch (AccountNotFoundException e) {
             throw new IllegalStateException("This should never happen - was the id of this object modified?", e);
-        } catch (JpaSystemException e) {
+        } catch (JpaSystemException | DataIntegrityViolationException e) {
             if (isEmailConflict(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
@@ -444,7 +446,7 @@ public class Account implements PermissionTarget {
         return accountRepository.getImage(this, imageId);
     }
 
-    private boolean isEmailConflict(JpaSystemException e) {
+    private boolean isEmailConflict(NonTransientDataAccessException e) {
         String message = e.getMostSpecificCause().getMessage();
         return message.contains("unique constraint");
     }

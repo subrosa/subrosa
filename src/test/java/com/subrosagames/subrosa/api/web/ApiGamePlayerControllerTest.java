@@ -1,10 +1,8 @@
 package com.subrosagames.subrosa.api.web;
 
 import org.junit.Test;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
@@ -13,7 +11,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
@@ -21,7 +18,6 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 /**
  * Test {@link ApiGamePlayerController}.
  */
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/games.xml")
 public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
 
@@ -163,9 +159,9 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     private ResultActions performUpdatePlayerObjectAttr(Integer playerId, String field, int id) throws Exception {
         return mockMvc.perform(
                 put("/game/{url}/player/{id}", "needs_image_and_address", playerId)
-                .with(user("player1@player.com"))
-                .content(jsonBuilder().addChild("attributes",
-                        jsonBuilder().addChild(field, jsonBuilder().add("id", id))).build()));
+                        .with(user("player1@player.com"))
+                        .content(jsonBuilder().addChild("attributes",
+                                jsonBuilder().addChild(field, jsonBuilder().add("id", id))).build()));
     }
 
     private ResultActions performUpdatePlayerNameAndTextAttr(Integer playerId, String name, String field, String value) throws Exception {
@@ -182,14 +178,14 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         return mockMvc.perform(
                 post("/game/{url}/player", "needs_image_and_address")
                         .with(user("player1@player.com"))
-                .content(jsonBuilder()
-                        .add("name", name)
-                        .addChild("attributes",
-                                jsonBuilder()
-                                        .addChild("img", jsonBuilder().add("id", 3))
-                                        .addChild("addy", jsonBuilder().add("id", 1))
-                                        .add("text", "Baby"))
-                        .build()));
+                        .content(jsonBuilder()
+                                .add("name", name)
+                                .addChild("attributes",
+                                        jsonBuilder()
+                                                .addChild("img", jsonBuilder().add("id", 3))
+                                                .addChild("addy", jsonBuilder().add("id", 1))
+                                                .add("text", "Baby"))
+                                .build()));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

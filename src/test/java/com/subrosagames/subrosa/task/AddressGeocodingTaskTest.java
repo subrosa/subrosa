@@ -4,45 +4,27 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.google.code.geocoder.model.GeocoderResult;
+import com.subrosagames.subrosa.bootstrap.GoogleIntegration;
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.geo.gmaps.MockGoogleGeocoder;
-import com.subrosagames.subrosa.test.TestConfiguration;
-import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
+import com.subrosagames.subrosa.test.AbstractContextTest;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Test {@link AddressGeocodingTask}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfiguration.class)
-@TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        ForeignKeyDisablingTestListener.class
-})
-public class AddressGeocodingTaskTest {
+public class AddressGeocodingTaskTest extends AbstractContextTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -67,16 +49,20 @@ public class AddressGeocodingTaskTest {
                         }));
             }
         });
+        mockGoogleGeocoder.setGoogleIntegration(new GoogleIntegration());
         addressGeocodingTask.setGoogleGeocoder(mockGoogleGeocoder);
     }
 
+    @Transactional
     @Test
     public void testSplitAddressesIntoFields() throws Exception {
-        jdbcTemplate.update("INSERT INTO address (address_id, user_provided) VALUES 1535, 'address1'");
+        Address address = new Address();
+        address.setUserProvided("address1");
+        entityManager.persist(address);
 
         addressGeocodingTask.execute();
 
-        Address address = entityManager.find(Address.class, 1535);
+        address = entityManager.find(Address.class, address.getId());
         assertEquals("123 Ivy Ln", address.getStreetAddress());
     }
 

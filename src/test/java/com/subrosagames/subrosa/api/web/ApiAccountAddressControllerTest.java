@@ -5,11 +5,9 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.StringUtils;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
@@ -29,7 +27,6 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCo
 /**
  * Test {@link ApiAccountAddressController}.
  */
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 

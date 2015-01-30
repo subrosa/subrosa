@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.android.gcm.server.Constants;
@@ -14,6 +13,7 @@ import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
+import com.subrosagames.subrosa.bootstrap.GoogleIntegration;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;
 import com.subrosagames.subrosa.domain.notification.NotificationRepository;
 import com.subrosagames.subrosa.domain.notification.Notifier;
@@ -26,8 +26,8 @@ public class GCMNotifier implements Notifier {
 
     private static final Logger LOG = LoggerFactory.getLogger(GCMNotifier.class);
 
-    @Value("${android.gcm.apiKey}")
-    private String gcmApiKey;
+    @Autowired
+    private GoogleIntegration googleIntegration;
 
     @Autowired
     private NotificationRepository notificationRepository;
@@ -37,7 +37,7 @@ public class GCMNotifier implements Notifier {
         int gameId = notificationDetails.getGameId();
         LOG.debug("Sending notifications for game {}", gameId);
         List<String> devices = notificationRepository.getDevicesForGame(gameId);
-        Sender sender = new Sender(gcmApiKey);
+        Sender sender = new Sender(googleIntegration.getGcmApiKey());
         Message.Builder builder = new Message.Builder()
                 .collapseKey("1")
                 .timeToLive(3)

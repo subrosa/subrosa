@@ -7,11 +7,9 @@ import java.io.InputStreamReader;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.io.CharStreams;
 import com.jayway.jsonpath.JsonPath;
@@ -24,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
@@ -32,7 +29,6 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsS
 /**
  * Test {@link ApiAccountImageControllerTest}.
  */
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
 

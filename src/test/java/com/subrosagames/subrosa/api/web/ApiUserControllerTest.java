@@ -4,9 +4,7 @@ import org.joda.time.DateTimeUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.TestExecutionListeners;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -14,13 +12,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiAccountController}.
  */
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/accounts.xml")
 public class ApiUserControllerTest extends AbstractApiControllerTest {
 

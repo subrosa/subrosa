@@ -47,7 +47,7 @@ import com.subrosagames.subrosa.security.permission.Permission;
  */
 @Configuration
 @EnableWebMvcSecurity
-public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     // CHECKSTYLE-OFF: JavadocMethod
 

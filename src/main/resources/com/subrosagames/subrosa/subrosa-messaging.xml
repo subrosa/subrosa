@@ -17,46 +17,4 @@
 
   <rabbit:queue name="myqueue"/>
 
-  <!--<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" destroy-method="stop">-->
-        <!--<property name="connectionFactory">-->
-            <!--<bean class="org.apache.activemq.ActiveMQConnectionFactory">-->
-                <!--<property name="brokerURL" value="${jms.broker.url}"/>-->
-            <!--</bean>-->
-        <!--</property>-->
-    <!--</bean>-->
-
-    <!--<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">-->
-        <!--<property name="connectionFactory" ref="jmsConnectionFactory"/>-->
-        <!--<property name="defaultDestination">-->
-            <!--<null/>-->
-        <!--</property>-->
-        <!--<property name="sessionTransacted" value="true"/>-->
-    <!--</bean>-->
-
-    <!--<bean id="startGameQueueName" class="java.lang.String">-->
-        <!--<constructor-arg type="java.lang.String" value="subrosa.game.start" />-->
-    <!--</bean>-->
-
-    <!--<bean id="endGameQueueName" class="java.lang.String">-->
-        <!--<constructor-arg type="java.lang.String" value="subrosa.game.end" />-->
-    <!--</bean>-->
-
-    <!--<bean id="startGameMessageHandler" class="com.subrosagames.subrosa.event.handler.GameStartMessageHandler"/>-->
-    <!--<bean id="endGameMessageHandler" class="com.subrosagames.subrosa.event.handler.GameEndMessageHandler"/>-->
-    <!--<bean id="robinAssignmentMessageHandler" class="com.subrosagames.subrosa.event.handler.RoundRobinAssignmentMessageHandler"/>-->
-    <!--<bean id="mutualInterestAssignmentMessageHandler" class="com.subrosagames.subrosa.event.handler.MutualInterestAssignmentMessageHandler"/>-->
-
-    <!--<jms:listener-container-->
-            <!--container-type="simple"-->
-            <!--connection-factory="jmsConnectionFactory"-->
-            <!--acknowledge="transacted"-->
-            <!--concurrency="${jms.concurrency}">-->
-
-        <!--<jms:listener destination="subrosa.game.start"-->
-                      <!--ref="startGameMessageHandler" method="process"/>-->
-        <!--<jms:listener destination="subrosa.game.end"-->
-                      <!--ref="endGameMessageHandler" method="process"/>-->
-
-    <!--</jms:listener-container>-->
-
 </beans>

@@ -2,6 +2,26 @@ server:
   context-path: /subrosa
   servlet-path: /v1
 
+logging:
+  level:
+    org.springframework: DEBUG
+    com.subrosagames: DEBUG
+
+subrosa:
+  files:
+    maxUploadSize: 2000000
+    assetDirectory: /tmp/subrosa
+
+  google:
+    gcmApiKey: AIzaSyDjzP-6Vz6Mvq-q2R7fgRgxXub9u49fLEg
+    geocodeEndpoint: https://maps.googleapis.com/maps/api/geocode/json
+    geocodeApiKey: AIzaSyCthS9QAsYMFQKZ0wR4s0HVbw44OeTa_ZM
+
+  aws:
+    accessKey: AKIAIBWV65P3H73SXSUA
+    secretKey: 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
+    imageBucket: com.subrosagames.subrosa-images
+
 spring:
   datasource:
     url: jdbc:postgresql://db:5432/engine
@@ -19,7 +39,4 @@ spring:
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
       ddl-auto: validate
 
-logging:
-  level:
-    org.springframework: DEBUG
 
