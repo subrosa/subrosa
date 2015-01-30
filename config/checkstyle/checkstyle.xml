@@ -290,7 +290,9 @@
     <module name="OuterTypeFilename">
       <property name="severity" value="error"/>
     </module>
-    <module name="UncommentedMain"/>
+    <module name="UncommentedMain">
+      <property name="excludedClasses" value=".*\.SubrosaApplication"/>
+    </module>
     <module name="UpperEll"/>
 
   </module>

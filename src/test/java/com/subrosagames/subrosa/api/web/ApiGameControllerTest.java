@@ -11,11 +11,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
@@ -41,7 +39,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
@@ -54,7 +51,6 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiGameController}.
  */
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
 @DatabaseSetup("/fixtures/games.xml")
 public class ApiGameControllerTest extends AbstractApiControllerTest {
 
@@ -292,7 +288,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     @Test
     public void testGameUpdate() throws Exception {
         String response = mockMvc.perform(post("/game").with(user("new@user.com"))
-                        .content(jsonBuilder().add("name", "game to update").add("gameType", "SCAVENGER").build()))
+                .content(jsonBuilder().add("name", "game to update").add("gameType", "SCAVENGER").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("game to update"))
                 .andExpect(jsonPath("$.url").exists())
@@ -300,7 +296,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String url = JsonPath.compile("$.url").read(response);
 
         mockMvc.perform(put("/game/{url}", url).with(user("new@user.com"))
-                        .content(jsonBuilder().add("name", "renamed game").build()))
+                .content(jsonBuilder().add("name", "renamed game").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
 
@@ -312,7 +308,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     @Test
     public void testGameUpdateByAdmin() throws Exception {
         mockMvc.perform(put("/game/{url}", "fun_times").with(user("admin@user.com"))
-                        .content(jsonBuilder().add("name", "this is now the name").build()))
+                .content(jsonBuilder().add("name", "this is now the name").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("this is now the name"));
     }

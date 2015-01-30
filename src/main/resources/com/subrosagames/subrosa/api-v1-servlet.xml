@@ -16,9 +16,6 @@
       </bean>
     </mvc:message-converters>
   </mvc:annotation-driven>
-  <mvc:interceptors>
-    <bean class="com.subrosagames.subrosa.util.LogResponseBodyInterceptor"/>
-  </mvc:interceptors>
 
   <bean id="methodHandlerExceptionResolver"
         class="org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver">
@@ -39,7 +36,7 @@
 
   <bean id="jacksonObjectMapper" class="org.springframework.http.converter.json.Jackson2ObjectMapperFactoryBean">
     <property name="objectMapper">
-      <bean class="com.subrosagames.subrosa.util.bean.HiberanteAwareObjectMapper"/>
+      <bean class="com.subrosagames.subrosa.util.bean.HibernateAwareObjectMapper"/>
     </property>
     <property name="modulesToInstall" value="com.fasterxml.jackson.datatype.guava.GuavaModule"/>
     <property name="featuresToEnable">

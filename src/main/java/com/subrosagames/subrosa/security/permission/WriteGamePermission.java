@@ -44,4 +44,8 @@ public class WriteGamePermission extends AbstractPermission {
     private Game getGame(Serializable id) throws GameNotFoundException {
         return gameFactory.getGame((String) id);
     }
+
+    public void setGameFactory(GameFactory gameFactory) {
+        this.gameFactory = gameFactory;
+    }
 }

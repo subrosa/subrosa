@@ -8,7 +8,7 @@ import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
 /**
  * Overrides {@link ObjectMapper} to register the {@link Hibernate4Module} module.
  */
-public class HiberanteAwareObjectMapper extends ObjectMapper implements InitializingBean {
+public class HibernateAwareObjectMapper extends ObjectMapper implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -87,6 +87,10 @@ public class QueryCriteriaTest {
         public EntityObject(Date innerDate) {
             this.innerDate = innerDate == null ? null : new Date(innerDate.getTime());
         }
+
+        public Date getInnerDate() {
+            return innerDate == null ? null : new Date(innerDate.getTime());
+        }
     }
 
     // CHECKSTYLE-ON: JavadocMethod

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.code.geocoder.model.GeocoderResult;
+import com.subrosagames.subrosa.bootstrap.GoogleIntegration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -40,6 +41,7 @@ public class GoogleGeocoderTest {
                         }));
             }
         });
+        googleGeocoder.setGoogleIntegration(new GoogleIntegration());
     }
 
     @Test

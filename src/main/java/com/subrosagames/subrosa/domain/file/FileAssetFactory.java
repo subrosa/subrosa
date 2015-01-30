@@ -11,10 +11,10 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.subrosagames.subrosa.bootstrap.SubrosaFiles;
 import net.sf.jmimemagic.Magic;
 import net.sf.jmimemagic.MagicException;
 import net.sf.jmimemagic.MagicMatch;
@@ -34,11 +34,8 @@ public class FileAssetFactory {
     @Autowired
     private FileAssetRepository fileAssetRepository;
 
-    @Value("${file.upload.maxSize}")
-    private Long maxUploadSize;
-
-    @Value("${file.assetDirectory}")
-    private String baseAssetDirectory;
+    @Autowired
+    private SubrosaFiles subrosaFiles;
 
     /**
      * Create a file asset for the given multipart file upload.
@@ -58,6 +55,7 @@ public class FileAssetFactory {
         // store physical file
         physicalFile = storeFileItemStreamToDisk(multipartFile, fileAsset);
 
+        long maxUploadSize = subrosaFiles.getMaxUploadSize();
         if (maxUploadSize >= 0 && physicalFile.length() > maxUploadSize) {
             if (!physicalFile.delete()) {
                 LOG.warn("Failed to delete file {} that exceeded upload size limit", physicalFile.getCanonicalPath());
@@ -97,6 +95,6 @@ public class FileAssetFactory {
     }
 
     private File getPhysicalFile(FileAsset fileAsset) {
-        return new File(baseAssetDirectory, fileAsset.getName());
+        return new File(subrosaFiles.getAssetDirectory(), fileAsset.getName());
     }
 }

@@ -6,17 +6,10 @@ import javax.annotation.Nullable;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -28,6 +21,7 @@ import com.subrosagames.subrosa.security.permission.ReadAccountPermission;
 import com.subrosagames.subrosa.security.permission.ReadGamePermission;
 import com.subrosagames.subrosa.security.permission.WriteAccountPermission;
 import com.subrosagames.subrosa.security.permission.WriteGamePermission;
+import com.subrosagames.subrosa.test.AbstractContextTest;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -35,14 +29,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests {@link SubrosaAclPermissionEvaluator}.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "/test-context.xml" })
-@TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class
-})
-public class SubrosaAclPermissionEvaluatorTest {
+public class SubrosaAclPermissionEvaluatorTest extends AbstractContextTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
 

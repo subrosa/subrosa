@@ -10,17 +10,10 @@ import javax.annotation.Nullable;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -30,19 +23,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.test.AbstractContextTest;
 import com.subrosagames.subrosa.test.util.ColumnSensingFlatXmlDataSetLoader;
-import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
 
 /**
@@ -50,17 +43,9 @@ import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.u
  * <p/>
  * Provides scaffolding for performing mock requests, along with helpers for generating domain objects.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(locations = { "/test-context.xml" })
-@TestExecutionListeners({
-        DependencyInjectionTestExecutionListener.class,
-        DirtiesContextTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        ForeignKeyDisablingTestListener.class
-})
 @DbUnitConfiguration(dataSetLoader = ColumnSensingFlatXmlDataSetLoader.class)
-public abstract class AbstractApiControllerTest {
+@TestExecutionListeners(DbUnitTestExecutionListener.class)
+public abstract class AbstractApiControllerTest extends AbstractContextTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
     // CHECKSTYLE-OFF: JavadocType
@@ -71,15 +56,15 @@ public abstract class AbstractApiControllerTest {
     protected MockMvc mockMvc; // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Autowired
-    private FilterChainProxy springSecurityFilterChain;
+    private FilterChainProxy filterChainProxy;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Before
-    public void setup() {
+    public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(springSecurityFilterChain)
+                .addFilter(filterChainProxy)
                 .defaultRequest(get("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

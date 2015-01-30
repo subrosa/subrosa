@@ -39,8 +39,13 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
             Object endProperty = PropertyUtils.getProperty(value, endField);
             final Date startDate = startProperty == null ? null : new Date(((Date) startProperty).getTime());
             final Date endDate = endProperty == null ? null : new Date(((Date) endProperty).getTime());
-            isValid = startDate == null || endDate == null
-                    || (allowEmptyRange ? startDate.compareTo(endDate) <= 0 : startDate.compareTo(endDate) < 0);
+            if (startDate == null || endDate == null) {
+                isValid = true;
+            } else if (allowEmptyRange) {
+                isValid = startDate.compareTo(endDate) <= 0;
+            } else {
+                isValid = startDate.compareTo(endDate) < 0;
+            }
         } catch (final Exception e) { // SUPPRESS CHECKSTYLE IllegalThrows
             LOG.warn("Got exception attempting to validate date range", e);
         }

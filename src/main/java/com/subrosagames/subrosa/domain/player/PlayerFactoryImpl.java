@@ -27,6 +27,7 @@ public class PlayerFactoryImpl implements PlayerFactory {
 
     @Autowired
     private PlayerRepository playerRepository;
+
     @Autowired
     private AccountFactory accountFactory;
 

@@ -7,7 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.code.geocoder.Geocoder;
@@ -17,6 +17,7 @@ import com.google.code.geocoder.model.GeocoderAddressComponent;
 import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.common.collect.Lists;
+import com.subrosagames.subrosa.bootstrap.GoogleIntegration;
 
 
 /**
@@ -29,11 +30,8 @@ public class GoogleGeocoder {
 
     private static final Logger LOG = LoggerFactory.getLogger(GoogleGeocoder.class);
 
-    @Value("${google.geocode.endpoint}")
-    private String geocodeEndpoint;
-
-    @Value("${google.geocode.apiKey}")
-    private String geocodeApiKey;
+    @Autowired
+    private GoogleIntegration googleIntegration;
 
     /**
      * Geocodes the provided address.
@@ -44,7 +42,7 @@ public class GoogleGeocoder {
      */
     public GoogleAddress geocode(String address) throws IOException {
         LOG.debug("Geocoding address <{}>", address);
-        GeocoderResult result = getGeocoderResultForAddress(address, geocodeApiKey);
+        GeocoderResult result = getGeocoderResultForAddress(address, googleIntegration.getGeocodeApiKey());
 
         GoogleAddress gaddr = new GoogleAddress();
         gaddr.setFullAddress(result.getFormattedAddress());
@@ -81,6 +79,7 @@ public class GoogleGeocoder {
     }
 
     GeocoderResult getGeocoderResultForAddress(String address, String key) throws IOException {
+        // TODO use our api key for google geocoding
         final Geocoder googleGeocoder = new Geocoder();
         GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(address).setLanguage("en").getGeocoderRequest();
         GeocodeResponse geocoderResponse = googleGeocoder.geocode(geocoderRequest);
@@ -88,6 +87,9 @@ public class GoogleGeocoder {
         return results.get(0);
     }
 
+    public void setGoogleIntegration(GoogleIntegration googleIntegration) {
+        this.googleIntegration = googleIntegration;
+    }
 }
 
 

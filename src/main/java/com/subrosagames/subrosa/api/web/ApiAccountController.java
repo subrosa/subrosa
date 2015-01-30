@@ -27,7 +27,6 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
-import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.service.AccountService;
@@ -68,7 +67,7 @@ public class ApiAccountController extends BaseApiController {
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
-        return accountFactory.getAccounts(limit, offset, expansions);
+        return accountService.listAccounts(limit, offset, expansions);
     }
 
     /**

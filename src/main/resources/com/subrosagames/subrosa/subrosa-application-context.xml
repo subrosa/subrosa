@@ -1,47 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-       ">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
-  <bean id="propertyConfigurer" class="com.subrosagames.subrosa.mgmt.config.ExposablePropertyPlaceholderConfigurer">
-    <property name="locations">
-      <list>
-        <value>classpath:etc/build.properties</value>
-        <value>classpath:com/subrosagames/subrosa/subrosa.properties</value>
-        <value>file:${external.config.directory:/opt/subrosa/etc}/environment.properties</value>
-        <value>file:${external.config.directory:/opt/subrosa/etc}/secure.properties</value>
-        <value>file:${external.config.directory:/opt/subrosa/etc}/subrosa/subrosa-env.properties</value>
-        <value>file:${external.config.directory:/opt/subrosa/etc}/host.properties</value>
-      </list>
-    </property>
-    <property name="ignoreResourceNotFound" value="true"/>
-  </bean>
 
-  <context:component-scan base-package="com.subrosagames.subrosa"/>
-
-  <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-    <property name="maxUploadSize" value="${file.upload.maxSize}"/>
-  </bean>
-
-  <import resource="subrosa-security.xml"/>
-  <import resource="subrosa-persistence.xml"/>
-  <import resource="subrosa-scheduling.xml"/>
-  <import resource="subrosa-messaging.xml"/>
-  <!--<import resource="subrosa-caching.xml"/>-->
-
-  <!--<import resource="subrosa-aws.xml"/>-->
-  <!--<import resource="subrosa-android.xml"/>-->
-  <import resource="subrosa-google.xml"/>
-
-  <bean id="customizableTraceInterceptor"
-        class="org.springframework.aop.interceptor.CustomizableTraceInterceptor">
-    <property name="exitMessage" value="Leaving $[methodName](): $[returnValue]"/>
-  </bean>
-
-  <!--<import resource="subrosa-monitoring.xml"/>-->
+    <import resource="subrosa-scheduling.xml"/>
+    <import resource="subrosa-messaging.xml"/>
 
 </beans>

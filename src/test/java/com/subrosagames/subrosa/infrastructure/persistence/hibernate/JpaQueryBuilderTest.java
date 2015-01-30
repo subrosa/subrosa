@@ -2,6 +2,7 @@ package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +59,7 @@ public class JpaQueryBuilderTest {
     public void setUp() throws Exception {
         LOG.info("Starting in-memory HSQL database for unit tests");
         Class.forName("org.hsqldb.jdbcDriver");
-        connection = DriverManager.getConnection("jdbc:hsqldb:mem:unit-testing-jpa", "sa", "");
+        connection = DriverManager.getConnection("jdbc:hsqldb:mem:unit-testing-jpa", "sa", getEmptyPassword());
         LOG.info("Building JPA EntityManager for unit tests");
         entityManagerFactory = Persistence.createEntityManagerFactory("testPU");
         entityManager = entityManagerFactory.createEntityManager();
@@ -94,6 +95,10 @@ public class JpaQueryBuilderTest {
         entityManager.getTransaction().commit();
     }
 
+    private String getEmptyPassword() {
+        return "";
+    }
+
     @After
     public void tearDown() throws Exception {
         LOG.info("Shuting down Hibernate JPA layer.");
@@ -104,7 +109,9 @@ public class JpaQueryBuilderTest {
             entityManagerFactory.close();
         }
         LOG.info("Stopping in-memory HSQL database.");
-        connection.createStatement().execute("SHUTDOWN");
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("SHUTDOWN");
+        }
         connection.close();
     }
 
