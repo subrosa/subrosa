@@ -30,6 +30,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.subrosagames.subrosa.security.DeviceSessionUserDetailsService;
@@ -61,6 +62,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), ExceptionTranslationFilter.class)
+                .addFilterBefore(deviceSessionAuthenticationFilter(), BasicAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(entryPoint)
                 .and()
                 .logout().logoutSuccessHandler(logouthandler);
