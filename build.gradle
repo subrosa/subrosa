@@ -94,17 +94,23 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-oxm', version: springVersion
     compile group: 'org.springframework', name: 'spring-jms', version: springVersion
     compile group: 'org.springframework', name: 'spring-context-support', version: springVersion
+
+    // spring boot
     compile("org.springframework.boot:spring-boot-starter-web:1.2.1.RELEASE")
     compile("org.springframework.boot:spring-boot-starter-jdbc")
-//    compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-actuator:1.2.1.RELEASE")
-
 
     // spring security
     compile group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion
     compile group: 'org.springframework.security', name: 'spring-security-acl', version: springSecurityVersion
     compile group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion
     compile group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion
+
+    // spring social
+    compile "org.springframework.social:spring-social-core:1.1.0.RELEASE"
+    compile "org.springframework.social:spring-social-config:1.1.0.RELEASE"
+    compile "org.springframework.social:spring-social-security:1.1.0.RELEASE"
+    compile 'org.springframework.social:spring-social-facebook:1.1.1.RELEASE'
 
     // persistence
     compile group: 'org.hibernate.common', name: 'hibernate-commons-annotations', version: '4.0.5.Final'

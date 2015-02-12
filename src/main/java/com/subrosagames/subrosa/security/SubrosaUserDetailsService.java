@@ -12,7 +12,7 @@ import com.subrosagames.subrosa.domain.account.AccountRepository;
 /**
  * Implementation of {@code UserDetailsService} for retrieving subrosa users.
  */
-@Service
+@Service("userDetailsService")
 public class SubrosaUserDetailsService implements UserDetailsService {
 
     @Autowired

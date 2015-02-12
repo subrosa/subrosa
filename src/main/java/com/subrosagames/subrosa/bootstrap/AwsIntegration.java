@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * Maps AWS configurations.
  */
 @Component
-@ConfigurationProperties("subrosa.aws")
+@ConfigurationProperties("aws")
 public class AwsIntegration {
 
     private String accessKey;

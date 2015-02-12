@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.token;
 
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
 
 /**
@@ -22,4 +23,11 @@ public interface TokenRepository {
      * @param tokenEntity token entity
      */
     void storeToken(TokenEntity tokenEntity);
+
+    /**
+     * Deletes all tokens for the given account.
+     *
+     * @param account account
+     */
+    void deleteTokensForAccount(Account account);
 }

@@ -19,6 +19,11 @@ import com.subrosagames.subrosa.domain.token.TokenType;
  */
 public class DeviceSessionUserDetailsService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
+    /**
+     * Header used for passing the authentication token.
+     */
+    public static final String SR_AUTH_HEADER = "X-SUBROSA-AUTH";
+
     private static final Logger LOG = LoggerFactory.getLogger(DeviceSessionUserDetailsService.class);
 
     @Autowired

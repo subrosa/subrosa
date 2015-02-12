@@ -2,21 +2,24 @@ package com.subrosagames.subrosa.security;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.social.security.SocialUser;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountRole;
+import com.subrosagames.subrosa.domain.account.UserConnection;
 
 /**
  * Overrides default spring security user to manipulate salted passwords handling.
  */
-public class SubrosaUser extends User {
+public class SubrosaUser extends SocialUser {
 
     private static final long serialVersionUID = 5565905400673524447L;
 
     private transient Account account;
+
+    private UserConnection.Provider socialProvider;
 
     /**
      * Construct with given subrosa account.

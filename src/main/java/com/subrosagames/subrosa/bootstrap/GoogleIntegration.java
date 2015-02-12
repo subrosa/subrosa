@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
  * Maps Google API configurations.
  */
 @Component
-@ConfigurationProperties("subrosa.google")
+@ConfigurationProperties("google")
 public class GoogleIntegration {
 
     private String geocodeEndpoint;
