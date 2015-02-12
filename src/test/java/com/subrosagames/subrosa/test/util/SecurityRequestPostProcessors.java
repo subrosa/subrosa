@@ -52,7 +52,6 @@ public final class SecurityRequestPostProcessors {
         return new UserDetailsRequestPostProcessor(username);
     }
 
-
     /**
      * Support class for {@link RequestPostProcessor}s that establish a Spring Security context.
      */

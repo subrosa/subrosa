@@ -60,6 +60,20 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     }
 
     /**
+     * Get account with the specified email address.
+     *
+     * @param email      email
+     * @param expansions fields to expand
+     * @return account
+     * @throws AccountNotFoundException if account with specified email does not exist
+     */
+    public Account getAccount(String email, String... expansions) throws AccountNotFoundException {
+        Account account = accountRepository.getAccountByEmail(email, expansions);
+        injectDependencies(account);
+        return account;
+    }
+
+    /**
      * Create account object for account descriptor.
      *
      * @param accountDescriptor account descriptor
@@ -101,4 +115,5 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     public void setGeocoder(GoogleGeocoder geocoder) {
         this.geocoder = geocoder;
     }
+
 }

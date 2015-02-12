@@ -1,13 +1,17 @@
 package com.subrosagames.subrosa.api.web;
 
 import org.joda.time.DateTimeUtils;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.security.DeviceSessionUserDetailsService;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -21,6 +25,12 @@ import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notifica
 public class ApiUserControllerTest extends AbstractApiControllerTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+    }
 
     @Test
     public void testRegistrationAndAuthentication() throws Exception {
@@ -75,11 +85,50 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(get("/account/1").with(user("joe@admin.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.lastLoggedIn").value(946702899999L));
+        DateTimeUtils.setCurrentMillisSystem();
+    }
+
+    @Test
+    public void testAuthenticateWithToken() throws Exception {
+        String token = getAuthenticationToken();
+        mockMvc.perform(get("/user").header(DeviceSessionUserDetailsService.SR_AUTH_HEADER, token))
+                .andExpect(status().isOk());
+    }
+
+    String getAuthenticationToken() throws Exception {
+        String response = mockMvc.perform(post("/v1/session")
+                .content(jsonBuilder().add("email", "bob@user.com").add("password", "password").build()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        return getTokenFromResponse(response);
     }
 
     @Ignore
     @Test
     public void testLogout() throws Exception {
+        String token = getAuthenticationToken();
+        mockMvc.perform(get("/user").header(DeviceSessionUserDetailsService.SR_AUTH_HEADER, token))
+                .andExpect(status().isOk());
+        mockMvc.perform(delete("/v1/session").header(DeviceSessionUserDetailsService.SR_AUTH_HEADER, token))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/user").header(DeviceSessionUserDetailsService.SR_AUTH_HEADER, token))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testFacebookLogin() throws Exception {
+        String response = mockMvc.perform(post("/session/facebook")
+                .content(jsonBuilder().add("accessToken", "validToken").build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andReturn().getResponse().getContentAsString();
+        String token = getTokenFromResponse(response);
+        mockMvc.perform(get("/user").header(DeviceSessionUserDetailsService.SR_AUTH_HEADER, token))
+                .andExpect(status().isOk());
+    }
+
+    String getTokenFromResponse(String response) {
+        return JsonPath.compile("$.token").read(response);
     }
 
     // CHECKSTYLE-ON: JavadocMethod

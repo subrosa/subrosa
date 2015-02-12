@@ -22,7 +22,6 @@ import org.springframework.security.config.annotation.web.servlet.configuration.
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
@@ -30,9 +29,12 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.security.web.authentication.preauth.RequestHeaderAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.social.security.SpringSocialConfigurer;
 
+import com.subrosagames.subrosa.security.DeleteDeviceSessionLogoutHandler;
 import com.subrosagames.subrosa.security.DeviceSessionUserDetailsService;
 import com.subrosagames.subrosa.security.Http200LogoutSuccessHandler;
 import com.subrosagames.subrosa.security.JsonResponseAuthenticationFailureHandler;
@@ -55,17 +57,24 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private SubrosaUserDetailsService subrosaUserDetailsService;
 
+    @Autowired
+    private DeleteDeviceSessionLogoutHandler deleteDeviceSessionLogoutHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         AuthenticationEntryPoint entryPoint = new Http403ForbiddenEntryPoint();
         LogoutSuccessHandler logouthandler = new Http200LogoutSuccessHandler();
         http
                 .csrf().disable()
-                .addFilterAfter(jsonUsernamePasswordAuthenticationFilter(), ExceptionTranslationFilter.class)
-                .addFilterBefore(deviceSessionAuthenticationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(jsonUsernamePasswordAuthenticationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(deviceSessionAuthenticationFilter(), RememberMeAuthenticationFilter.class)
                 .exceptionHandling().authenticationEntryPoint(entryPoint)
                 .and()
-                .logout().logoutSuccessHandler(logouthandler);
+                .logout()
+                .logoutRequestMatcher(new AntPathRequestMatcher("/v1/session", "DELETE"))
+                .addLogoutHandler(deleteDeviceSessionLogoutHandler)
+                .logoutSuccessHandler(logouthandler)
+                .and().apply(new SpringSocialConfigurer());
     }
 
     @Override
@@ -137,7 +146,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         RequestHeaderAuthenticationFilter filter = new RequestHeaderAuthenticationFilter();
         filter.setExceptionIfHeaderMissing(false);
         filter.setContinueFilterChainOnUnsuccessfulAuthentication(true);
-        filter.setPrincipalRequestHeader("X-SUBROSA-AUTH");
+        filter.setPrincipalRequestHeader(DeviceSessionUserDetailsService.SR_AUTH_HEADER);
         filter.setAuthenticationManager(authenticationManager());
         return filter;
     }

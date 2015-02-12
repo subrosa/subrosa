@@ -7,6 +7,7 @@ import javax.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.token.TokenRepository;
 import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.domain.token.persistence.TokenEntity;
@@ -36,5 +37,12 @@ public class JpaTokenRepository implements TokenRepository {
     @Override
     public void storeToken(TokenEntity tokenEntity) {
         entityManager.persist(tokenEntity);
+    }
+
+    @Override
+    public void deleteTokensForAccount(Account account) {
+        entityManager.createQuery("DELETE FROM TokenEntity t WHERE t.accountId = :accountId")
+                .setParameter("accountId", account.getId())
+                .executeUpdate();
     }
 }
