@@ -19,7 +19,8 @@ FILE
 
 run() {
     vagrant up
-    gradle flywayMigrate run
+    vagrant ssh -c "sudo /vagrant/script/env.sh restart"
+    ./gradlew flywayMigrate run
 }
 
 case "$1" in
@@ -28,7 +29,7 @@ case "$1" in
         vagrant up
         vagrant ssh -c "sudo /vagrant/script/env.sh update"
         vagrant ssh -c "sudo /vagrant/script/env.sh restart"
-        gradle flywayMigrate run
+        ./gradlew flywayMigrate run
     ;;
     run)
         run
