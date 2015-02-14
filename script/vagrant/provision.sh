@@ -23,5 +23,5 @@ umount /media/VBoxGuestAdditions
 rmdir /media/VBoxGuestAdditions
 
 cp /tmp/docker /etc/default/docker
-
+sudo service docker restart
 
