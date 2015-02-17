@@ -1,0 +1,13 @@
+db:
+  image: ec2-54-187-143-54.us-west-2.compute.amazonaws.com:5000/subrosa/db
+  ports:
+    - "5432:5432"
+
+mq:
+  image: tutum/rabbitmq
+  environment:
+    RABBITMQ_PASS: admin
+  ports:
+    - "5672:5672"
+    - "15672:15672"
+

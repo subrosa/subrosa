@@ -10,7 +10,10 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +38,7 @@ import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.game.UrlConflictException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
@@ -156,7 +160,6 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
-    @Transactional
     public Game updateGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody GameDescriptor gameDescriptor)
             throws GameValidationException, GameNotFoundException, NotAuthenticatedException, ImageNotFoundException
@@ -164,7 +167,14 @@ public class ApiGameController extends BaseApiController {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
-        return gameService.updateGame(gameUrl, gameDescriptor);
+        try {
+            return gameService.updateGame(gameUrl, gameDescriptor);
+        } catch (JpaSystemException | DataIntegrityViolationException e) {
+            if (isUniqueConstraintViolation(e)) {
+                throw new UrlConflictException("URL already in use.", e);
+            }
+            throw e;
+        }
     }
 
     /**
@@ -358,4 +368,8 @@ public class ApiGameController extends BaseApiController {
         game.achieveTarget(player, targetId, targetAchievement.getCode());
     }
 
+    private boolean isUniqueConstraintViolation(NonTransientDataAccessException e) {
+        String message = e.getMostSpecificCause().getMessage();
+        return message.contains("unique constraint");
+    }
 }

@@ -19,7 +19,7 @@ FILE
 
 run() {
     vagrant up
-    vagrant ssh -c "sudo /vagrant/script/env.sh restart"
+    vagrant ssh -c "cd /vagrant; fig restart"
     ./gradlew flywayMigrate run
 }
 
@@ -27,8 +27,7 @@ case "$1" in
     init)
         [ ! -f ${DIR}/gradle.properties ] && init_config
         vagrant up
-        vagrant ssh -c "sudo /vagrant/script/env.sh update"
-        vagrant ssh -c "sudo /vagrant/script/env.sh restart"
+        vagrant ssh -c "cd /vagrant; fig pull --allow-insecure-ssl; fig up -d"
         ./gradlew flywayMigrate run
     ;;
     run)

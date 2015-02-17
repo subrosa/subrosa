@@ -100,17 +100,21 @@ public abstract class AbstractApiControllerTest extends AbstractContextTest {
         return new JsonBuilder();
     }
 
-    protected String newRandomGame(GameType gameType) throws Exception {
-        String email = newRandomUser();
+    protected String newRandomGame(GameType gameType, String userEmail) throws Exception {
         MvcResult result = mockMvc.perform(
                 post("/game")
-                        .with(user(email))
+                        .with(user(userEmail))
                         .content(jsonBuilder()
                                 .add("name", RandomStringUtils.random(10))
                                 .add("gameType", gameType.name()).build()))
                 .andExpect(status().isCreated())
                 .andReturn();
         return JsonPath.compile("$.url").read(result.getResponse().getContentAsString());
+    }
+
+    protected String newRandomGame(GameType gameType) throws Exception {
+        String email = newRandomUser();
+        return newRandomGame(gameType, email);
     }
 
     protected ResultActions perform(MockHttpServletRequestBuilder requestBuilder) throws Exception {

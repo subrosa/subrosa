@@ -12,16 +12,13 @@ apt-get install -q -y linux-image-generic-lts-trusty
 apt-get install -q -y linux-headers-$(uname -r)
 apt-get install -q -y build-essential dkms
 
-
-echo 'Downloading VBox Guest Additions...'
-wget -q http://download.virtualbox.org/virtualbox/4.3.8/VBoxGuestAdditions_4.3.8.iso
-mkdir /media/VBoxGuestAdditions
-mount -o loop,ro VBoxGuestAdditions_4.3.8.iso /media/VBoxGuestAdditions
-echo 'yes' | sh /media/VBoxGuestAdditions/VBoxLinuxAdditions.run
-rm VBoxGuestAdditions_4.3.8.iso
-umount /media/VBoxGuestAdditions
-rmdir /media/VBoxGuestAdditions
+curl -s -L https://github.com/docker/fig/releases/download/1.0.1/fig-$(uname -s)-$(uname -m) > /tmp/fig
+sudo mv /tmp/fig /usr/local/bin/fig
+sudo chmod +x /usr/local/bin/fig
 
 cp /tmp/docker /etc/default/docker
 sudo service docker restart
 
+cat <<'EOF' > /home/vagrant/.bashrc
+export DOCKER_HOST=tcp://127.0.0.1:4243
+EOF

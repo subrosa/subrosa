@@ -105,6 +105,16 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
     BaseGame create(BaseGame baseGame) throws GameValidationException;
 
     /**
+     * Update a game.
+     *
+     * @param baseGame game to update
+     * @return updated game
+     * @throws GameNotFoundException   if game is not found
+     * @throws GameValidationException if game is invalid for update
+     */
+    BaseGame update(BaseGame baseGame) throws GameNotFoundException, GameValidationException;
+
+    /**
      * Get games owned by provided user.
      *
      * @param user owning account

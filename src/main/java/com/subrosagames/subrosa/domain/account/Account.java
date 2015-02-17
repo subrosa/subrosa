@@ -38,7 +38,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,6 +55,7 @@ import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**
@@ -72,7 +72,7 @@ import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
                 @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
         })
 })
-public class Account implements PermissionTarget {
+public class Account extends BaseEntity implements PermissionTarget {
 
     private static final Logger LOG = LoggerFactory.getLogger(Account.class);
 
@@ -355,7 +355,7 @@ public class Account implements PermissionTarget {
         try {
             accountRepository.create(this, userPassword);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
-            if (isEmailConflict(e)) {
+            if (isUniqueConstraintViolation(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
             throw e;
@@ -402,7 +402,7 @@ public class Account implements PermissionTarget {
         } catch (AccountNotFoundException e) {
             throw new IllegalStateException("This should never happen - was the id of this object modified?", e);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
-            if (isEmailConflict(e)) {
+            if (isUniqueConstraintViolation(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
             throw e;
@@ -446,11 +446,6 @@ public class Account implements PermissionTarget {
         return accountRepository.getImage(this, imageId);
     }
 
-    private boolean isEmailConflict(NonTransientDataAccessException e) {
-        String message = e.getMostSpecificCause().getMessage();
-        return message.contains("unique constraint");
-    }
-
     /**
      * Get player profiles.
      *
@@ -489,7 +484,8 @@ public class Account implements PermissionTarget {
      * @throws PlayerProfileValidationException if player profile is not valid for creation
      */
     public PlayerProfile createPlayerProfile(PlayerProfileDescriptor playerProfileDescriptor)
-            throws ImageNotFoundException, PlayerProfileValidationException {
+            throws ImageNotFoundException, PlayerProfileValidationException
+    {
         PlayerProfile playerProfile = new PlayerProfile();
         playerProfile.setAccount(this);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
@@ -530,7 +526,8 @@ public class Account implements PermissionTarget {
      * @throws PlayerProfileValidationException if player profile is not valid for saving
      */
     public PlayerProfile updatePlayerProfile(int playerId, PlayerProfileDescriptor playerProfileDescriptor)
-            throws PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException {
+            throws PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException
+    {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
         assertPlayerProfileValid(playerProfile);

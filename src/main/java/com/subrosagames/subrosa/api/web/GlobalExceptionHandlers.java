@@ -31,6 +31,7 @@ import com.subrosagames.subrosa.api.NotAuthorizedException;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
+import com.subrosagames.subrosa.domain.game.UrlConflictException;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 
 /**
@@ -228,21 +229,28 @@ public class GlobalExceptionHandlers {
     }
 
     /**
-     * Handle {@link EmailConflictException}.
+     * Handle {@link EmailConflictException} and {@link UrlConflictException}.
      *
      * @param e exception
      * @return notification list
      */
-    @ExceptionHandler
+    @ExceptionHandler({
+            EmailConflictException.class,
+            UrlConflictException.class
+    })
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
-    public NotificationList handleEmailConflictException(EmailConflictException e) {
+    public NotificationList handleEmailConflictException(DomainObjectValidationException e) {
         LOG.debug("Global exception handler: {}", e.getMessage());
         Notification notification = new Notification(
                 GeneralCode.INVALID_FIELD_VALUE, Severity.ERROR,
                 GeneralCode.INVALID_FIELD_VALUE.getDefaultMessage());
         EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
-        details.put(Notification.DetailKey.FIELD, "email");
+        if (e instanceof EmailConflictException) {
+            details.put(Notification.DetailKey.FIELD, "email");
+        } else if (e instanceof UrlConflictException) {
+            details.put(Notification.DetailKey.FIELD, "url");
+        }
         details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNIQUE.getText());
         notification.setDetails(details);
         return new NotificationList(notification);

@@ -19,6 +19,7 @@ end
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = BOX_NAME
   config.ssh.forward_agent = true
+  config.vm.synced_folder ".", "/vagrant", type: "nfs", mount_options: ['nolock,vers=3,udp,noatime']
 
   config.vm.define :dev, primary: true do |app|
     app.vm.network :private_network, ip: "10.10.10.42"
