@@ -56,10 +56,11 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
         return entityManager.createQuery(query);
     }
 
+    @SuppressWarnings("unchecked")
     private Predicate getPredicate(QueryCriteria<T> criteria, CriteriaBuilder builder, Root<T> root) {
         Predicate predicate = builder.conjunction();
         for (Filter filter : criteria.getFilters()) {
-            Object value = filter.getTranslator().translate(filter.getValue());
+            Comparable value = (Comparable) filter.getTranslator().translate(filter.getValue());
             Path<Comparable> path = root.get(filter.getField());
             if (filter.getChildOperand() != null) {
                 path = root.join(filter.getField());
@@ -73,10 +74,10 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
                     predicate = builder.and(predicate, builder.notEqual(path, value));
                     break;
                 case GREATER_THAN:
-                    predicate = builder.and(predicate, builder.greaterThan(path, (Comparable) value));
+                    predicate = builder.and(predicate, builder.greaterThan(path, value));
                     break;
                 case LESS_THAN:
-                    predicate = builder.and(predicate, builder.lessThan(path, (Comparable) value));
+                    predicate = builder.and(predicate, builder.lessThan(path, value));
                     break;
                 case SET:
                     predicate = builder.and(predicate, builder.isNotNull(path));

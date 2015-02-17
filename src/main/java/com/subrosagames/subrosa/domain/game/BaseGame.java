@@ -124,8 +124,10 @@ public class BaseGame extends GameEntity implements Game {
     public Game update(GameDescriptor gameDescriptor) throws GameValidationException, ImageNotFoundException {
         // read-only fields
         gameDescriptor.setId(getId());
-        gameDescriptor.setUrl(Optional.of(getUrl()));
         gameDescriptor.setGameType(Optional.of(getGameType()));
+        if (isPublished()) {
+            gameDescriptor.setUrl(Optional.of(getUrl()));
+        }
 
         GameDescriptorTranslator.ingest(this, gameDescriptor);
 

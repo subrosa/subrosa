@@ -6,6 +6,8 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
+import org.springframework.dao.NonTransientDataAccessException;
+
 /**
  * Parent class for persisted entities.
  * <p/>
@@ -35,6 +37,17 @@ public class BaseEntity {
     @PreUpdate
     protected void preUpdate() {
         modified = new Date();
+    }
+
+    /**
+     * Helper for determining whether an exception was caused by a unique constraint violation.
+     *
+     * @param e exception
+     * @return whether was unique constraint violation
+     */
+    protected boolean isUniqueConstraintViolation(NonTransientDataAccessException e) {
+        String message = e.getMostSpecificCause().getMessage();
+        return message.contains("unique constraint");
     }
 
     /**

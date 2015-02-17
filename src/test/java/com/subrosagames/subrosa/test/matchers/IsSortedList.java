@@ -26,8 +26,8 @@ public final class IsSortedList<T> extends TypeSafeDiagnosingMatcher<List<T>> {
      * @return list matcher
      */
     @Factory
-    public static <T> IsSortedList isSortedAscending() {
-        return new IsSortedList<T>(true);
+    public static <T> IsSortedList<T> isSortedAscending() {
+        return new IsSortedList<>(true);
     }
 
     /**
@@ -37,11 +37,12 @@ public final class IsSortedList<T> extends TypeSafeDiagnosingMatcher<List<T>> {
      * @return list matcher
      */
     @Factory
-    public static <T> IsSortedList isSortedDescending() {
-        return new IsSortedList<T>(false);
+    public static <T> IsSortedList<T> isSortedDescending() {
+        return new IsSortedList<>(false);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected boolean matchesSafely(List<T> objects, Description description) {
         boolean matches = true;
         T last = null;

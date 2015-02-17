@@ -42,6 +42,9 @@ public enum EnrollmentFieldType {
 
         @Override
         public PlayerAttribute updateForAccount(Account account, Object attribute, PlayerAttribute playerAttribute) throws ImageNotFoundException {
+            if (!(attribute instanceof Map)) {
+                throw new IllegalArgumentException("Expected a Map but received a " + attribute.getClass() + " updating enrollment field");
+            }
             Image image = account.getImage((Integer) ((Map) attribute).get("id"));
             if (playerAttribute instanceof PlayerAttributeImage) {
                 ((PlayerAttributeImage) playerAttribute).setImage(image);
@@ -63,6 +66,9 @@ public enum EnrollmentFieldType {
 
         @Override
         public PlayerAttribute updateForAccount(Account account, Object attribute, PlayerAttribute playerAttribute) throws AddressNotFoundException {
+            if (!(attribute instanceof Map)) {
+                throw new IllegalArgumentException("Expected a Map but received a " + attribute.getClass() + " updating enrollment field");
+            }
             Address address = account.getAddress((Integer) ((Map) attribute).get("id"));
             if (playerAttribute instanceof PlayerAttributeAddress) {
                 ((PlayerAttributeAddress) playerAttribute).setAddress(address);

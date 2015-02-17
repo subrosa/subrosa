@@ -1,6 +1,8 @@
 package com.subrosagames.subrosa.domain.game;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.lang.RandomStringUtils;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -146,8 +147,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
         try {
             game = GameTypeToEntityMapper.forType(gameType);
         } catch (GameTypeUnknownException e) {
-            ConstraintViolation<BaseGame> violation = new VirtualConstraintViolation<>("unknown", "gameType");
-            throw new GameValidationException(Sets.newHashSet(violation));
+            throw new GameValidationException(getVirtualConstraintViolationSet("unknown", "gameType"));
         }
         game.setOwner(account);
         injectDependencies(game);
@@ -163,6 +163,13 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
         }
 
         return game;
+    }
+
+    private Set<ConstraintViolation<BaseGame>> getVirtualConstraintViolationSet(String constraint, String field) {
+        ConstraintViolation<BaseGame> violation = new VirtualConstraintViolation<>(constraint, field);
+        Set<ConstraintViolation<BaseGame>> violations = new HashSet<>();
+        violations.add(violation);
+        return violations;
     }
 
     private String generateUrl() {

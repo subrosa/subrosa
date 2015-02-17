@@ -106,7 +106,7 @@ public class GameEntity extends BaseEntity {
     @Column
     private String name;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String url;
 
     @Column

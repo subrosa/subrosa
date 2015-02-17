@@ -436,7 +436,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testCannotUpdateUrlOrGameType() throws Exception {
+    public void testCannotUpdateIdOrGameType() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
                         .with(user("new@user.com"))
@@ -445,20 +445,21 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.url").exists())
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
+        Integer id = JsonPath.compile("$.id").read(response);
 
         mockMvc.perform(
                 put("/game/{url}", url)
                         .with(user("new@user.com"))
-                        .content(jsonBuilder().add("url", "new url").build()))
+                        .content(jsonBuilder().add("id", 1234).build()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value(url));
+                .andExpect(jsonPath("$.id").value(id));
 
         mockMvc.perform(
                 put("/game/{url}", url)
                         .content(jsonBuilder().add("gameType", "SCAVENGER").build())
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.url").value(url));
+                .andExpect(jsonPath("$.gameType").value("ASSASSIN"));
     }
 
     @Test
@@ -600,6 +601,51 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .with(user("new@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").value(notNullValue()));
+    }
+
+    @Test
+    public void testPublishGameLocksUrl() throws Exception {
+        String gameUrl = newRandomGame(GameType.SCAVENGER, "new@user.com");
+        String updateResponse = mockMvc.perform(put("/game/{url}", gameUrl)
+                .with(user("new@user.com"))
+                .content(jsonBuilder().add("url", "new-url").build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").value("new-url"))
+                .andReturn().getResponse().getContentAsString();
+        String newUrl = JsonPath.compile("$.url").read(updateResponse);
+
+        BaseGame gameEntity = gameRepository.get(newUrl, "events");
+        gameEntity.setGameRepository(gameRepository);
+        gameEntity.setGameFactory(gameFactory);
+        addEventToGame(gameEntity, "registrationStart", new Date(timeDaysInFuture(1)));
+        addEventToGame(gameEntity, "registrationEnd", new Date(timeDaysInFuture(2)));
+        addEventToGame(gameEntity, "gameStart", new Date(timeDaysInFuture(3)));
+        addEventToGame(gameEntity, "gameEnd", new Date(timeDaysInFuture(4)));
+
+        mockMvc.perform(
+                post("/game/{url}/publish", newUrl)
+                        .with(user("new@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.published").exists());
+
+        mockMvc.perform(put("/game/{url}", newUrl)
+                .with(user("new@user.com"))
+                .content(jsonBuilder().add("url", "even-newer-url").build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.url").value("new-url"));
+        mockMvc.perform(get("/game/{url}", "new-url").with(user("new@user.com"))).andExpect(status().isOk());
+        mockMvc.perform(get("/game/{url}", "even-newer-url").with(user("new@user.com"))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGameUrlCollisionResultsInConflict() throws Exception {
+        String game1 = newRandomGame(GameType.SCAVENGER, "new@user.com");
+        String game2 = newRandomGame(GameType.SCAVENGER, "new@user.com");
+        mockMvc.perform(put("/game/{url}", game2).with(user("new@user.com"))
+                .content(jsonBuilder().add("url", game1).build()))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("url", "unique"))));
     }
 
     @Test
