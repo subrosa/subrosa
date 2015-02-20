@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 
 /**
  * Provides common functionality for handling API requests.

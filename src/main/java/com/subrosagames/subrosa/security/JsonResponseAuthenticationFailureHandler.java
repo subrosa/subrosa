@@ -11,10 +11,10 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.subrosa.api.notification.GeneralCode;
-import com.subrosa.api.notification.Notification;
-import com.subrosa.api.notification.Severity;
-import com.subrosa.api.response.NotificationList;
+import com.subrosagames.subrosa.api.notification.GeneralCode;
+import com.subrosagames.subrosa.api.notification.Notification;
+import com.subrosagames.subrosa.api.notification.Severity;
+import com.subrosagames.subrosa.api.response.NotificationList;
 
 /**
  * Handles failed authentication attempts via a JSON response.

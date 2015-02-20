@@ -2,10 +2,10 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
-import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;

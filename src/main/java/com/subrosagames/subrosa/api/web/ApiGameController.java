@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import com.subrosa.api.actions.list.QueryCriteria;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
@@ -33,6 +32,7 @@ import com.subrosagames.subrosa.api.dto.TargetAchievement;
 import com.subrosagames.subrosa.api.dto.target.TargetDto;
 import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
 import com.subrosagames.subrosa.api.dto.target.TargetList;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;

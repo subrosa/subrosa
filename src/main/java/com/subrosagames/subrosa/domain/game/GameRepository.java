@@ -2,7 +2,7 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.List;
 
-import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.DomainObjectRepository;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;

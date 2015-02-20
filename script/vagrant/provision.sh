@@ -21,4 +21,20 @@ sudo service docker restart
 
 cat <<'EOF' > /home/vagrant/.bashrc
 export DOCKER_HOST=tcp://127.0.0.1:4243
+
+# load up environment variables
+source /vagrant/script/vagrant/default.env
+if [ -f /vagrant/script/vagrant/local.env ]; then
+    source /vagrant/script/vagrant/local.env
+fi
+
+# load up shell configs
+source /vagrant/script/vagrant/bashrc
+if [ -f /vagrant/script/vagrant/local.bashrc ]; then
+    source /vagrant/script/vagrant/local.bashrc
+fi
+
+# jump to source tree
+cd /vagrant
 EOF
+

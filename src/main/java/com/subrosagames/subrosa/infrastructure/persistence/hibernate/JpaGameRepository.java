@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.subrosa.api.actions.list.QueryBuilder;
-import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.QueryBuilder;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameAttributeType;
