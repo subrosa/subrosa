@@ -53,8 +53,14 @@
 
   <team team_id="100" game_id="1"/>
   <team team_id="101" game_id="1"/>
-  <player player_id="10" team_id="100" account_id="10002" name="peter" kill_code="12345" game_role="PLAYER"/>
-  <player player_id="11" team_id="101" account_id="10003" name="paul" kill_code="12345" game_role="PLAYER"/>
+  <player player_id="10" team_id="100" account_id="10002" player_profile_id="1" kill_code="12345" game_role="PLAYER"/>
+  <player_profile player_profile_id="1" account_id="10002" name="peter" image_id="1"/>
+  <image image_id="10" account_id="10002" file_asset_id="10" index="0"/>
+  <file_asset file_asset_id="10" name="pic1.png" mime_type="image/png" size="100"/>
+  <player player_id="11" team_id="101" account_id="10003" player_profile_id="2" kill_code="12345" game_role="PLAYER"/>
+  <player_profile player_profile_id="2" account_id="10003" name="paul" image_id="2"/>
+  <image image_id="11" account_id="10003" file_asset_id="11" index="1"/>
+  <file_asset file_asset_id="11" name="pic2.png" mime_type="image/png" size="200"/>
   <history history_id="1" game_id="1" history_type="KILL" assassin_id="10" victim_id="11" obituary="Peter got capped"/>
 
   <post post_id="1" game_id="1" post_type="TEXT" account_id="10001" content="This is a message"/>

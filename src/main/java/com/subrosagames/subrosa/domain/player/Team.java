@@ -1,7 +1,6 @@
 package com.subrosagames.subrosa.domain.player;
 
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
@@ -31,7 +30,7 @@ public class Team extends TeamEntity implements Participant {
     }
 
     @Override
-    public Image getImage(ImageType imageType) {
+    public Image getAvatar() {
         return null;
     }
 }

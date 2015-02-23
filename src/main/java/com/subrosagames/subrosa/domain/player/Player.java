@@ -5,6 +5,8 @@ import java.util.Map;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.PlayerProfile;
+import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttribute;
 
@@ -28,11 +30,19 @@ public interface Player extends Participant {
     Account getAccount();
 
     /**
-     * Get player name.
+     * Get the owning account's player profile used for the game player.
      *
-     * @return player name
+     * @return player profile
      */
-    String getName();
+    PlayerProfile getPlayerProfile();
+
+    default String getName() {
+        return getPlayerProfile().getName();
+    }
+
+    default Image getAvatar() {
+        return getPlayerProfile().getImage();
+    }
 
     /**
      * Get player attributes.

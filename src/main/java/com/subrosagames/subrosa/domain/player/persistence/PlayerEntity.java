@@ -16,8 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
-import javax.persistence.MapKeyEnumerated;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -25,20 +25,19 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Maps;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
-import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
-import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.GameRole;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -70,8 +69,10 @@ public class PlayerEntity implements Player {
     @Column(name = "player_id")
     private Integer id;
 
-    @Column
-    private String name;
+    @JsonProperty("player")
+    @OneToOne
+    @JoinColumn(name = "player_profile_id")
+    private PlayerProfile playerProfile;
 
     @OneToMany(
             mappedBy = "player",
@@ -102,20 +103,12 @@ public class PlayerEntity implements Player {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<TargetEntity> targets;
 
-    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER)
-    @MapKey(name = "imageType")
-    @MapKeyEnumerated(EnumType.STRING)
-    private Map<ImageType, PlayerImage> images;
-
     @Override
     public void update(PlayerDescriptor playerDescriptor) throws AddressNotFoundException, ImageNotFoundException {
         copyPlayerProperties(playerDescriptor);
     }
 
     void copyPlayerProperties(PlayerDescriptor playerDescriptor) throws AddressNotFoundException, ImageNotFoundException {
-        if (StringUtils.isNotBlank(playerDescriptor.getName())) {
-            setName(playerDescriptor.getName());
-        }
         playerFactory.processPlayerAttributes(this, playerDescriptor);
     }
 
@@ -127,36 +120,12 @@ public class PlayerEntity implements Player {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public PlayerProfile getPlayerProfile() {
+        return playerProfile;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Get image for the given type.
-     *
-     * @param imageType image type
-     * @return image
-     */
-    public Image getImage(ImageType imageType) {
-        return images.get(imageType).getImage();
-    }
-
-    public Map<ImageType, PlayerImage> getImages() {
-        return images;
-    }
-
-    /**
-     * Set image for the given type.
-     *
-     * @param imageType image type
-     * @param image     player image
-     */
-    public void setImage(ImageType imageType, PlayerImage image) {
-        images.put(imageType, image);
+    public void setPlayerProfile(PlayerProfile playerProfile) {
+        this.playerProfile = playerProfile;
     }
 
     public Map<String, PlayerAttribute> getAttributes() {
@@ -170,7 +139,7 @@ public class PlayerEntity implements Player {
     /**
      * Set the given player attribute.
      *
-     * @param fieldId attribute field it
+     * @param fieldId         attribute field it
      * @param playerAttribute attribute to set
      */
     public void setAttribute(String fieldId, PlayerAttribute playerAttribute) {

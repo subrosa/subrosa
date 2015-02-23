@@ -9,20 +9,6 @@ import com.subrosagames.subrosa.domain.image.Image;
 public interface TargetPlayer extends Target {
 
     /**
-     * Get target ID photo.
-     *
-     * @return ID photo
-     */
-    Image getPhotoId();
-
-    /**
-     * Get target action photo.
-     *
-     * @return action photo
-     */
-    Image getActionPhoto();
-
-    /**
      * Get target avatar.
      *
      * @return target avatar

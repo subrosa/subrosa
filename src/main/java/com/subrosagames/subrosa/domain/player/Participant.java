@@ -5,7 +5,6 @@ import java.util.List;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.location.Location;
 
 /**
@@ -15,6 +14,7 @@ public interface Participant {
 
     /**
      * Participant's name.
+     *
      * @return name
      */
     @NotBlank
@@ -60,8 +60,7 @@ public interface Participant {
     /**
      * Get an image for the participant.
      *
-     * @param imageType image type
      * @return partipiant image
      */
-    Image getImage(ImageType imageType);
+    Image getAvatar();
 }

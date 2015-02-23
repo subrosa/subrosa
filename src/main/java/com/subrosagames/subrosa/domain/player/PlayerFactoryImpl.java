@@ -41,9 +41,9 @@ public class PlayerFactoryImpl implements PlayerFactory {
 
         PlayerEntity playerEntity = new PlayerEntity();
         playerEntity.setAccount(account);
+        playerEntity.setPlayerProfile(playerDescriptor.getPlayer());
         playerEntity.setTeam(teamEntity);
         playerEntity.setGameRole(GameRole.PLAYER);
-        playerEntity.setName(playerDescriptor.getName());
         playerEntity.setKillCode(PlayerCodeGenerator.generate());
 
         processPlayerAttributes(playerEntity, playerDescriptor);

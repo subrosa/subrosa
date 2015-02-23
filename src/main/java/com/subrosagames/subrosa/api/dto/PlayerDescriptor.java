@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.api.dto;
 import java.util.List;
 import java.util.Map;
 
+import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.game.EnrollmentField;
 
 /**
@@ -10,7 +11,7 @@ import com.subrosagames.subrosa.domain.game.EnrollmentField;
  */
 public final class PlayerDescriptor {
 
-    private String name;
+    private PlayerProfile player;
     private Map<String, Object> attributes;
     private List<EnrollmentField> enrollmentFields;
 
@@ -28,12 +29,12 @@ public final class PlayerDescriptor {
         return playerDescriptor;
     }
 
-    public String getName() {
-        return name;
+    public PlayerProfile getPlayer() {
+        return player;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPlayer(PlayerProfile player) {
+        this.player = player;
     }
 
     public void setAttributes(Map<String, Object> attributes) {
