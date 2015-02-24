@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.domain.account;
 
-import java.io.IOException;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,34 +8,28 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Transient;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.subrosagames.subrosa.geo.gmaps.GoogleAddress;
-import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
+import com.subrosagames.subrosa.domain.location.Location;
+import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 
 /**
  * Used to represent an accounts addresses.
  */
 @Entity
-public class Address {
-
-    @JsonIgnore
-    @Transient
-    private GoogleGeocoder geocoder;
+public class Address extends BaseEntity {
 
     @Id
     @SequenceGenerator(name = "addressSeq", sequenceName = "address_address_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "addressSeq")
     @Column(name = "address_id")
     private Integer id;
-
-    @Column
-    @Length(max = 128)
-    private String label;
 
     @JsonIgnore
     @ManyToOne
@@ -48,17 +40,20 @@ public class Address {
     )
     private Account account;
 
+    @Column
+    @Length(max = 128)
+    private String label;
+
+    @OneToOne(targetEntity = LocationEntity.class)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    @NotBlank
     @Column(name = "full_address")
     private String fullAddress;
 
     @Column(name = "user_provided")
     private String userProvided;
-
-    @Column
-    private Date created;
-
-    @Column
-    private Date modified;
 
     @Column(name = "street_address")
     private String streetAddress;
@@ -94,6 +89,14 @@ public class Address {
         this.label = label;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public Account getAccount() {
         return account;
     }
@@ -116,22 +119,6 @@ public class Address {
 
     public void setUserProvided(String userProvided) {
         this.userProvided = userProvided;
-    }
-
-    public Date getCreated() {
-        return created == null ? null : new Date(created.getTime());
-    }
-
-    public void setCreated(Date created) {
-        this.created = created == null ? null : new Date(created.getTime());
-    }
-
-    public Date getModified() {
-        return modified == null ? null : new Date(modified.getTime());
-    }
-
-    public void setModified(Date modified) {
-        this.modified = modified == null ? null : new Date(modified.getTime());
     }
 
     public String getStreetAddress() {
@@ -180,25 +167,6 @@ public class Address {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
-    }
-
-    /**
-     * Uses Google's Geocode API to fill in address components from the full address.
-     *
-     * @throws IOException if API call could not be completed
-     */
-    public void geocode() throws IOException {
-        GoogleAddress googleAddress = geocoder.geocode(fullAddress);
-        setFullAddress(googleAddress.getFullAddress());
-        setStreetAddress(googleAddress.getStreetAddress());
-        setCity(googleAddress.getCity());
-        setState(googleAddress.getState());
-        setCountry(googleAddress.getCountry());
-        setPostalCode(googleAddress.getPostalCode());
-    }
-
-    public void setGeocoder(GoogleGeocoder geocoder) {
-        this.geocoder = geocoder;
     }
 
 }

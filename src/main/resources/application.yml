@@ -42,4 +42,9 @@ spring:
       naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
       ddl-auto: validate
 
+  rabbitmq:
+    host: mq
+    username: engine
+    password: engine
+
 

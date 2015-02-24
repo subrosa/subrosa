@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.domain.account;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -54,7 +53,6 @@ import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
-import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
@@ -85,9 +83,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     @JsonIgnore
     @Transient
     private TokenFactory tokenFactory;
-    @JsonIgnore
-    @Transient
-    private GoogleGeocoder geocoder;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -265,8 +260,6 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
         Address address = accountRepository.getAddress(this, addressId);
-        // TODO oddly placed DI. move address creation into its own factory?
-        address.setGeocoder(geocoder);
         return address;
     }
 
@@ -279,7 +272,6 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address createAddress(AddressDescriptor addressDescriptor) throws AddressValidationException {
         Address address = new Address();
-        address.setGeocoder(geocoder);
         populateAddress(addressDescriptor, address);
         assertAddressValid(address);
         addAddress(address);
@@ -289,13 +281,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     private void populateAddress(AddressDescriptor addressDescriptor, Address address) {
         address.setAccount(this);
         address.setFullAddress(addressDescriptor.getFullAddress().orNull());
-        try {
-            address.geocode();
-        } catch (IOException e) {
-            LOG.error("THIS NEEDS TO BE HANDLED");
-            LOG.error("Failed to geocode address {}", address.getFullAddress());
-            LOG.error("THIS NEEDS TO BE HANDLED");
-        }
     }
 
     private void addAddress(Address address) {
@@ -567,7 +552,4 @@ public class Account extends BaseEntity implements PermissionTarget {
         this.tokenFactory = tokenFactory;
     }
 
-    public void setGeocoder(GoogleGeocoder geocoder) {
-        this.geocoder = geocoder;
-    }
 }

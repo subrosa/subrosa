@@ -1,21 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:task="http://www.springframework.org/schema/task"
-       xsi:schemaLocation="
-         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
-       ">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
-  <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
-
-  <task:scheduler id="scheduler" pool-size="10"/>
-  <task:executor id="executor" pool-size="10"/>
-
-  <task:scheduled-tasks scheduler="scheduler">
-    <task:scheduled ref="addressGeocodingTask" method="execute" cron="0 29 * * * *"/>
-  </task:scheduled-tasks>
-
-  <bean id="addressGeocodingTask" class="com.subrosagames.subrosa.task.AddressGeocodingTask"/>
+    <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"/>
 
 </beans>
