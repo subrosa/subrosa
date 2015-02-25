@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
+import com.subrosagames.subrosa.domain.account.ImageInUseException;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.service.ImageService;
@@ -218,11 +219,12 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws NotAuthenticatedException if request is not authenticated
      * @throws AccountNotFoundException  if account is not found
      * @throws ImageNotFoundException    if image is not found
+     * @throws ImageInUseException       if image is in use
      */
     @RequestMapping(value = { "/account/{accountId}/image/{imageId}", "/account/{accountId}/image/{imageId}" }, method = RequestMethod.DELETE)
     public Image deleteImage(@PathVariable("accountId") Integer accountId,
                              @PathVariable("imageId") Integer imageId)
-            throws NotAuthenticatedException, ImageNotFoundException, AccountNotFoundException
+            throws NotAuthenticatedException, ImageNotFoundException, AccountNotFoundException, ImageInUseException
     {
         LOG.debug("{}: deleting image {} for {}", getAuthenticatedUser().getId(), imageId, accountId);
         return imageService.deleteImage(accountId, imageId);
@@ -236,10 +238,11 @@ public class ApiAccountImageController extends BaseApiController {
      * @throws NotAuthenticatedException if request is not authenticated
      * @throws AccountNotFoundException  if account is not found
      * @throws ImageNotFoundException    if image is not found
+     * @throws ImageInUseException       if image is in use
      */
     @RequestMapping(value = { "/user/image/{imageId}", "/user/image/{imageId}" }, method = RequestMethod.DELETE)
     public Image deleteImageForAuthenticatedUser(@PathVariable("imageId") Integer imageId)
-            throws NotAuthenticatedException, ImageNotFoundException, AccountNotFoundException
+            throws NotAuthenticatedException, ImageNotFoundException, AccountNotFoundException, ImageInUseException
 
     {
         return deleteImage(getAuthenticatedUser().getId(), imageId);

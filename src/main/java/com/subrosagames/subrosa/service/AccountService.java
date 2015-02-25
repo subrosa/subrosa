@@ -24,6 +24,7 @@ import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.AddressValidationException;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
+import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
@@ -155,9 +156,12 @@ public class AccountService {
      * @return deleted player profile
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
-    public PlayerProfile deletePlayerProfile(int accountId, int playerId) throws AccountNotFoundException, PlayerProfileNotFoundException {
+    public PlayerProfile deletePlayerProfile(int accountId, int playerId)
+            throws AccountNotFoundException, PlayerProfileNotFoundException, PlayerProfileInUseException
+    {
         Account account = accountFactory.getAccount(accountId);
         return account.deletePlayerProfile(playerId);
     }

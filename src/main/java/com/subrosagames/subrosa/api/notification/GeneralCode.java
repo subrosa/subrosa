@@ -20,7 +20,8 @@ public enum GeneralCode implements Code {
     DESERIALIZATION_ERROR("requestCorrupt", "Error deserializing request"),
     FILE_CORRUPT("fileCorrupt", "File is corrupt"),
     FILE_TOO_LARGE("fileTooLarge", "File is too large"),
-    FILE_NOT_FOUND("fileNotFound", "File not found");
+    FILE_NOT_FOUND("fileNotFound", "File not found"),
+    RESOURCE_IN_USE("resourceInUse", "The deletion request was for a resource that is in use");
     // CHECKSTYLE-ON: JavadocVariable
 
     private String code;

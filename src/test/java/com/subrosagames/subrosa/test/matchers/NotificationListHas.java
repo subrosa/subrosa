@@ -94,7 +94,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
 
         @Override
         public void describeTo(Description description) {
-            description.appendText("with details");
+            description.appendText("error code " + code);
         }
     }
 

@@ -17,7 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -70,7 +69,7 @@ public class PlayerEntity implements Player {
     private Integer id;
 
     @JsonProperty("player")
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "player_profile_id")
     private PlayerProfile playerProfile;
 

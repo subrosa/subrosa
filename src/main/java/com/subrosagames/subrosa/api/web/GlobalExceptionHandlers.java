@@ -31,7 +31,10 @@ import com.subrosagames.subrosa.api.notification.Severity;
 import com.subrosagames.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.ResourceInUseException;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
+import com.subrosagames.subrosa.domain.account.ImageInUseException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.game.UrlConflictException;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 
@@ -292,6 +295,26 @@ public class GlobalExceptionHandlers {
         Notification notification = new Notification(
                 GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
                 "Missing multipart file upload");
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link PlayerProfileInUseException} and {@link ImageInUseException}.
+     *
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler({
+            PlayerProfileInUseException.class,
+            ImageInUseException.class
+    })
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public NotificationList handlePlayerProfileInUseException(ResourceInUseException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.RESOURCE_IN_USE, Severity.ERROR,
+                GeneralCode.RESOURCE_IN_USE.getDefaultMessage());
         return new NotificationList(notification);
     }
 

@@ -33,4 +33,8 @@
   <account account_id="1000" activated="true" email="joe@admin.com"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
   <account_role account_id="1000" role="ADMIN"/>
+
+    <game game_id="1" owner_id="1" name="A Game" url="game" game_type="SCAVENGER"/>
+    <team team_id="1" game_id="1"/>
+    <player player_id="1" team_id="1" account_id="3" player_profile_id="2" game_role="PLAYER"/>
 </dataset>

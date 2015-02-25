@@ -29,6 +29,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -447,10 +448,15 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @param imageId image id
      * @return deleted image
      * @throws ImageNotFoundException if image does not exist
+     * @throws ImageInUseException    if image is in use
      */
-    public Image deleteImage(int imageId) throws ImageNotFoundException {
+    public Image deleteImage(int imageId) throws ImageNotFoundException, ImageInUseException {
         Image image = getImage(imageId);
-        images.remove(image);
+        if (CollectionUtils.isEmpty(image.getPlayerProfiles())) {
+            images.remove(image);
+        } else {
+            throw new ImageInUseException("Image " + imageId + " is in use and cannot be deleted");
+        }
         return image;
     }
 
@@ -516,10 +522,15 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @param playerId player profile id
      * @return deleted player profile
      * @throws PlayerProfileNotFoundException if player profile does not exist
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
-    public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException {
+    public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException, PlayerProfileInUseException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
-        accountRepository.delete(playerProfile);
+        if (CollectionUtils.isEmpty(playerProfile.getPlayers())) {
+            accountRepository.delete(playerProfile);
+        } else {
+            throw new PlayerProfileInUseException("Player profile " + playerId + " is in use and cannot be deleted");
+        }
         return playerProfile;
     }
 

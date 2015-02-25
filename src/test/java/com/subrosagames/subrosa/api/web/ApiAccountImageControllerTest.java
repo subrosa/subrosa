@@ -20,6 +20,7 @@ import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -205,12 +206,12 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     @Test
     public void testDeleteImage() throws Exception {
         mockMvc.perform(
-                delete("/account/{accountId}/image/{imageId}", 3, 1)
+                delete("/account/{accountId}/image/{imageId}", 3, 3)
                         .with(user("lotsopics@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(3));
         mockMvc.perform(
-                get("/account/{accountId}/image/{imageId}", 3, 1)
+                get("/account/{accountId}/image/{imageId}", 3, 3)
                         .with(user("lotsopics@user.com")))
                 .andExpect(status().isNotFound());
     }
@@ -218,12 +219,12 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     @Test
     public void testDeleteImageForAuthenticatedUser() throws Exception {
         mockMvc.perform(
-                delete("/user/image/{imageId}", 1)
+                delete("/user/image/{imageId}", 3)
                         .with(user("lotsopics@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(3));
         mockMvc.perform(
-                get("/user/image/{imageId}", 1)
+                get("/user/image/{imageId}", 3)
                         .with(user("lotsopics@user.com")))
                 .andExpect(status().isNotFound());
     }
@@ -232,7 +233,28 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDeleteImageNotFound() throws Exception {
         mockMvc.perform(
                 delete("/user/image/15")
-                .with(user("lotsopics@user.com")))
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteImageInPlayerProfileFails() throws Exception {
+        mockMvc.perform(
+                delete("/user/image/1")
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("resourceInUse"))));
+    }
+
+    @Test
+    public void testDeleteImageAfterRemovingFromPlayerProfile() throws Exception {
+        mockMvc.perform(put("/user/player/1").with(user("lotsopics@user.com")).content(jsonBuilder().add("imageId", 2).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image.id").value(2));
+        mockMvc.perform(delete("/user/image/1").with(user("lotsopics@user.com")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/user/image/1").with(user("lotsopics@user.com")))
                 .andExpect(status().isNotFound());
     }
 

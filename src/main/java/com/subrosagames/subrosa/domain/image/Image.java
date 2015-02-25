@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.image;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -16,6 +18,7 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 
 /**
@@ -44,6 +47,10 @@ public class Image {
     @JsonIgnore
     @Column
     private Integer index;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "image")
+    private Set<PlayerProfile> playerProfiles;
 
     @PrePersist
     @PreUpdate
@@ -98,5 +105,13 @@ public class Image {
 
     public void setFileAsset(FileAsset fileAsset) {
         this.fileAsset = fileAsset;
+    }
+
+    public Set<PlayerProfile> getPlayerProfiles() {
+        return playerProfiles;
+    }
+
+    public void setPlayerProfiles(Set<PlayerProfile> playerProfiles) {
+        this.playerProfiles = playerProfiles;
     }
 }
