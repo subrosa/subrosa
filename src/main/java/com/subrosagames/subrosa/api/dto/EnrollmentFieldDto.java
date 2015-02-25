@@ -12,6 +12,7 @@ public class EnrollmentFieldDto implements EnrollmentField {
     private String name;
     private String description;
     private EnrollmentFieldType type;
+    private Boolean required;
 
     @Override
     public String getFieldId() {
@@ -47,5 +48,14 @@ public class EnrollmentFieldDto implements EnrollmentField {
 
     public void setType(EnrollmentFieldType type) {
         this.type = type;
+    }
+
+    @Override
+    public Boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 }

@@ -51,7 +51,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testJoinGameMissingRequiredPlayerInfo() throws Exception {
+    public void testJoinGameMissingRequiredAttribute() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
                         .with(user("player1@player.com")))
@@ -77,6 +77,40 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.player.id").value(1))
                 .andExpect(jsonPath("$.attributes.lastWish").value(lastWish));
+    }
+
+    @Test
+    public void testJoinGameWithOptionalAttribute() throws Exception {
+        String lastWish = "You don't have to do this. You can still let me win.";
+        int playerId = 1;
+        mockMvc.perform(
+                post("/game/{url}/player", "last_wish_optional")
+                        .with(user("player1@player.com"))
+                        .content(jsonBuilder()
+                                .add("playerId", playerId)
+                                .addChild("attributes",
+                                        jsonBuilder()
+                                                .add("lastWish", lastWish))
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.player.id").value(1))
+                .andExpect(jsonPath("$.attributes.lastWish").value(lastWish));
+    }
+
+    @Test
+    public void testJoinGameWithoutOptionalAttribute() throws Exception {
+        int playerId = 1;
+        mockMvc.perform(
+                post("/game/{url}/player", "last_wish_optional")
+                        .with(user("player1@player.com"))
+                        .content(jsonBuilder()
+                                .add("playerId", playerId)
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.player.id").value(1))
+                .andExpect(jsonPath("$.attributes.lastWish").doesNotExist());
     }
 
     @Test

@@ -13,6 +13,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -338,7 +339,7 @@ public class BaseGame extends GameEntity implements Game {
             constraints.add(new VirtualConstraintViolation<>("required", "playerId"));
         }
         for (EnrollmentField enrollmentField : getPlayerInfo()) {
-            if (!joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
+            if (BooleanUtils.isNotFalse(enrollmentField.isRequired()) && !joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
                 failed = true;
                 ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", enrollmentField.getFieldId());
                 constraints.add(constraint);

@@ -42,6 +42,9 @@ public class EnrollmentFieldEntity implements EnrollmentField {
     @Enumerated(EnumType.STRING)
     private EnrollmentFieldType type;
 
+    @Column
+    private Boolean required;
+
     @JsonIgnore
     @Column
     private Integer index;
@@ -84,6 +87,15 @@ public class EnrollmentFieldEntity implements EnrollmentField {
     @Override
     public EnrollmentFieldType getType() {
         return type;
+    }
+
+    @Override
+    public Boolean isRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
     }
 
     public void setGame(GameEntity game) {

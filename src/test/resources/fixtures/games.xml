@@ -23,7 +23,7 @@
 
   <game game_id="4" owner_id="10001" name="Fun Times!" url="last_wish_required" game_type="ASSASSIN"/>
   <restriction restriction_id="2" game_id="4" type="AGE" value="18"/>
-  <enrollment_field game_id="4" field_id="lastWish" index="0" name="Last Wish" description="Dying request" type="TEXT"/>
+  <enrollment_field game_id="4" field_id="lastWish" required="true" index="0" name="Last Wish" description="Dying request" type="TEXT"/>
 
   <game game_id="5" owner_id="10001" name="Fun Times!" url="with_image" game_type="ASSASSIN" image_id="1"/>
   <image image_id="1" account_id="10001" file_asset_id="1" index="0"/>
@@ -44,7 +44,9 @@
   <address address_id="2" label="not home" full_address="1 My St. Raleigh, NC, 27601" street_address="1 My St."/>
   <account_address account_id="10002" address_id="2"/>
 
-  <game game_id="7" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
+  <game game_id="7" owner_id="10001" name="Fun Times!" url="last_wish_optional" game_type="ASSASSIN"/>
+  <enrollment_field game_id="7" field_id="lastWish" required="false" index="0" name="Last Wish" description="Dying request" type="TEXT"/>
+
   <game game_id="8" owner_id="10001" name="Fun Times!" url="fun_times8" game_type="ASSASSIN"/>
   <game game_id="9" owner_id="10001" name="Fun Times!" url="fun_times9" game_type="ASSASSIN"/>
   <game game_id="100" owner_id="10001" name="Fun Times!" url="fun_times10" game_type="ASSASSIN"/>
