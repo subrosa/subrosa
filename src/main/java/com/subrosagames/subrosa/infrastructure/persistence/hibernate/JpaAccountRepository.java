@@ -72,6 +72,11 @@ public class JpaAccountRepository implements AccountRepository {
     }
 
     @Override
+    public void delete(Image image) {
+        entityManager.remove(image);
+    }
+
+    @Override
     public PlayerProfile getPlayerProfile(Account account, int playerId) throws PlayerProfileNotFoundException {
         try {
             return entityManager.createQuery("SELECT pp FROM PlayerProfile pp WHERE pp.account = :account AND pp.id = :id", PlayerProfile.class)

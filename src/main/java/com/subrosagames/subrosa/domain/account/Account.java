@@ -442,6 +442,19 @@ public class Account extends BaseEntity implements PermissionTarget {
     }
 
     /**
+     * Delete the specified account image.
+     *
+     * @param imageId image id
+     * @return deleted image
+     * @throws ImageNotFoundException if image does not exist
+     */
+    public Image deleteImage(int imageId) throws ImageNotFoundException {
+        Image image = getImage(imageId);
+        images.remove(image);
+        return image;
+    }
+
+    /**
      * Get player profiles.
      *
      * @return player profiles

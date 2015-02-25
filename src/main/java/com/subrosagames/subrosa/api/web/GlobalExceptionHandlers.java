@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.common.collect.ImmutableMap;
@@ -277,5 +278,21 @@ public class GlobalExceptionHandlers {
         return new NotificationList(notification);
     }
 
+    /**
+     * Handle {@link MissingServletRequestPartException}.
+     *
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public NotificationList handleMissingServletRequestPartException(MissingServletRequestPartException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
+                "Missing multipart file upload");
+        return new NotificationList(notification);
+    }
 
 }

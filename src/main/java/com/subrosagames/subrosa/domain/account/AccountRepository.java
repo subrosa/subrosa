@@ -86,6 +86,13 @@ public interface AccountRepository extends DomainObjectRepository<Account> {
     Image getImage(Account account, int imageId) throws ImageNotFoundException;
 
     /**
+     * Delete an account image.
+     *
+     * @param image image to delete
+     */
+    void delete(Image image);
+
+    /**
      * Retrieve a player profile.
      *
      * @param account  account

@@ -116,4 +116,18 @@ public class ImageService {
         Account account = accountFactory.getAccount(accountId);
         return account.getImage(imageId);
     }
+
+    /**
+     * Delete an account image.
+     *
+     * @param accountId account id
+     * @param imageId   image id
+     * @return deleted image
+     * @throws AccountNotFoundException if account does not exist
+     * @throws ImageNotFoundException   if image does not exist
+     */
+    public Image deleteImage(int accountId, int imageId) throws ImageNotFoundException, AccountNotFoundException {
+        Account account = accountFactory.getAccount(accountId);
+        return account.deleteImage(imageId);
+    }
 }

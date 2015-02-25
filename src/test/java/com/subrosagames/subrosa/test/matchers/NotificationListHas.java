@@ -16,9 +16,9 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
  */
 public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArray> {
 
-    private final NotificationWithDetailsMatcher matcher;
+    private final AbstractNotificationMatcher matcher; // SUPPRESS CHECKSTYLE IllegalType
 
-    private NotificationListHas(NotificationWithDetailsMatcher matcher) {
+    private NotificationListHas(AbstractNotificationMatcher matcher) {
         this.matcher = matcher;
     }
 
@@ -29,7 +29,7 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
      * @return notification list matcher
      */
     @Factory
-    public static Matcher<JSONArray> hasNotification(NotificationWithDetailsMatcher matcher) {
+    public static Matcher<JSONArray> hasNotification(AbstractNotificationMatcher matcher) { // SUPPRESS CHECKSTYLE IllegalType
         return new NotificationListHas(matcher);
     }
 
@@ -50,9 +50,58 @@ public final class NotificationListHas extends TypeSafeDiagnosingMatcher<JSONArr
     }
 
     /**
+     * Abstract parent for notification matchers.
+     */
+    public abstract static class AbstractNotificationMatcher extends TypeSafeDiagnosingMatcher<JSONObject> { }
+
+    /**
+     * Matches notification with an error code.
+     */
+    public static class NotificationWithCodeMatcher extends AbstractNotificationMatcher { // SUPPRESS CHECKSTYLE FinalClassCheck
+
+        private String code;
+
+        private NotificationWithCodeMatcher(String code) {
+            this.code = code;
+        }
+
+        /**
+         * Factory for matching notification with an error code.
+         *
+         * @param code error code
+         * @return notification with constraint matcher
+         */
+        @Factory
+        public static NotificationWithCodeMatcher withCode(String code) {
+            return new NotificationWithCodeMatcher(code);
+        }
+
+        @Override
+        protected boolean matchesSafely(JSONObject jsonObject, Description description) {
+            boolean matches = true;
+            if (!jsonObject.containsKey("code")) {
+                description.appendText("| does not contain code ");
+                matches = false;
+            } else {
+                String errorCode = (String) jsonObject.get("code");
+                if (!code.equals(errorCode)) {
+                    description.appendText("| does not have code " + code + " (found " + errorCode + ") ");
+                    matches = false;
+                }
+            }
+            return matches;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("with details");
+        }
+    }
+
+    /**
      * Matches notification with a details map.
      */
-    public static class NotificationWithDetailsMatcher extends TypeSafeDiagnosingMatcher<JSONObject> { // SUPPRESS CHECKSTYLE FinalClassCheck
+    public static class NotificationWithDetailsMatcher extends AbstractNotificationMatcher { // SUPPRESS CHECKSTYLE FinalClassCheck
 
         private NotificationWithDetailsMatcher() {
         }
