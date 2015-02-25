@@ -41,6 +41,7 @@ public class Address extends BaseEntity {
     private Account account;
 
     @Column
+    @NotBlank
     @Length(max = 128)
     private String label;
 

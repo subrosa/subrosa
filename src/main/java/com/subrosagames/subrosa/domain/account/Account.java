@@ -280,7 +280,12 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     private void populateAddress(AddressDescriptor addressDescriptor, Address address) {
         address.setAccount(this);
-        address.setFullAddress(addressDescriptor.getFullAddress().orNull());
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
+        try {
+            beanCopier.copyProperties(address, addressDescriptor);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private void addAddress(Address address) {
@@ -303,7 +308,12 @@ public class Account extends BaseEntity implements PermissionTarget {
         return address;
     }
 
-    private void assertAddressValid(Address address) {
+    private void assertAddressValid(Address address, Class... validationGroups) throws AddressValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<Address>> violations = validator.validate(address, validationGroups);
+        if (!violations.isEmpty()) {
+            throw new AddressValidationException(violations);
+        }
     }
 
     /**

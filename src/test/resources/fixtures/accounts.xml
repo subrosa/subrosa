@@ -25,8 +25,8 @@
   <player_profile player_profile_id="2" account_id="3"
                   name="Secret Santa"
                   image_id="2"/>
-  <address address_id="1" full_address="My Home"/>
-  <address address_id="2" full_address="Workplace"/>
+  <address address_id="1" label="HOME" full_address="My Home"/>
+  <address address_id="2" label="WORK" full_address="Workplace"/>
   <account_address account_id="3" address_id="1"/>
   <account_address account_id="3" address_id="2"/>
 

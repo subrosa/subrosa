@@ -74,7 +74,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Get an account address .
+     * Get an account address.
      *
      * @param accountId account id
      * @param addressId address id
@@ -93,7 +93,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Get an account address .
+     * Get an account address.
      *
      * @param addressId address id
      * @return account address
@@ -109,7 +109,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Create an account address .
+     * Create an account address.
      *
      * @param accountId         account id
      * @param addressDescriptor address information
@@ -132,7 +132,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Create an account address .
+     * Create an account address.
      *
      * @param addressDescriptor address information
      * @return created address
@@ -150,7 +150,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Update an account address .
+     * Update an account address.
      *
      * @param accountId         account id
      * @param addressId         address id
@@ -175,7 +175,7 @@ public class ApiAccountAddressController extends BaseApiController {
     }
 
     /**
-     * Update an account address .
+     * Update an account address.
      *
      * @param addressId         address id
      * @param addressDescriptor address information

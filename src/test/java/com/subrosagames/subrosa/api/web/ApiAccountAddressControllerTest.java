@@ -18,8 +18,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link ApiAccountAddressController}.
@@ -111,8 +114,16 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.fullAddress").value(fullAddress));
     }
 
+    String addressJson(String address, String label) {
+        JsonBuilder builder = jsonBuilder().add("fullAddress", address);
+        if (label != null) {
+            builder.add("label", label);
+        }
+        return builder.build();
+    }
+
     String addressJson(String address) {
-        return jsonBuilder().add("fullAddress", address).build();
+        return addressJson(address, "my label");
     }
 
     private Integer checkNewAddressAssertions(ResultActions resultActions, String fullAddress) throws Exception {
@@ -127,6 +138,14 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
     @Test
     public void testCreateAddressWithWrongAccountForbidden() throws Exception {
         mockMvc.perform(post("/account/1/address").with(user("lotsopics@user.com")).content(addressJson("address"))).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testAddressLabelRequired() throws Exception {
+        mockMvc.perform(post("/user/address").with(user("bob@user.com")).content(addressJson("address", null)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("label", "required"))));
     }
 
     @Test

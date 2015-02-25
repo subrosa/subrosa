@@ -39,9 +39,9 @@
   <file_asset file_asset_id="3" name="selfie.png" mime_type="image/png" size="100"/>
   <image image_id="4" account_id="10002" file_asset_id="4" index="0"/>
   <file_asset file_asset_id="4" name="noodie.jpg" mime_type="image/jpg" size="100"/>
-  <address address_id="1" full_address="1 My St. Raleigh, NC, 27601" street_address="1 My St."/>
+  <address address_id="1" label="home" full_address="1 My St. Raleigh, NC, 27601" street_address="1 My St."/>
   <account_address account_id="10002" address_id="1"/>
-  <address address_id="2" full_address="1 My St. Raleigh, NC, 27601" street_address="1 My St."/>
+  <address address_id="2" label="not home" full_address="1 My St. Raleigh, NC, 27601" street_address="1 My St."/>
   <account_address account_id="10002" address_id="2"/>
 
   <game game_id="7" owner_id="10001" name="Fun Times!" url="fun_times7" game_type="ASSASSIN"/>
