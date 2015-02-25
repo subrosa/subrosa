@@ -6,6 +6,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -48,6 +49,28 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "18"))));
+    }
+
+    @Test
+    public void testJoinGameWithUserUnder13WithAgeRestriction() throws Exception {
+        mockMvc.perform(
+                post("/game/{url}/player", "must_be_18")
+                        .with(user("child@player.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasSize(1)))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "13"))));
+    }
+
+    @Test
+    public void testJoinGameWithUserUnder13RegardlessOfRestrictions() throws Exception {
+        mockMvc.perform(
+                post("/game/{url}/player", "fun_times")
+                        .with(user("child@player.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasSize(1)))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "13"))));
     }
 
     @Test

@@ -67,6 +67,8 @@ public class BaseGame extends GameEntity implements Game {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseGame.class);
 
+    private static final int ABSOLUTE_MINIMUM_AGE = 13;
+
     @Transient
     private final Function<Rule, String> extractRules = new Function<Rule, String>() {
         @Override
@@ -353,11 +355,19 @@ public class BaseGame extends GameEntity implements Game {
     private void assertRestrictionsSatisfied(Account account) throws PlayRestrictedException {
         boolean failed = false;
         Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
-        for (Restriction restriction : getRestrictions()) {
-            if (!restriction.satisfied(account)) {
-                failed = true;
-                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>(restriction.message(), restriction.field());
-                constraints.add(constraint);
+        if (!DateTime.now().minusYears(ABSOLUTE_MINIMUM_AGE).toDate().after(account.getDateOfBirth())) {
+            failed = true;
+            ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(
+                    RestrictionType.AGE.message(String.valueOf(ABSOLUTE_MINIMUM_AGE)), RestrictionType.AGE.field());
+            constraints.add(constraint);
+        }
+        if (!failed) {
+            for (Restriction restriction : getRestrictions()) {
+                if (!restriction.satisfied(account)) {
+                    failed = true;
+                    ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(restriction.message(), restriction.field());
+                    constraints.add(constraint);
+                }
             }
         }
         if (failed) {
