@@ -4,15 +4,19 @@ import java.io.IOException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.StringUtils;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
-import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.geo.gmaps.GoogleAddress;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
+import com.subrosagames.subrosa.service.AccountService;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -21,8 +25,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link ApiAccountAddressController}.
@@ -32,13 +39,18 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
 
-    @Autowired
-    private AccountFactory accountFactory;
+    @Mock
+    private RabbitTemplate rabbitTemplate;
 
+    @Autowired
+    @InjectMocks
+    private AccountService accountService;
+
+    @Override
     @Before
     public void setUp() {
         super.setUp();
-        accountFactory.setGeocoder(new ApiAccountAddressControllerTest.MockGeocoder());
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
@@ -102,31 +114,46 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
     @Test
     public void testCreateAddress() throws Exception {
         String address = "123 Ivy Ln, Raleigh, NC, US";
-        checkNewAddressAssertions(
+        int id = checkNewAddressAssertions(
                 mockMvc.perform(post("/account/1/address").with(user("bob@user.com")).content(addressJson(address))),
-                address, "Raleigh", "NC", "US");
+                address);
+        checkAddressAssertions(mockMvc.perform(get("/user/address/{id}", id).with(user("bob@user.com"))), address);
     }
 
     @Test
     public void testCreateAddressForAuthenticatedUser() throws Exception {
         String address = "I like games, a, b, c";
-        checkNewAddressAssertions(
+        int id = checkNewAddressAssertions(
                 mockMvc.perform(post("/user/address").with(user("bob@user.com")).content(addressJson(address))),
-                address, "a", "b", "c");
+                address);
+        checkAddressAssertions(mockMvc.perform(get("/user/address/{id}", id).with(user("bob@user.com"))), address);
+    }
+
+    private void checkAddressAssertions(ResultActions resultActions, String fullAddress) throws Exception {
+        resultActions
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.fullAddress").value(fullAddress));
+    }
+
+    String addressJson(String address, String label) {
+        JsonBuilder builder = jsonBuilder().add("fullAddress", address);
+        if (label != null) {
+            builder.add("label", label);
+        }
+        return builder.build();
     }
 
     String addressJson(String address) {
-        return jsonBuilder().add("fullAddress", address).build();
+        return addressJson(address, "my label");
     }
 
-    private void checkNewAddressAssertions(ResultActions resultActions, String fullAddress, String city, String state, String country) throws Exception {
-        resultActions
+    private Integer checkNewAddressAssertions(ResultActions resultActions, String fullAddress) throws Exception {
+        String response = resultActions
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
                 .andExpect(jsonPath("$.fullAddress").value(fullAddress))
-                .andExpect(jsonPath("$.city").value(city))
-                .andExpect(jsonPath("$.state").value(state))
-                .andExpect(jsonPath("$.country").value(country));
+                .andReturn().getResponse().getContentAsString();
+        return JsonPath.compile("$.id").read(response);
     }
 
     @Test
@@ -135,26 +162,33 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    public void testAddressLabelRequired() throws Exception {
+        mockMvc.perform(post("/user/address").with(user("bob@user.com")).content(addressJson("address", null)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("label", "required"))));
+    }
+
+    @Test
     public void testUpdateAddress() throws Exception {
         String address = "street address, city, state, country";
         checkUpdateAddressAssertions(mockMvc.perform(put("/account/3/address/2").with(user("lotsopics@user.com")).content(addressJson(address))),
-                address, "city", "state", "country");
+                address);
+        checkAddressAssertions(mockMvc.perform(get("/account/3/address/2").with(user("lotsopics@user.com"))), address);
     }
 
     @Test
     public void testUpdateAddressForAuthenticatedUser() throws Exception {
         String address = "updated, 1, 2, 3";
         checkUpdateAddressAssertions(mockMvc.perform(put("/user/address/2").with(user("lotsopics@user.com")).content(addressJson(address))),
-                address, "1", "2", "3");
+                address);
+        checkAddressAssertions(mockMvc.perform(get("/user/address/2").with(user("lotsopics@user.com"))), address);
     }
 
-    private void checkUpdateAddressAssertions(ResultActions resultActions, String fullAddress, String city, String state, String country) throws Exception {
+    private void checkUpdateAddressAssertions(ResultActions resultActions, String fullAddress) throws Exception {
         resultActions
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fullAddress").value(fullAddress))
-                .andExpect(jsonPath("$.city").value(city))
-                .andExpect(jsonPath("$.state").value(state))
-                .andExpect(jsonPath("$.country").value(country));
+                .andExpect(jsonPath("$.fullAddress").value(fullAddress));
     }
 
     @Test
@@ -167,7 +201,8 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
         resultActions
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id));
-        checkUpdateAddressAssertions(resultActions, address, "city", "state", "country");
+        checkUpdateAddressAssertions(resultActions, address);
+        checkAddressAssertions(mockMvc.perform(get("/user/address/{id}", id).with(user("bob@user.com"))), address);
     }
 
     @Test

@@ -9,15 +9,15 @@ import com.google.common.collect.Maps;
  */
 public class JoinGameRequest {
 
-    private String name;
+    private Integer playerId;
     private Map<String, Object> attributes = Maps.newHashMap();
 
-    public String getName() {
-        return name;
+    public Integer getPlayerId() {
+        return playerId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPlayerId(Integer playerId) {
+        this.playerId = playerId;
     }
 
     public Map<String, Object> getAttributes() {

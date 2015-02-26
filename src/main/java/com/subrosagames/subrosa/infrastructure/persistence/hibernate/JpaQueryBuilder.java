@@ -8,9 +8,9 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.subrosa.api.actions.list.Filter;
-import com.subrosa.api.actions.list.QueryBuilder;
-import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.Filter;
+import com.subrosagames.subrosa.api.list.QueryBuilder;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 
 /**
  * Manages the creation of a JPA {@link TypedQuery} from a {@link QueryCriteria}.

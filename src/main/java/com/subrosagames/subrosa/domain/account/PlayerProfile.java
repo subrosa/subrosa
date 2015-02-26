@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.account;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -16,6 +18,8 @@ import org.hibernate.validator.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * Account player profile.
@@ -43,6 +47,13 @@ public class PlayerProfile {
     @OneToOne
     @JoinColumn(name = "image_id")
     private Image image;
+
+    @JsonIgnore
+    @OneToMany(
+            targetEntity = PlayerEntity.class,
+            mappedBy = "playerProfile"
+    )
+    private Set<Player> players;
 
     public Integer getId() {
         return id;
@@ -74,5 +85,13 @@ public class PlayerProfile {
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    public Set<Player> getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(Set<Player> players) {
+        this.players = players;
     }
 }

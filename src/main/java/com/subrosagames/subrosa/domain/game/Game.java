@@ -8,6 +8,7 @@ import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
@@ -200,8 +201,10 @@ public interface Game extends GameData {
      * @throws IllegalArgumentException                                                if either parameter is null
      * @throws AddressNotFoundException                                                if address is not found
      * @throws ImageNotFoundException                                                  if image is not found
+     * @throws PlayerProfileNotFoundException                                          if the specified player profile is not found
      */
-    Player joinGame(Account account, JoinGameRequest joinGameRequest) throws PlayerValidationException, AddressNotFoundException, ImageNotFoundException;
+    Player joinGame(Account account, JoinGameRequest joinGameRequest)
+            throws PlayerValidationException, AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException;
 
     /**
      * Get specified player.
@@ -218,11 +221,13 @@ public interface Game extends GameData {
      * @param playerId        player id
      * @param joinGameRequest player information
      * @return updated player
-     * @throws PlayerNotFoundException  if player is not found
-     * @throws AddressNotFoundException if address is not found
-     * @throws ImageNotFoundException   if image is not found
+     * @throws PlayerNotFoundException        if player is not found
+     * @throws AddressNotFoundException       if address is not found
+     * @throws ImageNotFoundException         if image is not found
+     * @throws PlayerProfileNotFoundException if the specified player profile is not found
      */
-    Player updatePlayer(Integer playerId, JoinGameRequest joinGameRequest) throws PlayerNotFoundException, AddressNotFoundException, ImageNotFoundException;
+    Player updatePlayer(Integer playerId, JoinGameRequest joinGameRequest)
+            throws PlayerNotFoundException, AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException;
 
     /**
      * Whether game is published.

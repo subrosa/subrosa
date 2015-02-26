@@ -32,4 +32,11 @@ public interface EnrollmentField {
      * @return field type
      */
     EnrollmentFieldType getType();
+
+    /**
+     * Whether field is required.
+     *
+     * @return whether field is required
+     */
+    Boolean isRequired();
 }

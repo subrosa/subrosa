@@ -9,6 +9,7 @@ public interface Restriction {
 
     /**
      * Returns whether restriction is satisfied by provided account.
+     *
      * @param account account
      * @return whether restriction is satisfied
      */
@@ -16,6 +17,7 @@ public interface Restriction {
 
     /**
      * Restriction message.
+     *
      * @return restriction message
      */
     String message();
@@ -29,12 +31,14 @@ public interface Restriction {
 
     /**
      * Type of restriction.
+     *
      * @return type of restriction
      */
     RestrictionType getType();
 
     /**
      * Value against restriction is evaluated.
+     *
      * @return restriction value
      */
     String getValue();

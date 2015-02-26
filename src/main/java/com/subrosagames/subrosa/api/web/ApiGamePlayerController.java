@@ -22,6 +22,7 @@ import com.subrosagames.subrosa.api.NotAuthorizedException;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
@@ -126,6 +127,7 @@ public class ApiGamePlayerController extends BaseApiController {
      * @throws ImageNotFoundException                                                  if image is not found
      * @throws NotAuthenticatedException                                               if the request is not authenticated
      * @throws NotAuthorizedException                                                  if the user does not have correct permissions
+     * @throws PlayerProfileNotFoundException                                          if the specified player profile is not found
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
@@ -133,7 +135,7 @@ public class ApiGamePlayerController extends BaseApiController {
     public Player joinGame(@PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) JoinGameRequest joinGameRequestParam)
             throws NotAuthenticatedException, NotAuthorizedException, GameNotFoundException, PlayerValidationException, AccountNotFoundException,
-            AddressNotFoundException, ImageNotFoundException
+            AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
@@ -149,13 +151,14 @@ public class ApiGamePlayerController extends BaseApiController {
      * @param playerId        player id
      * @param joinGameRequest player information
      * @return updated player profile
-     * @throws NotAuthenticatedException if request is unauthenticated
-     * @throws AccountNotFoundException  if account is not found
-     * @throws GameNotFoundException     if game is not found
-     * @throws PlayerNotFoundException   if player is not found
-     * @throws ImageNotFoundException    if image is not found
-     * @throws AddressNotFoundException  if address is not found
-     * @throws PlayerValidationException if player is not valid for saving
+     * @throws NotAuthenticatedException      if request is unauthenticated
+     * @throws AccountNotFoundException       if account is not found
+     * @throws GameNotFoundException          if game is not found
+     * @throws PlayerNotFoundException        if player is not found
+     * @throws ImageNotFoundException         if image is not found
+     * @throws AddressNotFoundException       if address is not found
+     * @throws PlayerValidationException      if player is not valid for saving
+     * @throws PlayerProfileNotFoundException if the specified player profile is not found
      */
     @RequestMapping(value = { "{playerId}", "{playerId}/" }, method = RequestMethod.PUT)
     @ResponseBody
@@ -163,7 +166,7 @@ public class ApiGamePlayerController extends BaseApiController {
                                @PathVariable("playerId") Integer playerId,
                                @RequestBody JoinGameRequest joinGameRequest)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerNotFoundException, PlayerValidationException,
-            AddressNotFoundException, GameNotFoundException
+            AddressNotFoundException, GameNotFoundException, PlayerProfileNotFoundException
     {
         LOG.debug("{}: updating game player {} for game {}", getAuthenticatedUser().getId(), playerId, gameUrl);
         return gameService.updateGamePlayer(gameUrl, playerId, joinGameRequest);

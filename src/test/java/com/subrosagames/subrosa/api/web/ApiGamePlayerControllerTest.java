@@ -6,6 +6,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -31,13 +32,13 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testJoinGameWithoutName() throws Exception {
+    public void testJoinGameWithoutPlayerId() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "fun_times")
                         .with(user("player1@player.com")))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("name", "required"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("playerId", "required"))));
     }
 
     @Test
@@ -51,7 +52,29 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
-    public void testJoinGameMissingRequiredPlayerInfo() throws Exception {
+    public void testJoinGameWithUserUnder13WithAgeRestriction() throws Exception {
+        mockMvc.perform(
+                post("/game/{url}/player", "must_be_18")
+                        .with(user("child@player.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasSize(1)))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "13"))));
+    }
+
+    @Test
+    public void testJoinGameWithUserUnder13RegardlessOfRestrictions() throws Exception {
+        mockMvc.perform(
+                post("/game/{url}/player", "fun_times")
+                        .with(user("child@player.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasSize(1)))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "13"))));
+    }
+
+    @Test
+    public void testJoinGameMissingRequiredAttribute() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
                         .with(user("player1@player.com")))
@@ -63,27 +86,61 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     @Test
     public void testJoinGame() throws Exception {
         String lastWish = "You don't have to do this. You can still let me win.";
-        String name = "The Killer Rabbit";
+        int playerId = 1;
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
                         .with(user("player1@player.com"))
                         .content(jsonBuilder()
-                                .add("name", name)
+                                .add("playerId", playerId)
                                 .addChild("attributes",
                                         jsonBuilder()
                                                 .add("lastWish", lastWish))
                                 .build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.player.id").value(1))
                 .andExpect(jsonPath("$.attributes.lastWish").value(lastWish));
     }
 
     @Test
-    public void testJoinGameMissingPlayerName() throws Exception {
+    public void testJoinGameWithOptionalAttribute() throws Exception {
+        String lastWish = "You don't have to do this. You can still let me win.";
+        int playerId = 1;
+        mockMvc.perform(
+                post("/game/{url}/player", "last_wish_optional")
+                        .with(user("player1@player.com"))
+                        .content(jsonBuilder()
+                                .add("playerId", playerId)
+                                .addChild("attributes",
+                                        jsonBuilder()
+                                                .add("lastWish", lastWish))
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.player.id").value(1))
+                .andExpect(jsonPath("$.attributes.lastWish").value(lastWish));
+    }
+
+    @Test
+    public void testJoinGameWithoutOptionalAttribute() throws Exception {
+        int playerId = 1;
+        mockMvc.perform(
+                post("/game/{url}/player", "last_wish_optional")
+                        .with(user("player1@player.com"))
+                        .content(jsonBuilder()
+                                .add("playerId", playerId)
+                                .build()))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.player.id").value(1))
+                .andExpect(jsonPath("$.attributes.lastWish").doesNotExist());
+    }
+
+    @Test
+    public void testJoinGameMissingPlayerId() throws Exception {
         performJoinWithImageAndAddress(null)
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("name", "required"))));
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("playerId", "required"))));
     }
 
     @Test
@@ -99,11 +156,11 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testJoinGameWithImageAndAddress() throws Exception {
-        String name = "PlayerKiller";
-        performJoinWithImageAndAddress(name)
+        int playerId = 1;
+        performJoinWithImageAndAddress(playerId)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value(name))
+                .andExpect(jsonPath("$.player.id").value(playerId))
                 .andExpect(jsonPath("$.attributes.img").exists())
                 .andExpect(jsonPath("$.attributes.img.id").value(3))
                 .andExpect(jsonPath("$.attributes.img.name").value("selfie.png"))
@@ -113,46 +170,47 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGetPlayerWithImageAndAddress() throws Exception {
-        String response = performJoinWithImageAndAddress("player 1").andReturn().getResponse().getContentAsString();
+        String response = performJoinWithImageAndAddress(1).andReturn().getResponse().getContentAsString();
         Integer playerId = JsonPath.compile("$.id").read(response);
         perform(get("/game/{url}/player/{id}", "needs_image_and_address", playerId)
                 .with(user("player1@player.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(playerId))
-                .andExpect(jsonPath("$.name").value("player 1"))
+                .andExpect(jsonPath("$.name").value("peter"))
+                .andExpect(jsonPath("$.player.id").value(1))
                 .andExpect(jsonPath("$.attributes.img.id").value(3))
                 .andExpect(jsonPath("$.attributes.addy.id").value(1));
     }
 
     @Test
     public void testUpdatePlayerImageAndAddress() throws Exception {
-        String name = "PlayerKiller";
-        String response = performJoinWithImageAndAddress(name).andReturn().getResponse().getContentAsString();
-        Integer playerId = JsonPath.compile("$.id").read(response);
+        int playerId = 1;
+        String response = performJoinWithImageAndAddress(playerId).andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.compile("$.id").read(response);
 
-        performUpdatePlayerObjectAttr(playerId, "img", 4)
+        performUpdatePlayerObjectAttr(id, "img", 4)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(playerId))
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.player.id").value(playerId))
                 .andExpect(jsonPath("$.attributes.img.id").value(4))
                 .andExpect(jsonPath("$.attributes.addy.id").value(1));
 
-        performUpdatePlayerObjectAttr(playerId, "addy", 2)
+        performUpdatePlayerObjectAttr(id, "addy", 2)
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(playerId))
+                .andExpect(jsonPath("$.id").value(id))
+                .andExpect(jsonPath("$.player.id").value(playerId))
                 .andExpect(jsonPath("$.attributes.img.id").value(4))
                 .andExpect(jsonPath("$.attributes.addy.id").value(2));
     }
 
     @Test
-    public void testUpdatePlayerNameAndTextAttribute() throws Exception {
-        String name = "PlayerKiller";
-        String response = performJoinWithImageAndAddress(name).andReturn().getResponse().getContentAsString();
-        Integer playerId = JsonPath.compile("$.id").read(response);
+    public void testUpdatePlayerTextAttribute() throws Exception {
+        String response = performJoinWithImageAndAddress(1).andReturn().getResponse().getContentAsString();
+        Integer id = JsonPath.compile("$.id").read(response);
 
-        performUpdatePlayerNameAndTextAttr(playerId, "new name", "text", "pizza")
+        performUpdatePlayerTextAttr(id, "text", "pizza")
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(playerId))
-                .andExpect(jsonPath("$.name").value("new name"))
+                .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.attributes.text").value("pizza"));
     }
 
@@ -164,22 +222,21 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
                                 jsonBuilder().addChild(field, jsonBuilder().add("id", id))).build()));
     }
 
-    private ResultActions performUpdatePlayerNameAndTextAttr(Integer playerId, String name, String field, String value) throws Exception {
+    private ResultActions performUpdatePlayerTextAttr(Integer playerId, String field, String value) throws Exception {
         return mockMvc.perform(
                 put("/game/{url}/player/{id}", "needs_image_and_address", playerId)
                         .with(user("player1@player.com"))
                         .content(jsonBuilder()
-                                .add("name", name)
                                 .addChild("attributes",
                                         jsonBuilder().add(field, value)).build()));
     }
 
-    private ResultActions performJoinWithImageAndAddress(String name) throws Exception {
+    private ResultActions performJoinWithImageAndAddress(Integer playerId) throws Exception {
         return mockMvc.perform(
                 post("/game/{url}/player", "needs_image_and_address")
                         .with(user("player1@player.com"))
                         .content(jsonBuilder()
-                                .add("name", name)
+                                .add("playerId", playerId)
                                 .addChild("attributes",
                                         jsonBuilder()
                                                 .addChild("img", jsonBuilder().add("id", 3))

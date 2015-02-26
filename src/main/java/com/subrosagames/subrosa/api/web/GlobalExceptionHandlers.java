@@ -16,21 +16,25 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.subrosa.api.notification.GeneralCode;
-import com.subrosa.api.notification.Notification;
-import com.subrosa.api.notification.NotificationConstraint;
-import com.subrosa.api.notification.Severity;
-import com.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.NotAuthorizedException;
+import com.subrosagames.subrosa.api.notification.GeneralCode;
+import com.subrosagames.subrosa.api.notification.Notification;
+import com.subrosagames.subrosa.api.notification.NotificationConstraint;
+import com.subrosagames.subrosa.api.notification.Severity;
+import com.subrosagames.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
+import com.subrosagames.subrosa.domain.ResourceInUseException;
 import com.subrosagames.subrosa.domain.account.EmailConflictException;
+import com.subrosagames.subrosa.domain.account.ImageInUseException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.game.UrlConflictException;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 
@@ -277,5 +281,41 @@ public class GlobalExceptionHandlers {
         return new NotificationList(notification);
     }
 
+    /**
+     * Handle {@link MissingServletRequestPartException}.
+     *
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public NotificationList handleMissingServletRequestPartException(MissingServletRequestPartException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.INVALID_REQUEST_ENTITY, Severity.ERROR,
+                "Missing multipart file upload");
+        return new NotificationList(notification);
+    }
+
+    /**
+     * Handle {@link PlayerProfileInUseException} and {@link ImageInUseException}.
+     *
+     * @param e exception
+     * @return notification list
+     */
+    @ExceptionHandler({
+            PlayerProfileInUseException.class,
+            ImageInUseException.class
+    })
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public NotificationList handlePlayerProfileInUseException(ResourceInUseException e) {
+        LOG.debug("Global exception handler: {}", e.getMessage());
+        Notification notification = new Notification(
+                GeneralCode.RESOURCE_IN_USE, Severity.ERROR,
+                GeneralCode.RESOURCE_IN_USE.getDefaultMessage());
+        return new NotificationList(notification);
+    }
 
 }

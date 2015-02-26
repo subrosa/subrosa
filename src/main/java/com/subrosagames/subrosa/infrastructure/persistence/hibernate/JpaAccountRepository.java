@@ -18,8 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.subrosa.api.actions.list.QueryBuilder;
-import com.subrosa.api.actions.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.QueryBuilder;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
@@ -69,6 +69,11 @@ public class JpaAccountRepository implements AccountRepository {
             LOG.warn("Attempted to find non-existing image - account {} image {}", account.getId(), imageId);
             throw new ImageNotFoundException(e);
         }
+    }
+
+    @Override
+    public void delete(Image image) {
+        entityManager.remove(image);
     }
 
     @Override

@@ -10,7 +10,6 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.image.Image;
-import com.subrosagames.subrosa.domain.image.ImageType;
 import com.subrosagames.subrosa.domain.player.TargetPlayer;
 
 /**
@@ -35,18 +34,8 @@ public class TargetPlayerEntity extends TargetEntity implements TargetPlayer {
     }
 
     @Override
-    public Image getPhotoId() {
-        return target.getImage(ImageType.PHOTO_ID);
-    }
-
-    @Override
-    public Image getActionPhoto() {
-        return target.getImage(ImageType.ACTION_PHOTO);
-    }
-
-    @Override
     public Image getAvatar() {
-        return target.getImage(ImageType.AVATAR);
+        return target.getAvatar();
     }
 
     @Override

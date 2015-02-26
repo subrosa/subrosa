@@ -13,6 +13,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
@@ -59,8 +60,8 @@ public class GameServiceImpl implements GameService {
 
     @Override
     @Transactional
-    public Player joinGame(String gameUrl, Integer accountId, JoinGameRequest joinGameRequest)
-            throws GameNotFoundException, PlayerValidationException, AddressNotFoundException, ImageNotFoundException, AccountNotFoundException
+    public Player joinGame(String gameUrl, Integer accountId, JoinGameRequest joinGameRequest) throws GameNotFoundException, PlayerValidationException,
+            AddressNotFoundException, ImageNotFoundException, AccountNotFoundException, PlayerProfileNotFoundException
     {
         Game game = gameFactory.getGame(gameUrl);
         Account account = accountFactory.getAccount(accountId);
@@ -84,7 +85,8 @@ public class GameServiceImpl implements GameService {
     @Transactional
     @PostAuthorize("isAuthenticated() && hasPermission(returnObject.getAccount(), 'WRITE_ACCOUNT')")
     public Player updateGamePlayer(String gameUrl, Integer playerId, JoinGameRequest joinGameRequest) throws GameNotFoundException, AddressNotFoundException,
-            PlayerNotFoundException, ImageNotFoundException {
+            PlayerNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException
+    {
         Game game = gameFactory.getGame(gameUrl);
         return game.updatePlayer(playerId, joinGameRequest);
     }

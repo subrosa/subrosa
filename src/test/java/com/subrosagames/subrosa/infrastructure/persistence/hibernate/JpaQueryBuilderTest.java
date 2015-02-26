@@ -25,11 +25,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import com.subrosa.api.actions.list.Operator;
-import com.subrosa.api.actions.list.QueryBuilder;
-import com.subrosa.api.actions.list.QueryCriteria;
-import com.subrosa.api.actions.list.TimestampToDateTranslator;
-import com.subrosa.api.actions.list.annotation.Filterable;
+import com.subrosagames.subrosa.api.list.Operator;
+import com.subrosagames.subrosa.api.list.QueryBuilder;
+import com.subrosagames.subrosa.api.list.QueryCriteria;
+import com.subrosagames.subrosa.api.list.TimestampToDateTranslator;
+import com.subrosagames.subrosa.api.list.annotation.Filterable;
 import com.subrosagames.subrosa.util.RequestUtils;
 
 import static org.hamcrest.CoreMatchers.not;

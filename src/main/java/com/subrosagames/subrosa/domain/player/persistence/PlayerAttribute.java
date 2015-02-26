@@ -31,9 +31,6 @@ public class PlayerAttribute {
     @MapsId("playerId")
     private PlayerEntity player;
 
-    @Column(name = "attribute_type", insertable = false, updatable = false)
-    private String attributeType;
-
     @Column
     private String value;
 
@@ -59,14 +56,6 @@ public class PlayerAttribute {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public String getAttributeType() {
-        return attributeType;
-    }
-
-    public void setAttributeType(String attributeType) {
-        this.attributeType = attributeType;
     }
 
     @JsonValue

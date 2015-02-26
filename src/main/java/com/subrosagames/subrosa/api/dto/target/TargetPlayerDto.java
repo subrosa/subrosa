@@ -9,8 +9,6 @@ import com.subrosagames.subrosa.domain.player.TargetPlayer;
  */
 public class TargetPlayerDto extends TargetDto {
 
-    private Image photoId;
-    private Image actionPhoto;
     private Image avatar;
     private Address homeAddress;
     private Address workAddress;
@@ -21,27 +19,9 @@ public class TargetPlayerDto extends TargetDto {
      */
     public TargetPlayerDto(TargetPlayer target) {
         super(target);
-        photoId = target.getPhotoId();
-        actionPhoto = target.getActionPhoto();
         avatar = target.getAvatar();
         homeAddress = target.getHomeAddress();
         workAddress = target.getWorkAddress();
-    }
-
-    public Image getPhotoId() {
-        return photoId;
-    }
-
-    public void setPhotoId(Image photoId) {
-        this.photoId = photoId;
-    }
-
-    public Image getActionPhoto() {
-        return actionPhoto;
-    }
-
-    public void setActionPhoto(Image actionPhoto) {
-        this.actionPhoto = actionPhoto;
     }
 
     public Image getAvatar() {

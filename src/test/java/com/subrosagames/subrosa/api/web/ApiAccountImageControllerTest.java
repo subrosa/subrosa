@@ -17,14 +17,19 @@ import com.jayway.jsonpath.JsonPath;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationWithCodeMatcher.withCode;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
  * Test {@link ApiAccountImageControllerTest}.
@@ -186,6 +191,71 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
                         .file(file)
                         .with(user("bob@user.com")))
                 .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void testUploadWithoutFileIsBadRequest() throws Exception {
+        mockMvc.perform(
+                fileUpload("/account/{accountId}/image", 1)
+                        .with(user("bob@user.com")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("invalidRequestEntity"))));
+    }
+
+    @Test
+    public void testDeleteImage() throws Exception {
+        mockMvc.perform(
+                delete("/account/{accountId}/image/{imageId}", 3, 3)
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(3));
+        mockMvc.perform(
+                get("/account/{accountId}/image/{imageId}", 3, 3)
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteImageForAuthenticatedUser() throws Exception {
+        mockMvc.perform(
+                delete("/user/image/{imageId}", 3)
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(3));
+        mockMvc.perform(
+                get("/user/image/{imageId}", 3)
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteImageNotFound() throws Exception {
+        mockMvc.perform(
+                delete("/user/image/15")
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeleteImageInPlayerProfileFails() throws Exception {
+        mockMvc.perform(
+                delete("/user/image/1")
+                        .with(user("lotsopics@user.com")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("resourceInUse"))));
+    }
+
+    @Test
+    public void testDeleteImageAfterRemovingFromPlayerProfile() throws Exception {
+        mockMvc.perform(put("/user/player/1").with(user("lotsopics@user.com")).content(jsonBuilder().add("imageId", 2).build()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.image.id").value(2));
+        mockMvc.perform(delete("/user/image/1").with(user("lotsopics@user.com")))
+                .andExpect(status().isOk());
+        mockMvc.perform(get("/user/image/1").with(user("lotsopics@user.com")))
+                .andExpect(status().isNotFound());
     }
 
     @Ignore

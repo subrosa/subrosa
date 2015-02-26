@@ -17,6 +17,7 @@ import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notifica
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedList;
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
+import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationWithCodeMatcher.withCode;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
 
 /**
@@ -178,11 +179,11 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testDeletePlayer() throws Exception {
-        mockMvc.perform(delete("/account/3/player/2").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/account/3/player/1").with(user("lotsopics@user.com")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2));
+                .andExpect(jsonPath("$.id").value(1));
 
-        mockMvc.perform(get("/account/3/player/2").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/account/3/player/1").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
     }
 
     @Test
@@ -197,6 +198,14 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     @Test
     public void testDeletePlayerNotFound() throws Exception {
         mockMvc.perform(delete("/account/3/player/666").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testDeletePlayerInGameFails() throws Exception {
+        mockMvc.perform(delete("/account/3/player/2").with(user("lotsopics@user.com")))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$").value(notificationList()))
+                .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("resourceInUse"))));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

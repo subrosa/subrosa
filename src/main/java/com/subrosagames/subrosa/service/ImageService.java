@@ -19,6 +19,7 @@ import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountValidationException;
+import com.subrosagames.subrosa.domain.account.ImageInUseException;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 import com.subrosagames.subrosa.domain.file.FileAssetFactory;
 import com.subrosagames.subrosa.domain.image.Image;
@@ -115,5 +116,20 @@ public class ImageService {
         LOG.debug("Retrieving image {} for accountId {}", imageId, accountId);
         Account account = accountFactory.getAccount(accountId);
         return account.getImage(imageId);
+    }
+
+    /**
+     * Delete an account image.
+     *
+     * @param accountId account id
+     * @param imageId   image id
+     * @return deleted image
+     * @throws AccountNotFoundException if account does not exist
+     * @throws ImageNotFoundException   if image does not exist
+     * @throws ImageInUseException      if image is in use
+     */
+    public Image deleteImage(int accountId, int imageId) throws ImageNotFoundException, AccountNotFoundException, ImageInUseException {
+        Account account = accountFactory.getAccount(accountId);
+        return account.deleteImage(imageId);
     }
 }

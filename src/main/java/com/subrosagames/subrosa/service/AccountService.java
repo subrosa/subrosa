@@ -4,13 +4,19 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
+import com.subrosagames.subrosa.bootstrap.AmqpConfiguration;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
@@ -18,6 +24,7 @@ import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.AddressValidationException;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
+import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
@@ -25,12 +32,20 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 /**
  * Service layer for account operations.
  */
-@Service
 @Transactional
+@Service
 public class AccountService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
     private AccountFactory accountFactory;
+
+    @Autowired
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     /**
      * Get specified account.
@@ -48,8 +63,8 @@ public class AccountService {
     /**
      * List accounts.
      *
-     * @param limit limit
-     * @param offset offset
+     * @param limit      limit
+     * @param offset     offset
      * @param expansions field expansions
      * @return list of accounts
      */
@@ -105,7 +120,6 @@ public class AccountService {
      * @throws ImageNotFoundException           if image is not found
      * @throws PlayerProfileValidationException if player profile is not valid for creation
      */
-    @Transactional
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
     public PlayerProfile createPlayerProfile(int accountId, PlayerProfileDescriptor playerProfileDescriptor)
             throws AccountNotFoundException, ImageNotFoundException, PlayerProfileValidationException
@@ -142,9 +156,12 @@ public class AccountService {
      * @return deleted player profile
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
     @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
-    public PlayerProfile deletePlayerProfile(int accountId, int playerId) throws AccountNotFoundException, PlayerProfileNotFoundException {
+    public PlayerProfile deletePlayerProfile(int accountId, int playerId)
+            throws AccountNotFoundException, PlayerProfileNotFoundException, PlayerProfileInUseException
+    {
         Account account = accountFactory.getAccount(accountId);
         return account.deletePlayerProfile(playerId);
     }
@@ -237,4 +254,42 @@ public class AccountService {
         return account.deleteAddress(addressId);
     }
 
+    /**
+     * Find the specified address and trigger a reprocessing for it.
+     *
+     * @param accountId account id
+     * @param addressId address id
+     * @return address
+     * @throws AddressNotFoundException if address is not found
+     * @throws AccountNotFoundException if account is not found
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    public Address reprocessAddress(int accountId, int addressId) throws AddressNotFoundException, AccountNotFoundException {
+        Address address = getAddress(accountId, addressId);
+        notifyOfNewUserAddress(address);
+        return address;
+    }
+
+    /**
+     * Queues a message for processing given address.
+     *
+     * @param address address
+     */
+    // TODO configure aspectj for aop so that this can be private/called from within this class
+    public void notifyOfNewUserAddress(Address address) {
+        if (address.getId() == null) {
+            LOG.error("Attempted to queue user address message with no address id! - account {}: {}", address.getAccount().getId(), address.getFullAddress());
+            return;
+        }
+        try {
+            rabbitTemplate.convertAndSend(AmqpConfiguration.QueueName.USER_ADDRESS,
+                    objectMapper.writeValueAsString(new UserAddressNotification(address.getId())));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Failed to convert address into JSON. Should never happen.", e);
+        }
+    }
+
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 }

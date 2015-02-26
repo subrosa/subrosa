@@ -13,7 +13,9 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.NotImplementedException;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
+import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
@@ -63,6 +66,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BaseGame extends GameEntity implements Game {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseGame.class);
+
+    private static final int ABSOLUTE_MINIMUM_AGE = 13;
 
     @Transient
     private final Function<Rule, String> extractRules = new Function<Rule, String>() {
@@ -199,7 +204,7 @@ public class BaseGame extends GameEntity implements Game {
 
     @Override
     public Player joinGame(final Account account, final JoinGameRequest joinGameRequest) throws PlayerValidationException, AddressNotFoundException,
-            ImageNotFoundException
+            ImageNotFoundException, PlayerProfileNotFoundException
     {
         checkNotNull(account, "Cannot join game with null account");
         checkNotNull(joinGameRequest, "Cannot join game with null join game request");
@@ -208,7 +213,7 @@ public class BaseGame extends GameEntity implements Game {
         assertEnrollmentFieldsSet(joinGameRequest); // throws InsufficientInformationException
 
         PlayerDescriptor playerDescriptor = PlayerDescriptor.forEnrollmentFields(getPlayerInfo());
-        playerDescriptor.setName(joinGameRequest.getName());
+        playerDescriptor.setPlayer(account.getPlayerProfile(joinGameRequest.getPlayerId()));
         playerDescriptor.setAttributes(joinGameRequest.getAttributes());
         return playerFactory.createPlayerForGame(this, account, playerDescriptor);
     }
@@ -220,14 +225,20 @@ public class BaseGame extends GameEntity implements Game {
 
     @Override
     public Player updatePlayer(Integer playerId, JoinGameRequest joinGameRequest) throws PlayerNotFoundException, AddressNotFoundException,
-            ImageNotFoundException
+            ImageNotFoundException, PlayerProfileNotFoundException
     {
         Player player = getPlayer(playerId);
         PlayerDescriptor playerDescriptor = PlayerDescriptor.forEnrollmentFields(getPlayerInfo());
-        playerDescriptor.setName(joinGameRequest.getName());
+        if (joinGameRequest.getPlayerId() != null && !isInProgress()) {
+            playerDescriptor.setPlayer(player.getAccount().getPlayerProfile(joinGameRequest.getPlayerId()));
+        }
         playerDescriptor.setAttributes(joinGameRequest.getAttributes());
         player.update(playerDescriptor);
         return player;
+    }
+
+    private boolean isInProgress() {
+        return getGameStart() != null && getGameStart().before(DateTime.now().toDate());
     }
 
     @Override
@@ -325,8 +336,12 @@ public class BaseGame extends GameEntity implements Game {
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {
         boolean failed = false;
         Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
+        if (joinGameRequest.getPlayerId() == null) {
+            failed = true;
+            constraints.add(new VirtualConstraintViolation<>("required", "playerId"));
+        }
         for (EnrollmentField enrollmentField : getPlayerInfo()) {
-            if (!joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
+            if (BooleanUtils.isNotFalse(enrollmentField.isRequired()) && !joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
                 failed = true;
                 ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", enrollmentField.getFieldId());
                 constraints.add(constraint);
@@ -340,11 +355,19 @@ public class BaseGame extends GameEntity implements Game {
     private void assertRestrictionsSatisfied(Account account) throws PlayRestrictedException {
         boolean failed = false;
         Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
-        for (Restriction restriction : getRestrictions()) {
-            if (!restriction.satisfied(account)) {
-                failed = true;
-                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>(restriction.message(), restriction.field());
-                constraints.add(constraint);
+        if (!DateTime.now().minusYears(ABSOLUTE_MINIMUM_AGE).toDate().after(account.getDateOfBirth())) {
+            failed = true;
+            ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(
+                    RestrictionType.AGE.message(String.valueOf(ABSOLUTE_MINIMUM_AGE)), RestrictionType.AGE.field());
+            constraints.add(constraint);
+        }
+        if (!failed) {
+            for (Restriction restriction : getRestrictions()) {
+                if (!restriction.satisfied(account)) {
+                    failed = true;
+                    ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(restriction.message(), restriction.field());
+                    constraints.add(constraint);
+                }
             }
         }
         if (failed) {

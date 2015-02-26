@@ -1,6 +1,5 @@
 package com.subrosagames.subrosa.domain.account;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +29,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.FetchProfile;
 import org.hibernate.annotations.FetchProfiles;
@@ -54,7 +54,6 @@ import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
-import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
@@ -85,9 +84,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     @JsonIgnore
     @Transient
     private TokenFactory tokenFactory;
-    @JsonIgnore
-    @Transient
-    private GoogleGeocoder geocoder;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -265,8 +261,6 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
         Address address = accountRepository.getAddress(this, addressId);
-        // TODO oddly placed DI. move address creation into its own factory?
-        address.setGeocoder(geocoder);
         return address;
     }
 
@@ -279,7 +273,6 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address createAddress(AddressDescriptor addressDescriptor) throws AddressValidationException {
         Address address = new Address();
-        address.setGeocoder(geocoder);
         populateAddress(addressDescriptor, address);
         assertAddressValid(address);
         addAddress(address);
@@ -288,13 +281,11 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     private void populateAddress(AddressDescriptor addressDescriptor, Address address) {
         address.setAccount(this);
-        address.setFullAddress(addressDescriptor.getFullAddress().orNull());
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
-            address.geocode();
-        } catch (IOException e) {
-            LOG.error("THIS NEEDS TO BE HANDLED");
-            LOG.error("Failed to geocode address {}", address.getFullAddress());
-            LOG.error("THIS NEEDS TO BE HANDLED");
+            beanCopier.copyProperties(address, addressDescriptor);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
         }
     }
 
@@ -318,7 +309,12 @@ public class Account extends BaseEntity implements PermissionTarget {
         return address;
     }
 
-    private void assertAddressValid(Address address) {
+    private void assertAddressValid(Address address, Class... validationGroups) throws AddressValidationException {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+        Set<ConstraintViolation<Address>> violations = validator.validate(address, validationGroups);
+        if (!violations.isEmpty()) {
+            throw new AddressValidationException(violations);
+        }
     }
 
     /**
@@ -447,6 +443,24 @@ public class Account extends BaseEntity implements PermissionTarget {
     }
 
     /**
+     * Delete the specified account image.
+     *
+     * @param imageId image id
+     * @return deleted image
+     * @throws ImageNotFoundException if image does not exist
+     * @throws ImageInUseException    if image is in use
+     */
+    public Image deleteImage(int imageId) throws ImageNotFoundException, ImageInUseException {
+        Image image = getImage(imageId);
+        if (CollectionUtils.isEmpty(image.getPlayerProfiles())) {
+            images.remove(image);
+        } else {
+            throw new ImageInUseException("Image " + imageId + " is in use and cannot be deleted");
+        }
+        return image;
+    }
+
+    /**
      * Get player profiles.
      *
      * @return player profiles
@@ -508,10 +522,15 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @param playerId player profile id
      * @return deleted player profile
      * @throws PlayerProfileNotFoundException if player profile does not exist
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
-    public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException {
+    public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException, PlayerProfileInUseException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
-        accountRepository.delete(playerProfile);
+        if (CollectionUtils.isEmpty(playerProfile.getPlayers())) {
+            accountRepository.delete(playerProfile);
+        } else {
+            throw new PlayerProfileInUseException("Player profile " + playerId + " is in use and cannot be deleted");
+        }
         return playerProfile;
     }
 
@@ -567,7 +586,4 @@ public class Account extends BaseEntity implements PermissionTarget {
         this.tokenFactory = tokenFactory;
     }
 
-    public void setGeocoder(GoogleGeocoder geocoder) {
-        this.geocoder = geocoder;
-    }
 }

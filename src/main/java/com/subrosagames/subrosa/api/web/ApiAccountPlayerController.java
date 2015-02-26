@@ -17,6 +17,7 @@ import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
+import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
@@ -208,12 +209,13 @@ public class ApiAccountPlayerController extends BaseApiController {
      * @throws NotAuthenticatedException      if request is unauthenticated
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
     @RequestMapping(value = { "/account/{accountId}/player/{playerId}", "/account/{accountId}/player/{playerId}/" }, method = RequestMethod.DELETE)
     @ResponseBody
     public PlayerProfile deletePlayer(@PathVariable("accountId") Integer accountId,
                                       @PathVariable("playerId") Integer playerId)
-            throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException
+            throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException, PlayerProfileInUseException
     {
         LOG.debug("{}: deleting player profile {} for account {}", getAuthenticatedUser().getId(), playerId, accountId);
         return accountService.deletePlayerProfile(accountId, playerId);
@@ -227,11 +229,12 @@ public class ApiAccountPlayerController extends BaseApiController {
      * @throws NotAuthenticatedException      if request is unauthenticated
      * @throws AccountNotFoundException       if account is not found
      * @throws PlayerProfileNotFoundException if player profile is not found
+     * @throws PlayerProfileInUseException    if player profile is in use
      */
     @RequestMapping(value = { "/user/player/{playerId}", "/user/player/{playerId}/" }, method = RequestMethod.DELETE)
     @ResponseBody
     public PlayerProfile deletePlayerForAuthenticatedUser(@PathVariable("playerId") Integer playerId)
-            throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException
+            throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException, PlayerProfileInUseException
     {
         return deletePlayer(getAuthenticatedUser().getId(), playerId);
     }
