@@ -289,4 +289,7 @@ public class AccountService {
         }
     }
 
+    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 }

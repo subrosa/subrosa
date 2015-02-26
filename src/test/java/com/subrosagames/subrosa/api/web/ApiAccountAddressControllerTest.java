@@ -2,7 +2,13 @@ package com.subrosagames.subrosa.api.web;
 
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.StringUtils;
 
@@ -10,6 +16,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.geo.gmaps.GoogleAddress;
 import com.subrosagames.subrosa.geo.gmaps.GoogleGeocoder;
+import com.subrosagames.subrosa.service.AccountService;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -31,6 +38,20 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
+
+    @Mock
+    private RabbitTemplate rabbitTemplate;
+
+    @Autowired
+    @InjectMocks
+    private AccountService accountService;
+
+    @Override
+    @Before
+    public void setUp() {
+        super.setUp();
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void testListAddresses() throws Exception {
