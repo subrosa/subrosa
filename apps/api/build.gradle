@@ -1,0 +1,144 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'com.subrosa'
+version = '1.0.0-SNAPSHOT'
+description = """Subrosa API"""
+
+jar {
+    baseName = 'subrosa-api'
+    version = project.version
+}
+
+task ec2 {
+    description = 'Configures build for EC2 deployment'
+    group = 'configuration'
+}
+
+task local {
+    description = 'Configures build for localhost deployment'
+    group = 'configuration'
+}
+
+configurations {
+    provided
+}
+
+//Include provided for compilation
+sourceSets.main.compileClasspath += configurations.provided
+
+// Tests fail to find persistence.xml
+sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
+compileJava.dependsOn(processResources)
+
+dependencies {
+//    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+
+    // logging
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.6'
+    runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.6.6'
+    runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.6'
+
+    // spring framework
+    compile group: 'org.springframework', name: 'spring-web', version: springVersion
+    compile group: 'org.springframework', name: 'spring-webmvc', version: springVersion
+    compile group: 'org.springframework', name: 'spring-beans', version: springVersion
+    compile group: 'org.springframework', name: 'spring-expression', version: springVersion
+    compile group: 'org.springframework', name: 'spring-aop', version: springVersion
+    compile group: 'org.springframework', name: 'spring-orm', version: springVersion
+    compile group: 'org.springframework', name: 'spring-oxm', version: springVersion
+    compile group: 'org.springframework', name: 'spring-jms', version: springVersion
+    compile group: 'org.springframework', name: 'spring-context-support', version: springVersion
+
+    // spring boot
+    compile("org.springframework.boot:spring-boot-starter-web:1.2.1.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter-jdbc")
+    compile("org.springframework.boot:spring-boot-starter-amqp")
+    compile("org.springframework.boot:spring-boot-actuator:1.2.1.RELEASE")
+
+    // spring security
+    compile group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-acl', version: springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: springSecurityVersion
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: springSecurityVersion
+
+    // spring social
+    compile "org.springframework.social:spring-social-core:1.1.0.RELEASE"
+    compile "org.springframework.social:spring-social-config:1.1.0.RELEASE"
+    compile "org.springframework.social:spring-social-security:1.1.0.RELEASE"
+    compile 'org.springframework.social:spring-social-facebook:1.1.1.RELEASE'
+
+    // persistence
+    compile group: 'org.hibernate.common', name: 'hibernate-commons-annotations', version: '4.0.5.Final'
+    compile group: 'org.hibernate.javax.persistence', name: 'hibernate-jpa-2.1-api', version: '1.0.0.Final'
+    compile(group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.6.Final') {
+        exclude(module: 'javassist')
+    }
+    compile group: 'org.javassist', name: 'javassist', version: '3.18.1-GA'
+    runtime group: 'c3p0', name: 'c3p0', version: '0.9.1.2'
+    runtime group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
+
+    // validation
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.1.2.Final'
+    compile group: 'javax.el', name: 'javax.el-api', version: '3.0.0'
+    runtime group: 'org.glassfish.web', name: 'el-impl', version: '2.2.1-b05'
+
+    // messaging
+    compile group: 'javax', name: 'javaee-api', version: '7.0'
+
+    // serialization
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-guava', version: jacksonVersion
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-hibernate4', version: jacksonVersion
+
+    // files
+    compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.2.2'
+    compile(group: 'net.sf.jmimemagic', name: 'jmimemagic', version: '0.1.3') {
+        exclude(module: 'log4j')
+        exclude(module: 'commons-logging')
+    }
+
+    // utils
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2') {
+        exclude(module: 'commons-logging')
+    }
+    compile group: 'org.joda', name: 'joda-money', version: '0.9.1'
+    compile group: 'joda-time', name: 'joda-time', version: '2.4'
+    compile group: 'com.vividsolutions.jts', name: 'jts', version: '1.8.0'
+    compile group: 'com.jayway.jsonpath', name: 'json-path', version: '0.9.1'
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.3.5'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+    compile group: 'com.google.code.geocoder-java', name: 'geocoder-java', version: '0.16'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
+
+    // needed?
+    compile group: 'org.quartz-scheduler', name: 'quartz', version: '2.1.4'
+    compile group: 'com.amazon.aws', name: 'aws-java-jdk', version: '1.4.1'
+    compile group: 'com.google.android.gcm', name: 'gcm-server', version: '3'
+    runtime group: 'org.springframework.amqp', name: 'spring-rabbit', version: '1.4.2.RELEASE'
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+    compile group: 'cglib', name: 'cglib', version: '3.1'
+
+    // test
+    testCompile(group: 'junit', name: 'junit', version: '4.11') {
+        exclude(module: 'hamcrest-core')
+    }
+    testCompile(group: 'org.mockito', name: 'mockito-core', version: '1.9.0') {
+        exclude(module: 'hamcrest-core')
+    }
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+    testCompile group: 'org.springframework', name: 'spring-test', version: springVersion
+    testCompile group: 'org.dbunit', name: 'dbunit', version: '2.4.9'
+    testCompile group: 'com.github.springtestdbunit', name: 'spring-test-dbunit', version: '1.1.0'
+    testRuntime group: 'org.hsqldb', name: 'hsqldb', version: '2.3.2'
+
+    provided 'net.sourceforge.findbugs:annotations:1.3.2'
+}
+
+apply from: 'migrations.gradle'
