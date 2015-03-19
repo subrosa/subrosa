@@ -1,0 +1,70 @@
+api:
+  build: apps/api
+  ports:
+    - "8080:8080"
+  links:
+    - db
+    - migration
+    - mogilefsd
+
+image:
+  build: apps/image
+  ports:
+    - "8081:8080"
+  links:
+    - db
+    - mogilefsd
+
+db:
+#  image: subrosa/db
+  build: script/docker/db
+  volumes:
+#    - "/data/var/lib/postgresql:/var/lib/postgresql"
+#    - "/data/var/log/postgresql:/var/log/postgresql"
+#    - "/data/etc/postgresql:/etc/postgresql"
+    - "/var/lib/postgresql"
+    - "/var/log/postgresql"
+    - "/etc/postgresql"
+  ports:
+    - "5432:5432"
+
+rabbitmq:
+#  image: subrosa/rabbitmq
+  image: tutum/rabbitmq
+#  build: script/docker/rabbitmq
+  environment:
+    SEC_RABBITMQ_ADMIN_PASS:
+  ports:
+    - "5672:5672"
+    - "15672:15672"
+
+mogstored:
+#  image: subrosa/mogstored
+  build: script/docker/mogstored
+  volumes:
+#    - "/data/var/mogdata:/var/mogdata"
+    - "/var/mogdata"
+  ports:
+    - "7500:7500"
+    - "7501:7501"
+
+mogilefsd:
+#  image: subrosa/mogilefsd
+  build: script/docker/mogilefsd
+  environment:
+    SEC_MOGILEFS_DB_USER:
+    SEC_MOGILEFS_DB_PASS:
+  ports:
+    - "7001:7001"
+  links:
+    - db
+    - mogstored
+
+migration:
+  build: script/docker/migration
+  environment:
+    SEC_ENGINE_DB_USER:
+    SEC_ENGINE_DB_PASS:
+  links:
+    - db
+  command: migrate

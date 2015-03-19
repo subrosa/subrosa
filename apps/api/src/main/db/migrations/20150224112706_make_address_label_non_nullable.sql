@@ -1,1 +1,0 @@
-ALTER TABLE address ALTER label SET NOT NULL;

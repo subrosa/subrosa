@@ -12,6 +12,7 @@
 # This is also a handy place to tweak where Docker's temporary files go.
 #export TMPDIR="/mnt/bigdrive/docker-tmp"
 
-DOCKER_OPTS="-e lxc ${DOCKER_OPTS}"
+# seems lxc is no longer the hotness. use compose exec rather than lxc-attach
+#DOCKER_OPTS="-e lxc ${DOCKER_OPTS}"
 DOCKER_OPTS="--insecure-registry ec2-54-187-143-54.us-west-2.compute.amazonaws.com:5000 ${DOCKER_OPTS}"
 DOCKER_OPTS="-H tcp://127.0.0.1:4243 -H unix:///var/run/docker.sock ${DOCKER_OPTS}"

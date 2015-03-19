@@ -1,0 +1,1 @@
+ALTER TABLE file_asset ADD COLUMN uuid VARCHAR(40);

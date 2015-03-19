@@ -20,7 +20,7 @@ FILE
 run() {
     vagrant up
     vagrant ssh -c "cd /vagrant; fig restart"
-    ./gradlew flywayMigrate run
+    ./gradlew flywayMigrate api:run
 }
 
 case "$1" in
@@ -28,7 +28,7 @@ case "$1" in
         [ ! -f ${DIR}/gradle.properties ] && init_config
         vagrant up
         vagrant ssh -c "cd /vagrant; fig pull --allow-insecure-ssl; fig up -d"
-        ./gradlew flywayMigrate run
+        ./gradlew flywayMigrate api:run
     ;;
     run)
         run

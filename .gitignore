@@ -5,3 +5,5 @@
 build/
 gradle.properties
 .vagrant/
+script/vagrant/local.bashrc
+script/vagrant/local.env

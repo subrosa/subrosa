@@ -5,7 +5,7 @@ apply plugin: 'spring-boot'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = 'com.subrosa'
+group = 'subrosa'
 version = '1.0.0-SNAPSHOT'
 description = """Subrosa API"""
 
@@ -36,6 +36,8 @@ sourceSets.main.output.resourcesDir = sourceSets.main.output.classesDir
 compileJava.dependsOn(processResources)
 
 dependencies {
+//    compile project(':domain')
+
 //    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
 
     // logging
@@ -101,6 +103,7 @@ dependencies {
         exclude(module: 'log4j')
         exclude(module: 'commons-logging')
     }
+    compile 'fm.last:moji:1.4.0'
 
     // utils
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'

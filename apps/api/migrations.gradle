@@ -1,43 +1,10 @@
-apply plugin: 'flyway'
 
-if (gradle.startParameter.taskNames.contains("ec2")) {
-    ext {
-        databaseHost = ec2Host
-    }
-} else if (gradle.startParameter.taskNames.contains("local")) {
-    ext {
-        databaseHost = localhost
-    }
-} else {
-    ext {
-        databaseHost = vagrantIp
-    }
-}
+def sqlDir = 'script/docker/migration/sql/'
 
-def sqlDir = 'apps/api/src/main/db/migrations/'
-def javaDir = 'apps/api/src/main/java/migrations/'
-
-flyway {
-    url = "jdbc:postgresql://${databaseHost}:5432/engine"
-    user = 'engine'
-    password = 'engine'
-    locations = ["filesystem:$sqlDir"]
-    sqlMigrationPrefix = ''
-    sqlMigrationSeparator = '_'
-    outOfOrder = false
-    initOnMigrate = true
-}
-
-task flywayNew << {
+task newMigration << {
     def now = Calendar.getInstance()
     def version = String.format("%04d%02d%02d%02d%02d%02d.sql", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
     def f = new File(sqlDir, version)
     f.createNewFile()
 }
 
-task flywayNewJava << {
-    def now = Calendar.getInstance()
-    def version = String.format("V%04d%02d%02d%02d%02d%02d.java", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
-    def f = new File(javaDir, version)
-    f.createNewFile()
-}
