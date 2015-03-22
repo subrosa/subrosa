@@ -15,7 +15,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.io.CharStreams;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.bootstrap.SubrosaFiles;
 import com.subrosagames.subrosa.domain.file.FileAssetFactory;
+import com.subrosagames.subrosa.domain.file.FilesystemFileStorer;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
@@ -43,6 +45,9 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     // CHECKSTYLE-OFF: JavadocMethod
 
     @Autowired
+    private SubrosaFiles subrosaFiles;
+
+    @Autowired
     private FileAssetFactory fileAssetFactory;
 
     @Override
@@ -50,8 +55,8 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        FileAssetFactory.FilesystemFileStorer fileStorer = new FileAssetFactory.FilesystemFileStorer();
-        fileStorer.setSubrosaFiles(fileAssetFactory.getSubrosaFiles());
+        FilesystemFileStorer fileStorer = new FilesystemFileStorer();
+        fileStorer.setSubrosaFiles(subrosaFiles);
         fileAssetFactory.setFileStorer(fileStorer);
     }
 

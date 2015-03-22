@@ -9,13 +9,11 @@ import java.util.UUID;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.base.Splitter;
@@ -96,59 +94,6 @@ public class FileAssetFactory {
 
     public void setFileStorer(FileStorer fileStorer) {
         this.fileStorer = fileStorer;
-    }
-
-    public SubrosaFiles getSubrosaFiles() {
-        return subrosaFiles;
-    }
-
-    interface FileStorer {
-        long store(InputStream inputStream, String identifier) throws IOException;
-    }
-
-    @Component
-    public static class MogileFileStorer implements FileStorer {
-
-        @Autowired
-        private SpringMojiBean moji;
-
-        @Override
-        public long store(InputStream inputStream, String identifier) throws IOException {
-            MojiFile mojiFile = moji.getFile(identifier);
-            try (OutputStream fileStream = mojiFile.getOutputStream()) {
-                ByteStreams.copy(inputStream, fileStream);
-                fileStream.flush();
-            }
-            return mojiFile.length();
-        }
-    }
-
-    public static class FilesystemFileStorer implements FileStorer {
-
-        private SubrosaFiles subrosaFiles;
-
-        @Override
-        public long store(InputStream inputStream, String identifier) throws IOException {
-            File physicalFile = getPhysicalFile(identifier);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Storing file with uuid {} at location {}.", identifier, physicalFile.getCanonicalPath());
-            }
-            try (OutputStream fileOutputStream = FileUtils.openOutputStream(physicalFile)) {
-                ByteStreams.copy(inputStream, fileOutputStream);
-            }
-            return physicalFile.length();
-        }
-
-        private File getPhysicalFile(String identifier) {
-            String relativePath = StringUtils.join(
-                    Iterables.toArray(Splitter.fixedLength(2).split(identifier), String.class),
-                    File.separator);
-            return new File(subrosaFiles.getAssetDirectory() + File.separator + relativePath, identifier);
-        }
-
-        public void setSubrosaFiles(SubrosaFiles subrosaFiles) {
-            this.subrosaFiles = subrosaFiles;
-        }
     }
 
 }
