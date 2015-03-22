@@ -51,7 +51,7 @@ public class ImageApplication {
     public SpringMojiBean moji() {
         SpringMojiBean mojiBean = new SpringMojiBean();
         mojiBean.setAddressesCsv("10.10.10.42:7001");
-        mojiBean.setDomain("subrosa");
+        mojiBean.setDomain("sr-dev");
         return mojiBean;
     }
 
@@ -104,6 +104,7 @@ class ImageController {
         MojiFile file = moji.getFile(filename);
         Resource resource = new MogileResource(file);
         HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 
