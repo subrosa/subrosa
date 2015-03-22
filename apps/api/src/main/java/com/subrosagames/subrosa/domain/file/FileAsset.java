@@ -34,6 +34,9 @@ public class FileAsset {
     @Column(name = "mime_type")
     private String mimeType;
 
+    @Column
+    private String uuid;
+
     public Integer getId() {
         return id;
     }
@@ -66,4 +69,11 @@ public class FileAsset {
         return mimeType;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }

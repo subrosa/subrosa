@@ -28,7 +28,7 @@ public class ApiUserControllerTest extends AbstractApiControllerTest {
 
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         super.setUp();
     }
 

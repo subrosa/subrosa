@@ -1,7 +1,5 @@
 package com.subrosagames.subrosa.service;
 
-import java.util.List;
-
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -10,13 +8,11 @@ import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.domain.game.TargetDescriptor;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import com.subrosagames.subrosa.domain.player.Target;
 
 /**
  * Handles interactions between players and games.

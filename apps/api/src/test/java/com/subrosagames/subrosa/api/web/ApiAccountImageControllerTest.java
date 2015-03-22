@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -13,6 +15,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.io.CharStreams;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.domain.file.FileAssetFactory;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
@@ -38,6 +41,19 @@ import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNoti
 public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
+
+    @Autowired
+    private FileAssetFactory fileAssetFactory;
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+
+        FileAssetFactory.FilesystemFileStorer fileStorer = new FileAssetFactory.FilesystemFileStorer();
+        fileStorer.setSubrosaFiles(fileAssetFactory.getSubrosaFiles());
+        fileAssetFactory.setFileStorer(fileStorer);
+    }
 
     @Test
     public void testUploadImage() throws Exception {

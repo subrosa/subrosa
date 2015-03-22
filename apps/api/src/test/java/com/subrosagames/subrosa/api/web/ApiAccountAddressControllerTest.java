@@ -48,7 +48,7 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 
     @Override
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         super.setUp();
         MockitoAnnotations.initMocks(this);
     }

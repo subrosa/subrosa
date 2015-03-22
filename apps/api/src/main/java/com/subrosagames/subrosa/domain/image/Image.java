@@ -75,6 +75,11 @@ public class Image {
         return fileAsset.getMimeType();
     }
 
+    @JsonProperty
+    public String getLink() {
+        return "/images/" + fileAsset.getUuid();
+    }
+
     public Integer getId() {
         return id;
     }

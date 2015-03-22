@@ -62,7 +62,7 @@ public abstract class AbstractApiControllerTest extends AbstractContextTest {
     private WebApplicationContext webApplicationContext;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .addFilter(filterChainProxy)
                 .defaultRequest(get("/")

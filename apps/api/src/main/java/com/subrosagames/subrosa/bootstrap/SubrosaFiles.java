@@ -3,7 +3,10 @@ package com.subrosagames.subrosa.bootstrap;
 import java.io.File;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import fm.last.moji.spring.SpringMojiBean;
 
 /**
  * File management configurations.

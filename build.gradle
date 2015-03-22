@@ -28,6 +28,12 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
+//    test {
+//        testLogging {
+//            events 'started', 'passed'
+//        }
+//    }
+
     repositories {
         mavenCentral()
         maven {

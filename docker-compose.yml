@@ -4,7 +4,6 @@ api:
     - "8080:8080"
   links:
     - db
-    - migration
     - mogilefsd
 
 image:
@@ -18,6 +17,9 @@ image:
 db:
 #  image: subrosa/db
   build: script/docker/db
+  environment:
+    SEC_POSTGRES_USER:
+    SEC_POSTGRES_PASS:
   volumes:
 #    - "/data/var/lib/postgresql:/var/lib/postgresql"
 #    - "/data/var/log/postgresql:/var/log/postgresql"
@@ -52,6 +54,7 @@ mogilefsd:
 #  image: subrosa/mogilefsd
   build: script/docker/mogilefsd
   environment:
+    MOGILEFS_DB_NAME:
     SEC_MOGILEFS_DB_USER:
     SEC_MOGILEFS_DB_PASS:
   ports:

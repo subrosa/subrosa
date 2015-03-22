@@ -9,7 +9,11 @@ logging:
 subrosa:
   files:
     maxUploadSize: 2000000
-    assetDirectory: /tmp/subrosa
+    assetDirectory: /tmp/subrosa/images
+
+moji:
+  trackerAddresses: 10.10.10.42:7001
+  domain: sr-dev
 
 google:
   gcmApiKey: AIzaSyDjzP-6Vz6Mvq-q2R7fgRgxXub9u49fLEg
@@ -19,7 +23,7 @@ google:
 aws:
   accessKey: AKIAIBWV65P3H73SXSUA
   secretKey: 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
-  imageBucket: com.subrosagames.subrosa-images
+  imageBucket: subrosa-games-images
 
 facebook:
   appId: foo

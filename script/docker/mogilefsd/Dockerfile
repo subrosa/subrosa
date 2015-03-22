@@ -3,7 +3,7 @@ MAINTAINER Josiah Gore <josiah@subrosagames.com>
 
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cpanminus build-essential libpq-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y cpanminus build-essential libpq-dev postgresql-client-9.3
 
 RUN cpanm install --force MogileFS::Store::Postgres
 RUN cpanm install DBD::Pg
