@@ -32,13 +32,11 @@ public class ConfigurationTest extends AbstractContextTest {
     @Test
     public void testAwsIntegration() throws Exception {
         assertNotNull(awsIntegration);
-        assertNotNull(awsIntegration.getAccessKey());
     }
 
     @Test
     public void testGoogleIntegration() throws Exception {
         assertNotNull(googleIntegration);
-        assertNotNull(googleIntegration.getGcmApiKey());
     }
 
     // CHECKSTYLE-ON: JavadocMethod

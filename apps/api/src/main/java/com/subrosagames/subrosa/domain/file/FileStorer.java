@@ -5,6 +5,6 @@ import java.io.InputStream;
 
 /**
  */
-interface FileStorer {
+public interface FileStorer {
     long store(InputStream inputStream, String identifier) throws IOException;
 }

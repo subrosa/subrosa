@@ -55,8 +55,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void setUp() throws Exception {
         super.setUp();
 
-        FilesystemFileStorer fileStorer = new FilesystemFileStorer();
-        fileStorer.setSubrosaFiles(subrosaFiles);
+        FilesystemFileStorer fileStorer = new FilesystemFileStorer(subrosaFiles);
         fileAssetFactory.setFileStorer(fileStorer);
     }
 

@@ -13,15 +13,17 @@ import fm.last.moji.spring.SpringMojiBean;
 
 /**
  */
-@Component
 public class MogileFileStorer implements FileStorer {
 
-    @Autowired
-    private SpringMojiBean moji;
+    private SpringMojiBean springMojiBean;
+
+    public MogileFileStorer(SpringMojiBean springMojiBean) {
+        this.springMojiBean = springMojiBean;
+    }
 
     @Override
     public long store(InputStream inputStream, String identifier) throws IOException {
-        MojiFile mojiFile = moji.getFile(identifier);
+        MojiFile mojiFile = springMojiBean.getFile(identifier);
         try (OutputStream fileStream = mojiFile.getOutputStream()) {
             ByteStreams.copy(inputStream, fileStream);
             fileStream.flush();

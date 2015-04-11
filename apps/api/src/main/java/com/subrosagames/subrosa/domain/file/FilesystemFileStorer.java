@@ -23,6 +23,10 @@ public class FilesystemFileStorer implements FileStorer {
 
     private SubrosaFiles subrosaFiles;
 
+    public FilesystemFileStorer(SubrosaFiles subrosaFiles) {
+        this.subrosaFiles = subrosaFiles;
+    }
+
     @Override
     public long store(InputStream inputStream, String identifier) throws IOException {
         File physicalFile = getPhysicalFile(identifier);
@@ -42,7 +46,4 @@ public class FilesystemFileStorer implements FileStorer {
         return new File(subrosaFiles.getAssetDirectory() + File.separator + relativePath, identifier);
     }
 
-    public void setSubrosaFiles(SubrosaFiles subrosaFiles) {
-        this.subrosaFiles = subrosaFiles;
-    }
 }
