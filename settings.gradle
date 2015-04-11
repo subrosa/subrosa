@@ -1,11 +1,20 @@
 rootProject.name = 'subrosa'
 
+include 'apps/gateway'
+rootProject.children.find { it.name == 'apps/gateway' }.name = 'gateway'
+
 include 'apps/api'
 rootProject.children.find { it.name == 'apps/api' }.name = 'api'
 
-include 'apps/engine'
-rootProject.children.find { it.name == 'apps/engine' }.name = 'engine'
+//include 'apps/engine'
+//rootProject.children.find { it.name == 'apps/engine' }.name = 'engine'
 
 include 'apps/image'
 rootProject.children.find { it.name == 'apps/image' }.name = 'image'
+
+include 'services/eureka'
+rootProject.children.find { it.name == 'services/eureka' }.name = 'eureka'
+
+include 'services/config'
+rootProject.children.find { it.name == 'services/config' }.name = 'config'
 

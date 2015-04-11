@@ -1,18 +1,43 @@
-api:
-  build: apps/api
+config:
+  build: services/config
+  environment:
+    SEC_CONFIG_REPO_USER:
+    SEC_CONFIG_REPO_PASS:
+  ports:
+    - "8888:8888"
+
+eureka:
+  build: services/eureka
+  ports:
+    - "8761:8761"
+
+gateway:
+  build: apps/gateway
   ports:
     - "8080:8080"
   links:
-    - db
-    - mogilefsd
+    - api
+    - image
 
-image:
-  build: apps/image
+api:
+  build: apps/api
   ports:
     - "8081:8080"
   links:
     - db
     - mogilefsd
+    - config
+    - eureka
+
+image:
+  build: apps/image
+  ports:
+    - "8082:8080"
+  links:
+    - db
+    - mogilefsd
+    - config
+    - eureka
 
 db:
 #  image: subrosa/db
@@ -21,9 +46,6 @@ db:
     SEC_POSTGRES_USER:
     SEC_POSTGRES_PASS:
   volumes:
-#    - "/data/var/lib/postgresql:/var/lib/postgresql"
-#    - "/data/var/log/postgresql:/var/log/postgresql"
-#    - "/data/etc/postgresql:/etc/postgresql"
     - "/var/lib/postgresql"
     - "/var/log/postgresql"
     - "/etc/postgresql"
@@ -44,7 +66,6 @@ mogstored:
 #  image: subrosa/mogstored
   build: script/docker/mogstored
   volumes:
-#    - "/data/var/mogdata:/var/mogdata"
     - "/var/mogdata"
   ports:
     - "7500:7500"
@@ -71,3 +92,4 @@ migration:
   links:
     - db
   command: migrate
+

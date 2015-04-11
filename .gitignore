@@ -7,3 +7,4 @@ gradle.properties
 .vagrant/
 script/vagrant/local.bashrc
 script/vagrant/local.env
+script/vagrant/generated.env

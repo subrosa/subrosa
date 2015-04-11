@@ -1,0 +1,15 @@
+server:
+  port: 8888
+management:
+  context_path: /admin
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/subrosa/subrosa-config
+          username: ${SEC_CONFIG_REPO_USER}
+          password: ${SEC_CONFIG_REPO_PASS}
+
+

@@ -3,17 +3,32 @@
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 JAR=${DIR}/build/libs/subrosa-1.0.0-SNAPSHOT.jar
 
-init_config() {
-    echo "Initializing environment..."
+GRADLE_PROPERTIES=${DIR}/gradle.properties
+GENERATED_ENV=${DIR}/script/vagrant/generated.env
+
+init_gradle() {
     echo -n "LDAP Username: "
     read ldapUser
     echo -n "LDAP Password: "
     read -s ldapPass
     echo
 
-    cat << FILE > ${DIR}/gradle.properties
+    cat << FILE > ${GRADLE_PROPERTIES}
 nexusUsername=${ldapUser}
 nexusPassword=${ldapPass}
+FILE
+}
+
+init_vagrant_env() {
+    echo -n "GitHub Username: "
+    read ghUser
+    echo -n "GitHub Password: "
+    read -s ghPass
+    echo
+
+    cat << FILE > ${GENERATED_ENV}
+export SEC_CONFIG_REPO_USER=${ghUser}
+export SEC_CONFIG_REPO_PASS=${ghPass}
 FILE
 }
 
@@ -23,9 +38,35 @@ run() {
     ./gradlew flywayMigrate api:run
 }
 
+create() {
+    echo -n "[a]pp, [l]ibrary, or [s]ervice? "
+    read -n 1 type
+    echo -n "Name: "
+    read name
+
+    case "$type" in
+        a)
+            dir="apps"
+        ;;
+        l)
+            dir="libs"
+        ;;
+        s)
+            dir="services"
+        ;;
+    esac
+    mkdir -p "${dir}/${name}/src/{main,test},{java,resources}"
+    echo "Need to make build.gradle"
+    echo "Need to make Dockerfile"
+    echo "Need to make src/main/resources/application.yml"
+    echo "Need to make src/main/resources/bootstrap.yml"
+}
+
 case "$1" in
     init)
-        [ ! -f ${DIR}/gradle.properties ] && init_config
+        echo "Initializing environment..."
+        [ ! -f ${GRADLE_PROPERTIES} ] && init_gradle
+        [ ! -f ${GENERATED_ENV} ] && init_vagrant_env
         vagrant up
         vagrant ssh -c "cd /vagrant; fig pull --allow-insecure-ssl; fig up -d"
         ./gradlew flywayMigrate api:run
@@ -36,6 +77,9 @@ case "$1" in
     ssh)
         vagrant up
         vagrant ssh
+    ;;
+    create)
+        create
     ;;
     *)
         vagrant up

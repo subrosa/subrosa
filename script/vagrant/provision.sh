@@ -21,6 +21,9 @@ export DOCKER_HOST=tcp://127.0.0.1:4243
 
 # load up environment variables
 source /vagrant/script/vagrant/default.env
+if [ -f /vagrant/script/vagrant/generated.env ]; then
+    source /vagrant/script/vagrant/generated.env
+fi
 if [ -f /vagrant/script/vagrant/local.env ]; then
     source /vagrant/script/vagrant/local.env
 fi
