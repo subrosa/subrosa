@@ -16,6 +16,7 @@ import com.google.common.io.ByteStreams;
 import com.subrosagames.subrosa.bootstrap.SubrosaFiles;
 
 /**
+ * Local filesystem implementation of file storage.
  */
 public class FilesystemFileStorer implements FileStorer {
 
@@ -23,6 +24,10 @@ public class FilesystemFileStorer implements FileStorer {
 
     private SubrosaFiles subrosaFiles;
 
+    /**
+     * Construct with provided file config.
+     * @param subrosaFiles file config
+     */
     public FilesystemFileStorer(SubrosaFiles subrosaFiles) {
         this.subrosaFiles = subrosaFiles;
     }

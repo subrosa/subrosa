@@ -9,6 +9,9 @@ import com.subrosagames.subrosa.domain.file.FileStorer;
 import com.subrosagames.subrosa.domain.file.MogileFileStorer;
 import fm.last.moji.spring.SpringMojiBean;
 
+/**
+ * Mogile FS configuration.
+ */
 @Component
 @ConfigurationProperties("moji")
 public class MogileConfiguration {
@@ -32,12 +35,23 @@ public class MogileConfiguration {
         this.domain = domain;
     }
 
+    /**
+     * Mogile FS file storer.
+     *
+     * @param springMojiBean spring moji bean
+     * @return mogilefs file storer
+     */
     @Bean
     @Profile("!unit-test")
     public FileStorer mogileFileStorer(SpringMojiBean springMojiBean) {
         return new MogileFileStorer(springMojiBean);
     }
 
+    /**
+     * Spring moji bean.
+     *
+     * @return spring moji bean
+     */
     @Bean
     @Profile("!unit-test")
     public SpringMojiBean springMojiBean() {

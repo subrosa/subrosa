@@ -20,6 +20,8 @@ subprojects {
         vagrantIp = '10.10.10.42'
         ec2Host = 'ec2-54-69-114-113.us-west-2.compute.amazonaws.com'
         localhost = 'localhost'
+
+        configDir = new File(rootDir, 'config')
     }
 
     tasks.withType(JavaCompile) {
@@ -55,7 +57,10 @@ subprojects {
             classpath "org.springframework.boot:spring-boot-gradle-plugin:1.1.10.RELEASE"
         }
     }
+
+    apply from: new File(rootDir, 'gradle/quality.gradle')
 }
+
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
         tasks.withType(Javadoc) {
@@ -64,4 +69,3 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-apply from: 'gradle/quality.gradle'

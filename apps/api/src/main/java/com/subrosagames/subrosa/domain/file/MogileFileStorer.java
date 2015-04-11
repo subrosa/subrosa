@@ -4,19 +4,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.io.ByteStreams;
 import fm.last.moji.MojiFile;
 import fm.last.moji.spring.SpringMojiBean;
 
 /**
+ * Mogile FS implementation of file storage.
  */
 public class MogileFileStorer implements FileStorer {
 
     private SpringMojiBean springMojiBean;
 
+    /**
+     * Construct with spring moji bean.
+     *
+     * @param springMojiBean spring moji bean
+     */
     public MogileFileStorer(SpringMojiBean springMojiBean) {
         this.springMojiBean = springMojiBean;
     }
