@@ -8,3 +8,4 @@ gradle.properties
 script/vagrant/local.bashrc
 script/vagrant/local.env
 script/vagrant/generated.env
+keys/subrosa/*
