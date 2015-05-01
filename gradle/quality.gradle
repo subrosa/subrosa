@@ -9,7 +9,7 @@ ext {
 }
 checkstyle {
     toolVersion = '6.3'
-    configFile = "$checkstyleConfigDir/checkstyle.xml"
+    configFile = file("$checkstyleConfigDir/checkstyle.xml")
     configProperties.checkstyleConfigDir = checkstyleConfigDir
     ignoreFailures = true
 }

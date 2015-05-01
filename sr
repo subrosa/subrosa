@@ -1,5 +1,8 @@
 #!/bin/bash
 
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 JAR=${DIR}/build/libs/subrosa-1.0.0-SNAPSHOT.jar
 
@@ -78,24 +81,27 @@ case "$1" in
         [ ! -f ${GENERATED_ENV} ] && init_vagrant_env
         [ ! -f ${KEY_PATH}/${NEXUS_KEY} ] && echo "Need to put nexus certificate at ${KEY_PATH}/${NEXUS_KEY}" && exit 1
         [ ! -f ${NEXUS_KEY_INSTALLED} ] && install_nexus_key
+        echo -e "[${BLUE}SUBROSA${NC}] ./gradlew assemble"
+        ./gradlew assemble
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose up -d --no-recreate"
         docker-compose up -d --no-recreate
     ;;
     deploy)
-        echo "[RUNNING] ./gradlew $2:assemble"
+        echo -e "[${BLUE}SUBROSA${NC}] ./gradlew $2:assemble"
         ./gradlew $2:assemble
-        echo "[RUNNING] docker-compose stop $2"
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose stop $2"
         docker-compose stop $2
-        echo "[RUNNING] docker-compose rm --force $2"
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose rm --force $2"
         docker-compose rm --force $2
-        echo "[RUNNING] docker-compose build $2"
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose build $2"
         docker-compose build $2
-        echo "[RUNNING] docker-compose up -d --no-recreate $2"
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose up -d --no-recreate $2"
         docker-compose up -d --no-recreate $2
-        echo "[RUNNING] docker-compose logs $2"
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose logs $2"
         docker-compose logs $2
     ;;
     run)
-        echo "[RUNNING] ./gradlew $2:run"
+        echo -e "[${BLUE}SUBROSA${NC}] ./gradlew $2:run"
         ./gradlew $2:run
     ;;
     ssh)
