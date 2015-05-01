@@ -34,9 +34,13 @@ init_vagrant_env() {
     echo
 
     cat << FILE > ${GENERATED_ENV}
-export SEC_CONFIG_REPO_USER=${ghUser}
-export SEC_CONFIG_REPO_PASS=${ghPass}
+export SEC_CONFIG_REPO_USER='${ghUser}'
+export SEC_CONFIG_REPO_PASS='${ghPass}'
 FILE
+
+        source ${GENERATED_ENV}
+        export SEC_CONFIG_REPO_USER
+        export SEC_CONFIG_REPO_PASS
 }
 
 create() {
@@ -85,6 +89,8 @@ case "$1" in
         ./gradlew assemble
         echo -e "[${BLUE}SUBROSA${NC}] docker-compose up -d --no-recreate"
         docker-compose up -d --no-recreate
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose logs"
+        docker-compose logs
     ;;
     deploy)
         echo -e "[${BLUE}SUBROSA${NC}] ./gradlew $2:assemble"
