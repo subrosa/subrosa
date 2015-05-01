@@ -7,4 +7,3 @@ task newMigration << {
     def f = new File(sqlDir, version)
     f.createNewFile()
 }
-

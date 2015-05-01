@@ -8,6 +8,7 @@ GENERATED_ENV=${DIR}/script/vagrant/generated.env
 
 KEY_PATH=${DIR}/keys/subrosa
 NEXUS_KEY=nexus.subrosagames.com.crt
+NEXUS_KEY_INSTALLED=/home/vagrant/.nexus_key_installed
 
 init_gradle() {
     echo -n "LDAP Username: "
@@ -60,11 +61,14 @@ create() {
 }
 
 install_nexus_key() {
+    echo "If you have already installed the certificate successfully, but are still see this prompt, run:"
+    echo "  touch ${NEXUS_KEY_INSTALLED}"
     echo "Default keystore password is 'changeit'"
     sudo keytool -import --noprompt -trustcacerts \
                 -alias "nexus.subrosagames.com" \
                 -file ${KEY_PATH}/${NEXUS_KEY} \
-                -keystore  ${JAVA_HOME}/jre/lib/security/cacerts
+                -keystore  ${JAVA_HOME}/jre/lib/security/cacerts && \
+        touch ${NEXUS_KEY_INSTALLED}
 }
 
 case "$1" in
@@ -72,8 +76,8 @@ case "$1" in
         echo "Initializing environment..."
         [ ! -f ${GRADLE_PROPERTIES} ] && init_gradle
         [ ! -f ${GENERATED_ENV} ] && init_vagrant_env
-        [ ! -f ${KEY_PATH}/${NEXUS_KEY} ] && echo "Need to put nexus certificate in ${KEY_PATH}" && exit 1
-        install_nexus_key
+        [ ! -f ${KEY_PATH}/${NEXUS_KEY} ] && echo "Need to put nexus certificate at ${KEY_PATH}/${NEXUS_KEY}" && exit 1
+        [ ! -f ${NEXUS_KEY_INSTALLED} ] && install_nexus_key
         docker-compose up -d --no-recreate
     ;;
     deploy)

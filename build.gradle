@@ -21,7 +21,7 @@ subprojects {
         ec2Host = 'ec2-54-69-114-113.us-west-2.compute.amazonaws.com'
         localhost = 'localhost'
 
-        configDir = new File(rootDir, 'config')
+        configDir = file("$rootDir/config")
     }
 
     tasks.withType(JavaCompile) {
