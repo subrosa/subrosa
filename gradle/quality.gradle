@@ -1,12 +1,16 @@
 apply plugin: 'jacoco'
 apply plugin: 'build-dashboard'
 
-def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
+//def configDir = new File(buildscript.sourceFile.parentFile.parentFile, 'config')
 
 apply plugin: 'checkstyle'
+ext {
+    checkstyleConfigDir = "$configDir/checkstyle"
+}
 checkstyle {
     toolVersion = '6.3'
-    configProperties.checkstyleConfigDir = "$configDir/checkstyle"
+    configFile = file("$checkstyleConfigDir/checkstyle.xml")
+    configProperties.checkstyleConfigDir = checkstyleConfigDir
     ignoreFailures = true
 }
 

@@ -1,0 +1,14 @@
+server:
+  context-path: /subrosa
+  servlet-path: /v1
+
+logging:
+  level:
+    com.subrosagames: DEBUG
+
+subrosa:
+  files:
+    maxUploadSize: 2000000
+    assetDirectory: /tmp/subrosa/images
+
+

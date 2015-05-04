@@ -1,0 +1,95 @@
+config:
+  build: services/config
+  environment:
+    SEC_CONFIG_REPO_USER:
+    SEC_CONFIG_REPO_PASS:
+  ports:
+    - "8888:8888"
+
+eureka:
+  build: services/eureka
+  ports:
+    - "8761:8761"
+
+gateway:
+  build: apps/gateway
+  ports:
+    - "8080:8080"
+  links:
+    - api
+    - image
+
+api:
+  build: apps/api
+  ports:
+    - "8081:8080"
+  links:
+    - db
+    - mogilefsd
+    - config
+    - eureka
+
+image:
+  build: apps/image
+  ports:
+    - "8082:8080"
+  links:
+    - db
+    - mogilefsd
+    - config
+    - eureka
+
+db:
+#  image: subrosa/db
+  build: script/docker/db
+  environment:
+    SEC_POSTGRES_USER:
+    SEC_POSTGRES_PASS:
+  volumes:
+    - "/var/lib/postgresql"
+    - "/var/log/postgresql"
+    - "/etc/postgresql"
+  ports:
+    - "5432:5432"
+
+rabbitmq:
+#  image: subrosa/rabbitmq
+  image: tutum/rabbitmq
+#  build: script/docker/rabbitmq
+  environment:
+    SEC_RABBITMQ_ADMIN_PASS:
+  ports:
+    - "5672:5672"
+    - "15672:15672"
+
+mogstored:
+#  image: subrosa/mogstored
+  build: script/docker/mogstored
+  volumes:
+    - "/var/mogdata"
+  ports:
+    - "7500:7500"
+    - "7501:7501"
+
+mogilefsd:
+#  image: subrosa/mogilefsd
+  build: script/docker/mogilefsd
+  environment:
+    MOGILEFS_DB_NAME:
+    SEC_MOGILEFS_DB_USER:
+    SEC_MOGILEFS_DB_PASS:
+  ports:
+    - "7001:7001"
+  links:
+    - db
+    - mogstored
+
+migration:
+  build: script/docker/migration
+  environment:
+    SEC_ENGINE_DB_USER:
+    SEC_ENGINE_DB_PASS:
+  links:
+    - db
+  command: migrate
+

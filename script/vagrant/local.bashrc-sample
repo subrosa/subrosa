@@ -1,0 +1,3 @@
+echo "I like my vagrant box"
+
+set -o vi

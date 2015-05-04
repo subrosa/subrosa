@@ -1,0 +1,14 @@
+alias compose='docker-compose'
+alias cu='docker-compose up -d --no-recreate'
+alias cr='docker-compose run --rm'
+alias crb='docker-compose run --rm --entrypoint /bin/bash'
+alias dtop='docker stats $(docker ps -a | tail -n +2 | awk '\''NF>1{print $NF}'\'')'
+
+export COMPOSE_PROJECT_NAME=sr
+
+rebuild() {
+    compose build $1 && \
+        compose stop $1 && \
+        compose rm --force $1 && \
+        cu $1
+}

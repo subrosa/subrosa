@@ -1,0 +1,9 @@
+
+def sqlDir = 'script/docker/migration/sql/'
+
+task newMigration << {
+    def now = Calendar.getInstance()
+    def version = String.format("%04d%02d%02d%02d%02d%02d.sql", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
+    def f = new File(sqlDir, version)
+    f.createNewFile()
+}

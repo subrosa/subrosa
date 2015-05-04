@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'spring-boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'subrosa'
+version = '1.0.0-SNAPSHOT'
+description = """Subrosa game engine"""
+
+jar {
+    baseName = 'subrosa-engine'
+    version = project.version
+}
+
+dependencies {
+}
+
