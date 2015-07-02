@@ -1,4 +1,4 @@
-FROM dockerfile/java:oracle-java8
+FROM java:8
 MAINTAINER Josiah Gore <josiahgore@gmail.com>
 
 RUN useradd -u 1000 -m -s /bin/bash subrosa
