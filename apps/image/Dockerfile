@@ -1,4 +1,4 @@
-FROM dockerfile/java:oracle-java8
+FROM java:8
 MAINTAINER Josiah Gore <josiahgore@gmail.com>
 
 ADD build/libs/subrosa-image-1.0.0-SNAPSHOT.jar /subrosa-image.jar
