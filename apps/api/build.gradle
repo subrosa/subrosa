@@ -108,6 +108,7 @@ dependencies {
     compile 'fm.last:moji:1.4.0'
 
     // utils
+    compile("org.projectlombok:lombok:1.16.2")
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
     compile(group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2') {
         exclude(module: 'commons-logging')

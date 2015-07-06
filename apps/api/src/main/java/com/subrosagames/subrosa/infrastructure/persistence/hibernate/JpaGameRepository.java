@@ -37,6 +37,7 @@ import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.util.QueryHelper;
 
 /**
@@ -184,6 +185,16 @@ public class JpaGameRepository implements GameRepository {
     }
 
     @Override
+    public List<TeamEntity> getTeamsForGame(int gameId, Integer limit, Integer offset) {
+        String jpql = "SELECT t" +
+                " FROM TeamEntity t JOIN t.game g " +
+                " WHERE g.id = :gameId";
+        TypedQuery<TeamEntity> typedQuery = entityManager.createQuery(jpql, TeamEntity.class);
+        typedQuery.setParameter("gameId", gameId);
+        return boundedResultsList(limit, offset, typedQuery);
+    }
+
+    @Override
     public List<PlayerEntity> getPlayersForGame(int gameId, Integer limit, Integer offset) {
         String jpql = "SELECT p "
                 + " FROM PlayerEntity p "
@@ -192,6 +203,10 @@ public class JpaGameRepository implements GameRepository {
                 + " WHERE g.id = :gameId";
         TypedQuery<PlayerEntity> typedQuery = entityManager.createQuery(jpql, PlayerEntity.class)
                 .setParameter("gameId", gameId);
+        return boundedResultsList(limit, offset, typedQuery);
+    }
+
+    protected <T> List<T> boundedResultsList(Integer limit, Integer offset, TypedQuery<T> typedQuery) {
         if (limit != null && limit > 0) {
             typedQuery.setMaxResults(limit);
         }

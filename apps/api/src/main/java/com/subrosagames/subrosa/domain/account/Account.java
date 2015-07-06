@@ -56,6 +56,8 @@ import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Represents an account in the Subrosa application.
@@ -89,42 +91,63 @@ public class Account extends BaseEntity implements PermissionTarget {
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
     @Column(name = "account_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @Column
+    @Getter
+    @Setter
     private Boolean activated;
 
     @Column
+    @Getter
+    @Setter
     private String username;
 
     @Column
+    @Getter
+    @Setter
     private String name;
 
     @Column(length = 320, unique = true)
     @NotNull
     @NotBlank
     @Email
+    @Getter
+    @Setter
     private String email;
 
     @Column(name = "cell_phone")
+    @Getter
+    @Setter
     private String cellPhone;
 
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
+    @Getter
+    @Setter
+    // TODO use immutable java 8 temporal types
     private Date dateOfBirth;
 
     @ElementCollection(targetClass = AccountRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
     private Set<AccountRole> roles;
 
     @JsonIgnore
     @Column(length = 256)
+    @Getter
+    @Setter
     private String password;
 
     @JsonIgnore
     @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @Getter
+    @Setter
     private List<Address> addresses;
 
     @JsonIgnore
@@ -135,13 +158,19 @@ public class Account extends BaseEntity implements PermissionTarget {
             fetch = FetchType.EAGER
     )
     @OrderColumn(name = "index")
+    @Getter
+    @Setter
     private List<Image> images = Lists.newArrayList();
 
     @JsonIgnore
     @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @Getter
+    @Setter
     private List<PlayerProfile> playerProfiles = Lists.newArrayList();
 
     @Column(name = "last_logged_in")
+    @Getter
+    @Setter
     private Date lastLoggedIn;
 
     /**
@@ -153,54 +182,6 @@ public class Account extends BaseEntity implements PermissionTarget {
         return new ArrayList<>();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCellPhone() {
-        return cellPhone;
-    }
-
-    public void setCellPhone(String cellPhone) {
-        this.cellPhone = cellPhone;
-    }
-
     public Date getDateOfBirth() {
         return dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
     }
@@ -210,48 +191,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     }
 
 
-    public Set<AccountRole> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<AccountRole> accountRoles) {
-        this.roles = accountRoles;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getLastLoggedIn() {
-        return lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
-    }
-
-    public void setLastLoggedIn(Date lastLoggedIn) {
-        this.lastLoggedIn = lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
-    }
-
-    /**
-     * Get addresses if they have been loaded from the database.
-     *
-     * @return addresses if loaded or {@code null}
-     */
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    /**
-     * Set addresses.
-     *
-     * @param addresses addresses
-     */
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
-    }
-
     /**
      * Get address for id.
      *
@@ -260,8 +199,7 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AddressNotFoundException if address is not found
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
-        Address address = accountRepository.getAddress(this, addressId);
-        return address;
+        return accountRepository.getAddress(this, addressId);
     }
 
     /**
@@ -331,15 +269,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     }
 
     /**
-     * Get images if they have been loaded from the database.
-     *
-     * @return images if loaded or {@code null}
-     */
-    public List<Image> getImages() {
-        return images;
-    }
-
-    /**
      * Create an account with the specified password.
      *
      * @param userPassword password
@@ -382,7 +311,7 @@ public class Account extends BaseEntity implements PermissionTarget {
         // read-only fields
         // TODO specify R/O fields via an annotation
         accountDescriptor.setId(getId());
-        accountDescriptor.setActivated(Optional.of(isActivated()));
+        accountDescriptor.setActivated(Optional.of(getActivated()));
         OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
@@ -458,15 +387,6 @@ public class Account extends BaseEntity implements PermissionTarget {
             throw new ImageInUseException("Image " + imageId + " is in use and cannot be deleted");
         }
         return image;
-    }
-
-    /**
-     * Get player profiles.
-     *
-     * @return player profiles
-     */
-    public List<PlayerProfile> getPlayerProfiles() {
-        return playerProfiles;
     }
 
     /**

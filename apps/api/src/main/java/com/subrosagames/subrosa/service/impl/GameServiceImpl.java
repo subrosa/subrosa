@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.service.impl;
 
+import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.TargetDescriptor;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
@@ -22,6 +25,8 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.service.GameService;
 
 /**
@@ -89,6 +94,47 @@ public class GameServiceImpl implements GameService {
     {
         Game game = gameFactory.getGame(gameUrl);
         return game.updatePlayer(playerId, joinGameRequest);
+    }
+
+    @Override
+    public List<Target> listTargets(String gameUrl) {
+        return null;
+    }
+
+    @Override
+    public Target getTarget(String gameUrl, Integer integer) {
+        return null;
+    }
+
+    @Override
+    public Target createTarget(String gameUrl, TargetDescriptor targetDescriptor) {
+        return null;
+    }
+
+    @Override
+    public Target updateTarget(String gameUrl, Integer integer, TargetDescriptor targetDescriptor) {
+        return null;
+    }
+
+    @Override
+    public List<Team> listTeams(String gameUrl) throws GameNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.getTeams();
+    }
+
+    @Override
+    public Team getTeam(String gameUrl, Integer integer) {
+        return null;
+    }
+
+    @Override
+    public Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) {
+        return null;
+    }
+
+    @Override
+    public Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor) {
+        return null;
     }
 
 }

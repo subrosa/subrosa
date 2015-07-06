@@ -53,7 +53,9 @@ import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
@@ -265,6 +267,16 @@ public class BaseGame extends GameEntity implements Game {
 
     private List<Player> getPlayers(List<? extends Player> players) {
         return Lists.newArrayList(players);
+    }
+
+    @JsonIgnore
+    @Override
+    public List<Team> getTeams() {
+        return getTeams(gameRepository.getTeamsForGame(getId(), 0, 0));
+    }
+
+    private List<Team> getTeams(List<? extends Team> teams) {
+        return Lists.newArrayList(teams);
     }
 
     @Override

@@ -1,9 +1,6 @@
-package com.subrosagames.subrosa.domain.game;
+package com.subrosagames.subrosa.api.dto;
 
 import com.subrosagames.subrosa.domain.DomainObjectDescriptor;
 
-/**
- * Created by josiah on 3/3/15.
- */
 public class TargetDescriptor implements DomainObjectDescriptor {
 }

@@ -110,16 +110,8 @@ case "$1" in
         echo -e "[${BLUE}SUBROSA${NC}] ./gradlew $2:run"
         ./gradlew $2:run
     ;;
-    ssh)
-        vagrant up
-        vagrant ssh
-    ;;
     create)
         create
-    ;;
-    *)
-        vagrant up
-        vagrant ssh -c "sudo /vagrant/script/env.sh $1"
     ;;
 esac
 

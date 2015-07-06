@@ -13,6 +13,7 @@ import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**
  * Repository for retrieval of game information.
@@ -75,6 +76,16 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * @return player entity
      */
     PlayerEntity getPlayerForUserAndGame(int accountId, int gameId);
+
+    /**
+     * Get all of the teams in the specified game.
+     *
+     * @param gameId game id
+     * @param limit number of teams to return
+     * @param offset into list
+     * @return list of teams
+     */
+    List<TeamEntity> getTeamsForGame(int gameId, Integer limit, Integer offset);
 
     /**
      * Get all of the players enrolled in the specified game.
@@ -179,4 +190,5 @@ public interface GameRepository extends DomainObjectRepository<BaseGame> {
      * @return rules for type
      */
     List<? extends Rule> getRulesForType(RuleType ruleType);
+
 }

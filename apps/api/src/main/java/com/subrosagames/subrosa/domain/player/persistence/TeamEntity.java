@@ -18,105 +18,94 @@ import org.hibernate.annotations.LazyCollectionOption;
 
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.location.Location;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.Target;
+import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.Team;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted team entity.
  */
 @Entity
 @Table(name = "team")
-public class TeamEntity {
+public class TeamEntity implements Team {
 
     @Id
     @SequenceGenerator(name = "teamSeq", sequenceName = "team_team_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teamSeq")
     @Column(name = "team_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", insertable = false, updatable = false)
+    @Getter
+    @Setter
     private GameEntity game;
 
     @Column(name = "game_id")
+    @Getter
+    @Setter
     private Integer gameId;
 
     @OneToMany(mappedBy = "team")
+    @Getter
+    @Setter
     private List<PlayerEntity> players;
 
     @OneToOne
     @JoinColumn(name = "image_id")
+    @Getter
+    @Setter
     private Image image;
 
     @Column
+    @Getter
+    @Setter
     private String name;
 
     @OneToMany(mappedBy = "player")
     @LazyCollection(LazyCollectionOption.FALSE)
+    @Getter
+    @Setter
     private List<TargetEntity> targets;
 
     @Column
+    @Getter
+    @Setter
     private String password;
 
-    public Integer getId() {
-        return id;
+    @Override
+    public String identifier() {
+        return getId().toString();
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    @Override
+    public Target getTarget(int targetId) throws TargetNotFoundException {
+        return null;
     }
 
-    public GameEntity getGame() {
-        return game;
+    @Override
+    public void addTarget(Player target) {
+
     }
 
-    public void setGame(GameEntity game) {
-        this.game = game;
+    @Override
+    public void addTarget(Team target) {
+
     }
 
-    public List<PlayerEntity> getPlayers() {
-        return players;
+    @Override
+    public void addTarget(Location target) {
+
     }
 
-    public void setPlayers(List<PlayerEntity> players) {
-        this.players = players;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<TargetEntity> getTargets() {
-        return targets;
-    }
-
-    public void setTargets(List<TargetEntity> targets) {
-        this.targets = targets;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Integer getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
+    @Override
+    public Image getAvatar() {
+        return null;
     }
 }

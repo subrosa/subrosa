@@ -23,6 +23,7 @@ import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
+import com.subrosagames.subrosa.domain.player.Team;
 
 /**
  * The minimum functionality shared by all games.
@@ -236,4 +237,5 @@ public interface Game extends GameData {
      */
     boolean isPublished();
 
+    List<Team> getTeams();
 }

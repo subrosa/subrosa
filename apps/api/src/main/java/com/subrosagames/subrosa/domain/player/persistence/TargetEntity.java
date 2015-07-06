@@ -18,6 +18,9 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetType;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Parent entity for game targets.
@@ -32,37 +35,25 @@ public class TargetEntity implements Target {
     @Column(name = "target_id")
     @SequenceGenerator(name = "targetSeq", sequenceName = "target_target_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "targetSeq")
+    @Getter
+    @Setter
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "player_id")
+    @Getter
+    @Setter
     private PlayerEntity player;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type")
+    @Getter
+    @Setter
     private TargetType targetType;
 
-    public Integer getId() {
-        return id;
+    @Override
+    public String identifier() {
+        return getId().toString();
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public PlayerEntity getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(PlayerEntity playerId) {
-        this.player = playerId;
-    }
-
-    public TargetType getTargetType() {
-        return targetType;
-    }
-
-    public void setTargetType(TargetType targetType) {
-        this.targetType = targetType;
-    }
 }
