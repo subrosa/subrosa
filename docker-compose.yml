@@ -1,5 +1,5 @@
 config:
-  build: services/config
+  build: apps/config
   environment:
     SEC_CONFIG_REPO_USER:
     SEC_CONFIG_REPO_PASS:
@@ -7,7 +7,7 @@ config:
     - "8888:8888"
 
 eureka:
-  build: services/eureka
+  build: apps/eureka
   ports:
     - "8761:8761"
 
@@ -16,6 +16,7 @@ gateway:
   ports:
     - "8080:8080"
   links:
+    - config
     - api
     - image
 

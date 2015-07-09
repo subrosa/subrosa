@@ -37,34 +37,11 @@ init_vagrant_env() {
 export SEC_CONFIG_REPO_USER='${ghUser}'
 export SEC_CONFIG_REPO_PASS='${ghPass}'
 FILE
-
+}
+source_vagrant_env() {
         source ${GENERATED_ENV}
         export SEC_CONFIG_REPO_USER
         export SEC_CONFIG_REPO_PASS
-}
-
-create() {
-    echo -n "[a]pp, [l]ibrary, or [s]ervice? "
-    read -n 1 type
-    echo -n "Name: "
-    read name
-
-    case "$type" in
-        a)
-            dir="apps"
-        ;;
-        l)
-            dir="libs"
-        ;;
-        s)
-            dir="services"
-        ;;
-    esac
-    mkdir -p "${dir}/${name}/src/{main,test},{java,resources}"
-    echo "Need to make build.gradle"
-    echo "Need to make Dockerfile"
-    echo "Need to make src/main/resources/application.yml"
-    echo "Need to make src/main/resources/bootstrap.yml"
 }
 
 install_nexus_key() {
@@ -83,6 +60,7 @@ case "$1" in
         echo "Initializing environment..."
         [ ! -f ${GRADLE_PROPERTIES} ] && init_gradle
         [ ! -f ${GENERATED_ENV} ] && init_vagrant_env
+        source_vagrant_env
         [ ! -f ${KEY_PATH}/${NEXUS_KEY} ] && echo "Need to put nexus certificate at ${KEY_PATH}/${NEXUS_KEY}" && exit 1
         [ ! -f ${NEXUS_KEY_INSTALLED} ] && install_nexus_key
         echo -e "[${BLUE}SUBROSA${NC}] ./gradlew assemble"
@@ -109,9 +87,6 @@ case "$1" in
     run)
         echo -e "[${BLUE}SUBROSA${NC}] ./gradlew $2:run"
         ./gradlew $2:run
-    ;;
-    create)
-        create
     ;;
 esac
 

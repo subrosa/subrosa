@@ -57,12 +57,15 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-context-support', version: springVersion
 
     // spring boot
-    compile "org.springframework.boot:spring-boot-starter-web:1.2.1.RELEASE"
-    compile "org.springframework.boot:spring-boot-starter-jdbc"
-    compile "org.springframework.boot:spring-boot-starter-amqp"
-    compile "org.springframework.boot:spring-boot-actuator:1.2.1.RELEASE"
-    compile 'org.springframework.cloud:spring-cloud-starter-eureka:1.0.0.RELEASE'
-    compile 'org.glassfish.jersey.core:jersey-common:2.4.1'
+    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-jdbc:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-amqp:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-actuator:${springBootVersion}"
+
+    // spring cloud
+    compile 'org.springframework.cloud:spring-cloud-config-client:1.0.1.RELEASE'
+//    compile 'org.springframework.cloud:spring-cloud-starter-eureka:1.0.3.RELEASE'
+//    compile 'org.glassfish.jersey.core:jersey-common:2.4.1'
 
     // spring security
     compile group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion

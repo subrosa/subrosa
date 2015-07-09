@@ -16,18 +16,21 @@ To aid in management of your sandbox, it is recommended that you make entries in
 127.0.0.1	local.subrosagames.com
 10.10.10.42     db
 10.10.10.42     mq
+10.10.10.42     sr
 ```
 
 While not entirely necessary, this will allow you to do things like
 ```
 psql -h db -U engine
-curl 'http://local.subrosagames.com:8080/subrosa/v1/game'
+curl 'http://sr:8080/subrosa/v1/game'
 ```
 
 ### Provisioning
-After installing the prerequisites and configuring gradle, run `./sr init` and wait for the deployment to finish. After everything is done you should be running a working API at localhost:8080.
+After installing the prerequisites and configuring gradle, run `./sr init` on the vagrant VM and wait for the deployment to finish. After everything is done you should be running a working API at localhost:8080.
 
 ### Managing Deployments
+
+These are run on the vagrant VM:
 
 `./sr init` initialize environment
 
