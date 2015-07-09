@@ -3,9 +3,9 @@ zuul:
   routes:
     api:
       path: /subrosa/v1/**
-      url: http://${API_PORT_8080_TCP_ADDR:localhost}:${API_PORT_8080_TCP_PORT:8080}
+      url: http://${API_PORT_8080_TCP_ADDR:api}:${API_PORT_8080_TCP_PORT:8080}
       stripPrefix: false
     image:
       path: /image/**
-      url: http://${IMAGE_PORT_8080_TCP_ADDR:localhost}:${IMAGE_PORT_8080_TCP_PORT:8080}
+      url: http://${IMAGE_PORT_8080_TCP_ADDR:image}:${IMAGE_PORT_8080_TCP_PORT:8080}
       stripPrefix: false

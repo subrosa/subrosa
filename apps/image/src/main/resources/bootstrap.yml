@@ -3,4 +3,6 @@ spring:
     name: image
   cloud:
     config:
-      uri: http://${CONFIG_PORT_8888_TCP_ADDR:localhost}:${CONFIG_PORT_8888_TCP_PORT:8888}
+      uri: http://config:8888
+      failFast: true
+      retryBeforeFail: 50

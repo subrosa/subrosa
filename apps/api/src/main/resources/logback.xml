@@ -16,7 +16,7 @@
   <logger name="com.subrosa" level="DEBUG"/>
   <logger name="com.subrosagames" level="DEBUG"/>
 
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>
