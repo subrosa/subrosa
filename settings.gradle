@@ -12,9 +12,9 @@ rootProject.children.find { it.name == 'apps/api' }.name = 'api'
 include 'apps/image'
 rootProject.children.find { it.name == 'apps/image' }.name = 'image'
 
-include 'services/eureka'
-rootProject.children.find { it.name == 'services/eureka' }.name = 'eureka'
+include 'apps/eureka'
+rootProject.children.find { it.name == 'apps/eureka' }.name = 'eureka'
 
-include 'services/config'
-rootProject.children.find { it.name == 'services/config' }.name = 'config'
+include 'apps/config'
+rootProject.children.find { it.name == 'apps/config' }.name = 'config'
 
