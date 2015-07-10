@@ -55,9 +55,11 @@ public class ValidationTest {
     public void testPublishViolations() throws Exception {
         expectedException.expect(GameValidationException.class);
         expectedException.expect(hasConstraintViolation("registrationStart", "required"));
-        expectedException.expect(hasConstraintViolation("registrationEnd", "required"));
         expectedException.expect(hasConstraintViolation("gameStart", "required"));
-        expectedException.expect(hasConstraintViolation("gameEnd", "required"));
+        expectedException.expect(not(hasConstraintViolation("registrationEnd", "required")));
+        expectedException.expect(not(hasConstraintViolation("gameEnd", "required")));
+
+
         BaseGame game = new BaseGame();
         game.assertValid(PublishAction.class);
     }
