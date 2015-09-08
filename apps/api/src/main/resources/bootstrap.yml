@@ -8,4 +8,5 @@ spring:
   config:
     retry:
       multiplier: 2
+      maxInterval: 5000
       maxAttempts: 10
