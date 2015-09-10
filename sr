@@ -65,8 +65,10 @@ case "$1" in
         [ ! -f ${NEXUS_KEY_INSTALLED} ] && install_nexus_key
         echo -e "[${BLUE}SUBROSA${NC}] ./gradlew assemble"
         ./gradlew assemble
-        echo -e "[${BLUE}SUBROSA${NC}] docker-compose up -d --no-recreate"
-        docker-compose up -d --no-recreate
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose build config api image gateway"
+        docker-compose build config api image gateway
+        echo -e "[${BLUE}SUBROSA${NC}] docker-compose up -d"
+        docker-compose up -d
         echo -e "[${BLUE}SUBROSA${NC}] docker-compose logs"
         docker-compose logs
     ;;
