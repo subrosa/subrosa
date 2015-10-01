@@ -26,7 +26,7 @@ curl 'http://sr:8080/subrosa/v1/game'
 ```
 
 ### Provisioning
-After installing the prerequisites and configuring gradle, run `./sr init` on the vagrant VM and wait for the deployment to finish. After everything is done you should be running a working API at localhost:8080.
+After installing the prerequisites and configuring gradle, run `./sr init` on the vagrant VM and wait for the deployment to finish. After everything is done you should be running a working application at localhost:8080.
 
 ### Managing Deployments
 
@@ -34,7 +34,5 @@ These are run on the vagrant VM:
 
 `./sr init` initialize environment
 
-`./sr run` run the API along with its dependent services
-
-`./sr restart` restart the API's dependent services
+`./sr deploy api` rebuild and redeploy the API
 

@@ -6,43 +6,70 @@ NC='\033[0m' # No Color
 uname -a
 uname -r
 
-echo
-echo -e [${BLUE}SUBROSA${NC}] Installing Oracle Java 8...
-echo
+msg() {
+  echo
+  echo -e [${BLUE}SUBROSA${NC}] $1
+  echo
+}
 
-echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
-  add-apt-repository -y ppa:webupd8team/java && \
-  apt-get update -q && \
-  apt-get install -y oracle-java8-installer && \
-  rm -rf /var/lib/apt/lists/* && \
-  rm -rf /var/cache/oracle-jdk8-installer
+msg "Looking for Java 8..."
+VERSION=0
+if type -p java; then
+  VERSION=$(java -version 2>&1 | sed 's/java version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q')
+  msg "...Found java version ${VERSION}"
+else
+  msg "...Java not found"
+fi
 
-echo
-echo -e [${BLUE}SUBROSA${NC}] Installing Docker and its dependencies...
-echo
+if [ "$VERSION" -lt 18 ]; then
+  msg "Installing Oracle Java 8..."
+  echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+    add-apt-repository -y ppa:webupd8team/java && \
+    apt-get update -q && \
+    apt-get install -y oracle-java8-installer && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/cache/oracle-jdk8-installer
+fi
 
-wget -q -O - https://get.docker.io/gpg | apt-key add -
-echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+msg "Installing Docker and its dependencies..."
 
-apt-get update
-apt-get install -q -y linux-image-generic-lts-trusty
-apt-get install -q -y linux-headers-$(uname -r)
-apt-get install -q -y build-essential dkms
-apt-get install -q -y lxc lxc-docker
+msg "Looking for docker..."
+VERSION=0
+if type -p docker; then
+  VERSION=$(docker --version 2>&1 | sed 's/Docker version \(.*\)\.\(.*\)\..*/\1\2/; 1q')
+  msg "...Found docker version ${VERSION}"
+else
+  msg "...Docker not found"
+fi
 
-echo
-echo -e [${BLUE}SUBROSA${NC}] Installing docker-compose...
-echo
+if [ "$VERSION" -lt 18 ]; then
+  msg "Installing latest docker..."
+  apt-get update
+  apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+  mkdir -p /etc/apt/sources.list.d
+  echo "deb https://apt.dockerproject.org/repo ubuntu-trusty main" > /etc/apt/sources.list.d/docker.list
+  apt-get update
+  apt-get purge -y -qq docker\*
+  apt-get autoremove -y -qq
+  apt-get install -y -qq docker-engine=1.8.1-0~trusty
+  usermod -aG docker vagrant
+fi
 
-curl -s -L https://github.com/docker/compose/releases/download/1.1.0/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+msg "Installing docker-compose and docker utilities..."
+mkdir -p /home/vagrant/bin
+wget -nv -O /home/vagrant/bin/docker-compose https://github.com/docker/compose/releases/download/1.4.0/docker-compose-Linux-x86_64
+wget -nv -O /home/vagrant/bin/docker-gc https://raw.githubusercontent.com/spotify/docker-gc/master/docker-gc
+wget -nv -O /home/vagrant/bin/docker-volumes https://github.com/cpuguy83/docker-volumes/releases/download/v1.1.2/docker-volumes-linux-amd64
+chmod +x /home/vagrant/bin/docker-{compose,gc,volumes}
 
+msg "Other utilties..."
+apt-get install -y htop tmux linux-image-extra-virtual
+
+msg "Restarting docker..."
 cp /tmp/docker /etc/default/docker
 sudo service docker restart
 
-echo
-echo -e [${BLUE}SUBROSA${NC}] Initializing shell configs and cleaning up...
-echo
+msg "Initializing shell configs and cleaning up..."
 
 cat <<'EOF' > /home/vagrant/.bashrc
 export DOCKER_HOST=tcp://127.0.0.1:4243
