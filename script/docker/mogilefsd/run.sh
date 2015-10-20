@@ -1,5 +1,8 @@
 #!/bin/bash -ex
 
+# assuming we're starting this service at the same time as the database, give it time to start up
+sleep 5
+
 cat <<CONF > /etc/mogilefs/mogilefsd.conf
 db_dsn DBI:Pg:database=$MOGILEFS_DB_NAME;host=$DB_PORT_5432_TCP_ADDR;port=$DB_PORT_5432_TCP_PORT;
 db_user $SEC_MOGILEFS_DB_USER

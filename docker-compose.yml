@@ -6,10 +6,12 @@ config:
   ports:
     - "8888:8888"
 
-eureka:
-  build: apps/eureka
-  ports:
-    - "8761:8761"
+#eureka:
+#  build: apps/eureka
+#  ports:
+#    - "8761:8761"
+#  links:
+#    - config
 
 gateway:
   build: apps/gateway
@@ -28,7 +30,6 @@ api:
     - db
     - mogilefsd
     - config
-    - eureka
 
 image:
   build: apps/image
@@ -38,7 +39,6 @@ image:
     - db
     - mogilefsd
     - config
-    - eureka
 
 db:
 #  image: subrosa/db

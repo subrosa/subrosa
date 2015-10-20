@@ -13,6 +13,19 @@ checkstyle {
     configProperties.checkstyleConfigDir = checkstyleConfigDir
     ignoreFailures = true
 }
+tasks.withType(Checkstyle) { Task task ->
+    task.doLast {
+        def xmlReport = task.reports.xml.destination
+        def basename = xmlReport.name.lastIndexOf('.').with { xmlReport.name[0..it-1] }
+        def htmlReport = new File(xmlReport.parent, "${basename}.html")
+        println "Generating HTML report for $task.name"
+        println "   at $htmlReport"
+        println "   from $xmlReport"
+        ant.xslt(in: xmlReport,
+                style: file("$checkstyleConfigDir/checkstyle-noframes-sorted.xsl"),
+                out: htmlReport)
+    }
+}
 
 apply plugin: 'findbugs'
 findbugs {

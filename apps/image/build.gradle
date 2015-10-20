@@ -17,9 +17,11 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    compile "org.springframework.boot:spring-boot-starter-web:{$springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
     compile "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
     compile 'org.springframework.cloud:spring-cloud-config-client:1.0.2.RELEASE'
+    // spring retry for startup
+    compile 'org.springframework.retry:spring-retry:1.1.2.RELEASE'
 
     compile 'com.amazonaws:aws-java-sdk:1.9.22'
     compile 'com.google.guava:guava:18.0'
