@@ -125,8 +125,6 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
-    @Getter
-    @Setter
     // TODO use immutable java 8 temporal types
     private Date dateOfBirth;
 

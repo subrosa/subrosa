@@ -120,8 +120,7 @@ public class GameEntity extends BaseEntity {
     private String url;
 
     @Column
-    @Getter
-    @Setter
+    // TODO use java8 date/time apis
     private Date published;
 
     @Column
@@ -229,7 +228,6 @@ public class GameEntity extends BaseEntity {
     )
     @OrderColumn(name = "index")
     @Getter
-    @Setter
     private List<EnrollmentField> playerInfo = Lists.newArrayList();
 
     @Filterable(

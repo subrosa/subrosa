@@ -19,6 +19,7 @@ import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 
 /**
  * Handles interactions between players and games.
@@ -124,9 +125,9 @@ public interface GameService {
 
     List<Team> listTeams(String gameUrl) throws GameNotFoundException;
 
-    Team getTeam(String gameUrl, Integer integer);
+    Team getTeam(String gameUrl, Integer integer) throws GameNotFoundException, TeamNotFoundException;
 
-    Team createTeam(String gameUrl, TeamDescriptor teamDescriptor);
+    Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) throws GameNotFoundException;
 
-    Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor);
+    Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException;
 }

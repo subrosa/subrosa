@@ -38,7 +38,7 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
 
     protected abstract T getObject(String parentId, String childId) throws DomainObjectNotFoundException;
 
-    protected abstract T createObject(String parentId, U objectDescriptor);
+    protected abstract T createObject(String parentId, U objectDescriptor) throws DomainObjectNotFoundException;
 
     protected abstract String createdObjectLocation(String parentId, String childId);
 
@@ -57,8 +57,9 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
         if (CollectionUtils.isEmpty(objects)) {
             return new PaginatedList<>(Lists.<T>newArrayList(), 0, limit, offset);
         } else {
+            limit = limit > 0 ? limit : objects.size();
             return new PaginatedList<>(
-                    objects.subList(offset, Math.min(objects.size() - 1, offset + limit)),
+                    objects.subList(offset, Math.min(objects.size(), offset + limit)),
                     objects.size(),
                     limit, offset);
         }
@@ -78,7 +79,7 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
     public T create(@PathVariable(PARENT_ID) String parentId,
                     @RequestBody(required = false) U objectDescriptor,
                     HttpServletResponse response)
-            throws BadRequestException
+            throws BadRequestException, DomainObjectNotFoundException
     {
         if (objectDescriptor == null) {
             throw new BadRequestException("No POST body supplied");
@@ -92,7 +93,8 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
     @ResponseBody
     public T update(@PathVariable(PARENT_ID) String parentId,
                     @PathVariable(CHILD_ID) String childId,
-                    @RequestBody(required = false) U objectDescriptor) throws BadRequestException, NotAuthenticatedException, DomainObjectNotFoundException
+                    @RequestBody(required = false) U objectDescriptor)
+            throws BadRequestException, NotAuthenticatedException, DomainObjectNotFoundException
     {
         if (objectDescriptor == null) {
             throw new BadRequestException("No POST body supplied");

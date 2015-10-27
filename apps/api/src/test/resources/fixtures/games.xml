@@ -55,8 +55,8 @@
   <game game_id="101" owner_id="10001" name="Fun Times!" url="fun_times11" game_type="ASSASSIN"/>
   <game game_id="102" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
 
-  <team team_id="100" game_id="1"/>
-  <team team_id="101" game_id="1"/>
+  <team team_id="100" game_id="1" name="good team"/>
+  <team team_id="101" game_id="1" name="bad team"/>
   <player player_id="10" team_id="100" account_id="10002" player_profile_id="1" kill_code="12345" game_role="PLAYER"/>
   <player_profile player_profile_id="1" account_id="10002" name="peter" image_id="1"/>
   <image image_id="10" account_id="10002" file_asset_id="10" index="0"/>
@@ -69,5 +69,8 @@
 
   <post post_id="1" game_id="1" post_type="TEXT" account_id="10001" content="This is a message"/>
   <post post_id="2" game_id="1" post_type="KILL_EVENT" history_id="1" account_id="10001" content="This is a message"/>
+
+  <player player_id="12" account_id="10004" player_profile_id="3" kill_code="12345" game_role="PLAYER"/>
+  <player_profile player_profile_id="3" account_id="10004" name="not on a team" image_id="3"/>
 
 </dataset>

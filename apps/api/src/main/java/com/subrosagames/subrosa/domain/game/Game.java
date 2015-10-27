@@ -6,6 +6,7 @@ import java.util.Map;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
@@ -24,6 +25,7 @@ import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 
 /**
  * The minimum functionality shared by all games.
@@ -238,4 +240,10 @@ public interface Game extends GameData {
     boolean isPublished();
 
     List<Team> getTeams();
+
+    Team getTeam(Integer teamId) throws TeamNotFoundException;
+
+    Team addTeam(TeamDescriptor teamDescriptor);
+
+    Team updateTeam(Integer teamId, TeamDescriptor teamDescriptor) throws TeamNotFoundException;
 }

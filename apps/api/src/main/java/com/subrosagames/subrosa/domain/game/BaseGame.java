@@ -29,6 +29,7 @@ import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -54,10 +55,12 @@ import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
+import lombok.Setter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -81,15 +84,19 @@ public class BaseGame extends GameEntity implements Game {
 
     @JsonIgnore
     @Transient
+    @Setter
     private GameRepository gameRepository;
     @JsonIgnore
     @Transient
+    @Setter
     private PlayerFactory playerFactory;
     @JsonIgnore
     @Transient
+    @Setter
     private GameFactory gameFactory;
     @JsonIgnore
     @Transient
+    @Setter
     private AccountFactory accountFactory;
 
     @Override
@@ -275,6 +282,23 @@ public class BaseGame extends GameEntity implements Game {
         return getTeams(gameRepository.getTeamsForGame(getId(), 0, 0));
     }
 
+    @Override
+    public Team getTeam(Integer teamId) throws TeamNotFoundException {
+        return playerFactory.getTeam(this, teamId);
+    }
+
+    @Override
+    public Team addTeam(TeamDescriptor teamDescriptor) {
+        return playerFactory.createTeamForGame(this, teamDescriptor);
+    }
+
+    @Override
+    public Team updateTeam(Integer teamId, TeamDescriptor teamDescriptor) throws TeamNotFoundException {
+        Team team = getTeam(teamId);
+        // TODO check constraints against updates - for example, during games
+        return team.update(teamDescriptor);
+    }
+
     private List<Team> getTeams(List<? extends Team> teams) {
         return Lists.newArrayList(teams);
     }
@@ -327,22 +351,6 @@ public class BaseGame extends GameEntity implements Game {
             throw new GameEventValidationException(violations);
         }
         return gameRepository.update(eventEntity);
-    }
-
-    public void setGameFactory(GameFactory gameFactory) {
-        this.gameFactory = gameFactory;
-    }
-
-    public void setGameRepository(GameRepository gameRepository) {
-        this.gameRepository = gameRepository;
-    }
-
-    public void setPlayerFactory(PlayerFactory playerFactory) {
-        this.playerFactory = playerFactory;
-    }
-
-    public void setAccountFactory(AccountFactory accountFactory) {
-        this.accountFactory = accountFactory;
     }
 
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {

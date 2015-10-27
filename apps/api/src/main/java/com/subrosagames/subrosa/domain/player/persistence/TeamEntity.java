@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.domain.player.persistence;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
@@ -23,6 +25,7 @@ import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -107,5 +110,16 @@ public class TeamEntity implements Team {
     @Override
     public Image getAvatar() {
         return null;
+    }
+
+    @Override
+    public Team update(TeamDescriptor teamDescriptor) {
+        OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
+        try {
+            beanCopier.copyProperties(this, teamDescriptor);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        }
+        return this;
     }
 }

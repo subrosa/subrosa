@@ -35,6 +35,6 @@
   <account_role account_id="1000" role="ADMIN"/>
 
     <game game_id="1" owner_id="1" name="A Game" url="game" game_type="SCAVENGER"/>
-    <team team_id="1" game_id="1"/>
+    <team team_id="1" game_id="1" name="The Team"/>
     <player player_id="1" team_id="1" account_id="3" player_profile_id="2" game_role="PLAYER"/>
 </dataset>

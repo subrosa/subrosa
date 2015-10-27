@@ -27,6 +27,7 @@ import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.service.GameService;
 
 /**
@@ -123,18 +124,22 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public Team getTeam(String gameUrl, Integer integer) {
-        return null;
+    public Team getTeam(String gameUrl, Integer teamId) throws GameNotFoundException, TeamNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.getTeam(teamId);
     }
 
     @Override
-    public Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) {
-        return null;
+    public Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) throws GameNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.addTeam(teamDescriptor);
     }
 
     @Override
-    public Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor) {
-        return null;
+    @Transactional
+    public Team updateTeam(String gameUrl, Integer teamId, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.updateTeam(teamId, teamDescriptor);
     }
 
 }

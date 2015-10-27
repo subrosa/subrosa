@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
+import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
@@ -21,7 +23,7 @@ import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
  * Factory for game player objects.
  */
 @Component
-public class PlayerFactoryImpl implements PlayerFactory {
+public class PlayerFactoryImpl extends BaseDomainObjectFactory implements PlayerFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlayerFactoryImpl.class);
 
@@ -37,6 +39,7 @@ public class PlayerFactoryImpl implements PlayerFactory {
     {
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
+        teamEntity.setName(playerDescriptor.getPlayer().getName());
         playerRepository.createTeam(teamEntity);
 
         PlayerEntity playerEntity = new PlayerEntity();
@@ -92,4 +95,21 @@ public class PlayerFactoryImpl implements PlayerFactory {
         return player;
     }
 
+    @Override
+    public Team createTeamForGame(Game game, TeamDescriptor teamDescriptor) {
+        TeamEntity teamEntity = new TeamEntity();
+        teamEntity.setGameId(game.getId());
+        copyProperties(teamDescriptor, teamEntity);
+        playerRepository.createTeam(teamEntity);
+        return teamEntity;
+    }
+
+    @Override
+    public Team getTeam(Game game, Integer teamId) throws TeamNotFoundException {
+        TeamEntity team = playerRepository.getTeam(teamId);
+        if (team == null || !game.getId().equals(team.getGameId())) {
+            throw new TeamNotFoundException("No team " + teamId + " in game.");
+        }
+        return team;
+    }
 }
