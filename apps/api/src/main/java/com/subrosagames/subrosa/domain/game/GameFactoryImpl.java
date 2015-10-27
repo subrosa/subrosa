@@ -30,7 +30,6 @@ import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
-import com.subrosagames.subrosa.event.EventScheduler;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -43,9 +42,6 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Autowired
     private GameRepository gameRepository;
-
-    @Autowired
-    private EventScheduler eventScheduler;
 
     @Autowired
     private PlayerFactory playerFactory;

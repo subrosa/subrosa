@@ -10,7 +10,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 /**
  * Base configuration class for application.
  */
-@ImportResource("classpath:com/subrosagames/subrosa/subrosa-application-context.xml")
 @Configuration
 public class SubrosaConfiguration {
 

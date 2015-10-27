@@ -11,7 +11,6 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.notification.NotificationCode;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;
 import com.subrosagames.subrosa.domain.notification.Notifier;
-import com.subrosagames.subrosa.event.EventExecutor;
 
 /**
  * Handler for starting a game.
@@ -22,9 +21,6 @@ public class GameStartMessageHandler extends AbstractMessageHandler {
 
     @Autowired
     private Notifier notifier;
-
-    @Autowired
-    private EventExecutor eventExecutor;
 
     @Override
     public void process(Game game, Map<String, Serializable> properties) throws MessageHandlingException {
