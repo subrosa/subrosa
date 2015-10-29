@@ -49,7 +49,6 @@ import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
-import com.subrosagames.subrosa.domain.account.repository.AddressRepository;
 import com.subrosagames.subrosa.domain.account.repository.PlayerProfileRepository;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
@@ -94,10 +93,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     @Transient
     @Setter
     private TokenFactory tokenFactory;
-    @JsonIgnore
-    @Transient
-    @Setter
-    private AddressRepository addressRepository;
     @JsonIgnore
     @Transient
     @Setter
@@ -167,10 +162,14 @@ public class Account extends BaseEntity implements PermissionTarget {
     private String password;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Getter
     @Setter
-    private List<Address> addresses;
+    private List<Address> addresses = Lists.newArrayList();
 
     @JsonIgnore
     @OneToMany(
@@ -185,7 +184,11 @@ public class Account extends BaseEntity implements PermissionTarget {
     private List<Image> images = Lists.newArrayList();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Getter
     @Setter
     private List<PlayerProfile> playerProfiles = Lists.newArrayList();
@@ -221,7 +224,7 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AddressNotFoundException if address is not found
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
-        return addressRepository.findOneByAccountAndId(this, addressId)
+        return addresses.stream().filter(a -> a.getId().equals(addressId)).findAny()
                 .orElseThrow(() -> new AddressNotFoundException("Address not found with id " + addressId + " for account " + id));
     }
 
@@ -287,7 +290,7 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address deleteAddress(int addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId);
-        addressRepository.delete(address);
+        addresses.remove(address);
         return address;
     }
 
