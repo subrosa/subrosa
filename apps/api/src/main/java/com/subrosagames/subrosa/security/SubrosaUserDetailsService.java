@@ -6,8 +6,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
 
 /**
  * Implementation of {@code UserDetailsService} for retrieving subrosa users.
@@ -20,11 +21,9 @@ public class SubrosaUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) {
-        try {
-            return new SubrosaUser(accountRepository.getAccountByEmail(email));
-        } catch (AccountNotFoundException e) {
-            throw new UsernameNotFoundException("User with email " + email + " not found", e);
-        }
+        Account account = accountRepository.findOneByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User with email " + email + " not found"));
+        return new SubrosaUser(account);
     }
 
 }

@@ -1,8 +1,8 @@
 package com.subrosagames.subrosa.api.dto;
 
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
-import com.google.common.base.Optional;
 import com.subrosagames.subrosa.domain.account.AccountRole;
 
 /**

@@ -14,8 +14,7 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
-import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
 import com.subrosagames.subrosa.domain.account.UserConnection;
 
 /**
@@ -23,17 +22,16 @@ import com.subrosagames.subrosa.domain.account.UserConnection;
  */
 public class JpaUsersConnectionRepository implements UsersConnectionRepository {
 
-    private SocialUserRepository socialUserRepository;
-    private AccountRepository accountRepository;
+    private final SocialUserRepository socialUserRepository;
+    private final AccountRepository accountRepository;
 
     /**
      * Construct with the given repositories.
      *
      * @param socialUserRepository user connection repository
-     * @param accountRepository account repository
+     * @param accountRepository    account repository
      */
     public JpaUsersConnectionRepository(SocialUserRepository socialUserRepository, AccountRepository accountRepository) {
-
         this.socialUserRepository = socialUserRepository;
         this.accountRepository = accountRepository;
     }
@@ -69,13 +67,9 @@ public class JpaUsersConnectionRepository implements UsersConnectionRepository {
             newAccount.setUsername(profile.getUsername());
             // accounts created via a 3rd party integration can be considered vetted
             newAccount.setActivated(true);
-            // no password - if they want to set one later they can use fogot password
+            // need an empty (but non-null) password - if the user wants to set a password later they can via "forgot password"
             newAccount.setPassword("");
-            try {
-                accountRepository.create(newAccount);
-            } catch (DomainObjectValidationException e) {
-                throw new IllegalStateException("Social profile is insufficient for account creation!");
-            }
+            accountRepository.save(newAccount);
             userId = newAccount.getEmail();
         } else {
             userId = account.getEmail();
@@ -95,11 +89,7 @@ public class JpaUsersConnectionRepository implements UsersConnectionRepository {
 
     private Account findUserFromSocialProfile(UserProfile profile) {
         if (profile != null && StringUtils.hasText(profile.getEmail())) {
-            try {
-                return accountRepository.getAccountByEmail(profile.getEmail());
-            } catch (AccountNotFoundException e) {
-                return null;
-            }
+            return accountRepository.findOneByEmail(profile.getEmail()).orElse(null);
         }
         return null;
     }
@@ -114,12 +104,8 @@ public class JpaUsersConnectionRepository implements UsersConnectionRepository {
         if (userId == null) {
             throw new IllegalArgumentException("userId cannot be null");
         }
-        Account account;
-        try {
-            account = accountRepository.getAccountByEmail(userId);
-        } catch (AccountNotFoundException e) {
-            throw new IllegalArgumentException("User not Found", e);
-        }
+        Account account = accountRepository.findOneByEmail(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not Found"));
         return new JpaConnectionRepository(socialUserRepository, account);
     }
 }

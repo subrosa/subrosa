@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
@@ -20,8 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -73,14 +72,6 @@ public class BaseGame extends GameEntity implements Game {
     private static final Logger LOG = LoggerFactory.getLogger(BaseGame.class);
 
     private static final int ABSOLUTE_MINIMUM_AGE = 13;
-
-    @Transient
-    private final Function<Rule, String> extractRules = new Function<Rule, String>() {
-        @Override
-        public String apply(Rule input) {
-            return input.getDescription();
-        }
-    };
 
     @JsonIgnore
     @Transient
@@ -181,14 +172,14 @@ public class BaseGame extends GameEntity implements Game {
     @Override
     public Map<RuleType, List<String>> getRules() {
         Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
-        rules.put(RuleType.ALL_GAMES, Lists.transform(gameRepository.getRulesForType(RuleType.ALL_GAMES), extractRules));
+        rules.put(RuleType.ALL_GAMES, Lists.transform(gameRepository.getRulesForType(RuleType.ALL_GAMES), Rule::getDescription));
         final Set<Rule> ruleSet = getRuleSet();
         if (ruleSet != null) {
             List<Rule> rulesList = new ArrayList<Rule>(ruleSet.size());
             rulesList.addAll(ruleSet);
             rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
                     rulesList,
-                    extractRules
+                    Rule::getDescription
             ));
         }
         return rules;

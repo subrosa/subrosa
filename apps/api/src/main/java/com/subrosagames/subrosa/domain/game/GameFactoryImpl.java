@@ -64,31 +64,27 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     }
 
     void injectDependencies(List<BaseGame> games) {
-        for (BaseGame game : games) {
-            injectDependencies(game);
-        }
+        games.forEach(this::injectDependencies);
     }
 
     @Override
-    public void injectDependencies(BaseGame game) {
+    public BaseGame injectDependencies(BaseGame game) {
         game.setGameRepository(gameRepository);
         game.setGameFactory(this);
         game.setPlayerFactory(playerFactory);
         game.setAccountFactory(accountFactory);
+        return game;
     }
 
     @Override
     public PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions) {
         List<BaseGame> gameEntities = gameRepository.list(limit, offset, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
-            @Override
-            public Game apply(BaseGame gameEntity) {
-                try {
-                    return getGame(gameEntity.getId());
-                } catch (GameNotFoundException e) {
-                    LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
-                    return null;
-                }
+        List<Game> games = Lists.transform(gameEntities, gameEntity -> {
+            try {
+                return getGame(gameEntity.getId());
+            } catch (GameNotFoundException e) {
+                LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
+                return null;
             }
         });
         return new PaginatedList<>(
@@ -138,7 +134,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public BaseGame forDto(GameDescriptor gameDescriptor, Account account) throws GameValidationException, ImageNotFoundException {
-        GameType gameType = gameDescriptor.getGameType() == null ? null : gameDescriptor.getGameType().orNull();
+        GameType gameType = gameDescriptor.getGameType() == null ? null : gameDescriptor.getGameType().orElse(null);
         BaseGame game;
         try {
             game = GameTypeToEntityMapper.forType(gameType);

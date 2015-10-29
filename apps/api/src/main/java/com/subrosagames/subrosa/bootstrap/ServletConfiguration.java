@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.subrosagames.subrosa.util.bean.HibernateAwareObjectMapper;
 
 /**
@@ -50,7 +50,7 @@ public class ServletConfiguration extends WebMvcConfigurerAdapter {
     private MappingJackson2HttpMessageConverter jacksonMessageConverter() {
         MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
         HibernateAwareObjectMapper objectMapper = new HibernateAwareObjectMapper();
-        objectMapper.registerModules(new GuavaModule());
+        objectMapper.registerModules(new Jdk8Module());
         objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         converter.setObjectMapper(objectMapper);

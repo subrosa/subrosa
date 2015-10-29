@@ -18,7 +18,14 @@ import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 /**
  * Repository for retrieval of game information.
  */
-public interface GameRepository extends DomainObjectRepository<BaseGame> {
+public interface GameRepository {
+
+    default List<BaseGame> list(int limit, int offset, String... expansions) {
+        return null;
+    }
+    default int count() {
+        return 0;
+    }
 
     /**
      * Get a list of games matching the provided criteria.

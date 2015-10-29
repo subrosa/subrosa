@@ -37,7 +37,7 @@ import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.list.Operator;
@@ -82,7 +82,7 @@ import lombok.Setter;
                 @FetchProfile.FetchOverride(entity = GameEntity.class, association = "events", mode = FetchMode.JOIN)
         })
 })
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameEntity extends BaseEntity {
 
     /**

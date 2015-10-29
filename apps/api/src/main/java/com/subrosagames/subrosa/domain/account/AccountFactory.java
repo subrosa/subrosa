@@ -1,17 +1,22 @@
 package com.subrosagames.subrosa.domain.account;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
+import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.repository.AddressRepository;
+import com.subrosagames.subrosa.domain.account.repository.PlayerProfileRepository;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
-import com.subrosagames.subrosa.service.PaginatedList;
+import com.subrosagames.subrosa.security.PasswordUtility;
 
 /**
  * Factory for account objects.
@@ -21,9 +26,16 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
 
     @Autowired
     private AccountRepository accountRepository;
-
+    @Autowired
+    private AddressRepository addressRepository;
+    @Autowired
+    private PlayerProfileRepository playerProfileRepository;
+    @Autowired
+    private ImageRepository imageRepository;
     @Autowired
     private TokenFactory tokenFactory;
+    @Autowired
+    private PasswordUtility passwordUtility;
 
     /**
      * Get paginated list of accounts.
@@ -33,12 +45,8 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      * @param expansions fields to expand
      * @return paginated list of accounts
      */
-    public PaginatedList<Account> getAccounts(Integer limit, Integer offset, String... expansions) {
-        List<Account> accounts = accountRepository.list(limit, offset, expansions);
-        return new PaginatedList<>(
-                accounts,
-                accountRepository.count(),
-                limit, offset);
+    public Page<Account> getAccounts(Integer limit, Integer offset, String... expansions) {
+        return accountRepository.findAll(null, new PageRequest(0, limit), expansions);
     }
 
     /**
@@ -50,9 +58,9 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      * @throws AccountNotFoundException if account with specified id does not exist
      */
     public Account getAccount(int id, String... expansions) throws AccountNotFoundException {
-        Account account = accountRepository.get(id, expansions);
-        injectDependencies(account);
-        return account;
+        return accountRepository.findOne(id, expansions)
+                .map(this::injectDependencies)
+                .orElseThrow(() -> new AccountNotFoundException("No account with id " + id));
     }
 
     /**
@@ -64,9 +72,9 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      * @throws AccountNotFoundException if account with specified email does not exist
      */
     public Account getAccount(String email, String... expansions) throws AccountNotFoundException {
-        Account account = accountRepository.getAccountByEmail(email, expansions);
-        injectDependencies(account);
-        return account;
+        return accountRepository.findOneByEmail(email, expansions)
+                .map(this::injectDependencies)
+                .orElseThrow(() -> new AccountNotFoundException("No account with email " + email));
     }
 
     /**
@@ -87,10 +95,15 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
      *
      * @param account account
      */
-    public void injectDependencies(Account account) {
+    public Account injectDependencies(Account account) {
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
+        account.setAddressRepository(addressRepository);
+        account.setPlayerProfileRepository(playerProfileRepository);
+        account.setImageRepository(imageRepository);
+        account.setPasswordUtility(passwordUtility);
         account.setTokenFactory(tokenFactory);
+        return account;
     }
 
     /**

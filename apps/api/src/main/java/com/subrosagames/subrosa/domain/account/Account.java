@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -41,20 +42,24 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Optional;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
+import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.repository.AddressRepository;
+import com.subrosagames.subrosa.domain.account.repository.PlayerProfileRepository;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
+import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import com.subrosagames.subrosa.security.PasswordUtility;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.Getter;
 import lombok.Setter;
@@ -64,7 +69,6 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "account")
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @FetchProfiles({
         @FetchProfile(name = "addresses", fetchOverrides = {
                 @FetchProfile.FetchOverride(entity = Account.class, association = "addresses", mode = FetchMode.JOIN)
@@ -73,19 +77,39 @@ import lombok.Setter;
                 @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
         })
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends BaseEntity implements PermissionTarget {
 
     private static final Logger LOG = LoggerFactory.getLogger(Account.class);
 
     @JsonIgnore
     @Transient
+    @Setter
     private AccountRepository accountRepository;
     @JsonIgnore
     @Transient
+    @Setter
     private AccountFactory accountFactory;
     @JsonIgnore
     @Transient
+    @Setter
     private TokenFactory tokenFactory;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private AddressRepository addressRepository;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private ImageRepository imageRepository;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private PlayerProfileRepository playerProfileRepository;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private PasswordUtility passwordUtility;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -197,7 +221,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AddressNotFoundException if address is not found
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
-        return accountRepository.getAddress(this, addressId);
+        return addressRepository.findOneByAccountAndId(this, addressId)
+                .orElseThrow(() -> new AddressNotFoundException("Address not found with id " + addressId + " for account " + id));
     }
 
     /**
@@ -262,7 +287,7 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address deleteAddress(int addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId);
-        accountRepository.delete(address);
+        addressRepository.delete(address);
         return address;
     }
 
@@ -274,9 +299,10 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AccountValidationException if account is invalid for creation
      */
     public Account create(String userPassword) throws AccountValidationException {
+        setPassword(passwordUtility.encryptPassword(userPassword));
         assertValid();
         try {
-            accountRepository.create(this, userPassword);
+            accountRepository.save(this);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
             if (isUniqueConstraintViolation(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
@@ -321,9 +347,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     private Account performUpdate() throws AccountValidationException {
         assertValid();
         try {
-            accountRepository.update(this);
-        } catch (AccountNotFoundException e) {
-            throw new IllegalStateException("This should never happen - was the id of this object modified?", e);
+            accountRepository.save(this);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
             if (isUniqueConstraintViolation(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
@@ -366,7 +390,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws ImageNotFoundException if image does not exist
      */
     public Image getImage(int imageId) throws ImageNotFoundException {
-        return accountRepository.getImage(this, imageId);
+        return imageRepository.findOneByAccountAndId(this, imageId)
+                .orElseThrow(() -> new ImageNotFoundException("No image " + imageId + " for account " + id));
     }
 
     /**
@@ -404,7 +429,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws PlayerProfileNotFoundException if player profile does not exist
      */
     public PlayerProfile getPlayerProfile(int playerId) throws PlayerProfileNotFoundException {
-        return accountRepository.getPlayerProfile(this, playerId);
+        return playerProfileRepository.findOneByAccountAndId(this, playerId)
+                .orElseThrow(() -> new PlayerProfileNotFoundException("No player profile " + playerId + " for account " + id));
     }
 
     /**
@@ -445,7 +471,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException, PlayerProfileInUseException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         if (CollectionUtils.isEmpty(playerProfile.getPlayers())) {
-            accountRepository.delete(playerProfile);
+            playerProfileRepository.delete(playerProfile);
         } else {
             throw new PlayerProfileInUseException("Player profile " + playerId + " is in use and cannot be deleted");
         }
@@ -473,7 +499,7 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     void copyPlayerProfileProperties(PlayerProfileDescriptor playerProfileDescriptor, PlayerProfile playerProfile) throws ImageNotFoundException {
         if (playerProfileDescriptor.getName() != null) {
-            playerProfile.setName(playerProfileDescriptor.getName().orNull());
+            playerProfile.setName(playerProfileDescriptor.getName().orElse(null));
         }
         if (playerProfileDescriptor.getImageId() != null) {
             if (playerProfileDescriptor.getImageId().isPresent()) {
@@ -490,18 +516,6 @@ public class Account extends BaseEntity implements PermissionTarget {
         if (!violations.isEmpty()) {
             throw new AccountValidationException(violations);
         }
-    }
-
-    public void setAccountRepository(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
-
-    public void setAccountFactory(AccountFactory accountFactory) {
-        this.accountFactory = accountFactory;
-    }
-
-    public void setTokenFactory(TokenFactory tokenFactory) {
-        this.tokenFactory = tokenFactory;
     }
 
 }

@@ -2,10 +2,10 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.RandomStringUtils;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.EnrollmentFieldDto;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
@@ -39,7 +39,7 @@ public final class GameDescriptorTranslator {
             List<EnrollmentFieldDto> emptyList = Lists.newArrayList();
             enrollmentFields = Optional.of(emptyList);
         }
-        for (EnrollmentField field : enrollmentFields.or(Lists.<EnrollmentFieldDto>newArrayList())) {
+        for (EnrollmentField field : enrollmentFields.orElse(Lists.<EnrollmentFieldDto>newArrayList())) {
             EnrollmentFieldEntity entity = new EnrollmentFieldEntity();
             entity.setPrimaryKey(new EnrollmentFieldPk(game.getId(), RandomStringUtils.randomAlphabetic(7)));
             entity.setGame(game);

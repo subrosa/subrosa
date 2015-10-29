@@ -16,7 +16,7 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
 import com.subrosagames.subrosa.security.JpaUsersConnectionRepository;
 import com.subrosagames.subrosa.security.SocialUserRepository;
 import com.subrosagames.subrosa.security.SubrosaUser;
@@ -51,15 +51,12 @@ public class SocialAuthConfiguration extends SocialConfigurerAdapter {
 
     @Override
     public UserIdSource getUserIdSource() {
-        return new UserIdSource() {
-            @Override
-            public String getUserId() {
-                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (authentication == null) {
-                    throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
-                }
-                return ((SubrosaUser) authentication.getPrincipal()).getUserId();
+        return () -> {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null) {
+                throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
             }
+            return ((SubrosaUser) authentication.getPrincipal()).getUserId();
         };
     }
 

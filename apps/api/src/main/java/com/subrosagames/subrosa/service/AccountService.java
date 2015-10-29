@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +70,7 @@ public class AccountService {
      * @return list of accounts
      */
     @PreAuthorize("hasRole('ADMIN')")
-    public PaginatedList<Account> listAccounts(int limit, int offset, String... expansions) {
+    public Page<Account> listAccounts(int limit, int offset, String... expansions) {
         return accountFactory.getAccounts(limit, offset, expansions);
     }
 

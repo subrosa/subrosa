@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.dto;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
+
 import com.subrosagames.subrosa.domain.DomainObjectDescriptor;
 import lombok.Data;
 

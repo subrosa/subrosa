@@ -1,6 +1,6 @@
 package com.subrosagames.subrosa.api.dto;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * Encapsulates the necessary information to create or update an address.

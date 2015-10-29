@@ -11,7 +11,8 @@ public interface DomainObjectFactory<T> {
      * Inject dependencies into the domain object.
      *
      * @param object domain object
+     * @return domain object with dependencies injected
      */
-    void injectDependencies(T object);
+    T injectDependencies(T object);
 
 }

@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Ignore;
@@ -15,7 +16,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;

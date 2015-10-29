@@ -1,11 +1,13 @@
 package com.subrosagames.subrosa.security;
 
+import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.social.security.SocialUser;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountRole;
 import com.subrosagames.subrosa.domain.account.UserConnection;
@@ -27,13 +29,12 @@ public class SubrosaUser extends SocialUser {
      * @param account subrosa account
      */
     public SubrosaUser(Account account) {
-        super(account.getEmail(), account.getPassword(), Collections2.transform(account.getRoles(), new Function<AccountRole, GrantedAuthority>() {
-            @Override
-            public GrantedAuthority apply(AccountRole accountRole) {
-                return new SimpleGrantedAuthority(accountRole.name());
-            }
-        }));
+        super(account.getEmail(), account.getPassword(), authoritiesForRoles(account.getRoles()));
         this.account = account;
+    }
+
+    private static Collection<? extends GrantedAuthority> authoritiesForRoles(Set<AccountRole> roles) {
+        return roles.stream().map(role -> new SimpleGrantedAuthority(role.name())).collect(Collectors.toSet());
     }
 
     /**
