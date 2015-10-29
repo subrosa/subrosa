@@ -7,7 +7,7 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 
 /**
  * Listener that updates {@link Account#lastLoggedIn} on successful authentication.

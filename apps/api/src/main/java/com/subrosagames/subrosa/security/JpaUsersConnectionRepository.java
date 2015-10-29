@@ -12,9 +12,8 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Sets;
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.account.UserConnection;
 
 /**

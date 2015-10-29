@@ -16,7 +16,7 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.security.JpaUsersConnectionRepository;
 import com.subrosagames.subrosa.security.SocialUserRepository;
 import com.subrosagames.subrosa.security.SubrosaUser;

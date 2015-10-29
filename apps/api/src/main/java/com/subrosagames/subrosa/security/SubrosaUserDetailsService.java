@@ -7,8 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 
 /**
  * Implementation of {@code UserDetailsService} for retrieving subrosa users.

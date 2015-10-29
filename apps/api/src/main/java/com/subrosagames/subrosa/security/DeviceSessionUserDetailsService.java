@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenType;

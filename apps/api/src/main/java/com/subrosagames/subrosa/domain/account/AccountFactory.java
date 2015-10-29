@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.domain.BaseDomainObjectFactory;
 import com.subrosagames.subrosa.domain.DomainObjectFactory;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
-import com.subrosagames.subrosa.domain.account.repository.PlayerProfileRepository;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
@@ -24,8 +22,6 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
 
     @Autowired
     private AccountRepository accountRepository;
-    @Autowired
-    private PlayerProfileRepository playerProfileRepository;
     @Autowired
     private ImageRepository imageRepository;
     @Autowired
@@ -94,7 +90,6 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     public Account injectDependencies(Account account) {
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
-        account.setPlayerProfileRepository(playerProfileRepository);
         account.setImageRepository(imageRepository);
         account.setPasswordUtility(passwordUtility);
         account.setTokenFactory(tokenFactory);

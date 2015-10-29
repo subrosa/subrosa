@@ -48,8 +48,6 @@ import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
-import com.subrosagames.subrosa.domain.account.repository.AccountRepository;
-import com.subrosagames.subrosa.domain.account.repository.PlayerProfileRepository;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
@@ -97,10 +95,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     @Transient
     @Setter
     private ImageRepository imageRepository;
-    @JsonIgnore
-    @Transient
-    @Setter
-    private PlayerProfileRepository playerProfileRepository;
     @JsonIgnore
     @Transient
     @Setter
@@ -432,7 +426,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws PlayerProfileNotFoundException if player profile does not exist
      */
     public PlayerProfile getPlayerProfile(int playerId) throws PlayerProfileNotFoundException {
-        return playerProfileRepository.findOneByAccountAndId(this, playerId)
+        return playerProfiles.stream()
+                .filter(pp -> pp.getId().equals(playerId)).findAny()
                 .orElseThrow(() -> new PlayerProfileNotFoundException("No player profile " + playerId + " for account " + id));
     }
 
@@ -474,7 +469,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException, PlayerProfileInUseException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         if (CollectionUtils.isEmpty(playerProfile.getPlayers())) {
-            playerProfileRepository.delete(playerProfile);
+            playerProfiles.remove(playerProfile);
         } else {
             throw new PlayerProfileInUseException("Player profile " + playerId + " is in use and cannot be deleted");
         }

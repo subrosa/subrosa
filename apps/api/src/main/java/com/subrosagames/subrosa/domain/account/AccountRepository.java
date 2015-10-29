@@ -1,4 +1,4 @@
-package com.subrosagames.subrosa.domain.account.repository;
+package com.subrosagames.subrosa.domain.account;
 
 import java.util.Optional;
 
