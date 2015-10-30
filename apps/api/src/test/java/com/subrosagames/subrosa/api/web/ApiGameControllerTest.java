@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
@@ -70,7 +72,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         game.setName("Test game");
         game.setUrl("test_game_url");
         game.setGameType(GameType.ASSASSIN);
-        gameRepository.create(game);
+        gameRepository.save(game);
 
         mockMvc.perform(
                 get("/game/test_game_url"))
@@ -145,11 +147,11 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("gameType", "ASSASSIN");
             }
         });
-        BaseGame entity1 = gameRepository.get(active1, "events");
-        entity1.setGameRepository(gameRepository);
-        entity1.setGameFactory(gameFactory);
+        BaseGame entity1 = gameRepository.findOneByUrl(active1, "events").get();
+        entity1 = gameFactory.injectDependencies(entity1);
         addEventToGame(entity1, "registrationStart", new Date(timeDaysInFuture(-1)));
         addEventToGame(entity1, "registrationEnd", new Date(timeDaysInFuture(1)));
+        gameRepository.save(entity1);
         String active2 = createGame(new HashMap<String, String>() {
             {
                 put("name", "active 2");
@@ -157,11 +159,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("gameType", "ASSASSIN");
             }
         });
-        BaseGame entity2 = gameRepository.get(active2, "events");
+        BaseGame entity2 = gameRepository.findOneByUrl(active2, "events").get();
+        entity2 = gameFactory.injectDependencies(entity2);
         entity2.setGameRepository(gameRepository);
         entity2.setGameFactory(gameFactory);
         addEventToGame(entity2, "registrationStart", new Date(timeDaysInFuture(-100)));
         addEventToGame(entity2, "registrationEnd", new Date(timeDaysInFuture(100)));
+        gameRepository.save(entity2);
         String inactive1 = createGame(new HashMap<String, String>() {
             {
                 put("name", "inactive 1");
@@ -171,11 +175,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 put("registrationEnd", Long.toString(timeDaysInFuture(5)));
             }
         });
-        BaseGame entity3 = gameRepository.get(inactive1, "events");
+        BaseGame entity3 = gameRepository.findOneByUrl(inactive1, "events").get();
+        entity3 = gameFactory.injectDependencies(entity3);
         entity3.setGameRepository(gameRepository);
         entity3.setGameFactory(gameFactory);
         addEventToGame(entity3, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(entity3, "registrationEnd", new Date(timeDaysInFuture(5)));
+        gameRepository.save(entity3);
 
         // search should now contain the two active games
         mockMvc.perform(
@@ -571,19 +577,15 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         final Long registrationEnd = timeDaysInFuture(7);
         final Long gameStart = timeDaysInFuture(7);
         final Long gameEnd = timeDaysInFuture(30);
-        BaseGame gameEntity = gameRepository.get(url, "events");
-        gameEntity.setGameRepository(gameRepository);
-        gameEntity.setGameFactory(gameFactory);
+        BaseGame gameEntity = gameRepository.findOneByUrl(url, "events").get();
+        gameEntity = gameFactory.injectDependencies(gameEntity);
         addEventToGame(gameEntity, "registrationStart", new Date(registrationStart));
         addEventToGame(gameEntity, "registrationEnd", new Date(registrationEnd));
         addEventToGame(gameEntity, "gameStart", new Date(gameStart));
         addEventToGame(gameEntity, "gameEnd", new Date(gameEnd));
-        Map<String, Object> updates = new HashMap<String, Object>() {
-            {
-                put("description", "it's going to be fun!");
-            }
-        };
-        performGameUpdates(url, updates)
+        gameRepository.save(gameEntity);
+
+        performGameUpdates(url, ImmutableMap.of("description", "it's going to be fun!"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameStart").value(gameStart))
                 .andExpect(jsonPath("$.gameEnd").value(gameEnd))
@@ -614,13 +616,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
         String newUrl = JsonPath.compile("$.url").read(updateResponse);
 
-        BaseGame gameEntity = gameRepository.get(newUrl, "events");
-        gameEntity.setGameRepository(gameRepository);
-        gameEntity.setGameFactory(gameFactory);
+        BaseGame gameEntity = gameRepository.findOneByUrl(newUrl, "events").get();
+        gameEntity = gameFactory.injectDependencies(gameEntity);
         addEventToGame(gameEntity, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(gameEntity, "registrationEnd", new Date(timeDaysInFuture(2)));
         addEventToGame(gameEntity, "gameStart", new Date(timeDaysInFuture(3)));
         addEventToGame(gameEntity, "gameEnd", new Date(timeDaysInFuture(4)));
+        gameRepository.save(gameEntity);
 
         mockMvc.perform(
                 post("/game/{url}/publish", newUrl)
@@ -662,23 +664,15 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String url = JsonPath.compile("$.url").read(response);
 
         // enter a price and assert it updates successfully
-        performGameUpdates(url, new HashMap<String, Object>() {
-            {
-                put("price", 500);
-            }
-        })
+        performGameUpdates(url, ImmutableMap.of("price", 500))
                 .andExpect(jsonPath("$.price").value(500));
 
         // update without specifying price and see original
-        performGameUpdates(url, new HashMap<String, Object>())
+        performGameUpdates(url, new HashMap<>())
                 .andExpect(jsonPath("$.price").value(500.0));
 
         // update with null and see that it sets it successfully
-        performGameUpdates(url, new HashMap<String, Object>() {
-            {
-                put("price", null);
-            }
-        })
+        performGameUpdates(url, Collections.singletonMap("price", null))
                 .andExpect(jsonPath("$.price").value(0));
     }
 
@@ -752,19 +746,15 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
-        performGameUpdates(url, new HashMap<String, Object>() {
-            {
-                put("description", "need this");
-            }
-        });
+        performGameUpdates(url, ImmutableMap.of("description", "need this"));
 
-        BaseGame baseGame = gameRepository.get(url, "events");
-        baseGame.setGameRepository(gameRepository);
-        baseGame.setGameFactory(gameFactory);
+        BaseGame baseGame = gameRepository.findOneByUrl(url, "events").get();
+        baseGame = gameFactory.injectDependencies(baseGame);
         addEventToGame(baseGame, "registrationStart", new Date(timeDaysInFuture(1)));
         addEventToGame(baseGame, "registrationEnd", new Date(timeDaysInFuture(2)));
         addEventToGame(baseGame, "gameStart", new Date(timeDaysInFuture(2)));
         addEventToGame(baseGame, "gameEnd", new Date(timeDaysInFuture(3)));
+        gameRepository.save(baseGame);
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
@@ -772,17 +762,17 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()));
 
-        updateEvent(gameRepository.get(url).getRegistrationStartEvents().get(0), new Date(timeDaysInFuture(-4)));
-        LOG.debug("registrationStart: {}", gameRepository.get(url).getRegistrationStart());
+        BaseGame game = gameRepository.findOneByUrl(url, "events").get();
+        updateEvent(game, game.getRegistrationStartEvents().get(0), new Date(timeDaysInFuture(-4)));
         expectGameStatusIs(url, GameStatus.REGISTRATION);
 
-        updateEvent(gameRepository.get(url).getRegistrationEndEvents().get(0), new Date(timeDaysInFuture(-3)));
+        updateEvent(game, game.getRegistrationEndEvents().get(0), new Date(timeDaysInFuture(-3)));
         expectGameStatusIs(url, GameStatus.POSTREGISTRATION);
 
-        updateEvent(gameRepository.get(url).getGameStartEvents().get(0), new Date(timeDaysInFuture(-2)));
+        updateEvent(game, game.getGameStartEvents().get(0), new Date(timeDaysInFuture(-2)));
         expectGameStatusIs(url, GameStatus.RUNNING);
 
-        updateEvent(gameRepository.get(url).getGameEndEvents().get(0), new Date(timeDaysInFuture(-1)));
+        updateEvent(game, game.getGameEndEvents().get(0), new Date(timeDaysInFuture(-1)));
         expectGameStatusIs(url, GameStatus.ARCHIVED);
     }
 
@@ -793,10 +783,10 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         game.addEvent(eventDescriptor);
     }
 
-    private void updateEvent(ScheduledEvent event, Date date) throws Exception {
-        ScheduledEventEntity eventEntity = (ScheduledEventEntity) gameRepository.getEvent(event.getId());
+    private void updateEvent(BaseGame game, ScheduledEvent event, Date date) throws Exception {
+        ScheduledEventEntity eventEntity = (ScheduledEventEntity) game.getEvent(event.getId());
         eventEntity.setDate(date);
-        gameRepository.update(eventEntity);
+        gameRepository.save(game);
     }
 
     private void expectGameStatusIs(String url, GameStatus gameStatus) throws Exception {

@@ -18,6 +18,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -66,13 +69,9 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "account")
-@FetchProfiles({
-        @FetchProfile(name = "addresses", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = Account.class, association = "addresses", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "images", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
-        })
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "addresses", attributeNodes = @NamedAttributeNode("addresses")),
+        @NamedEntityGraph(name = "images", attributeNodes = @NamedAttributeNode("images")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Account extends BaseEntity implements PermissionTarget {

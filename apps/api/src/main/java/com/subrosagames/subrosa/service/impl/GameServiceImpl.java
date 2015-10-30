@@ -118,7 +118,7 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public List<Team> listTeams(String gameUrl) throws GameNotFoundException {
+    public List<? extends Team> listTeams(String gameUrl) throws GameNotFoundException {
         Game game = gameFactory.getGame(gameUrl);
         return game.getTeams();
     }

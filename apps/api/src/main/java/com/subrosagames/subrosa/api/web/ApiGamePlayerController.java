@@ -78,7 +78,7 @@ public class ApiGamePlayerController extends BaseApiController {
 
         int limit = ObjectUtils.defaultIfNull(limitParam, 0);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        List<Player> players = game.getPlayers(limit, offset);
+        List<? extends Player> players = game.getPlayers(limit, offset);
         if (CollectionUtils.isEmpty(players)) {
             return new PaginatedList<>(Lists.<Player>newArrayList(), 0, limit, offset);
         } else {

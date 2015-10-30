@@ -13,6 +13,7 @@ import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
+import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
@@ -74,7 +75,7 @@ public interface Game extends GameData {
      * @param accountId account id
      * @return player
      */
-    Player getPlayerForUser(int accountId);
+    Player getPlayerForUser(int accountId) throws PlayerNotFoundException;
 
     /**
      * Get list of the players enrolled in the game.
@@ -83,14 +84,14 @@ public interface Game extends GameData {
      * @param offset offset into list
      * @return set of players in the game
      */
-    List<Player> getPlayers(Integer limit, Integer offset);
+    List<? extends Player> getPlayers(Integer limit, Integer offset);
 
     /**
      * Get list of all players enrolled in the game.
      *
      * @return list of players in the game
      */
-    List<Player> getPlayers();
+    List<? extends Player> getPlayers();
 
     /**
      * Set a game attribute on this game.
@@ -105,7 +106,7 @@ public interface Game extends GameData {
      *
      * @return list of game events
      */
-    List<GameEvent> getEvents();
+    List<? extends GameEvent> getEvents();
 
     /**
      * Get the specified game event.
@@ -114,7 +115,7 @@ public interface Game extends GameData {
      * @return game event
      * @throws GameEventNotFoundException if the specified game event does not exist
      */
-    GameEvent getEvent(int eventId) throws GameEventNotFoundException;
+    EventEntity getEvent(int eventId) throws GameEventNotFoundException;
 
     /**
      * Get a list of historical game events.
@@ -239,7 +240,7 @@ public interface Game extends GameData {
      */
     boolean isPublished();
 
-    List<Team> getTeams();
+    List<? extends Team> getTeams();
 
     Team getTeam(Integer teamId) throws TeamNotFoundException;
 

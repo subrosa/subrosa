@@ -46,7 +46,7 @@ public class MigrationController {
     @ResponseBody
     public String populateGameLocations() throws DomainObjectNotFoundException, DomainObjectValidationException {
         LOG.debug("Populating game locations");
-        List<BaseGame> games = gameRepository.list(0, 0, "zones");
+        List<BaseGame> games = gameRepository.findAll(null, "zones");
         for (BaseGame game : games) {
             Point centroid = getGameCentroid(game);
             if (centroid != null) {
@@ -54,9 +54,8 @@ public class MigrationController {
                 location.setLatitude(new BigDecimal(centroid.getCoordinate().x));
                 location.setLongitude(new BigDecimal(centroid.getCoordinate().y));
                 location.setApproximate(true);
-                gameRepository.create(location);
                 game.setLocation(location);
-                gameRepository.update(game);
+                gameRepository.save(game);
             }
         }
         return "OK";
@@ -64,7 +63,7 @@ public class MigrationController {
 
     private Point getGameCentroid(GameEntity game) throws GameNotFoundException {
         GeometryFactory geometryFactory = new GeometryFactory();
-        List<Zone> zones = gameRepository.getZonesForGame(game.getUrl());
+        List<Zone> zones = game.getZones();
         if (zones.size() > 0) {
             Zone zone = zones.get(0);
             Coordinate[] coordinates = new Coordinate[zone.getPoints().size() + 1];

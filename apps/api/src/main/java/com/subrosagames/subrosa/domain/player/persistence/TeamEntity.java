@@ -18,6 +18,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
@@ -44,11 +45,11 @@ public class TeamEntity implements Team {
     @Setter
     private Integer id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = GameEntity.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", insertable = false, updatable = false)
     @Getter
     @Setter
-    private GameEntity game;
+    private Game game;
 
     @Column(name = "game_id")
     @Getter

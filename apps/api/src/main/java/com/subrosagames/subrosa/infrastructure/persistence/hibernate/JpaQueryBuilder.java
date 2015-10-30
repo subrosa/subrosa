@@ -57,7 +57,7 @@ public class JpaQueryBuilder<T> implements QueryBuilder<T, TypedQuery<T>, TypedQ
     }
 
     @SuppressWarnings("unchecked")
-    private Predicate getPredicate(QueryCriteria<T> criteria, CriteriaBuilder builder, Root<T> root) {
+    public static <T> Predicate getPredicate(QueryCriteria<T> criteria, CriteriaBuilder builder, Root<T> root) {
         Predicate predicate = builder.conjunction();
         for (Filter filter : criteria.getFilters()) {
             Comparable value = (Comparable) filter.getTranslator().translate(filter.getValue());

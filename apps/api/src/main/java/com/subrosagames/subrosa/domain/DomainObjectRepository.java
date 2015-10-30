@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -11,6 +14,10 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * Extension of the paging and sorting repository interface to support the simultaneous use of
@@ -70,5 +77,37 @@ public interface DomainObjectRepository<T, I extends Serializable> extends Pagin
     Optional<T> findOne(int id, DomainObjectRepositoryImpl.EntityGraphHint... hints);
 
     Optional<T> findOne(int id, String... expansions);
+
+    EntityManager getEntityManager();
+
+    Page<T> readPage(TypedQuery<T> query, Pageable pageable, Specification<T> spec);
+
+    default void applyHints(TypedQuery<T> query, EntityGraphHint[] hints) {
+        if (hints.length > 0) {
+            EntityGraphHint hint = hints[0];
+            try {
+                query.setHint(hint.getType().getKey(), getEntityManager().getEntityGraph(hint.getName()));
+            } catch (IllegalArgumentException e) {
+                // swallow this - bad graph name given so it won't be used
+            }
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class EntityGraphHint {
+
+        @Getter
+        private final EntityGraph.EntityGraphType type;
+        @Getter
+        private final String name;
+
+        public static EntityGraphHint loadGraphName(String name) {
+            return new EntityGraphHint(EntityGraph.EntityGraphType.LOAD, name);
+        }
+
+        public static EntityGraphHint fetchGraphName(String name) {
+            return new EntityGraphHint(EntityGraph.EntityGraphType.FETCH, name);
+        }
+    }
 }
 

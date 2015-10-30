@@ -3,7 +3,6 @@ package com.subrosagames.subrosa.domain.game.support.assassin;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +22,10 @@ public final class TargetAssigner {
 
     /**
      * Assign players targets according to the given assignment type.
-     *
-     * @param players        players
+     *  @param players        players
      * @param assignmentType assignment type
      */
-    public static void assignTargets(List<Player> players, AssignmentType assignmentType) {
+    public static void assignTargets(List<? extends Player> players, AssignmentType assignmentType) {
         LOG.debug("Assigning targets for {} players using {} assignment type", players.size(), assignmentType);
         switch (assignmentType) {
             case ROUND_ROBIN:
@@ -44,36 +42,30 @@ public final class TargetAssigner {
         }
     }
 
-    private static void performMeleeAssignment(List<Player> players) {
+    private static void performMeleeAssignment(List<? extends Player> players) {
     }
 
-    private static void performMutualInterestAssignment(List<Player> players) {
-        shuffleAndAssign(players, new Function<Player[], Void>() {
-            @Override
-            public Void apply(@Nullable Player[] players) {
-                assert players != null && players.length == 2 : "Invalid player arguments supplied to assignment function";
-                LOG.debug("Player {} and player {} are assigned each other as targets", players[0].getId(), players[1].getId());
-                players[0].addTarget(players[1]);
-                players[1].addTarget(players[0]);
-                return null;
-            }
+    private static void performMutualInterestAssignment(List<? extends Player> players) {
+        shuffleAndAssign(players, toAssign -> {
+            assert toAssign != null && toAssign.length == 2 : "Invalid player arguments supplied to assignment function";
+            LOG.debug("Player {} and player {} are assigned each other as targets", toAssign[0].getId(), toAssign[1].getId());
+            toAssign[0].addTarget(toAssign[1]);
+            toAssign[1].addTarget(toAssign[0]);
+            return null;
         });
     }
 
-    private static void performRoundRobinAssignment(List<Player> players) {
-        shuffleAndAssign(players, new Function<Player[], Void>() {
-            @Override
-            public Void apply(@Nullable Player[] players) {
-                assert players != null && players.length == 2 : "Invalid player arguments supplied to assignment function";
-                LOG.debug("Player {} is assigned player {} as a target", players[0].getId(), players[1].getId());
-                players[0].addTarget(players[1]);
-                return null;
-            }
+    private static void performRoundRobinAssignment(List<? extends Player> players) {
+        shuffleAndAssign(players, toAssign -> {
+            assert toAssign != null && toAssign.length == 2 : "Invalid player arguments supplied to assignment function";
+            LOG.debug("Player {} is assigned player {} as a target", toAssign[0].getId(), toAssign[1].getId());
+            toAssign[0].addTarget(toAssign[1]);
+            return null;
         });
     }
 
-    private static void shuffleAndAssign(List<Player> playerList, Function<Player[], Void> assignFunction) {
-        List<Player> players = new ArrayList<Player>(playerList);
+    private static void shuffleAndAssign(List<? extends Player> playerList, Function<Player[], Void> assignFunction) {
+        List<Player> players = new ArrayList<>(playerList);
         Collections.shuffle(players);
         Player previous = null;
         for (Player player : players) {

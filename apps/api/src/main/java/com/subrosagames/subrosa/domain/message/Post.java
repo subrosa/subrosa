@@ -4,6 +4,7 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 
@@ -25,7 +26,7 @@ public interface Post {
      *
      * @return game id
      */
-    Integer getGameId();
+    Game getGame();
 
     /**
      * Get account that created the post.

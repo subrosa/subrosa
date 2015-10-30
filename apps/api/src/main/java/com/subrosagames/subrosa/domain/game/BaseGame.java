@@ -29,8 +29,6 @@ import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
-import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
-import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
@@ -38,6 +36,7 @@ import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameEventNotFoundException;
 import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
+import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
@@ -56,7 +55,6 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
-import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.Setter;
@@ -77,6 +75,10 @@ public class BaseGame extends GameEntity implements Game {
     @Transient
     @Setter
     private GameRepository gameRepository;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private RuleRepository ruleRepository;
     @JsonIgnore
     @Transient
     @Setter
@@ -120,7 +122,7 @@ public class BaseGame extends GameEntity implements Game {
     @Override
     public Game create() throws GameValidationException {
         assertValid();
-        gameRepository.create(this);
+        gameRepository.save(this);
         gameFactory.injectDependencies(this);
         return this;
     }
@@ -144,14 +146,7 @@ public class BaseGame extends GameEntity implements Game {
     public Game publish() throws GameValidationException {
         assertValid(PublishAction.class);
         setPublished(new Date());
-        try {
-            gameRepository.update(this);
-        } catch (DomainObjectNotFoundException e) {
-            throw new IllegalStateException("Got object not found when updating persisted object");
-        } catch (DomainObjectValidationException e) {
-            throw new GameValidationException(e);
-        }
-        return this;
+        return gameRepository.save(this);
     }
 
     void assertValid(Class... validationGroups) throws GameValidationException {
@@ -163,25 +158,17 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public GameEvent getEvent(int eventId) throws GameEventNotFoundException {
-        EventEntity event = gameRepository.getEvent(eventId);
-        // TODO ensure the event is part of this game
-        return event;
+    public EventEntity getEvent(int eventId) throws GameEventNotFoundException {
+        return getEvents().stream()
+                .filter(e -> e.getId().equals(eventId)).findAny()
+                .orElseThrow(() -> new GameEventNotFoundException("no event " + eventId + " for game " + getUrl()));
     }
 
     @Override
     public Map<RuleType, List<String>> getRules() {
         Map<RuleType, List<String>> rules = Maps.newEnumMap(RuleType.class);
-        rules.put(RuleType.ALL_GAMES, Lists.transform(gameRepository.getRulesForType(RuleType.ALL_GAMES), Rule::getDescription));
-        final Set<Rule> ruleSet = getRuleSet();
-        if (ruleSet != null) {
-            List<Rule> rulesList = new ArrayList<Rule>(ruleSet.size());
-            rulesList.addAll(ruleSet);
-            rules.put(RuleType.GAME_SPECIFIC, Lists.transform(
-                    rulesList,
-                    Rule::getDescription
-            ));
-        }
+        rules.put(RuleType.ALL_GAMES, Lists.transform(ruleRepository.findAllByRuleType(RuleType.ALL_GAMES), Rule::getDescription));
+        rules.put(RuleType.GAME_SPECIFIC, Lists.transform(Lists.newArrayList(getRuleSet()), Rule::getDescription));
         return rules;
     }
 
@@ -247,30 +234,28 @@ public class BaseGame extends GameEntity implements Game {
     }
 
     @Override
-    public Player getPlayerForUser(int accountId) {
-        return gameRepository.getPlayerForUserAndGame(accountId, getId());
+    public Player getPlayerForUser(int accountId) throws PlayerNotFoundException {
+        return getPlayers().stream()
+                .filter(p -> p.getAccount().getId().equals(accountId)).findAny()
+                .orElseThrow(() -> new PlayerNotFoundException("no player for account " + accountId + " in game " + getUrl()));
     }
 
     @JsonIgnore
     @Override
-    public List<Player> getPlayers(Integer limit, Integer offset) {
-        return getPlayers(gameRepository.getPlayersForGame(getId(), limit, offset));
+    public List<? extends Player> getPlayers(Integer limit, Integer offset) {
+        return playerFactory.getPlayers(this, limit, offset);
     }
 
     @JsonIgnore
     @Override
-    public List<Player> getPlayers() {
+    public List<? extends Player> getPlayers() {
         return getPlayers(0, 0);
     }
 
-    private List<Player> getPlayers(List<? extends Player> players) {
-        return Lists.newArrayList(players);
-    }
-
     @JsonIgnore
     @Override
-    public List<Team> getTeams() {
-        return getTeams(gameRepository.getTeamsForGame(getId(), 0, 0));
+    public List<? extends Team> getTeams() {
+        return playerFactory.getTeams(this);
     }
 
     @Override
@@ -290,43 +275,49 @@ public class BaseGame extends GameEntity implements Game {
         return team.update(teamDescriptor);
     }
 
-    private List<Team> getTeams(List<? extends Team> teams) {
-        return Lists.newArrayList(teams);
-    }
-
     @Override
     public void setAttribute(Enum<? extends GameAttributeType> attributeType, Enum<? extends GameAttributeValue> attributeValue) {
         LOG.debug("Setting attribute {} to {} for game {}", attributeType, attributeValue, getId());
-        gameRepository.setGameAttribute(this, attributeType, attributeValue);
+        GameAttributeEntity attributeEntity = getAttributes().get(attributeType.name());
+        if (attributeEntity == null) {
+            LOG.debug("Did not find attribute of type {} for game {}. Creating.", attributeType, getId());
+            getAttributes().put(attributeType.name(), new GameAttributeEntity(this, attributeType.name(), attributeValue.name()));
+        } else {
+            LOG.debug("Found attribute of type {} for game {}. Updating.", attributeType, getId());
+            attributeEntity.setValue(attributeValue.name());
+        }
+        gameRepository.save(this);
     }
 
     @Override
     public Post addPost(PostEntity postEntity) throws PostValidationException {
-        postEntity.setGameId(getId());
+        postEntity.setGame(this);
         postEntity.setPostType(PostType.TEXT);
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<PostEntity>> violations = validator.validate(postEntity);
         if (!violations.isEmpty()) {
             throw new PostValidationException(violations);
         }
-        return gameRepository.create(postEntity);
+        getPosts().add(postEntity);
+        return postEntity;
     }
 
     @Override
     public GameEvent addEvent(GameEventDescriptor eventDescriptor) throws GameEventValidationException {
         EventEntity eventEntity = gameFactory.forDto(eventDescriptor);
+        eventEntity.setGame(this);
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<EventEntity>> violations = validator.validate(eventEntity);
         if (!violations.isEmpty()) {
             throw new GameEventValidationException(violations);
         }
-        eventEntity.setGame(this);
-        return gameRepository.create(eventEntity);
+        getEvents().add(eventEntity);
+        return eventEntity;
     }
 
     @Override
     public GameEvent updateEvent(int eventId, GameEventDescriptor eventDescriptor) throws GameEventNotFoundException, GameEventValidationException {
-        EventEntity eventEntity = gameRepository.getEvent(eventId);
+        EventEntity eventEntity = getEvent(eventId);
         // read-only fields
         eventDescriptor.setId(eventId);
 
@@ -341,7 +332,7 @@ public class BaseGame extends GameEntity implements Game {
         if (!violations.isEmpty()) {
             throw new GameEventValidationException(violations);
         }
-        return gameRepository.update(eventEntity);
+        return eventEntity;
     }
 
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {

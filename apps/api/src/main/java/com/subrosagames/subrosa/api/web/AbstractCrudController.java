@@ -34,7 +34,7 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
     private static final String PARENT_ID = "parentId";
     private static final String CHILD_ID = "childId";
 
-    protected abstract List<T> listObjects(String parentId) throws DomainObjectNotFoundException;
+    protected abstract List<? extends T> listObjects(String parentId) throws DomainObjectNotFoundException;
 
     protected abstract T getObject(String parentId, String childId) throws DomainObjectNotFoundException;
 
@@ -53,7 +53,7 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
     {
         int limit = ObjectUtils.defaultIfNull(limitParam, 0);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        List<T> objects = listObjects(parentId);
+        List<? extends T> objects = listObjects(parentId);
         if (CollectionUtils.isEmpty(objects)) {
             return new PaginatedList<>(Lists.<T>newArrayList(), 0, limit, offset);
         } else {

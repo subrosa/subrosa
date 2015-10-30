@@ -1,11 +1,16 @@
 package com.subrosagames.subrosa.infrastructure.persistence.hibernate;
 
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.player.PlayerRepository;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttribute;
@@ -23,6 +28,11 @@ public class JpaPlayerRepository implements PlayerRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @Override
+    public Page<PlayerEntity> findByGame(@Param("game") Game game, PageRequest pageRequest) {
+        return null;
+    }
 
     @Override
     public void createTarget(TargetEntity targetEntity) {

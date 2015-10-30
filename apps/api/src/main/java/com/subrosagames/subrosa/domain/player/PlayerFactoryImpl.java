@@ -1,8 +1,12 @@
 package com.subrosagames.subrosa.domain.player;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
@@ -29,6 +33,9 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     @Autowired
     private AccountFactory accountFactory;
@@ -96,6 +103,12 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
     }
 
     @Override
+    public List<? extends Player> getPlayers(Game game, Integer limit, Integer offset) {
+        int pageNum = offset > 0 && limit > 0 ? offset / limit : 0;
+        return playerRepository.findByGame(game, new PageRequest(pageNum, limit)).getContent();
+    }
+
+    @Override
     public Team createTeamForGame(Game game, TeamDescriptor teamDescriptor) {
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
@@ -111,5 +124,10 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
             throw new TeamNotFoundException("No team " + teamId + " in game.");
         }
         return team;
+    }
+
+    @Override
+    public List<? extends Team> getTeams(Game game) {
+        return teamRepository.findByGame(game);
     }
 }

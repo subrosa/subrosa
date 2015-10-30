@@ -22,6 +22,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -68,19 +71,11 @@ import lombok.Setter;
 @Table(name = "game")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "game_type", discriminatorType = DiscriminatorType.STRING)
-@FetchProfiles({
-        @FetchProfile(name = "posts", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "posts", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "history", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "history", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "zones", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "zones", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "events", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "events", mode = FetchMode.JOIN)
-        })
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "posts", attributeNodes = @NamedAttributeNode("posts")),
+        @NamedEntityGraph(name = "history", attributeNodes = @NamedAttributeNode("history")),
+        @NamedEntityGraph(name = "zones", attributeNodes = @NamedAttributeNode("zones")),
+        @NamedEntityGraph(name = "events", attributeNodes = @NamedAttributeNode("events")),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameEntity extends BaseEntity {
@@ -160,8 +155,12 @@ public class GameEntity extends BaseEntity {
     @Setter
     private Image image;
 
-    @OneToMany(targetEntity = PostEntity.class)
-    @JoinColumn(name = "game_id")
+    @OneToMany(
+            targetEntity = PostEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @OrderBy("created DESC")
     @Getter
     @Setter
@@ -203,7 +202,7 @@ public class GameEntity extends BaseEntity {
     @Setter
     private List<Zone> zones;
 
-    @OneToOne(fetch = FetchType.EAGER, targetEntity = LocationEntity.class)
+    @OneToOne(targetEntity = LocationEntity.class)
     @JoinTable(
             name = "game_location",
             joinColumns = @JoinColumn(name = "game_id"),
@@ -274,13 +273,15 @@ public class GameEntity extends BaseEntity {
     @Setter
     private List<ScheduledEvent> gameEnd;
 
-    @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
+    @OneToMany(
+            targetEntity = EventEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @Getter
     @Setter
-    private List<GameEvent> events;
-
-    @OneToMany
-
+    private List<EventEntity> events;
 
     /**
      * Set the default price and max team size if unset.

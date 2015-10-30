@@ -14,15 +14,22 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.game.BaseGame;
+import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted game post.
  */
+@Data
 @Entity
 @Table(name = "post")
 public class PostEntity extends BaseEntity implements Post {
@@ -31,94 +38,48 @@ public class PostEntity extends BaseEntity implements Post {
     @SequenceGenerator(name = "postSeq", sequenceName = "post_post_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "postSeq")
     @Column(name = "post_id")
+    @Getter
+    @Setter
     private Integer postId;
 
-    @Column(name = "game_id")
-    private Integer gameId;
+    @JsonIgnore
+    @ManyToOne(targetEntity = BaseGame.class)
+    @JoinColumn(name = "game_id")
+    @Getter
+    @Setter
+    private Game game;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @Getter
+    @Setter
     private Account account;
 
     @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
     private PostType postType;
 
     @Column
+    @Getter
+    @Setter
     private String content;
 
     @Column(name = "history_id")
+    @Getter
+    @Setter
     private Integer historyId;
 
     @Column(name = "accolade_id")
+    @Getter
+    @Setter
     private Integer accoladeId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
+    @Getter
+    @Setter
     private Image image;
-
-    public Integer getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Integer postId) {
-        this.postId = postId;
-    }
-
-    public PostType getPostType() {
-        return postType;
-    }
-
-    public void setPostType(PostType postType) {
-        this.postType = postType;
-    }
-
-    public Integer getGameId() {
-        return gameId;
-    }
-
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Integer getHistoryId() {
-        return historyId;
-    }
-
-    public void setHistoryId(Integer historyId) {
-        this.historyId = historyId;
-    }
-
-    public Integer getAccoladeId() {
-        return accoladeId;
-    }
-
-    public void setAccoladeId(Integer accoladeId) {
-        this.accoladeId = accoladeId;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
 
 }

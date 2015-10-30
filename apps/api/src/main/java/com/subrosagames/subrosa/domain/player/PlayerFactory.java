@@ -1,5 +1,7 @@
 package com.subrosagames.subrosa.domain.player;
 
+import java.util.List;
+
 import com.subrosagames.subrosa.api.dto.PlayerDescriptor;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
@@ -38,6 +40,8 @@ public interface PlayerFactory {
      */
     Player getPlayer(Game game, Integer playerId) throws PlayerNotFoundException;
 
+    List<? extends Player> getPlayers(Game game, Integer limit, Integer offset);
+
     /**
      * Create a new team in a game.
      *
@@ -56,6 +60,8 @@ public interface PlayerFactory {
      * @throws TeamNotFoundException if specified team is not in game
      */
     Team getTeam(Game game, Integer teamId) throws TeamNotFoundException;
+
+    List<? extends Team> getTeams(Game game);
 
     /**
      * Handles transformation of player attributes into persistable entities on the player.

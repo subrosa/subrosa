@@ -123,7 +123,7 @@ public interface GameService {
 
     Target updateTarget(String gameUrl, Integer integer, TargetDescriptor targetDescriptor);
 
-    List<Team> listTeams(String gameUrl) throws GameNotFoundException;
+    List<? extends Team> listTeams(String gameUrl) throws GameNotFoundException;
 
     Team getTeam(String gameUrl, Integer integer) throws GameNotFoundException, TeamNotFoundException;
 

@@ -27,7 +27,7 @@ public class ApiGameTeamController extends AbstractCrudController<Team, TeamDesc
     private GameService gameService;
 
     @Override
-    protected List<Team> listObjects(String gameUrl) throws GameNotFoundException {
+    protected List<? extends Team> listObjects(String gameUrl) throws GameNotFoundException {
         LOG.debug("Listing teams for game {}", gameUrl);
         return gameService.listTeams(gameUrl);
     }

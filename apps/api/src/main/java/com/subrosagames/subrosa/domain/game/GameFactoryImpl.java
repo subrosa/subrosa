@@ -3,16 +3,17 @@ package com.subrosagames.subrosa.domain.game;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.api.dto.PostDescriptor;
@@ -30,6 +31,7 @@ import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.player.PlayerFactory;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaQueryBuilder;
 import com.subrosagames.subrosa.service.PaginatedList;
 
 /**
@@ -44,23 +46,26 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     private GameRepository gameRepository;
 
     @Autowired
+    private RuleRepository ruleRepository;
+
+    @Autowired
     private PlayerFactory playerFactory;
 
     @Autowired
     private AccountFactory accountFactory;
 
     @Override
-    public Game getGame(int gameId, String... expansions) throws GameNotFoundException {
-        BaseGame game = gameRepository.get(gameId, expansions);
-        injectDependencies(game);
-        return game;
+    public Game getGame(int id, String... expansions) throws GameNotFoundException {
+        return gameRepository.findOne(id, expansions)
+                .map(this::injectDependencies)
+                .orElseThrow(() -> new GameNotFoundException("no game for id " + id));
     }
 
     @Override
     public Game getGame(String url, String... expansions) throws GameNotFoundException {
-        BaseGame game = gameRepository.get(url, expansions);
-        injectDependencies(game);
-        return game;
+        return gameRepository.findOneByUrl(url, expansions)
+                .map(this::injectDependencies)
+                .orElseThrow(() -> new GameNotFoundException("no game for url " + url));
     }
 
     void injectDependencies(List<BaseGame> games) {
@@ -70,6 +75,7 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     @Override
     public BaseGame injectDependencies(BaseGame game) {
         game.setGameRepository(gameRepository);
+        game.setRuleRepository(ruleRepository);
         game.setGameFactory(this);
         game.setPlayerFactory(playerFactory);
         game.setAccountFactory(accountFactory);
@@ -77,59 +83,32 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
     }
 
     @Override
-    public PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions) {
-        List<BaseGame> gameEntities = gameRepository.list(limit, offset, expansions);
-        List<Game> games = Lists.transform(gameEntities, gameEntity -> {
-            try {
-                return getGame(gameEntity.getId());
-            } catch (GameNotFoundException e) {
-                LOG.error("Failed to retrieve a game that just got pulled from the DB! Shenanigans!", e);
-                return null;
-            }
-        });
-        return new PaginatedList<>(
-                games,
-                gameRepository.count(),
-                limit, offset);
-    }
-
-    @Override
     public PaginatedList<Game> getGamesNear(Coordinates coordinates, Integer limit, Integer offset, String... expansions) {
-        List<BaseGame> gameEntities = gameRepository.getGamesNear(coordinates, limit, offset, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
-            @Override
-            public Game apply(BaseGame gameEntity) {
-                injectDependencies(gameEntity);
-                return gameEntity;
-            }
-        });
+        int pageNum = offset > 0 && limit > 0 ? offset / limit : 0;
+        Page<BaseGame> page = gameRepository.findNearLocation(coordinates, new PageRequest(pageNum, limit), expansions);
         return new PaginatedList<>(
-                games,
-                gameRepository.count(),
+                page.getContent().stream().map(this::injectDependencies).collect(Collectors.toList()),
+                page.getTotalElements(),
                 limit, offset);
     }
 
     @Override
     public PaginatedList<Game> fromCriteria(QueryCriteria<BaseGame> queryCriteria, String... expansions) {
-        List<BaseGame> gameEntities = gameRepository.findByCriteria(queryCriteria, expansions);
-        List<Game> games = Lists.transform(gameEntities, new Function<BaseGame, Game>() {
-            @Override
-            public Game apply(BaseGame gameEntity) {
-                injectDependencies(gameEntity);
-                return gameEntity;
-            }
-        });
+        Page<BaseGame> page = gameRepository.findAll(
+                (root, query, cb) -> JpaQueryBuilder.getPredicate(queryCriteria, cb, root),
+                new PageRequest(queryCriteria.getPageNumber(), queryCriteria.getLimit(), queryCriteria.getSpringDataSort()),
+                expansions);
         return new PaginatedList<>(
-                games,
-                gameRepository.countByCriteria(queryCriteria).intValue(),
-                queryCriteria.getLimit(), queryCriteria.getOffset());
+                page.getContent().stream().map(this::injectDependencies).collect(Collectors.toList()),
+                page.getTotalElements(),
+                page.getSize(), page.getNumber() * page.getSize());
     }
 
     @Override
     public List<? extends Game> ownedBy(Account user) {
-        List<BaseGame> gameEntities = gameRepository.ownedBy(user);
-        injectDependencies(gameEntities);
-        return gameEntities;
+        return gameRepository.findAllByOwner(user).stream()
+                .map(this::injectDependencies)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -184,7 +163,9 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
 
     @Override
     public List<Zone> getGameZones(String gameUrl) throws GameNotFoundException {
-        return gameRepository.getZonesForGame(gameUrl);
+        return gameRepository.findOneByUrl(gameUrl, "zones")
+                .orElseThrow(() -> new GameNotFoundException("no game for url " + gameUrl))
+                .getZones();
     }
 
 }

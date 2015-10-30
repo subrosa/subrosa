@@ -35,6 +35,19 @@ public class DomainObjectRepositoryImpl<T, I extends Serializable> extends Simpl
     }
 
     @Override
+    public EntityManager getEntityManager() {
+        return em;
+    }
+
+    /*
+     * Here only to boost SimpleJpaRepository#readPage's access level to public.
+     */
+    @Override
+    public Page<T> readPage(TypedQuery<T> query, Pageable pageable, Specification<T> spec) {
+        return super.readPage(query, pageable, spec);
+    }
+
+    @Override
     public List<T> findAll(Specification<T> spec, EntityGraphHint... hints) {
         TypedQuery<T> query = getQuery(spec, (Sort) null);
         applyHints(query, hints);
@@ -87,13 +100,6 @@ public class DomainObjectRepositoryImpl<T, I extends Serializable> extends Simpl
         }
     }
 
-    private void applyHints(TypedQuery<T> query, EntityGraphHint[] hints) {
-        if (hints.length > 0) {
-            EntityGraphHint hint = hints[0];
-            query.setHint(hint.type.getKey(), em.getEntityGraph(hint.name));
-        }
-    }
-
     @Override
     public Optional<T> findOne(Specification<T> spec, String... expansions) {
         return findOne(spec, Arrays.stream(expansions)
@@ -111,22 +117,5 @@ public class DomainObjectRepositoryImpl<T, I extends Serializable> extends Simpl
         return findOne(id, Arrays.stream(expansions)
                 .map(EntityGraphHint::loadGraphName)
                 .toArray(EntityGraphHint[]::new));
-    }
-
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class EntityGraphHint {
-
-        @Getter
-        private final EntityGraph.EntityGraphType type;
-        @Getter
-        private final String name;
-
-        public static EntityGraphHint loadGraphName(String name) {
-            return new EntityGraphHint(EntityGraph.EntityGraphType.LOAD, name);
-        }
-
-        public static EntityGraphHint fetchGraphName(String name) {
-            return new EntityGraphHint(EntityGraph.EntityGraphType.FETCH, name);
-        }
     }
 }
