@@ -11,13 +11,11 @@ import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.api.dto.TargetDescriptor;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 
@@ -114,14 +112,6 @@ public interface GameService {
      */
     Player updateGamePlayer(String gameUrl, Integer playerId, JoinGameRequest joinGameRequest) throws GameNotFoundException, AddressNotFoundException,
             PlayerNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException;
-
-    List<Target> listTargets(String gameUrl);
-
-    Target getTarget(String gameUrl, Integer integer);
-
-    Target createTarget(String gameUrl, TargetDescriptor targetDescriptor);
-
-    Target updateTarget(String gameUrl, Integer integer, TargetDescriptor targetDescriptor);
 
     List<? extends Team> listTeams(String gameUrl) throws GameNotFoundException;
 
