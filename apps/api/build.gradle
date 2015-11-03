@@ -38,17 +38,10 @@ compileJava.dependsOn(processResources)
 dependencies {
 //    compile project(':domain')
 
-//    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-
     // logging
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.6'
     runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.6.6'
     runtime group: 'ch.qos.logback', name: 'logback-classic', version: '1.0.6'
-
-    // spring framework
-//    compile group: 'org.springframework', name: 'spring-expression', version: springVersion
-//    compile group: 'org.springframework', name: 'spring-oxm', version: springVersion
-//    compile group: 'org.springframework', name: 'spring-jms', version: springVersion
 
     // spring boot
     compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
@@ -61,8 +54,6 @@ dependencies {
     compile 'org.springframework.cloud:spring-cloud-config-client:1.0.2.RELEASE'
     // spring retry for startup
     compile 'org.springframework.retry:spring-retry:1.1.2.RELEASE'
-//    compile 'org.springframework.cloud:spring-cloud-starter-eureka:1.0.3.RELEASE'
-//    compile 'org.glassfish.jersey.core:jersey-common:2.4.1'
 
     // spring security
     compile group: 'org.springframework.security', name: 'spring-security-core', version: springSecurityVersion
