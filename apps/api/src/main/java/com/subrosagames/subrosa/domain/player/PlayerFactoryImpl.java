@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.player;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,7 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
         teamEntity.setName(playerDescriptor.getPlayer().getName());
-        playerRepository.createTeam(teamEntity);
+        teamRepository.save(teamEntity);
 
         PlayerEntity playerEntity = new PlayerEntity();
         playerEntity.setAccount(account);
@@ -57,7 +58,7 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         playerEntity.setKillCode(PlayerCodeGenerator.generate());
 
         processPlayerAttributes(playerEntity, playerDescriptor);
-        playerRepository.createPlayer(playerEntity);
+        playerRepository.save(playerEntity);
 
         injectDependencies(playerEntity);
         return playerEntity;
@@ -69,7 +70,7 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
             if (!playerDescriptor.getAttributes().containsKey(field.getFieldId())) {
                 continue;
             }
-            PlayerAttribute playerAttribute = playerRepository.getPlayerAttribute(playerEntity, field.getFieldId());
+            PlayerAttribute playerAttribute = playerEntity.getAttributes().get(field.getFieldId());
             if (playerAttribute == null) {
                 playerAttribute = field.getType().newForAccount(playerEntity.getAccount(), playerDescriptor.getAttribute(field.getFieldId()));
                 LOG.debug("Creating new player attribute ({}) {} => {} for player {}",
@@ -85,21 +86,19 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         }
     }
 
-    private void injectDependencies(PlayerEntity playerEntity) {
+    private PlayerEntity injectDependencies(PlayerEntity playerEntity) {
         playerEntity.setPlayerFactory(this);
         playerEntity.setPlayerRepository(playerRepository);
         // TODO got to be a better way of doing this...
         accountFactory.injectDependencies(playerEntity.getAccount());
+        return playerEntity;
     }
 
     @Override
     public Player getPlayer(Game game, Integer playerId) throws PlayerNotFoundException {
-        PlayerEntity player = playerRepository.getPlayer(playerId);
-        if (!player.getTeam().getGameId().equals(game.getId())) {
-            throw new PlayerNotFoundException("No player " + playerId + " in game.");
-        }
-        injectDependencies(player);
-        return player;
+        return playerRepository.findByGameAndId(game, playerId)
+                .map(this::injectDependencies)
+                .orElseThrow(() -> new PlayerNotFoundException("No player " + playerId + " in game " + game.getId()));
     }
 
     @Override
@@ -113,17 +112,15 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
         copyProperties(teamDescriptor, teamEntity);
-        playerRepository.createTeam(teamEntity);
+        teamEntity = teamRepository.save(teamEntity);
         return teamEntity;
     }
 
     @Override
     public Team getTeam(Game game, Integer teamId) throws TeamNotFoundException {
-        TeamEntity team = playerRepository.getTeam(teamId);
-        if (team == null || !game.getId().equals(team.getGameId())) {
-            throw new TeamNotFoundException("No team " + teamId + " in game.");
-        }
-        return team;
+        return teamRepository.findByGameAndId(game, teamId)
+//                .map(this::injectDependencies)
+                .orElseThrow(() -> new TeamNotFoundException("No team " + teamId + " in game " + game.getId()));
     }
 
     @Override

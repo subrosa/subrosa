@@ -110,7 +110,7 @@ public class TeamEntity implements Team {
 
     @Override
     public Image getAvatar() {
-        return null;
+        return image;
     }
 
     @Override

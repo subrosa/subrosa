@@ -47,6 +47,8 @@ import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.TargetType;
 import com.subrosagames.subrosa.domain.player.Team;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persists a player.
@@ -66,11 +68,15 @@ public class PlayerEntity implements Player {
     @SequenceGenerator(name = "playerSeq", sequenceName = "player_player_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "playerSeq")
     @Column(name = "player_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @JsonProperty("player")
     @ManyToOne
     @JoinColumn(name = "player_profile_id")
+    @Getter
+    @Setter
     private PlayerProfile playerProfile;
 
     @OneToMany(
@@ -85,17 +91,25 @@ public class PlayerEntity implements Player {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
+    @Getter
+    @Setter
     private TeamEntity team;
 
     @Column(name = "kill_code")
+    @Getter
+    @Setter
     private String killCode;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
+    @Getter
+    @Setter
     private Account account;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "game_role")
+    @Getter
+    @Setter
     private GameRole gameRole;
 
     @OneToMany(mappedBy = "player")
@@ -109,22 +123,6 @@ public class PlayerEntity implements Player {
 
     void copyPlayerProperties(PlayerDescriptor playerDescriptor) throws AddressNotFoundException, ImageNotFoundException {
         playerFactory.processPlayerAttributes(this, playerDescriptor);
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public PlayerProfile getPlayerProfile() {
-        return playerProfile;
-    }
-
-    public void setPlayerProfile(PlayerProfile playerProfile) {
-        this.playerProfile = playerProfile;
     }
 
     public Map<String, PlayerAttribute> getAttributes() {
@@ -145,44 +143,12 @@ public class PlayerEntity implements Player {
         attributes.put(fieldId, playerAttribute);
     }
 
-    public TeamEntity getTeam() {
-        return team;
-    }
-
-    public void setTeam(TeamEntity team) {
-        this.team = team;
-    }
-
-    public String getKillCode() {
-        return killCode;
-    }
-
-    public void setKillCode(String killCode) {
-        this.killCode = killCode;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
     public List<TargetEntity> getTargets() {
         return targets;
     }
 
     public void setTargets(List<TargetEntity> targets) {
         this.targets = targets;
-    }
-
-    public GameRole getGameRole() {
-        return gameRole;
-    }
-
-    public void setGameRole(GameRole gameRole) {
-        this.gameRole = gameRole;
     }
 
     @Override
@@ -203,17 +169,16 @@ public class PlayerEntity implements Player {
     public void addTarget(Player target) {
         TargetPlayerEntity entity = new TargetPlayerEntity();
         entity.setTargetType(TargetType.PLAYER);
-        entity.setTarget(playerRepository.getPlayer(target.getId()));
-        playerRepository.createTarget(entity);
-
+        entity.setTarget(target);
+        targets.add(entity);
     }
 
     @Override
     public void addTarget(Team target) {
         TargetTeamEntity entity = new TargetTeamEntity();
         entity.setTargetType(TargetType.TEAM);
-        entity.setTarget(playerRepository.getTeam(target.getId()));
-        playerRepository.createTarget(entity);
+        entity.setTarget(target);
+        targets.add(entity);
     }
 
     @Override

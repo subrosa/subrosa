@@ -10,7 +10,10 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.account.Address;
 import com.subrosagames.subrosa.domain.image.Image;
+import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.TargetPlayer;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted targeted player.
@@ -21,17 +24,11 @@ import com.subrosagames.subrosa.domain.player.TargetPlayer;
 @PrimaryKeyJoinColumn(name = "target_id")
 public class TargetPlayerEntity extends TargetEntity implements TargetPlayer {
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, targetEntity = PlayerEntity.class)
     @JoinColumn(name = "player_id")
-    private PlayerEntity target;
-
-    public PlayerEntity getTarget() {
-        return target;
-    }
-
-    public void setTarget(PlayerEntity target) {
-        this.target = target;
-    }
+    @Getter
+    @Setter
+    private Player target;
 
     @Override
     public Image getAvatar() {
