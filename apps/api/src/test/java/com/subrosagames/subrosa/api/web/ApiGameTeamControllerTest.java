@@ -18,6 +18,9 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsS
 @DatabaseSetup("/fixtures/games.xml")
 public class ApiGameTeamControllerTest extends AbstractApiControllerTest {
 
+    static final int TEAM_ID = 100;
+    static final String TEAM_NAME = "good team";
+
     @Test
     public void listTeams() throws Exception {
         mockMvc.perform(get("/game/{gameUrl}/team", "fun_times"))
@@ -27,9 +30,9 @@ public class ApiGameTeamControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void getTeam() throws Exception {
-        mockMvc.perform(get("/game/{gameUrl}/team/{teamId}", "fun_times", 100))
+        mockMvc.perform(get("/game/{gameUrl}/team/{teamId}", "fun_times", TEAM_ID))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(100))
+                .andExpect(jsonPath("$.id").value(TEAM_ID))
                 .andExpect(jsonPath("$.name").value("good team"));
     }
 
@@ -56,7 +59,7 @@ public class ApiGameTeamControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void updateTeam() throws Exception {
-        String response = mockMvc.perform(put("/game/{gameUrl}/team/{id}", "fun_times", 100)
+        String response = mockMvc.perform(put("/game/{gameUrl}/team/{id}", "fun_times", TEAM_ID)
                 .with(user("young@player.com"))
                 .content(jsonBuilder().add("name", "new name").build()))
                 .andExpect(status().isOk())
@@ -67,5 +70,18 @@ public class ApiGameTeamControllerTest extends AbstractApiControllerTest {
                 .with(user("young@player.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("new name"));
+    }
+
+    @Test
+    public void joinTeam() throws Exception {
+        mockMvc.perform(post("/game/{url}/team/{id}/join", "fun_times", TEAM_ID)
+                .with(user("young@player.com"))
+                .content(jsonBuilder().build()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/game/{url}/player/{id}", "fun_times", 12)
+                .with(user("young@player.com")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.team.name").value(TEAM_NAME));
     }
 }

@@ -4,7 +4,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 
 /**
  * Exception thrown when player information is invalid.
@@ -50,7 +49,7 @@ public class PlayerValidationException extends DomainObjectValidationException {
      *
      * @param violations constraint violations
      */
-    public PlayerValidationException(Set<ConstraintViolation<PlayerEntity>> violations) {
+    public PlayerValidationException(Set<ConstraintViolation<Player>> violations) {
         super(violations);
     }
 }

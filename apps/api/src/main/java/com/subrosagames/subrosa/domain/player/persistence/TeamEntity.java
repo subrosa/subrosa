@@ -17,9 +17,11 @@ import javax.persistence.Table;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
+import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
-import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.player.Player;
@@ -45,7 +47,7 @@ public class TeamEntity implements Team {
     @Setter
     private Integer id;
 
-    @OneToOne(targetEntity = GameEntity.class, fetch = FetchType.LAZY)
+    @OneToOne(targetEntity = BaseGame.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", insertable = false, updatable = false)
     @Getter
     @Setter
@@ -56,10 +58,11 @@ public class TeamEntity implements Team {
     @Setter
     private Integer gameId;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "team")
     @Getter
     @Setter
-    private List<PlayerEntity> players;
+    private List<Player> players;
 
     @OneToOne
     @JoinColumn(name = "image_id")
@@ -122,5 +125,17 @@ public class TeamEntity implements Team {
             throw new IllegalStateException(e);
         }
         return this;
+    }
+
+    @Override
+    public Team join(Player player, JoinTeamRequest joinTeamRequest) {
+        // TODO use joinTeamRequest for things like password checks
+        addPlayer(player);
+        return this;
+    }
+
+    private void addPlayer(Player player) {
+        player.setTeam(this);
+        players.add(player);
     }
 }

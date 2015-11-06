@@ -29,10 +29,10 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  * Created by josiah on 3/3/15.
  */
 @RestController
-public abstract class AbstractCrudController<T extends DomainObject, U extends DomainObjectDescriptor> {
+public abstract class AbstractCrudController<T extends DomainObject, U extends DomainObjectDescriptor> extends BaseApiController {
 
-    private static final String PARENT_ID = "parentId";
-    private static final String CHILD_ID = "childId";
+    protected static final String PARENT_ID = "parentId";
+    protected static final String CHILD_ID = "childId";
 
     protected abstract List<? extends T> listObjects(String parentId) throws DomainObjectNotFoundException;
 

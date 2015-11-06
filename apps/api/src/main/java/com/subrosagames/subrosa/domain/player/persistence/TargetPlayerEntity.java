@@ -24,7 +24,7 @@ import lombok.Setter;
 @PrimaryKeyJoinColumn(name = "target_id")
 public class TargetPlayerEntity extends TargetEntity implements TargetPlayer {
 
-    @OneToOne(fetch = FetchType.EAGER, targetEntity = PlayerEntity.class)
+    @OneToOne(fetch = FetchType.EAGER, targetEntity = Player.class)
     @JoinColumn(name = "player_id")
     @Getter
     @Setter

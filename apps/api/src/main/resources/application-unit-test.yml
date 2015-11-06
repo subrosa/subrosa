@@ -15,4 +15,6 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: create-drop
+      format-sql: true
+      use-sql-comments: true
 

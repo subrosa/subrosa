@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetType;
 import lombok.Data;
@@ -43,7 +44,7 @@ public class TargetEntity implements Target {
     @JoinColumn(name = "player_id")
     @Getter
     @Setter
-    private PlayerEntity player;
+    private Player player;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "target_type")

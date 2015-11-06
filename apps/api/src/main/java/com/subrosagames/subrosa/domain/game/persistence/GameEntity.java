@@ -34,9 +34,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,7 +48,6 @@ import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;

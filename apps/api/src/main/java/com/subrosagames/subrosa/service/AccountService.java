@@ -29,6 +29,7 @@ import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
+import lombok.Setter;
 
 /**
  * Service layer for account operations.
@@ -40,12 +41,15 @@ public class AccountService {
     private static final Logger LOG = LoggerFactory.getLogger(AccountService.class);
 
     @Autowired
+    @Setter
     private AccountFactory accountFactory;
 
     @Autowired
+    @Setter
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
+    @Setter
     private ObjectMapper objectMapper;
 
     /**
@@ -125,7 +129,7 @@ public class AccountService {
     public PlayerProfile createPlayerProfile(int accountId, PlayerProfileDescriptor playerProfileDescriptor)
             throws AccountNotFoundException, ImageNotFoundException, PlayerProfileValidationException
     {
-        Account account = accountFactory.getAccount(accountId);
+        Account account = accountFactory.getAccount(accountId, Account.PLAYERS_GRAPH);
         return account.createPlayerProfile(playerProfileDescriptor);
     }
 
@@ -217,7 +221,9 @@ public class AccountService {
     public Address createAddress(int accountId, AddressDescriptor addressDescriptor)
             throws AccountNotFoundException, AddressValidationException
     {
-        Account account = accountFactory.getAccount(accountId);
+        // TODO it should not be necessary to use the addresses entitygraph here since we're in within the transaction
+        // perhaps it's a problem specific to tests?
+        Account account = accountFactory.getAccount(accountId, Account.ADDRESSES_GRAPH);
         return account.createAddress(addressDescriptor);
     }
 
@@ -290,7 +296,4 @@ public class AccountService {
         }
     }
 
-    public void setRabbitTemplate(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
-    }
 }

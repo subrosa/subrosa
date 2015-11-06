@@ -34,9 +34,6 @@ import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -61,7 +58,11 @@ import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import com.subrosagames.subrosa.security.PasswordUtility;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -70,11 +71,17 @@ import lombok.Setter;
 @Entity
 @Table(name = "account")
 @NamedEntityGraphs({
-        @NamedEntityGraph(name = "addresses", attributeNodes = @NamedAttributeNode("addresses")),
-        @NamedEntityGraph(name = "images", attributeNodes = @NamedAttributeNode("images")),
+        @NamedEntityGraph(name = Account.ADDRESSES_GRAPH, attributeNodes = @NamedAttributeNode(Account.ADDRESSES_GRAPH)),
+        @NamedEntityGraph(name = Account.PLAYERS_GRAPH, attributeNodes = @NamedAttributeNode(Account.PLAYERS_GRAPH)),
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Account extends BaseEntity implements PermissionTarget {
+
+    public static final String ADDRESSES_GRAPH = "addresses";
+    public static final String PLAYERS_GRAPH = "playerProfiles";
 
     private static final Logger LOG = LoggerFactory.getLogger(Account.class);
 
@@ -160,6 +167,7 @@ public class Account extends BaseEntity implements PermissionTarget {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderColumn(name = "index")
     @Getter
     @Setter
     private List<Address> addresses = Lists.newArrayList();
@@ -182,6 +190,7 @@ public class Account extends BaseEntity implements PermissionTarget {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
+    @OrderColumn(name = "index")
     @Getter
     @Setter
     private List<PlayerProfile> playerProfiles = Lists.newArrayList();
@@ -207,7 +216,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
     }
-
 
     /**
      * Get address for id.
@@ -283,7 +291,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address deleteAddress(int addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId);
-        addresses.remove(address);
+        boolean removed = addresses.remove(address);
+        LOG.debug("Removing address {} for account {}. Removed? {}", addressId, id, removed);
         return address;
     }
 
@@ -297,6 +306,12 @@ public class Account extends BaseEntity implements PermissionTarget {
     public Account create(String userPassword) throws AccountValidationException {
         setPassword(passwordUtility.encryptPassword(userPassword));
         assertValid();
+        save();
+        accountFactory.injectDependencies(this);
+        return this;
+    }
+
+    private void save() throws EmailConflictException {
         try {
             accountRepository.save(this);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
@@ -305,8 +320,6 @@ public class Account extends BaseEntity implements PermissionTarget {
             }
             throw e;
         }
-        accountFactory.injectDependencies(this);
-        return this;
     }
 
     /**
@@ -342,14 +355,7 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     private Account performUpdate() throws AccountValidationException {
         assertValid();
-        try {
-            accountRepository.save(this);
-        } catch (JpaSystemException | DataIntegrityViolationException e) {
-            if (isUniqueConstraintViolation(e)) {
-                throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
-            }
-            throw e;
-        }
+        save();
         return this;
     }
 
@@ -425,7 +431,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws PlayerProfileNotFoundException if player profile does not exist
      */
     public PlayerProfile getPlayerProfile(int playerId) throws PlayerProfileNotFoundException {
-        return playerProfiles.stream()
+        LOG.debug("Looking for player profile with id {} for account {}", playerId, id);
+        return getPlayerProfiles().stream()
                 .filter(pp -> pp.getId().equals(playerId)).findAny()
                 .orElseThrow(() -> new PlayerProfileNotFoundException("No player profile " + playerId + " for account " + id));
     }
@@ -444,14 +451,14 @@ public class Account extends BaseEntity implements PermissionTarget {
         PlayerProfile playerProfile = new PlayerProfile();
         playerProfile.setAccount(this);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
-        assertPlayerProfileValid(playerProfile);
+        assertPlayerProfileValid(playerProfile, PlayerProfile.Create.class);
         addPlayerProfile(playerProfile);
         return playerProfile;
     }
 
-    void assertPlayerProfileValid(PlayerProfile playerProfile) throws PlayerProfileValidationException {
+    void assertPlayerProfileValid(PlayerProfile playerProfile, Class<?>... groups) throws PlayerProfileValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<PlayerProfile>> violations = validator.validate(playerProfile);
+        Set<ConstraintViolation<PlayerProfile>> violations = validator.validate(playerProfile, groups);
         if (!violations.isEmpty()) {
             throw new PlayerProfileValidationException(violations);
         }
@@ -490,7 +497,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
-        assertPlayerProfileValid(playerProfile);
+        assertPlayerProfileValid(playerProfile, PlayerProfile.Update.class);
         return playerProfile;
     }
 

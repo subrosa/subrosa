@@ -1,12 +1,10 @@
 package com.subrosagames.subrosa.domain.player;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +19,6 @@ import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttribute;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttributePk;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.player.persistence.TeamEntity;
 
 /**
@@ -48,50 +45,54 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         TeamEntity teamEntity = new TeamEntity();
         teamEntity.setGameId(game.getId());
         teamEntity.setName(playerDescriptor.getPlayer().getName());
+
+        Player player = new Player();
+        player.setAccount(account);
+        player.setGame(game);
+        player.setPlayerProfile(playerDescriptor.getPlayer());
+        player.setTeam(teamEntity);
+        player.setGameRole(GameRole.PLAYER);
+        player.setKillCode(PlayerCodeGenerator.generate());
+        processPlayerAttributes(player, playerDescriptor);
+        player.assertValid();
+
         teamRepository.save(teamEntity);
+        playerRepository.save(player);
 
-        PlayerEntity playerEntity = new PlayerEntity();
-        playerEntity.setAccount(account);
-        playerEntity.setPlayerProfile(playerDescriptor.getPlayer());
-        playerEntity.setTeam(teamEntity);
-        playerEntity.setGameRole(GameRole.PLAYER);
-        playerEntity.setKillCode(PlayerCodeGenerator.generate());
-
-        processPlayerAttributes(playerEntity, playerDescriptor);
-        playerRepository.save(playerEntity);
-
-        injectDependencies(playerEntity);
-        return playerEntity;
+        injectDependencies(player);
+        return player;
     }
 
     @Override
-    public void processPlayerAttributes(PlayerEntity playerEntity, PlayerDescriptor playerDescriptor) throws ImageNotFoundException, AddressNotFoundException {
+    public void processPlayerAttributes(Player player, PlayerDescriptor playerDescriptor) throws ImageNotFoundException, AddressNotFoundException {
+        LOG.debug("Ingesting player attributes: {}", playerDescriptor.getAttributes());
         for (EnrollmentField field : playerDescriptor.getEnrollmentFields()) {
             if (!playerDescriptor.getAttributes().containsKey(field.getFieldId())) {
+                LOG.debug("Could not find enrollment field {} in supplied attributes: {}", field.getFieldId());
                 continue;
             }
-            PlayerAttribute playerAttribute = playerEntity.getAttributes().get(field.getFieldId());
+            PlayerAttribute playerAttribute = player.getAttributes().get(field.getFieldId());
             if (playerAttribute == null) {
-                playerAttribute = field.getType().newForAccount(playerEntity.getAccount(), playerDescriptor.getAttribute(field.getFieldId()));
+                playerAttribute = field.getType().newForAccount(player.getAccount(), playerDescriptor.getAttribute(field.getFieldId()));
                 LOG.debug("Creating new player attribute ({}) {} => {} for player {}",
-                        field.getType().name(), field.getFieldId(), playerAttribute.getValueRef(), playerEntity.getId());
-                playerAttribute.setPrimaryKey(new PlayerAttributePk(playerEntity.getId(), field.getFieldId()));
-                playerAttribute.setPlayer(playerEntity);
-                playerEntity.setAttribute(field.getFieldId(), playerAttribute);
+                        field.getType().name(), field.getFieldId(), playerAttribute.getValueRef(), player.getId());
+                playerAttribute.setPrimaryKey(new PlayerAttributePk(player.getId(), field.getFieldId()));
+                playerAttribute.setPlayer(player);
+                playerAttribute.setType(field.getType());
+                player.setAttribute(field.getFieldId(), playerAttribute);
             } else {
                 LOG.debug("Updating player attribute ({}) {} => {} for player {}",
-                        field.getType().name(), field.getFieldId(), playerAttribute.getValueRef(), playerEntity.getId());
-                field.getType().updateForAccount(playerEntity.getAccount(), playerDescriptor.getAttribute(field.getFieldId()), playerAttribute);
+                        field.getType().name(), field.getFieldId(), playerAttribute.getValueRef(), player.getId());
+                field.getType().updateForAccount(player.getAccount(), playerDescriptor.getAttribute(field.getFieldId()), playerAttribute);
             }
         }
     }
 
-    private PlayerEntity injectDependencies(PlayerEntity playerEntity) {
-        playerEntity.setPlayerFactory(this);
-        playerEntity.setPlayerRepository(playerRepository);
+    private Player injectDependencies(Player player) {
+        player.setPlayerFactory(this);
         // TODO got to be a better way of doing this...
-        accountFactory.injectDependencies(playerEntity.getAccount());
-        return playerEntity;
+        accountFactory.injectDependencies(player.getAccount());
+        return player;
     }
 
     @Override
@@ -99,6 +100,11 @@ public class PlayerFactoryImpl extends BaseDomainObjectFactory implements Player
         return playerRepository.findByGameAndId(game, playerId)
                 .map(this::injectDependencies)
                 .orElseThrow(() -> new PlayerNotFoundException("No player " + playerId + " in game " + game.getId()));
+    }
+
+    @Override
+    public List<? extends Player> getPlayers(Game game) {
+        return playerRepository.findByGame(game);
     }
 
     @Override

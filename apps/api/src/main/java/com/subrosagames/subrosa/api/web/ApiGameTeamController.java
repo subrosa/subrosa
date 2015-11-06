@@ -5,11 +5,18 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.subrosagames.subrosa.api.NotAuthenticatedException;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.game.GameNotFoundException;
+import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.service.GameService;
@@ -18,7 +25,7 @@ import com.subrosagames.subrosa.service.GameService;
  * Controller for game team related CRUD operations.
  */
 @RestController
-@RequestMapping("/game/{parentId}/team")
+@RequestMapping("/game/{" + AbstractCrudController.PARENT_ID + "}/team")
 public class ApiGameTeamController extends AbstractCrudController<Team, TeamDescriptor> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiGameTeamController.class);
@@ -57,5 +64,14 @@ public class ApiGameTeamController extends AbstractCrudController<Team, TeamDesc
         return gameService.updateTeam(gameUrl, Integer.valueOf(teamId), teamDescriptor);
     }
 
+    @RequestMapping(value = { "/{" + CHILD_ID + "}/join", "/{" + CHILD_ID + "}/join/" }, method = RequestMethod.POST)
+    public Team joinTeam(@PathVariable(PARENT_ID) String gameUrl, @PathVariable(CHILD_ID) String teamId, @RequestBody JoinTeamRequest joinTeamRequest)
+            throws TeamNotFoundException, GameNotFoundException, NotAuthenticatedException, PlayerNotFoundException
+    {
+        LOG.debug("Joining team {} for game {} as {}", teamId, gameUrl, joinTeamRequest);
+        Player player = gameService.getGame(gameUrl).getPlayerForUser(getAuthenticatedUser().getId());
+        Team team =  gameService.getTeam(gameUrl, Integer.valueOf(teamId));
+        return gameService.joinTeam(player, team, joinTeamRequest);
+    }
 }
 

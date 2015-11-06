@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;

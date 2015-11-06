@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
@@ -120,4 +121,6 @@ public interface GameService {
     Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) throws GameNotFoundException;
 
     Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException;
+
+    Team joinTeam(Player player, Team team, JoinTeamRequest joinTeamRequest);
 }

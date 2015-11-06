@@ -41,8 +41,8 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     private void checkListPlayerAssertions(ResultActions resultActions) throws Exception {
         resultActions.andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(paginatedList()))
-                .andExpect(jsonPath("$").value(hasResultCount(2)))
-                .andExpect(jsonPath("$.results[*].name").value(containsInAnyOrder("Player One!", "Secret Santa")));
+                .andExpect(jsonPath("$").value(hasResultCount(3)))
+                .andExpect(jsonPath("$.results[*].name").value(containsInAnyOrder("Player One!", "Secret Santa", "No image")));
     }
 
     @Test
@@ -81,6 +81,11 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     @Test
     public void testGetPlayerWrongAccount() throws Exception {
         mockMvc.perform(get("/account/3/player/2").with(user("bob@user.com"))).andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void getPlayer_whenAvatarIsMissing_stillReturns() throws Exception {
+        mockMvc.perform(get("/account/3/player/3").with(user("lotsopics@user.com"))).andExpect(status().isOk());
     }
 
     @Test

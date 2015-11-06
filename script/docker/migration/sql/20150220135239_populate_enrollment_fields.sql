@@ -28,7 +28,7 @@ INSERT INTO enrollment_field ( game_id, field_id, name, description, type, index
     'Action Photo',
     'Image showing you in action',
     'IMAGE',
-    0,
+    1,
     1
   FROM game g
 ;
@@ -51,7 +51,7 @@ INSERT INTO enrollment_field ( game_id, field_id, name, description, type, index
     'Photo ID',
     'Standard photo ID',
     'IMAGE',
-    0,
+    2,
     2
   FROM game g
 ;

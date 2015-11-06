@@ -3,8 +3,6 @@ package com.subrosagames.subrosa.domain.player;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
-
 /**
  * Player validation involving insufficient user information.
  */
@@ -49,7 +47,7 @@ public class InsufficientInformationException extends PlayerValidationException 
      *
      * @param violations constraint violations
      */
-    public InsufficientInformationException(Set<ConstraintViolation<PlayerEntity>> violations) {
+    public InsufficientInformationException(Set<ConstraintViolation<Player>> violations) {
         super(violations);
     }
 }

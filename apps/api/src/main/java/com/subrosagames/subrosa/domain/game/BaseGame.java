@@ -2,7 +2,6 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,6 @@ import com.subrosagames.subrosa.domain.player.PlayerValidationException;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.Setter;
@@ -249,7 +247,7 @@ public class BaseGame extends GameEntity implements Game {
     @JsonIgnore
     @Override
     public List<? extends Player> getPlayers() {
-        return getPlayers(0, 0);
+        return playerFactory.getPlayers(this);
     }
 
     @JsonIgnore
@@ -337,15 +335,15 @@ public class BaseGame extends GameEntity implements Game {
 
     private void assertEnrollmentFieldsSet(JoinGameRequest joinGameRequest) throws InsufficientInformationException {
         boolean failed = false;
-        Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
+        Set<ConstraintViolation<Player>> constraints = Sets.newHashSet();
         if (joinGameRequest.getPlayerId() == null) {
             failed = true;
             constraints.add(new VirtualConstraintViolation<>("required", "playerId"));
         }
         for (EnrollmentField enrollmentField : getPlayerInfo()) {
-            if (BooleanUtils.isNotFalse(enrollmentField.isRequired()) && !joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
+            if (BooleanUtils.isNotFalse(enrollmentField.getRequired()) && !joinGameRequest.getAttributes().containsKey(enrollmentField.getFieldId())) {
                 failed = true;
-                ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<PlayerEntity>("required", enrollmentField.getFieldId());
+                ConstraintViolation<Player> constraint = new VirtualConstraintViolation<>("required", enrollmentField.getFieldId());
                 constraints.add(constraint);
             }
         }
@@ -356,10 +354,10 @@ public class BaseGame extends GameEntity implements Game {
 
     private void assertRestrictionsSatisfied(Account account) throws PlayRestrictedException {
         boolean failed = false;
-        Set<ConstraintViolation<PlayerEntity>> constraints = Sets.newHashSet();
+        Set<ConstraintViolation<Player>> constraints = Sets.newHashSet();
         if (!DateTime.now().minusYears(ABSOLUTE_MINIMUM_AGE).toDate().after(account.getDateOfBirth())) {
             failed = true;
-            ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(
+            ConstraintViolation<Player> constraint = new VirtualConstraintViolation<>(
                     RestrictionType.AGE.message(String.valueOf(ABSOLUTE_MINIMUM_AGE)), RestrictionType.AGE.field());
             constraints.add(constraint);
         }
@@ -367,7 +365,7 @@ public class BaseGame extends GameEntity implements Game {
             for (Restriction restriction : getRestrictions()) {
                 if (!restriction.satisfied(account)) {
                     failed = true;
-                    ConstraintViolation<PlayerEntity> constraint = new VirtualConstraintViolation<>(restriction.message(), restriction.field());
+                    ConstraintViolation<Player> constraint = new VirtualConstraintViolation<>(restriction.message(), restriction.field());
                     constraints.add(constraint);
                 }
             }

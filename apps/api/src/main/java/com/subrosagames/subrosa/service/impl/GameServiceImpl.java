@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
 import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
@@ -118,6 +119,12 @@ public class GameServiceImpl implements GameService {
     public Team updateTeam(String gameUrl, Integer teamId, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException {
         Game game = gameFactory.getGame(gameUrl);
         return game.updateTeam(teamId, teamDescriptor);
+    }
+
+    @Override
+    @Transactional
+    public Team joinTeam(Player player, Team team, JoinTeamRequest joinTeamRequest) {
+        return team.join(player, joinTeamRequest);
     }
 
 }

@@ -22,14 +22,20 @@ import com.subrosagames.subrosa.domain.game.PostType;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * Persisted game post.
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @Table(name = "post")
 public class PostEntity extends BaseEntity implements Post {
@@ -38,48 +44,32 @@ public class PostEntity extends BaseEntity implements Post {
     @SequenceGenerator(name = "postSeq", sequenceName = "post_post_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "postSeq")
     @Column(name = "post_id")
-    @Getter
-    @Setter
     private Integer postId;
 
     @JsonIgnore
     @ManyToOne(targetEntity = BaseGame.class)
     @JoinColumn(name = "game_id")
-    @Getter
-    @Setter
     private Game game;
 
     @ManyToOne
     @JoinColumn(name = "account_id")
-    @Getter
-    @Setter
     private Account account;
 
     @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
     private PostType postType;
 
     @Column
-    @Getter
-    @Setter
     private String content;
 
     @Column(name = "history_id")
-    @Getter
-    @Setter
     private Integer historyId;
 
     @Column(name = "accolade_id")
-    @Getter
-    @Setter
     private Integer accoladeId;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
-    @Getter
-    @Setter
     private Image image;
 
 }

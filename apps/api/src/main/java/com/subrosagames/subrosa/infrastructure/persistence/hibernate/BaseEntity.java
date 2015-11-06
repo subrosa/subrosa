@@ -8,17 +8,19 @@ import javax.persistence.PreUpdate;
 
 import org.springframework.dao.NonTransientDataAccessException;
 
+import lombok.Data;
+
 /**
  * Parent class for persisted entities.
  * <p/>
  * Provides common elements such as create and update timestamps.
  */
+@Data
 @MappedSuperclass
 public class BaseEntity {
 
     @Column
     private Date created;
-
     @Column
     private Date modified;
 
@@ -48,42 +50,6 @@ public class BaseEntity {
     protected boolean isUniqueConstraintViolation(NonTransientDataAccessException e) {
         String message = e.getMostSpecificCause().getMessage();
         return message.contains("unique constraint");
-    }
-
-    /**
-     * Get created date.
-     *
-     * @return created date
-     */
-    public Date getCreated() {
-        return created == null ? null : new Date(created.getTime());
-    }
-
-    /**
-     * Set created date.
-     *
-     * @param created created date
-     */
-    public void setCreated(Date created) {
-        this.created = created == null ? null : new Date(created.getTime());
-    }
-
-    /**
-     * Get last modified date.
-     *
-     * @return modified date
-     */
-    public Date getModified() {
-        return modified == null ? null : new Date(modified.getTime());
-    }
-
-    /**
-     * Set last modified date.
-     *
-     * @param modified modified date
-     */
-    public void setModified(Date modified) {
-        this.modified = modified == null ? null : new Date(modified.getTime());
     }
 
 }

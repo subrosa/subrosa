@@ -2,6 +2,9 @@ package com.subrosagames.subrosa.domain.game;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.Address;
@@ -11,6 +14,7 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttribute;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttributeAddress;
 import com.subrosagames.subrosa.domain.player.persistence.PlayerAttributeImage;
+import com.subrosagames.subrosa.domain.player.persistence.PlayerAttributeText;
 
 /**
  * Enumeration of type that enrollment fields can take.
@@ -108,7 +112,7 @@ public enum EnrollmentFieldType {
      * @throws AddressNotFoundException if an address is not found
      */
     public PlayerAttribute newForAccount(Account account, Object attribute) throws ImageNotFoundException, AddressNotFoundException {
-        PlayerAttribute pa = new PlayerAttribute();
+        PlayerAttribute pa = new PlayerAttributeText();
         pa.setValue((String) attribute);
         return pa;
     }

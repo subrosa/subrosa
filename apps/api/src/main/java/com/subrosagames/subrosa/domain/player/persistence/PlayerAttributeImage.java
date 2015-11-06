@@ -14,13 +14,13 @@ import com.subrosagames.subrosa.domain.image.Image;
  */
 @Entity
 @Table(name = "player_attribute_image")
-@DiscriminatorValue(PlayerAttributeImage.ATTRIBUTE_TYPE_IMAGE)
+@DiscriminatorValue(PlayerAttributeImage.ATTRIBUTE_TYPE)
 public class PlayerAttributeImage extends PlayerAttribute {
 
     /**
      * Indicates image attribute type.
      */
-    public static final String ATTRIBUTE_TYPE_IMAGE = "IMAGE";
+    public static final String ATTRIBUTE_TYPE = "IMAGE";
 
     @ManyToOne
     @JoinColumn(name = "value_ref_id")

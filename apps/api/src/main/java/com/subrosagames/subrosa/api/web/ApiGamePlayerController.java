@@ -107,7 +107,7 @@ public class ApiGamePlayerController extends BaseApiController {
             throws GameNotFoundException, PlayerNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
+            throw new NotAuthenticatedException("Unauthenticated attempt to get game player.");
         }
         return gameService.getGamePlayer(gameUrl, playerId);
     }
@@ -138,7 +138,7 @@ public class ApiGamePlayerController extends BaseApiController {
             AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
+            throw new NotAuthenticatedException("Unauthenticated attempt to join game.");
         }
         JoinGameRequest joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequestParam, new JoinGameRequest());
         return gameService.joinGame(gameUrl, getAuthenticatedUser().getId(), joinGameRequest);

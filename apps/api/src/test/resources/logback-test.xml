@@ -15,6 +15,8 @@
 
   <logger name="com.subrosa" level="DEBUG"/>
   <logger name="com.subrosagames" level="DEBUG"/>
+  <logger name="org.hibernate.sql" level="DEBUG"/>
+  <logger name="org.hibernate.type" level="TRACE"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>

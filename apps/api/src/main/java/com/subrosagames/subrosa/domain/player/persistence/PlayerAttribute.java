@@ -5,6 +5,8 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -13,6 +15,10 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.subrosagames.subrosa.domain.game.EnrollmentFieldType;
+import com.subrosagames.subrosa.domain.player.Player;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted player attribute.
@@ -24,39 +30,27 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public class PlayerAttribute {
 
     @EmbeddedId
+    @Getter
+    @Setter
     private PlayerAttributePk primaryKey;
 
     @ManyToOne
     @JoinColumn(name = "player_id")
     @MapsId("playerId")
-    private PlayerEntity player;
+    @Getter
+    @Setter
+    private Player player;
 
     @Column
+    @Getter
+    @Setter
     private String value;
 
-    public PlayerAttributePk getPrimaryKey() {
-        return primaryKey;
-    }
-
-    public void setPrimaryKey(PlayerAttributePk primaryKey) {
-        this.primaryKey = primaryKey;
-    }
-
-    public PlayerEntity getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(PlayerEntity player) {
-        this.player = player;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
+    @Column(name = "attribute_type", insertable = false, updatable = false)
+    @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
+    private EnrollmentFieldType type;
 
     @JsonValue
     public Object getJsonValue() {
