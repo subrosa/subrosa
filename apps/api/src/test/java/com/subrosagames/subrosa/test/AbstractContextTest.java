@@ -3,6 +3,10 @@ package com.subrosagames.subrosa.test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -11,7 +15,11 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.SubrosaApplication;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRole;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 
 /**
@@ -29,4 +37,15 @@ import com.subrosagames.subrosa.test.util.ForeignKeyDisablingTestListener;
 })
 @ActiveProfiles("unit-test")
 public abstract class AbstractContextTest {
+
+    protected void login(int id, AccountRole... roles) {
+        TestingAuthenticationToken authentication = new TestingAuthenticationToken(new SubrosaUser(
+                Account.builder().id(id).email("email").password("password").roles(Sets.newHashSet(roles)).build()), "");
+        authentication.setAuthenticated(true);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    protected void logout() {
+        SecurityContextHolder.clearContext();
+    }
 }

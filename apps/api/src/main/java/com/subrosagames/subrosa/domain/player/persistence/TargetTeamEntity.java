@@ -10,6 +10,9 @@ import javax.persistence.Table;
 
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.player.TargetTeam;
+import com.subrosagames.subrosa.domain.player.Team;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted targeted team.
@@ -20,20 +23,15 @@ import com.subrosagames.subrosa.domain.player.TargetTeam;
 @PrimaryKeyJoinColumn(name = "target_id")
 public class TargetTeamEntity extends TargetEntity implements TargetTeam {
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER, targetEntity = TeamEntity.class)
     @JoinColumn(name = "team_id")
-    private TeamEntity target;
-
-    public TeamEntity getTarget() {
-        return target;
-    }
-
-    public void setTarget(TeamEntity target) {
-        this.target = target;
-    }
+    @Getter
+    @Setter
+    private Team target;
 
     @Override
     public Image getImage() {
-        return target.getImage();
+        return target.getAvatar();
     }
+
 }

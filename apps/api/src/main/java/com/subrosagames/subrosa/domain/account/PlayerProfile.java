@@ -9,7 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -19,13 +20,14 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.player.Player;
-import com.subrosagames.subrosa.domain.player.persistence.PlayerEntity;
+import lombok.Data;
 
 /**
  * Account player profile.
  */
 @Entity
 @Table(name = "player_profile")
+@Data
 public class PlayerProfile {
 
     @Id
@@ -39,59 +41,34 @@ public class PlayerProfile {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    @NotBlank
+    @JsonIgnore
+    @Column
+    private Integer index;
+
+    @NotBlank(groups = { Create.class, Update.class })
     @Column
     private String name;
 
-    @NotNull
-    @OneToOne
-    @JoinColumn(name = "image_id")
+    @NotNull(groups = { Create.class, Update.class })
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "image_id", nullable = true) // TODO can we retrofit images to make this non-nullable?
     private Image image;
 
     @JsonIgnore
-    @OneToMany(
-            targetEntity = PlayerEntity.class,
-            mappedBy = "playerProfile"
-    )
+    @OneToMany(mappedBy = "playerProfile")
     private Set<Player> players;
 
-    public Integer getId() {
-        return id;
+    @PrePersist
+    @PreUpdate
+    private void prepareIndex() {
+        if (account != null) {
+            index = account.getPlayerProfiles().indexOf(this);
+        }
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public interface Create {
     }
 
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public Set<Player> getPlayers() {
-        return players;
-    }
-
-    public void setPlayers(Set<Player> players) {
-        this.players = players;
+    public interface Update {
     }
 }

@@ -1,9 +1,19 @@
 
-def sqlDir = 'script/docker/migration/sql/'
+def sqlDir = "${rootDir}/script/docker/migration/sql/"
 
 task newMigration << {
+    if (!project.hasProperty('desc')) {
+        throw new GradleException('Please set the desc property: -Pdesc=for_example')
+    }
     def now = Calendar.getInstance()
-    def version = String.format("%04d%02d%02d%02d%02d%02d.sql", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DATE), now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(Calendar.SECOND))
-    def f = new File(sqlDir, version)
+    def filename = String.format("%04d%02d%02d%02d%02d%02d_${desc}.sql",
+            now.get(Calendar.YEAR),
+            now.get(Calendar.MONTH) + 1,
+            now.get(Calendar.DATE),
+            now.get(Calendar.HOUR_OF_DAY),
+            now.get(Calendar.MINUTE),
+            now.get(Calendar.SECOND))
+    def f = file(new File(sqlDir, filename))
+    println("Created migration: ${f}")
     f.createNewFile()
 }

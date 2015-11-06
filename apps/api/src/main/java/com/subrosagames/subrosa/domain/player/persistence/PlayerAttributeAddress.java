@@ -12,13 +12,13 @@ import com.subrosagames.subrosa.domain.account.Address;
  * Persists a reference to an account image as a player attribute.
  */
 @Entity
-@DiscriminatorValue(PlayerAttributeAddress.ATTRIBUTE_TYPE_ADDRESS)
+@DiscriminatorValue(PlayerAttributeAddress.ATTRIBUTE_TYPE)
 public class PlayerAttributeAddress extends PlayerAttribute {
 
     /**
      * Indicates address attribute type.
      */
-    public static final String ATTRIBUTE_TYPE_ADDRESS = "ADDRESS";
+    public static final String ATTRIBUTE_TYPE = "ADDRESS";
 
     @ManyToOne
     @JoinColumn(name = "value_ref_id")

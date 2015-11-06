@@ -78,7 +78,7 @@ public class ApiGamePlayerController extends BaseApiController {
 
         int limit = ObjectUtils.defaultIfNull(limitParam, 0);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        List<Player> players = game.getPlayers(limit, offset);
+        List<? extends Player> players = game.getPlayers(limit, offset);
         if (CollectionUtils.isEmpty(players)) {
             return new PaginatedList<>(Lists.<Player>newArrayList(), 0, limit, offset);
         } else {
@@ -107,7 +107,7 @@ public class ApiGamePlayerController extends BaseApiController {
             throws GameNotFoundException, PlayerNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
         if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
+            throw new NotAuthenticatedException("Unauthenticated attempt to get game player.");
         }
         return gameService.getGamePlayer(gameUrl, playerId);
     }
@@ -138,7 +138,7 @@ public class ApiGamePlayerController extends BaseApiController {
             AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException
     {
         if (!SecurityHelper.isAuthenticated()) {
-            throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
+            throw new NotAuthenticatedException("Unauthenticated attempt to join game.");
         }
         JoinGameRequest joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequestParam, new JoinGameRequest());
         return gameService.joinGame(gameUrl, getAuthenticatedUser().getId(), joinGameRequest);

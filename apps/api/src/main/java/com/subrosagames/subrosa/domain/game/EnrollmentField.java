@@ -38,5 +38,5 @@ public interface EnrollmentField {
      *
      * @return whether field is required
      */
-    Boolean isRequired();
+    Boolean getRequired();
 }

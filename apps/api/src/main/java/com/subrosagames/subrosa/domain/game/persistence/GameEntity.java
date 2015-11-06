@@ -22,6 +22,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
@@ -31,13 +34,10 @@ import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.annotations.Where;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.api.list.Operator;
@@ -48,7 +48,6 @@ import com.subrosagames.subrosa.domain.game.EnrollmentField;
 import com.subrosagames.subrosa.domain.game.GameType;
 import com.subrosagames.subrosa.domain.game.Restriction;
 import com.subrosagames.subrosa.domain.game.Rule;
-import com.subrosagames.subrosa.domain.game.event.GameEvent;
 import com.subrosagames.subrosa.domain.game.event.GameHistory;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.location.Location;
@@ -58,6 +57,8 @@ import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Persisted entity for a game.
@@ -66,21 +67,13 @@ import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 @Table(name = "game")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "game_type", discriminatorType = DiscriminatorType.STRING)
-@FetchProfiles({
-        @FetchProfile(name = "posts", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "posts", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "history", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "history", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "zones", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "zones", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "events", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = GameEntity.class, association = "events", mode = FetchMode.JOIN)
-        })
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "posts", attributeNodes = @NamedAttributeNode("posts")),
+        @NamedEntityGraph(name = "history", attributeNodes = @NamedAttributeNode("history")),
+        @NamedEntityGraph(name = "zones", attributeNodes = @NamedAttributeNode("zones")),
+        @NamedEntityGraph(name = "events", attributeNodes = @NamedAttributeNode("events")),
 })
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GameEntity extends BaseEntity {
 
     /**
@@ -96,53 +89,84 @@ public class GameEntity extends BaseEntity {
     @SequenceGenerator(name = "gameSeq", sequenceName = "game_game_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "gameSeq")
     @Column(name = "game_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "owner_id")
+    @Getter
+    @Setter
     private Account owner;
 
     @Column
+    @Getter
+    @Setter
     private String name;
 
     @Column(nullable = false, unique = true)
+    @Getter
+    @Setter
     private String url;
 
     @Column
+    // TODO use java8 date/time apis
     private Date published;
 
     @Column
+    @Getter
+    @Setter
     private String description;
 
     @Column(name = "game_type", insertable = false, updatable = false)
     @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
     private GameType gameType;
 
     @Column
+    @Getter
+    @Setter
     private BigDecimal price;
 
     @Column
+    @Getter
+    @Setter
     private String timezone;
 
     @Column(name = "max_team_size")
+    @Getter
+    @Setter
     private Integer maximumTeamSize;
 
     @Column
+    @Getter
+    @Setter
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "image_id")
+    @Getter
+    @Setter
     private Image image;
 
-    @OneToMany(targetEntity = PostEntity.class)
-    @JoinColumn(name = "game_id")
+    @OneToMany(
+            targetEntity = PostEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     @OrderBy("created DESC")
+    @Getter
+    @Setter
     private List<Post> posts;
 
     @OneToMany(targetEntity = GameHistoryEntity.class)
     @JoinColumn(name = "game_id")
     @OrderBy("created DESC")
+    @Getter
+    @Setter
     private List<GameHistory> history;
 
     @JsonIgnore
@@ -152,11 +176,15 @@ public class GameEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "rule_id")
     )
+    @Getter
+    @Setter
     private Set<Rule> ruleSet = Sets.newHashSet();
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "game")
     @MapKey(name = "primaryKey.attributeType")
+    @Getter
+    @Setter
     private Map<String, GameAttributeEntity> attributes;
 
     @JsonIgnore
@@ -166,18 +194,24 @@ public class GameEntity extends BaseEntity {
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "zone_id")
     )
+    @Getter
+    @Setter
     private List<Zone> zones;
 
-    @OneToOne(fetch = FetchType.EAGER, targetEntity = LocationEntity.class)
+    @OneToOne(targetEntity = LocationEntity.class)
     @JoinTable(
             name = "game_location",
             joinColumns = @JoinColumn(name = "game_id"),
             inverseJoinColumns = @JoinColumn(name = "location_id")
     )
+    @Getter
+    @Setter
     private Location location;
 
     @JsonIgnore
     @OneToMany(targetEntity = RestrictionEntity.class, mappedBy = "game")
+    @Getter
+    @Setter
     private Set<Restriction> restrictions;
 
     @OneToMany(
@@ -188,6 +222,7 @@ public class GameEntity extends BaseEntity {
             fetch = FetchType.EAGER
     )
     @OrderColumn(name = "index")
+    @Getter
     private List<EnrollmentField> playerInfo = Lists.newArrayList();
 
     @Filterable(
@@ -198,6 +233,7 @@ public class GameEntity extends BaseEntity {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='registrationStart'")
+    @Setter
     private List<ScheduledEvent> registrationStart;
 
     @Filterable(
@@ -208,6 +244,7 @@ public class GameEntity extends BaseEntity {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='registrationEnd'")
+    @Setter
     private List<ScheduledEvent> registrationEnd;
 
     @Filterable(
@@ -218,6 +255,7 @@ public class GameEntity extends BaseEntity {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameStart'")
+    @Setter
     private List<ScheduledEvent> gameStart;
 
     @Filterable(
@@ -228,10 +266,18 @@ public class GameEntity extends BaseEntity {
     @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     @Where(clause = "event_class='gameEnd'")
+    @Setter
     private List<ScheduledEvent> gameEnd;
 
-    @OneToMany(targetEntity = EventEntity.class, mappedBy = "game")
-    private List<GameEvent> events;
+    @OneToMany(
+            targetEntity = EventEntity.class,
+            mappedBy = "game",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @Getter
+    @Setter
+    private List<EventEntity> events;
 
     /**
      * Set the default price and max team size if unset.
@@ -260,183 +306,12 @@ public class GameEntity extends BaseEntity {
         }
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Account getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Account owner) {
-        this.owner = owner;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public GameType getGameType() {
-        return gameType;
-    }
-
-    public void setGameType(GameType gameType) {
-        this.gameType = gameType;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getTimezone() {
-        return timezone;
-    }
-
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
-    }
-
-    public Integer getMaximumTeamSize() {
-        return maximumTeamSize;
-    }
-
-    public void setMaximumTeamSize(Integer maximumTeamSize) {
-        this.maximumTeamSize = maximumTeamSize;
-    }
-
-    /**
-     * Get game posts, guarding against lazy load exceptions.
-     *
-     * @return game posts
-     */
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
-
-    /**
-     * Get game history, guarding against lazy load exceptions.
-     *
-     * @return game history
-     */
-    public List<GameHistory> getHistory() {
-        return history;
-    }
-
-    public void setHistory(List<GameHistory> history) {
-        this.history = history;
-    }
-
-    /**
-     * Get game events, guarding against lazy load exceptions.
-     *
-     * @return game events
-     */
-    public List<GameEvent> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<GameEvent> events) {
-        this.events = events;
-    }
-
-    public Set<Rule> getRuleSet() {
-        return ruleSet;
-    }
-
-    public void setRuleSet(Set<Rule> ruleSet) {
-        this.ruleSet = ruleSet;
-    }
-
-    public Map<String, GameAttributeEntity> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(Map<String, GameAttributeEntity> attributes) {
-        this.attributes = attributes;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public Date getPublished() {
         return published == null ? null : new Date(published.getTime());
     }
 
     public void setPublished(Date published) {
         this.published = published == null ? null : new Date(published.getTime());
-    }
-
-    public List<Zone> getZones() {
-        return zones;
-    }
-
-    public void setZones(List<Zone> zones) {
-        this.zones = zones;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Set<Restriction> getRestrictions() {
-        return restrictions;
-    }
-
-    public void setRestrictions(Set<Restriction> restrictions) {
-        this.restrictions = restrictions;
-    }
-
-    public List<EnrollmentField> getPlayerInfo() {
-        return playerInfo;
     }
 
     /**
@@ -459,10 +334,6 @@ public class GameEntity extends BaseEntity {
                 : gameStart.get(0).getDate();
     }
 
-    public void setGameStart(List<ScheduledEvent> gameStart) {
-        this.gameStart = gameStart;
-    }
-
     @JsonIgnore
     public List<ScheduledEvent> getGameStartEvents() {
         return gameStart;
@@ -477,10 +348,6 @@ public class GameEntity extends BaseEntity {
         return gameEnd == null ? null
                 : gameEnd.isEmpty() ? null
                 : gameEnd.get(0).getDate();
-    }
-
-    public void setGameEnd(List<ScheduledEvent> gameEnd) {
-        this.gameEnd = gameEnd;
     }
 
     @JsonIgnore
@@ -499,10 +366,6 @@ public class GameEntity extends BaseEntity {
                 : registrationStart.get(0).getDate();
     }
 
-    public void setRegistrationStart(List<ScheduledEvent> registrationStart) {
-        this.registrationStart = registrationStart;
-    }
-
     @JsonIgnore
     public List<ScheduledEvent> getRegistrationStartEvents() {
         return registrationStart;
@@ -517,10 +380,6 @@ public class GameEntity extends BaseEntity {
         return registrationEnd == null ? null
                 : registrationEnd.isEmpty() ? null
                 : registrationEnd.get(0).getDate();
-    }
-
-    public void setRegistrationEnd(List<ScheduledEvent> registrationEnd) {
-        this.registrationEnd = registrationEnd;
     }
 
     @JsonIgnore

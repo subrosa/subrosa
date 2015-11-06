@@ -45,7 +45,8 @@ public class ReadGamePermission extends AbstractPermission {
     }
 
     private Game getGame(Serializable id) throws GameNotFoundException {
-        return gameRepository.get((String) id);
+        return gameRepository.findOneByUrl((String) id)
+                .orElseThrow(() -> new GameNotFoundException("no game for identifier " + id));
     }
 
     public void setGameFactory(GameFactory gameFactory) {

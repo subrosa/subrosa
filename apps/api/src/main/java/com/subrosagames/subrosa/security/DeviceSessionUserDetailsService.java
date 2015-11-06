@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
+import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
@@ -37,12 +37,11 @@ public class DeviceSessionUserDetailsService implements AuthenticationUserDetail
         Token sessionToken = tokenFactory.findToken((String) token.getPrincipal(), TokenType.DEVICE_AUTH);
         if (sessionToken != null) {
             LOG.debug("Device session token resolved to user " + sessionToken.getOwner());
-            try {
-                return new SubrosaUser(accountRepository.get(sessionToken.getOwner()));
-            } catch (AccountNotFoundException e) { // SUPPRESS CHECKSTYLE EmptyCatch
-                LOG.debug("No account found for user {}", sessionToken.getOwner());
-                // fall through to UsernameNotFoundException below
+            Account account = accountRepository.findOne(sessionToken.getOwner());
+            if (account != null) {
+                return new SubrosaUser(account);
             }
+            LOG.debug("No account found for user {}", sessionToken.getOwner());
         }
         throw new UsernameNotFoundException("No user found for auth token " + token.getPrincipal());
     }

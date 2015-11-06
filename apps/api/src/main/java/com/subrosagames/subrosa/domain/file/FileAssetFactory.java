@@ -55,7 +55,7 @@ public class FileAssetFactory {
         FileAsset fileAsset = new FileAsset();
         fileAsset.setName(FilenameUtils.getName(multipartFile.getOriginalFilename()));
         fileAsset.setUuid(UUID.randomUUID().toString().replace("-", ""));
-        fileAsset = fileAssetRepository.create(fileAsset);
+        fileAsset = fileAssetRepository.save(fileAsset);
 
         // store physical file
         long length = storeFileStream(multipartFile, fileAsset);
@@ -70,7 +70,7 @@ public class FileAssetFactory {
             LOG.error("Could not determine mime type.", e);
         }
         fileAsset.setSize(length);
-        fileAssetRepository.update(fileAsset);
+        fileAssetRepository.save(fileAsset);
 
         if (LOG.isInfoEnabled()) {
             LOG.info("Successfully created new file: {} => {} ({})", fileAsset.getId(), fileAsset.getName(), fileAsset.getMimeType());

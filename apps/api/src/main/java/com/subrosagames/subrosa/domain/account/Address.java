@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.validator.constraints.Length;
@@ -18,11 +20,25 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.subrosagames.subrosa.domain.location.Location;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import jdk.nashorn.internal.objects.annotations.Getter;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Used to represent an accounts addresses.
  */
 @Entity
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Address extends BaseEntity {
 
     @Id
@@ -33,12 +49,12 @@ public class Address extends BaseEntity {
 
     @JsonIgnore
     @ManyToOne
-    @JoinTable(
-            name = "account_address",
-            inverseJoinColumns = @JoinColumn(name = "account_id"),
-            joinColumns = @JoinColumn(name = "address_id")
-    )
+    @JoinColumn(name = "account_id")
     private Account account;
+
+    @JsonIgnore
+    @Column
+    private Integer index;
 
     @Column
     @NotBlank
@@ -74,100 +90,12 @@ public class Address extends BaseEntity {
     @Column(name = "postal_code")
     private String postalCode;
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public String getFullAddress() {
-        return fullAddress;
-    }
-
-    public void setFullAddress(String fullAddress) {
-        this.fullAddress = fullAddress;
-    }
-
-    public String getUserProvided() {
-        return userProvided;
-    }
-
-    public void setUserProvided(String userProvided) {
-        this.userProvided = userProvided;
-    }
-
-    public String getStreetAddress() {
-        return streetAddress;
-    }
-
-    public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
-    }
-
-    public String getStreetContinued() {
-        return streetContinued;
-    }
-
-    public void setStreetContinued(String streetContinued) {
-        this.streetContinued = streetContinued;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+    @PrePersist
+    @PreUpdate
+    private void prepareIndex() {
+        if (account != null) {
+            index = account.getAddresses().indexOf(this);
+        }
     }
 
 }

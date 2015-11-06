@@ -4,14 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+
+import com.subrosagames.subrosa.domain.DomainObjectRepositoryFactoryBean;
 
 /**
  * Base configuration class for application.
  */
-@ImportResource("classpath:com/subrosagames/subrosa/subrosa-application-context.xml")
 @Configuration
+@EnableJpaRepositories(
+        basePackageClasses = com.subrosagames.subrosa.domain.Marker.class,
+        repositoryFactoryBeanClass = DomainObjectRepositoryFactoryBean.class
+)
 public class SubrosaConfiguration {
 
     @Autowired

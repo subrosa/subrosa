@@ -7,9 +7,7 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.account.Account;
-import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AccountRepository;
-import com.subrosagames.subrosa.domain.account.AccountValidationException;
 
 /**
  * Listener that updates {@link Account#lastLoggedIn} on successful authentication.
@@ -24,10 +22,6 @@ public class UpdateLastLoggedInListener implements ApplicationListener<Authentic
     public void onApplicationEvent(AuthenticationSuccessEvent event) {
         Account account = ((SubrosaUser) event.getAuthentication().getPrincipal()).getAccount();
         account.setLastLoggedIn(DateTime.now().toDate());
-        try {
-            accountRepository.update(account);
-        } catch (AccountNotFoundException | AccountValidationException e) {
-            throw new IllegalStateException(e);
-        }
+        accountRepository.save(account);
     }
 }

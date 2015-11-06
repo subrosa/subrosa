@@ -216,11 +216,11 @@ public class ApiAccountAddressControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testDeleteAddressForAuthenticatedUser() throws Exception {
-        mockMvc.perform(delete("/account/3/address/1").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/user/address/1").with(user("lotsopics@user.com")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        mockMvc.perform(get("/account/3/address/1").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/user/address/1").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
     }
 
     @Test

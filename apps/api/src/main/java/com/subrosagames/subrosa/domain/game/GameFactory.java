@@ -42,16 +42,6 @@ public interface GameFactory extends DomainObjectFactory<BaseGame> {
     Game getGame(String url, String... expansions) throws GameNotFoundException;
 
     /**
-     * Get a paginated list of games.
-     *
-     * @param limit      number of games to return
-     * @param offset     offset into the games list
-     * @param expansions fields to expand
-     * @return paginated list of games
-     */
-    PaginatedList<Game> getGames(Integer limit, Integer offset, String... expansions);
-
-    /**
      * Get the games that the given account has created.
      *
      * @param user game owner

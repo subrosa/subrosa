@@ -3,9 +3,9 @@ package com.subrosagames.subrosa.api.notification;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Represents a notification message related to a request.
@@ -90,9 +90,7 @@ public class Notification {
      *
      * @return the collection of notification details
      */
-    @JsonSerialize(
-            include = JsonSerialize.Inclusion.NON_NULL
-    )
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Map<DetailKey, String> getDetails() {
         return details;
     }

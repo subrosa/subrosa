@@ -1,7 +1,11 @@
 package com.subrosagames.subrosa.service;
 
+import java.util.List;
+
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.account.AddressNotFoundException;
@@ -13,6 +17,8 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
+import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 
 /**
  * Handles interactions between players and games.
@@ -107,4 +113,14 @@ public interface GameService {
      */
     Player updateGamePlayer(String gameUrl, Integer playerId, JoinGameRequest joinGameRequest) throws GameNotFoundException, AddressNotFoundException,
             PlayerNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException;
+
+    List<? extends Team> listTeams(String gameUrl) throws GameNotFoundException;
+
+    Team getTeam(String gameUrl, Integer integer) throws GameNotFoundException, TeamNotFoundException;
+
+    Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) throws GameNotFoundException;
+
+    Team updateTeam(String gameUrl, Integer integer, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException;
+
+    Team joinTeam(Player player, Team team, JoinTeamRequest joinTeamRequest);
 }

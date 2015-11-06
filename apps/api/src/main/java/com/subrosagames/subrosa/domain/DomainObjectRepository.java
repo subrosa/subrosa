@@ -1,59 +1,113 @@
 package com.subrosagames.subrosa.domain;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
- * Generic CRUD interface for domain repositories.
+ * Extension of the paging and sorting repository interface to support the simultaneous use of
+ * {@link Specification}-based querying and dynamically chosen {@link EntityGraph}s.
  *
  * @param <T> domain object type
  */
-public interface DomainObjectRepository<T> {
+@NoRepositoryBean
+public interface DomainObjectRepository<T, I extends Serializable> extends PagingAndSortingRepository<T, I> {
 
     /**
-     * Create domain object.
+     * Find all entities matching the provided specs with the given entity graph enabled.
      *
-     * @param object domain object
-     * @return created object
-     * @throws DomainObjectValidationException if domain object is not valid
+     * @param spec  query specifications
+     * @param hints entity graph hints
+     * @return matching entities
      */
-    T create(T object) throws DomainObjectValidationException;
+    List<T> findAll(Specification<T> spec, DomainObjectRepositoryImpl.EntityGraphHint... hints);
+
+    List<T> findAll(Specification<T> spec, String... expansions);
 
     /**
-     * List domain objects.
+     * Perform a paginated query for entities matching the provided specs with the given entity graph enabled.
      *
-     * @param limit      limit
-     * @param offset     offset
-     * @param expansions fields to expand
-     * @return list of domain objects
+     * @param spec     query specifications
+     * @param pageable pagination information
+     * @param hints    entity graph hints
+     * @return matching entities
      */
-    List<T> list(int limit, int offset, String... expansions);
+    Page<T> findAll(Specification<T> spec, Pageable pageable, DomainObjectRepositoryImpl.EntityGraphHint... hints);
+
+    Page<T> findAll(Specification<T> spec, Pageable pageable, String... expansions);
 
     /**
-     * Total count of domain objects.
+     * Perform a sorted query for entities matching the provided specs with the given entity graph enabled.
      *
-     * @return object count
+     * @param spec  query specifications
+     * @param sort  sort
+     * @param hints entity graph hints
+     * @return matching entities
      */
-    int count();
+    List<T> findAll(Specification<T> spec, Sort sort, DomainObjectRepositoryImpl.EntityGraphHint... hints);
+
+    List<T> findAll(Specification<T> spec, Sort sort, String... expansions);
 
     /**
-     * Get domain object.
+     * Retrieve a single entity matching the provided specs with the given entity graph enabled.
      *
-     * @param id         object id
-     * @param expansions fields to expand
-     * @return domain object
-     * @throws DomainObjectNotFoundException if object is not found
+     * @param spec  query specifications
+     * @param hints entity graph hints
+     * @return matching entity
      */
-    T get(int id, String... expansions) throws DomainObjectNotFoundException;
+    Optional<T> findOne(Specification<T> spec, DomainObjectRepositoryImpl.EntityGraphHint... hints);
 
-    /**
-     * Update domain object.
-     *
-     * @param object domain object
-     * @return updated object
-     * @throws DomainObjectNotFoundException   is object is not found
-     * @throws DomainObjectValidationException if object is not valid
-     */
-    T update(T object) throws DomainObjectNotFoundException, DomainObjectValidationException;
+    Optional<T> findOne(Specification<T> spec, String... expansions);
 
+    Optional<T> findOne(int id, DomainObjectRepositoryImpl.EntityGraphHint... hints);
+
+    Optional<T> findOne(int id, String... expansions);
+
+    EntityManager getEntityManager();
+
+    Page<T> readPage(TypedQuery<T> query, Pageable pageable, Specification<T> spec);
+
+    default void applyHints(TypedQuery<T> query, EntityGraphHint[] hints) {
+        if (hints.length > 0) {
+            EntityGraphHint hint = hints[0];
+            try {
+                query.setHint(hint.getType().getKey(), getEntityManager().getEntityGraph(hint.getName()));
+            } catch (IllegalArgumentException e) {
+                // swallow this - bad graph name given so it won't be used
+            }
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    class EntityGraphHint {
+
+        @Getter
+        private final EntityGraph.EntityGraphType type;
+        @Getter
+        private final String name;
+
+        public static EntityGraphHint loadGraphName(String name) {
+            return new EntityGraphHint(EntityGraph.EntityGraphType.LOAD, name);
+        }
+
+        public static EntityGraphHint fetchGraphName(String name) {
+            return new EntityGraphHint(EntityGraph.EntityGraphType.FETCH, name);
+        }
+    }
 }
 

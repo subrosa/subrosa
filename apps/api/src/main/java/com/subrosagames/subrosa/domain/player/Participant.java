@@ -12,6 +12,8 @@ import com.subrosagames.subrosa.domain.location.Location;
  */
 public interface Participant {
 
+    Integer getId();
+
     /**
      * Participant's name.
      *

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
@@ -48,6 +47,7 @@ import com.subrosagames.subrosa.domain.location.Coordinates;
 import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.message.Post;
 import com.subrosagames.subrosa.domain.player.Player;
+import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.security.SecurityHelper;
@@ -293,7 +293,7 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}/target", method = RequestMethod.GET)
     @ResponseBody
-    public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException {
+    public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException, PlayerNotFoundException {
         int accountId = getAuthenticatedUser().getId();
         LOG.debug("Retrieving targets for game {} and account {}", gameUrl, accountId);
         Game game = gameFactory.getGame(gameUrl);
@@ -301,12 +301,7 @@ public class ApiGameController extends BaseApiController {
         LOG.debug("Found player {} in game. Getting targets.", player.getId());
         List<? extends Target> targets = player.getTargets();
         LOG.debug("Player {} in game {} has {} targets", player.getId(), gameUrl, targets.size());
-        return new TargetList(Lists.transform(targets, new Function<Target, TargetDto>() {
-            @Override
-            public TargetDto apply(Target input) {
-                return TargetDtoFactory.getDtoForTarget(input);
-            }
-        }));
+        return new TargetList(Lists.transform(targets, TargetDtoFactory::getDtoForTarget));
     }
 
     /**
@@ -336,7 +331,8 @@ public class ApiGameController extends BaseApiController {
     @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.GET)
     @ResponseBody
     public TargetDto getTarget(@PathVariable("gameUrl") String gameUrl,
-                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException
+                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException, PlayerNotFoundException
+
     {
         int accountId = getAuthenticatedUser().getId();
         Game game = gameFactory.getGame(gameUrl);
@@ -360,7 +356,7 @@ public class ApiGameController extends BaseApiController {
     public void achieveTarget(@PathVariable("gameUrl") String gameUrl,
                               @PathVariable("targetId") Integer targetId,
                               @RequestBody TargetAchievement targetAchievement)
-            throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException
+            throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException, PlayerNotFoundException
     {
         int accountId = getAuthenticatedUser().getId();
         Game game = gameFactory.getGame(gameUrl);

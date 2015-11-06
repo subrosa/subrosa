@@ -90,7 +90,7 @@ public class EnrollmentFieldEntity implements EnrollmentField {
     }
 
     @Override
-    public Boolean isRequired() {
+    public Boolean getRequired() {
         return required;
     }
 

@@ -57,7 +57,7 @@ fi
 
 msg "Installing docker-compose and docker utilities..."
 mkdir -p /home/vagrant/bin
-wget -nv -O /home/vagrant/bin/docker-compose https://github.com/docker/compose/releases/download/1.4.0/docker-compose-Linux-x86_64
+wget -nv -O /home/vagrant/bin/docker-compose https://github.com/docker/compose/releases/download/1.4.2/docker-compose-Linux-x86_64
 wget -nv -O /home/vagrant/bin/docker-gc https://raw.githubusercontent.com/spotify/docker-gc/master/docker-gc
 wget -nv -O /home/vagrant/bin/docker-volumes https://github.com/cpuguy83/docker-volumes/releases/download/v1.1.2/docker-volumes-linux-amd64
 chmod +x /home/vagrant/bin/docker-{compose,gc,volumes}

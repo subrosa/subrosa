@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -17,6 +18,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
+import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -30,9 +34,6 @@ import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
-import org.hibernate.annotations.FetchProfiles;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
@@ -41,8 +42,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.base.Optional;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AccountDescriptor;
 import com.subrosagames.subrosa.api.dto.AddressDescriptor;
@@ -50,82 +50,127 @@ import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
 import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
+import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
 import com.subrosagames.subrosa.domain.token.Token;
 import com.subrosagames.subrosa.domain.token.TokenFactory;
 import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
+import com.subrosagames.subrosa.security.PasswordUtility;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Represents an account in the Subrosa application.
  */
 @Entity
 @Table(name = "account")
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
-@FetchProfiles({
-        @FetchProfile(name = "addresses", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = Account.class, association = "addresses", mode = FetchMode.JOIN)
-        }),
-        @FetchProfile(name = "images", fetchOverrides = {
-                @FetchProfile.FetchOverride(entity = Account.class, association = "images", mode = FetchMode.JOIN)
-        })
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = Account.ADDRESSES_GRAPH, attributeNodes = @NamedAttributeNode(Account.ADDRESSES_GRAPH)),
+        @NamedEntityGraph(name = Account.PLAYERS_GRAPH, attributeNodes = @NamedAttributeNode(Account.PLAYERS_GRAPH)),
 })
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Account extends BaseEntity implements PermissionTarget {
+
+    public static final String ADDRESSES_GRAPH = "addresses";
+    public static final String PLAYERS_GRAPH = "playerProfiles";
 
     private static final Logger LOG = LoggerFactory.getLogger(Account.class);
 
     @JsonIgnore
     @Transient
+    @Setter
     private AccountRepository accountRepository;
     @JsonIgnore
     @Transient
+    @Setter
     private AccountFactory accountFactory;
     @JsonIgnore
     @Transient
+    @Setter
     private TokenFactory tokenFactory;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private ImageRepository imageRepository;
+    @JsonIgnore
+    @Transient
+    @Setter
+    private PasswordUtility passwordUtility;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "accountSeq")
     @Column(name = "account_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @Column
+    @Getter
+    @Setter
     private Boolean activated;
 
     @Column
+    @Getter
+    @Setter
     private String username;
 
     @Column
+    @Getter
+    @Setter
     private String name;
 
     @Column(length = 320, unique = true)
     @NotNull
     @NotBlank
     @Email
+    @Getter
+    @Setter
     private String email;
 
     @Column(name = "cell_phone")
+    @Getter
+    @Setter
     private String cellPhone;
 
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
+    // TODO use immutable java 8 temporal types
     private Date dateOfBirth;
 
     @ElementCollection(targetClass = AccountRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
     private Set<AccountRole> roles;
 
     @JsonIgnore
     @Column(length = 256)
+    @Getter
+    @Setter
     private String password;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
-    private List<Address> addresses;
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderColumn(name = "index")
+    @Getter
+    @Setter
+    private List<Address> addresses = Lists.newArrayList();
 
     @JsonIgnore
     @OneToMany(
@@ -135,13 +180,24 @@ public class Account extends BaseEntity implements PermissionTarget {
             fetch = FetchType.EAGER
     )
     @OrderColumn(name = "index")
+    @Getter
+    @Setter
     private List<Image> images = Lists.newArrayList();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "account", cascade = { CascadeType.PERSIST })
+    @OneToMany(
+            mappedBy = "account",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @OrderColumn(name = "index")
+    @Getter
+    @Setter
     private List<PlayerProfile> playerProfiles = Lists.newArrayList();
 
     @Column(name = "last_logged_in")
+    @Getter
+    @Setter
     private Date lastLoggedIn;
 
     /**
@@ -153,103 +209,12 @@ public class Account extends BaseEntity implements PermissionTarget {
         return new ArrayList<>();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Boolean isActivated() {
-        return activated;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCellPhone() {
-        return cellPhone;
-    }
-
-    public void setCellPhone(String cellPhone) {
-        this.cellPhone = cellPhone;
-    }
-
     public Date getDateOfBirth() {
         return dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
     }
 
     public void setDateOfBirth(Date dateOfBirth) {
         this.dateOfBirth = dateOfBirth == null ? null : new Date(dateOfBirth.getTime());
-    }
-
-
-    public Set<AccountRole> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<AccountRole> accountRoles) {
-        this.roles = accountRoles;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Date getLastLoggedIn() {
-        return lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
-    }
-
-    public void setLastLoggedIn(Date lastLoggedIn) {
-        this.lastLoggedIn = lastLoggedIn == null ? null : new Date(lastLoggedIn.getTime());
-    }
-
-    /**
-     * Get addresses if they have been loaded from the database.
-     *
-     * @return addresses if loaded or {@code null}
-     */
-    public List<Address> getAddresses() {
-        return addresses;
-    }
-
-    /**
-     * Set addresses.
-     *
-     * @param addresses addresses
-     */
-    public void setAddresses(List<Address> addresses) {
-        this.addresses = addresses;
     }
 
     /**
@@ -260,8 +225,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AddressNotFoundException if address is not found
      */
     public Address getAddress(int addressId) throws AddressNotFoundException {
-        Address address = accountRepository.getAddress(this, addressId);
-        return address;
+        return addresses.stream().filter(a -> a.getId().equals(addressId)).findAny()
+                .orElseThrow(() -> new AddressNotFoundException("Address not found with id " + addressId + " for account " + id));
     }
 
     /**
@@ -326,17 +291,9 @@ public class Account extends BaseEntity implements PermissionTarget {
      */
     public Address deleteAddress(int addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId);
-        accountRepository.delete(address);
+        boolean removed = addresses.remove(address);
+        LOG.debug("Removing address {} for account {}. Removed? {}", addressId, id, removed);
         return address;
-    }
-
-    /**
-     * Get images if they have been loaded from the database.
-     *
-     * @return images if loaded or {@code null}
-     */
-    public List<Image> getImages() {
-        return images;
     }
 
     /**
@@ -347,17 +304,22 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws AccountValidationException if account is invalid for creation
      */
     public Account create(String userPassword) throws AccountValidationException {
+        setPassword(passwordUtility.encryptPassword(userPassword));
         assertValid();
+        save();
+        accountFactory.injectDependencies(this);
+        return this;
+    }
+
+    private void save() throws EmailConflictException {
         try {
-            accountRepository.create(this, userPassword);
+            accountRepository.save(this);
         } catch (JpaSystemException | DataIntegrityViolationException e) {
             if (isUniqueConstraintViolation(e)) {
                 throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
             }
             throw e;
         }
-        accountFactory.injectDependencies(this);
-        return this;
     }
 
     /**
@@ -382,7 +344,7 @@ public class Account extends BaseEntity implements PermissionTarget {
         // read-only fields
         // TODO specify R/O fields via an annotation
         accountDescriptor.setId(getId());
-        accountDescriptor.setActivated(Optional.of(isActivated()));
+        accountDescriptor.setActivated(Optional.of(getActivated()));
         OptionalAwareSimplePropertyCopier beanCopier = new OptionalAwareSimplePropertyCopier();
         try {
             beanCopier.copyProperties(this, accountDescriptor);
@@ -393,16 +355,7 @@ public class Account extends BaseEntity implements PermissionTarget {
 
     private Account performUpdate() throws AccountValidationException {
         assertValid();
-        try {
-            accountRepository.update(this);
-        } catch (AccountNotFoundException e) {
-            throw new IllegalStateException("This should never happen - was the id of this object modified?", e);
-        } catch (JpaSystemException | DataIntegrityViolationException e) {
-            if (isUniqueConstraintViolation(e)) {
-                throw new EmailConflictException("Email " + getEmail() + " already in use.", e);
-            }
-            throw e;
-        }
+        save();
         return this;
     }
 
@@ -439,7 +392,8 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws ImageNotFoundException if image does not exist
      */
     public Image getImage(int imageId) throws ImageNotFoundException {
-        return accountRepository.getImage(this, imageId);
+        return imageRepository.findOneByAccountAndId(this, imageId)
+                .orElseThrow(() -> new ImageNotFoundException("No image " + imageId + " for account " + id));
     }
 
     /**
@@ -461,15 +415,6 @@ public class Account extends BaseEntity implements PermissionTarget {
     }
 
     /**
-     * Get player profiles.
-     *
-     * @return player profiles
-     */
-    public List<PlayerProfile> getPlayerProfiles() {
-        return playerProfiles;
-    }
-
-    /**
      * Add player profile.
      *
      * @param playerProfile player profile
@@ -486,7 +431,10 @@ public class Account extends BaseEntity implements PermissionTarget {
      * @throws PlayerProfileNotFoundException if player profile does not exist
      */
     public PlayerProfile getPlayerProfile(int playerId) throws PlayerProfileNotFoundException {
-        return accountRepository.getPlayerProfile(this, playerId);
+        LOG.debug("Looking for player profile with id {} for account {}", playerId, id);
+        return getPlayerProfiles().stream()
+                .filter(pp -> pp.getId().equals(playerId)).findAny()
+                .orElseThrow(() -> new PlayerProfileNotFoundException("No player profile " + playerId + " for account " + id));
     }
 
     /**
@@ -503,14 +451,14 @@ public class Account extends BaseEntity implements PermissionTarget {
         PlayerProfile playerProfile = new PlayerProfile();
         playerProfile.setAccount(this);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
-        assertPlayerProfileValid(playerProfile);
+        assertPlayerProfileValid(playerProfile, PlayerProfile.Create.class);
         addPlayerProfile(playerProfile);
         return playerProfile;
     }
 
-    void assertPlayerProfileValid(PlayerProfile playerProfile) throws PlayerProfileValidationException {
+    void assertPlayerProfileValid(PlayerProfile playerProfile, Class<?>... groups) throws PlayerProfileValidationException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<PlayerProfile>> violations = validator.validate(playerProfile);
+        Set<ConstraintViolation<PlayerProfile>> violations = validator.validate(playerProfile, groups);
         if (!violations.isEmpty()) {
             throw new PlayerProfileValidationException(violations);
         }
@@ -527,7 +475,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     public PlayerProfile deletePlayerProfile(int playerId) throws PlayerProfileNotFoundException, PlayerProfileInUseException {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         if (CollectionUtils.isEmpty(playerProfile.getPlayers())) {
-            accountRepository.delete(playerProfile);
+            playerProfiles.remove(playerProfile);
         } else {
             throw new PlayerProfileInUseException("Player profile " + playerId + " is in use and cannot be deleted");
         }
@@ -549,13 +497,13 @@ public class Account extends BaseEntity implements PermissionTarget {
     {
         PlayerProfile playerProfile = getPlayerProfile(playerId);
         copyPlayerProfileProperties(playerProfileDescriptor, playerProfile);
-        assertPlayerProfileValid(playerProfile);
+        assertPlayerProfileValid(playerProfile, PlayerProfile.Update.class);
         return playerProfile;
     }
 
     void copyPlayerProfileProperties(PlayerProfileDescriptor playerProfileDescriptor, PlayerProfile playerProfile) throws ImageNotFoundException {
         if (playerProfileDescriptor.getName() != null) {
-            playerProfile.setName(playerProfileDescriptor.getName().orNull());
+            playerProfile.setName(playerProfileDescriptor.getName().orElse(null));
         }
         if (playerProfileDescriptor.getImageId() != null) {
             if (playerProfileDescriptor.getImageId().isPresent()) {
@@ -572,18 +520,6 @@ public class Account extends BaseEntity implements PermissionTarget {
         if (!violations.isEmpty()) {
             throw new AccountValidationException(violations);
         }
-    }
-
-    public void setAccountRepository(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
-
-    public void setAccountFactory(AccountFactory accountFactory) {
-        this.accountFactory = accountFactory;
-    }
-
-    public void setTokenFactory(TokenFactory tokenFactory) {
-        this.tokenFactory = tokenFactory;
     }
 
 }

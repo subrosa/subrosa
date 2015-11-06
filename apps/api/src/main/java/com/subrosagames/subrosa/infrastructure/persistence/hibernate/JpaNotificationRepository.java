@@ -40,12 +40,7 @@ public class JpaNotificationRepository implements NotificationRepository {
 //                .getResultList();
         List<DeviceRegistration> resultList = entityManager.createQuery("SELECT dr FROM DeviceRegistration dr", DeviceRegistration.class)
                 .getResultList();
-        return Lists.transform(resultList, new Function<DeviceRegistration, String>() {
-            @Override
-            public String apply(DeviceRegistration deviceRegistration) {
-                return deviceRegistration.getRegistrationId();
-            }
-        });
+        return Lists.transform(resultList, DeviceRegistration::getRegistrationId);
     }
 
     @Override

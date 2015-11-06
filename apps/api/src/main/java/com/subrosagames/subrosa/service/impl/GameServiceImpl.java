@@ -1,5 +1,6 @@
 package com.subrosagames.subrosa.service.impl;
 
+import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import com.subrosagames.subrosa.api.dto.GameDescriptor;
 import com.subrosagames.subrosa.api.dto.JoinGameRequest;
+import com.subrosagames.subrosa.api.dto.JoinTeamRequest;
+import com.subrosagames.subrosa.api.dto.TeamDescriptor;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
@@ -22,6 +25,8 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
+import com.subrosagames.subrosa.domain.player.Team;
+import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.service.GameService;
 
 /**
@@ -89,6 +94,37 @@ public class GameServiceImpl implements GameService {
     {
         Game game = gameFactory.getGame(gameUrl);
         return game.updatePlayer(playerId, joinGameRequest);
+    }
+
+    @Override
+    public List<? extends Team> listTeams(String gameUrl) throws GameNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.getTeams();
+    }
+
+    @Override
+    public Team getTeam(String gameUrl, Integer teamId) throws GameNotFoundException, TeamNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.getTeam(teamId);
+    }
+
+    @Override
+    public Team createTeam(String gameUrl, TeamDescriptor teamDescriptor) throws GameNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.addTeam(teamDescriptor);
+    }
+
+    @Override
+    @Transactional
+    public Team updateTeam(String gameUrl, Integer teamId, TeamDescriptor teamDescriptor) throws GameNotFoundException, TeamNotFoundException {
+        Game game = gameFactory.getGame(gameUrl);
+        return game.updateTeam(teamId, teamDescriptor);
+    }
+
+    @Override
+    @Transactional
+    public Team joinTeam(Player player, Team team, JoinTeamRequest joinTeamRequest) {
+        return team.join(player, joinTeamRequest);
     }
 
 }

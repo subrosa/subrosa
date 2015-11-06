@@ -6,10 +6,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -18,6 +25,10 @@ import com.subrosagames.subrosa.api.list.annotation.FilterGroup;
 import com.subrosagames.subrosa.api.list.annotation.FilterGroups;
 import com.subrosagames.subrosa.api.list.annotation.Filterable;
 import com.subrosagames.subrosa.api.list.annotation.Sortable;
+import com.subrosagames.subrosa.domain.game.BaseGame;
+import com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaQueryBuilder;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Encapsulates the parameters that drive a query for a list of objects.
@@ -28,11 +39,17 @@ public class QueryCriteria<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryCriteria.class);
 
-    private List<Filter> filters = new ArrayList<Filter>();
-    private Map<String, FilterGroup> filterGroups = new HashMap<String, FilterGroup>();
+    @Getter
+    private List<Filter> filters = new ArrayList<>();
+    private final Map<String, FilterGroup> filterGroups = new HashMap<>();
+    @Getter
     private Sort sort;
-    private Class<T> clazz;
+    private final Class<T> clazz;
+    @Getter
+    @Setter
     private int limit = DefaultSearchConstants.DEFAULT_LIMIT;
+    @Getter
+    @Setter
     private int offset = DefaultSearchConstants.DEFAULT_OFFSET;
     private boolean bypassFilterableChecks;
 
@@ -57,6 +74,10 @@ public class QueryCriteria<T> {
         }
     }
 
+    public int getPageNumber() {
+        return offset > 0 && limit > 0 ? offset / limit : 0;
+    }
+
     /**
      * Return a list of the possible keys upon which filtering may occur.
      *
@@ -65,21 +86,13 @@ public class QueryCriteria<T> {
     public List<String> getValidFilterKeys() {
         final List<String> keys = new ArrayList<String>();
         ReflectionUtils.doWithFields(clazz,
-                new ReflectionUtils.FieldCallback() {
-                    @Override
-                    public void doWith(Field field) {
-                        Filterable filterable = field.getAnnotation(Filterable.class);
-                        String fieldName = field.getName();
-                        Operator[] operators = filterable.operators();
-                        keys.addAll(getKeysForFieldAndOperators(fieldName, operators));
-                    }
+                field -> {
+                    Filterable filterable = field.getAnnotation(Filterable.class);
+                    String fieldName = field.getName();
+                    Operator[] operators = filterable.operators();
+                    keys.addAll(getKeysForFieldAndOperators(fieldName, operators));
                 },
-                new ReflectionUtils.FieldFilter() {
-                    @Override
-                    public boolean matches(Field field) {
-                        return field.getAnnotation(Filterable.class) != null;
-                    }
-                }
+                field -> field.getAnnotation(Filterable.class) != null
         );
         if (!CollectionUtils.isEmpty(filterGroups)) {
             for (Map.Entry<String, FilterGroup> group : filterGroups.entrySet()) {
@@ -87,9 +100,7 @@ public class QueryCriteria<T> {
             }
         }
         if (LOG.isDebugEnabled()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("(").append(StringUtils.join(keys, "|")).append(")");
-            LOG.debug("Inspecting class {} found valid filter keys: {}", clazz.getName(), stringBuilder.toString());
+            LOG.debug("Inspecting class {} found valid filter keys: {}", clazz.getName(), "(" + StringUtils.join(keys, "|") + ")");
         }
         return keys;
     }
@@ -153,9 +164,7 @@ public class QueryCriteria<T> {
             String queryField = filterable.value().equals(Filterable.VALUE_UNSET) ? null : filterable.value();
             String childOperator = filterable.childOperand().equals(Filterable.VALUE_UNSET) ? null : filterable.childOperand();
             return new Filter(filter.getFilterKey(), filter.getValue(), translator, queryField, childOperator);
-        } catch (InstantiationException e) {
-            throw new IllegalStateException("Configured filter value translator " + filterable.translator() + " cannot be instantiated.", e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Configured filter value translator " + filterable.translator() + " cannot be instantiated.", e);
         }
     }
@@ -214,42 +223,18 @@ public class QueryCriteria<T> {
         }
     }
 
-    public List<Filter> getFilters() {
-        return filters;
-    }
-
-    public Sort getSort() {
-        return sort;
-    }
-
-    public int getLimit() {
-        return limit;
-    }
-
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public Map<String, FilterGroup> getFilterGroups() {
-        return filterGroups;
+    public org.springframework.data.domain.Sort getSpringDataSort() {
+        if (sort == null) {
+            return null;
+        }
+        org.springframework.data.domain.Sort.Direction direction =
+                sort.isAscending() ? org.springframework.data.domain.Sort.Direction.ASC : org.springframework.data.domain.Sort.Direction.DESC;
+        return new org.springframework.data.domain.Sort(direction, sort.getField());
     }
 
     @Override
     public String toString() {
-
-        List<String> filterStrings = new ArrayList<String>();
-        for (Filter filter : filters) {
-            filterStrings.add(filter.toString());
-        }
-
+        List<String> filterStrings = filters.stream().map(Filter::toString).collect(Collectors.toList());
         return String.format("Class: %s, Filters: (%s), Sort: %s, Limit: %s, Offset: %s", clazz, StringUtils.join(filterStrings, ","),
                 sort, limit, offset);
     }

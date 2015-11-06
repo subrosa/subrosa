@@ -1,11 +1,13 @@
 package com.subrosagames.subrosa.api.web;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.google.common.base.Optional;
 import com.subrosagames.subrosa.api.AccountActivation;
 import com.subrosagames.subrosa.api.BadRequestException;
 import com.subrosagames.subrosa.api.NotAuthenticatedException;
@@ -67,7 +68,8 @@ public class ApiAccountController extends BaseApiController {
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         String[] expansions = StringUtils.isEmpty(expand) ? new String[0] : expand.split(",");
-        return accountService.listAccounts(limit, offset, expansions);
+        Page<Account> page = accountService.listAccounts(limit, offset, expansions);
+        return new PaginatedList<>(page.getContent(), page.getTotalElements(), page.getSize(), page.getNumber() * page.getSize());
     }
 
     /**

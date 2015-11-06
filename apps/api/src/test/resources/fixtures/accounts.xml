@@ -19,22 +19,24 @@
   <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
   <image image_id="3" account_id="3" file_asset_id="3" index="2"/>
   <file_asset file_asset_id="3" name="pic3.png" mime_type="image/png" size="300"/>
-  <player_profile player_profile_id="1" account_id="3"
+  <player_profile player_profile_id="1" account_id="3" index="0"
                   name="Player One!"
                   image_id="1"/>
-  <player_profile player_profile_id="2" account_id="3"
+  <player_profile player_profile_id="2" account_id="3" index="1"
                   name="Secret Santa"
                   image_id="2"/>
-  <address address_id="1" label="HOME" full_address="My Home"/>
-  <address address_id="2" label="WORK" full_address="Workplace"/>
-  <account_address account_id="3" address_id="1"/>
-  <account_address account_id="3" address_id="2"/>
+  <player_profile player_profile_id="3" account_id="3" index="2"
+                  name="No image"/>
+  <address address_id="1" account_id="3" index="0"
+           label="HOME" full_address="My Home"/>
+  <address address_id="2" account_id="3" index="1"
+           label="WORK" full_address="Workplace"/>
 
   <account account_id="1000" activated="true" email="joe@admin.com"
            password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
   <account_role account_id="1000" role="ADMIN"/>
 
     <game game_id="1" owner_id="1" name="A Game" url="game" game_type="SCAVENGER"/>
-    <team team_id="1" game_id="1"/>
-    <player player_id="1" team_id="1" account_id="3" player_profile_id="2" game_role="PLAYER"/>
+    <team team_id="1" game_id="1" name="The Team"/>
+    <player player_id="1" account_id="3" game_id="1" team_id="1" player_profile_id="2" game_role="PLAYER"/>
 </dataset>

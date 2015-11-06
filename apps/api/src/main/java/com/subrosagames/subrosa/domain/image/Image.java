@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -17,9 +18,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.PlayerProfile;
 import com.subrosagames.subrosa.domain.file.FileAsset;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Model class for images.
@@ -32,25 +36,35 @@ public class Image {
     @SequenceGenerator(name = "imageSeq", sequenceName = "image_image_id_seq")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "imageSeq")
     @Column(name = "image_id")
+    @Getter
+    @Setter
     private Integer id;
 
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "file_asset_id")
+    @Getter
+    @Setter
     private FileAsset fileAsset;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @Getter
+    @Setter
     private Account account;
 
     @JsonIgnore
     @Column
+    @Getter
+    @Setter
     private Integer index;
 
     @JsonIgnore
     @OneToMany(mappedBy = "image")
-    private Set<PlayerProfile> playerProfiles;
+    @Getter
+    @Setter
+    private Set<PlayerProfile> playerProfiles = Sets.newHashSet();
 
     @PrePersist
     @PreUpdate
@@ -80,43 +94,4 @@ public class Image {
         return "/images/" + fileAsset.getUuid();
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getIndex() {
-        return index;
-    }
-
-    public void setIndex(Integer index) {
-        this.index = index;
-    }
-
-    public Account getAccount() {
-        return account;
-    }
-
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
-    public FileAsset getFileAsset() {
-        return fileAsset;
-    }
-
-    public void setFileAsset(FileAsset fileAsset) {
-        this.fileAsset = fileAsset;
-    }
-
-    public Set<PlayerProfile> getPlayerProfiles() {
-        return playerProfiles;
-    }
-
-    public void setPlayerProfiles(Set<PlayerProfile> playerProfiles) {
-        this.playerProfiles = playerProfiles;
-    }
 }

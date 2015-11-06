@@ -235,14 +235,14 @@ public class JpaQueryBuilderTest {
         QueryCriteria<TestObject> criteria;
         List<TestObject> results;
 
-        criteria = new QueryCriteria<TestObject>(TestObject.class);
+        criteria = new QueryCriteria<>(TestObject.class);
         criteria.setBypassFilterableChecks(true);
         criteria.addFilter("nullableSet", true);
         results = findForCriteria(criteria);
         assertEquals(2, results.size());
         assertThat(results, everyItem(HasPropertyWithValue.<TestObject>hasProperty("notAnnotated", is(3))));
 
-        criteria = new QueryCriteria<TestObject>(TestObject.class);
+        criteria = new QueryCriteria<>(TestObject.class);
         criteria.setBypassFilterableChecks(true);
         criteria.addFilter("nullableUnset", true);
         results = findForCriteria(criteria);

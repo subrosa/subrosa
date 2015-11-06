@@ -1,5 +1,8 @@
 package com.subrosagames.subrosa.api.web;
 
+import java.util.function.Consumer;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -7,6 +10,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -169,6 +173,34 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     }
 
     @Test
+    @Ignore("this is not yet enforced")
+    public void joinGame_whenAlreadyAPlayer_resultsInConflict() throws Exception {
+        performJoin("fun_times", "player1@player.com", 1, (ResultActions actions) -> {
+            try {
+                actions.andExpect(status().isCreated()).andExpect(jsonPath("$.player.id").value(1));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        performJoin("fun_times", "player1@player.com", 10, actions -> {
+            try {
+                actions.andExpect(status().isConflict());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void performJoin(String gameUrl, String user, int playerId, Consumer<ResultActions> expectations) throws Exception {
+        expectations.accept(
+                mockMvc.perform(
+                        post("/game/{url}/player", gameUrl)
+                                .with(user(user))
+                                .content(jsonBuilder().add("playerId", playerId).build()))
+        );
+    }
+
+    @Test
     public void testGetPlayerWithImageAndAddress() throws Exception {
         String response = performJoinWithImageAndAddress(1).andReturn().getResponse().getContentAsString();
         Integer playerId = JsonPath.compile("$.id").read(response);
@@ -237,11 +269,10 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
                         .with(user("player1@player.com"))
                         .content(jsonBuilder()
                                 .add("playerId", playerId)
-                                .addChild("attributes",
-                                        jsonBuilder()
-                                                .addChild("img", jsonBuilder().add("id", 3))
-                                                .addChild("addy", jsonBuilder().add("id", 1))
-                                                .add("text", "Baby"))
+                                .addChild("attributes", jsonBuilder()
+                                        .addChild("img", jsonBuilder().add("id", 3))
+                                        .addChild("addy", jsonBuilder().add("id", 1))
+                                        .add("text", "Baby"))
                                 .build()));
     }
 

@@ -73,11 +73,11 @@ public class ApiGameEventController {
 
         int limit = ObjectUtils.defaultIfNull(limitParam, 0);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
-        List<GameEvent> events = game.getEvents();
+        List<? extends GameEvent> events = game.getEvents();
         if (CollectionUtils.isEmpty(events)) {
-            return new PaginatedList<GameEvent>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
+            return new PaginatedList<>(Lists.<GameEvent>newArrayList(), 0, limit, offset);
         } else {
-            return new PaginatedList<GameEvent>(
+            return new PaginatedList<>(
                     events.subList(offset, Math.min(events.size() - 1, offset + limit)),
                     events.size(),
                     limit, offset);

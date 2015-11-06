@@ -89,7 +89,7 @@ public class AssassinGame extends BaseGame {
     @Transactional
     @Override
     public void startGame() {
-        List<Player> players = getPlayers();
+        List<? extends Player> players = getPlayers();
         LOG.debug("Starting game {} with {} players", getId(), players.size());
     }
 
