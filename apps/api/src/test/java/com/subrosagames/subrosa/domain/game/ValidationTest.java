@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -8,14 +9,10 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import com.google.common.collect.Lists;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PublishAction;
-import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import static org.hamcrest.Matchers.not;
-
 import static com.subrosagames.subrosa.test.matchers.HasConstraintViolation.hasConstraintViolation;
 
 
@@ -54,7 +51,7 @@ public class ValidationTest {
     @Test
     public void testPublishViolations() throws Exception {
         expectedException.expect(GameValidationException.class);
-        expectedException.expect(hasConstraintViolation("registrationStart", "required"));
+        expectedException.expect(not(hasConstraintViolation("registrationStart", "required")));
         expectedException.expect(hasConstraintViolation("gameStart", "required"));
         expectedException.expect(not(hasConstraintViolation("registrationEnd", "required")));
         expectedException.expect(not(hasConstraintViolation("gameEnd", "required")));
@@ -70,7 +67,7 @@ public class ValidationTest {
         expectedException.expect(hasConstraintViolation("registrationStart", "startBeforeEnd"));
         expectedException.expect(hasConstraintViolation("registrationEnd", "startBeforeEnd"));
         BaseGame game = getPublishableGame();
-        game.setRegistrationEnd(Lists.newArrayList(eventXDaysFromNow(1)));
+        game.setRegistrationEnd(xDaysFromNow(1));
         game.assertValid();
     }
 
@@ -80,7 +77,7 @@ public class ValidationTest {
         expectedException.expect(hasConstraintViolation("gameStart", "startBeforeEnd"));
         expectedException.expect(hasConstraintViolation("gameEnd", "startBeforeEnd"));
         BaseGame game = getPublishableGame();
-        game.setGameEnd(Lists.newArrayList(eventXDaysFromNow(25)));
+        game.setGameEnd(xDaysFromNow(25));
         game.assertValid();
     }
 
@@ -114,19 +111,17 @@ public class ValidationTest {
 
     private BaseGame getPublishableGame() {
         BaseGame game = getValidGame();
-        game.setRegistrationStart(Lists.newArrayList(eventXDaysFromNow(10)));
-        game.setRegistrationEnd(Lists.newArrayList(eventXDaysFromNow(20)));
-        game.setGameStart(Lists.newArrayList(eventXDaysFromNow(30)));
-        game.setGameEnd(Lists.newArrayList(eventXDaysFromNow(40)));
+        game.setRegistrationStart(xDaysFromNow(10));
+        game.setRegistrationEnd(xDaysFromNow(20));
+        game.setGameStart(xDaysFromNow(30));
+        game.setGameEnd(xDaysFromNow(40));
         return game;
     }
 
-    private ScheduledEvent eventXDaysFromNow(int days) {
+    private Date xDaysFromNow(int days) {
         final Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, days);
-        ScheduledEventEntity event = new ScheduledEventEntity();
-        event.setDate(calendar.getTime());
-        return event;
+        return calendar.getTime();
     }
 
     // CHECKSTYLE-ON: JavadocMethod

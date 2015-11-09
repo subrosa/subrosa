@@ -38,6 +38,7 @@ import com.subrosagames.subrosa.domain.game.persistence.EventEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameAttributeEntity;
 import com.subrosagames.subrosa.domain.game.persistence.GameEntity;
 import com.subrosagames.subrosa.domain.game.persistence.PostEntity;
+import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.validation.GameEventValidationException;
 import com.subrosagames.subrosa.domain.game.validation.GameValidationException;
 import com.subrosagames.subrosa.domain.game.validation.PostValidationException;
@@ -54,6 +55,7 @@ import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
 import com.subrosagames.subrosa.domain.player.Team;
 import com.subrosagames.subrosa.domain.player.TeamNotFoundException;
 import com.subrosagames.subrosa.domain.validation.VirtualConstraintViolation;
+import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.Setter;
 
@@ -144,6 +146,9 @@ public class BaseGame extends GameEntity implements Game {
     public Game publish() throws GameValidationException {
         assertValid(PublishAction.class);
         setPublished(new Date());
+        if (getRegistrationStart() == null) {
+            setRegistrationStart(getPublished());
+        }
         return gameRepository.save(this);
     }
 
