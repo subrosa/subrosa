@@ -103,7 +103,7 @@ public interface GameData {
      * Registration start time.
      * @return registration start time
      */
-    @NotNull(groups = PublishAction.class)
+    @Future(groups = PublishAction.class)
     Date getRegistrationStart();
 
     /**

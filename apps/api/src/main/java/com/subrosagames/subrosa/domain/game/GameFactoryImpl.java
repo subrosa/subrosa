@@ -68,10 +68,6 @@ public class GameFactoryImpl extends BaseDomainObjectFactory implements GameFact
                 .orElseThrow(() -> new GameNotFoundException("no game for url " + url));
     }
 
-    void injectDependencies(List<BaseGame> games) {
-        games.forEach(this::injectDependencies);
-    }
-
     @Override
     public BaseGame injectDependencies(BaseGame game) {
         game.setGameRepository(gameRepository);

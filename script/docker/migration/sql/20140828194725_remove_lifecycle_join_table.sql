@@ -15,17 +15,3 @@ ALTER TABLE lifecycle_event ADD COLUMN event_date TIMESTAMP;
 ALTER TABLE lifecycle_event ADD COLUMN trigger_event_id INTEGER REFERENCES lifecycle_event(event_id);
 ALTER TABLE lifecycle_event ADD COLUMN trigger_type TEXT;
 
-INSERT INTO lifecycle_event (game_id, event_type, event_class, event_date)
-  SELECT game_id, 'SCHEDULED', 'registrationStart', registration_start FROM game;
-INSERT INTO lifecycle_event (game_id, event_type, event_class, event_date)
-  SELECT game_id, 'SCHEDULED', 'registrationEnd', registration_end FROM game;
-INSERT INTO lifecycle_event (game_id, event_type, event_class, event_date)
-  SELECT game_id, 'SCHEDULED', 'gameStart', game_start FROM game;
-INSERT INTO lifecycle_event (game_id, event_type, event_class, event_date)
-  SELECT game_id, 'SCHEDULED', 'gameEnd', game_end FROM game;
-
-ALTER TABLE game DROP COLUMN registration_start;
-ALTER TABLE game DROP COLUMN registration_end;
-ALTER TABLE game DROP COLUMN game_start;
-ALTER TABLE game DROP COLUMN game_end;
-

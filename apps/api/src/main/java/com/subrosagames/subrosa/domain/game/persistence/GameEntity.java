@@ -227,47 +227,35 @@ public class GameEntity extends BaseEntity {
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
-            translator = TimestampToDateTranslator.class,
-            childOperand = "date"
+            translator = TimestampToDateTranslator.class
     )
-    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id")
-    @Where(clause = "event_class='registrationStart'")
+    @Getter
     @Setter
-    private List<ScheduledEvent> registrationStart;
+    private Date registrationStart;
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
-            translator = TimestampToDateTranslator.class,
-            childOperand = "date"
+            translator = TimestampToDateTranslator.class
     )
-    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id")
-    @Where(clause = "event_class='registrationEnd'")
+    @Getter
     @Setter
-    private List<ScheduledEvent> registrationEnd;
+    private Date registrationEnd;
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
-            translator = TimestampToDateTranslator.class,
-            childOperand = "date"
+            translator = TimestampToDateTranslator.class
     )
-    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id")
-    @Where(clause = "event_class='gameStart'")
+    @Getter
     @Setter
-    private List<ScheduledEvent> gameStart;
+    private Date gameStart;
 
     @Filterable(
             operators = { Operator.EQUAL, Operator.LESS_THAN, Operator.GREATER_THAN },
-            translator = TimestampToDateTranslator.class,
-            childOperand = "date"
+            translator = TimestampToDateTranslator.class
     )
-    @OneToMany(targetEntity = ScheduledEventEntity.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "game_id")
-    @Where(clause = "event_class='gameEnd'")
+    @Getter
     @Setter
-    private List<ScheduledEvent> gameEnd;
+    private Date gameEnd;
 
     @OneToMany(
             targetEntity = EventEntity.class,
@@ -321,70 +309,6 @@ public class GameEntity extends BaseEntity {
      */
     public void addEnrollmentField(EnrollmentField enrollmentField) {
         playerInfo.add(enrollmentField);
-    }
-
-    /**
-     * Get game start date.
-     *
-     * @return game start date
-     */
-    public Date getGameStart() {
-        return gameStart == null ? null
-                : gameStart.isEmpty() ? null
-                : gameStart.get(0).getDate();
-    }
-
-    @JsonIgnore
-    public List<ScheduledEvent> getGameStartEvents() {
-        return gameStart;
-    }
-
-    /**
-     * Get game end date.
-     *
-     * @return game end date
-     */
-    public Date getGameEnd() {
-        return gameEnd == null ? null
-                : gameEnd.isEmpty() ? null
-                : gameEnd.get(0).getDate();
-    }
-
-    @JsonIgnore
-    public List<ScheduledEvent> getGameEndEvents() {
-        return gameEnd;
-    }
-
-    /**
-     * Get game registration start date.
-     *
-     * @return game registration start date
-     */
-    public Date getRegistrationStart() {
-        return registrationStart == null ? null
-                : registrationStart.isEmpty() ? null
-                : registrationStart.get(0).getDate();
-    }
-
-    @JsonIgnore
-    public List<ScheduledEvent> getRegistrationStartEvents() {
-        return registrationStart;
-    }
-
-    /**
-     * Get game registration end date.
-     *
-     * @return game registration end date
-     */
-    public Date getRegistrationEnd() {
-        return registrationEnd == null ? null
-                : registrationEnd.isEmpty() ? null
-                : registrationEnd.get(0).getDate();
-    }
-
-    @JsonIgnore
-    public List<ScheduledEvent> getRegistrationEndEvents() {
-        return registrationEnd;
     }
 
 }
