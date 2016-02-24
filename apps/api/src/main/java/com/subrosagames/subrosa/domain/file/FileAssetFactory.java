@@ -45,7 +45,8 @@ public class FileAssetFactory {
      * @throws IOException         if file transfer fails
      * @throws FileUploadException if file upload fails to meet restrictions
      */
-    public FileAsset fileAssetForMultipartFile(MultipartFile multipartFile) throws IOException, FileUploadException { // SUPPRESS CHECKSTYLE RedundantThrowsCheck
+    public FileAsset fileAssetForMultipartFile(MultipartFile multipartFile) throws IOException, FileUploadException { // SUPPRESS CHECKSTYLE
+        // RedundantThrowsCheck
 
         long maxUploadSize = subrosaFiles.getMaxUploadSize();
         if (maxUploadSize >= 0 && multipartFile.getSize() > maxUploadSize) {

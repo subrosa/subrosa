@@ -9,10 +9,12 @@ import com.subrosagames.subrosa.domain.player.TargetTeam;
  */
 public final class TargetDtoFactory {
 
-    private TargetDtoFactory() { }
+    private TargetDtoFactory() {
+    }
 
     /**
      * Get DTO for given target.
+     *
      * @param target target
      * @return target DTO
      */

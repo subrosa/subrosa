@@ -10,7 +10,6 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.jayway.jsonpath.JsonPath;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -19,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static com.subrosagames.subrosa.test.matchers.IsNotificationList.notificationList;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Test {@link ApiGamePlayerController}.
@@ -39,7 +39,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameWithoutPlayerId() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "fun_times")
-                        .with(user("player1@player.com")))
+                        .with(bearer(accessTokenForEmail("player1@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("playerId", "required"))));
@@ -49,7 +49,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameWithUserTooYoung() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "must_be_18")
-                        .with(user("young@player.com")))
+                        .with(bearer(accessTokenForEmail("young@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("age", "atLeast", "18"))));
@@ -59,7 +59,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameWithUserUnder13WithAgeRestriction() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "must_be_18")
-                        .with(user("child@player.com")))
+                        .with(bearer(accessTokenForEmail("child@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasSize(1)))
@@ -70,7 +70,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameWithUserUnder13RegardlessOfRestrictions() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "fun_times")
-                        .with(user("child@player.com")))
+                        .with(bearer(accessTokenForEmail("child@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasSize(1)))
@@ -81,7 +81,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameMissingRequiredAttribute() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
-                        .with(user("player1@player.com")))
+                        .with(bearer(accessTokenForEmail("player1@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("lastWish", "required"))));
@@ -93,7 +93,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         int playerId = 1;
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_required")
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder()
                                 .add("playerId", playerId)
                                 .addChild("attributes",
@@ -112,7 +112,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         int playerId = 1;
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_optional")
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder()
                                 .add("playerId", playerId)
                                 .addChild("attributes",
@@ -130,7 +130,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         int playerId = 1;
         mockMvc.perform(
                 post("/game/{url}/player", "last_wish_optional")
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder()
                                 .add("playerId", playerId)
                                 .build()))
@@ -151,7 +151,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     public void testJoinGameMissingRequiredImageAndAddress() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/player", "needs_image_and_address")
-                        .with(user("player1@player.com")))
+                        .with(bearer(accessTokenForEmail("player1@player.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("img", "required"))))
@@ -195,7 +195,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         expectations.accept(
                 mockMvc.perform(
                         post("/game/{url}/player", gameUrl)
-                                .with(user(user))
+                                .with(bearer(accessTokenForEmail(user)))
                                 .content(jsonBuilder().add("playerId", playerId).build()))
         );
     }
@@ -205,7 +205,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
         String response = performJoinWithImageAndAddress(1).andReturn().getResponse().getContentAsString();
         Integer playerId = JsonPath.compile("$.id").read(response);
         perform(get("/game/{url}/player/{id}", "needs_image_and_address", playerId)
-                .with(user("player1@player.com")))
+                .with(bearer(accessTokenForEmail("player1@player.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(playerId))
                 .andExpect(jsonPath("$.name").value("peter"))
@@ -249,7 +249,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     private ResultActions performUpdatePlayerObjectAttr(Integer playerId, String field, int id) throws Exception {
         return mockMvc.perform(
                 put("/game/{url}/player/{id}", "needs_image_and_address", playerId)
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder().addChild("attributes",
                                 jsonBuilder().addChild(field, jsonBuilder().add("id", id))).build()));
     }
@@ -257,7 +257,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     private ResultActions performUpdatePlayerTextAttr(Integer playerId, String field, String value) throws Exception {
         return mockMvc.perform(
                 put("/game/{url}/player/{id}", "needs_image_and_address", playerId)
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder()
                                 .addChild("attributes",
                                         jsonBuilder().add(field, value)).build()));
@@ -266,7 +266,7 @@ public class ApiGamePlayerControllerTest extends AbstractApiControllerTest {
     private ResultActions performJoinWithImageAndAddress(Integer playerId) throws Exception {
         return mockMvc.perform(
                 post("/game/{url}/player", "needs_image_and_address")
-                        .with(user("player1@player.com"))
+                        .with(bearer(accessTokenForEmail("player1@player.com")))
                         .content(jsonBuilder()
                                 .add("playerId", playerId)
                                 .addChild("attributes", jsonBuilder()

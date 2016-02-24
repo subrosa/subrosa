@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-  <account account_id="1" activated="true" email="bob@user.com"
-           name="Bob T. User"
-           password="14e573d5ae03790afe14a176208b2cf47babb4acb7d3cf0ec1338e71f6de0d8ee56fb49a76a5f82bf7b1bdc07b1ee0ca8a04ff9abc6f3e6e4bc9035da17a5058690aceb61fc12ab7ad0970d9da38ab30d2387c768a92715366383afa5511a21ccba60b95160c04c855af2bec5fb2b5505f13c28d8e069fc321fbb6482f9dcc7c"/>
-  <image image_id="5" account_id="1" file_asset_id="5" index="0"/>
-  <file_asset file_asset_id="5" name="img5.jpg" mime_type="image/jpg" size="500"/>
+    <account account_id="1" activated="true" email="bob@user.com"
+             name="Bob T. User"
+             password="14e573d5ae03790afe14a176208b2cf47babb4acb7d3cf0ec1338e71f6de0d8ee56fb49a76a5f82bf7b1bdc07b1ee0ca8a04ff9abc6f3e6e4bc9035da17a5058690aceb61fc12ab7ad0970d9da38ab30d2387c768a92715366383afa5511a21ccba60b95160c04c855af2bec5fb2b5505f13c28d8e069fc321fbb6482f9dcc7c"/>
+    <image image_id="5" account_id="1" file_asset_id="5" index="0"/>
+    <file_asset file_asset_id="5" name="img5.jpg" mime_type="image/jpg" size="500"/>
 
-  <account account_id="2" activated="false" email="notactive@user.com"
-           name="Not Activated"
-           password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+    <account account_id="2" activated="false" email="notactive@user.com"
+             name="Not Activated"
+             password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
 
-  <account account_id="3" activated="true" email="lotsopics@user.com"
-           name="Like N. Pics"
-           password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <image image_id="1" account_id="3" file_asset_id="1" index="0"/>
-  <file_asset file_asset_id="1" name="pic1.png" mime_type="image/png" size="100"/>
-  <image image_id="2" account_id="3" file_asset_id="2" index="1"/>
-  <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
-  <image image_id="3" account_id="3" file_asset_id="3" index="2"/>
-  <file_asset file_asset_id="3" name="pic3.png" mime_type="image/png" size="300"/>
-  <player_profile player_profile_id="1" account_id="3" index="0"
-                  name="Player One!"
-                  image_id="1"/>
-  <player_profile player_profile_id="2" account_id="3" index="1"
-                  name="Secret Santa"
-                  image_id="2"/>
-  <player_profile player_profile_id="3" account_id="3" index="2"
-                  name="No image"/>
-  <address address_id="1" account_id="3" index="0"
-           label="HOME" full_address="My Home"/>
-  <address address_id="2" account_id="3" index="1"
-           label="WORK" full_address="Workplace"/>
+    <account account_id="3" activated="true" email="lotsopics@user.com"
+             name="Like N. Pics"
+             password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+    <image image_id="1" account_id="3" file_asset_id="1" index="0"/>
+    <file_asset file_asset_id="1" name="pic1.png" mime_type="image/png" size="100"/>
+    <image image_id="2" account_id="3" file_asset_id="2" index="1"/>
+    <file_asset file_asset_id="2" name="pic2.png" mime_type="image/png" size="200"/>
+    <image image_id="3" account_id="3" file_asset_id="3" index="2"/>
+    <file_asset file_asset_id="3" name="pic3.png" mime_type="image/png" size="300"/>
+    <player_profile player_profile_id="1" account_id="3" index="0"
+                    name="Player One!"
+                    image_id="1"/>
+    <player_profile player_profile_id="2" account_id="3" index="1"
+                    name="Secret Santa"
+                    image_id="2"/>
+    <player_profile player_profile_id="3" account_id="3" index="2"
+                    name="No image"/>
+    <address address_id="1" account_id="3" index="0"
+             label="HOME" full_address="My Home"/>
+    <address address_id="2" account_id="3" index="1"
+             label="WORK" full_address="Workplace"/>
 
-  <account account_id="1000" activated="true" email="joe@admin.com"
-           password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
-  <account_role account_id="1000" role="ADMIN"/>
+    <account account_id="1000" activated="true" email="joe@admin.com"
+             password="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"/>
+    <account_role account_id="1000" role="ADMIN"/>
 
     <game game_id="1" owner_id="1" name="A Game" url="game" game_type="SCAVENGER"/>
     <team team_id="1" game_id="1" name="The Team"/>

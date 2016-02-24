@@ -2,13 +2,24 @@ server:
   context-path: /subrosa
   servlet-path: /v1
 
+security:
+  sessions: NEVER
+
+spring:
+  redis:
+    host: redis
+
 logging:
   level:
     com.subrosagames: DEBUG
+    # log hibernate queries TODO - specific to development profile
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.hibernate.stat: DEBUG
 
 subrosa:
   files:
-    maxUploadSize: 2000000
-    assetDirectory: /tmp/subrosa/images
+    max-upload-size: 2000000
+    asset-directory: /tmp/subrosa/images
 
 

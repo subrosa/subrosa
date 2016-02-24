@@ -10,7 +10,8 @@ public class GameRule {
 
     /**
      * Construct a rule with the given name and description.
-     * @param name name
+     *
+     * @param name        name
      * @param description description
      */
     public GameRule(String name, String description) {

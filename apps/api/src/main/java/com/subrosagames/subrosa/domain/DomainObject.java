@@ -1,8 +1,8 @@
 package com.subrosagames.subrosa.domain;
 
 /**
-* Domain object interface.
-*/
+ * Domain object interface.
+ */
 public interface DomainObject {
 
     /**

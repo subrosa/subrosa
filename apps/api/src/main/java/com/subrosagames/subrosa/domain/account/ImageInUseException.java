@@ -26,7 +26,7 @@ public class ImageInUseException extends ResourceInUseException {
      * Construct with message and cause.
      *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public ImageInUseException(String message, Throwable cause) {
         super(message, cause);

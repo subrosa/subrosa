@@ -9,6 +9,7 @@ public interface NotificationRepository {
 
     /**
      * Get devices that should be notified for a given game.
+     *
      * @param gameId game id
      * @return list of device registration ids
      */
@@ -16,15 +17,17 @@ public interface NotificationRepository {
 
     /**
      * Register a device for notifications.
+     *
      * @param registrationId registration id
-     * @param deviceType device type
+     * @param deviceType     device type
      */
     void registerDevice(String registrationId, DeviceType deviceType);
 
     /**
      * Unregister a device for notifications.
+     *
      * @param registrationId registration id
-     * @param deviceType device type
+     * @param deviceType     device type
      */
     void unregisterDevice(String registrationId, DeviceType deviceType);
 }

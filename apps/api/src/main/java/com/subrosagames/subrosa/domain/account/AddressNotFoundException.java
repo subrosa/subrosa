@@ -18,6 +18,7 @@ public class AddressNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public AddressNotFoundException(String s) {
@@ -26,7 +27,8 @@ public class AddressNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     *
+     * @param s         message
      * @param throwable cause
      */
     public AddressNotFoundException(String s, Throwable throwable) {
@@ -35,6 +37,7 @@ public class AddressNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public AddressNotFoundException(Throwable throwable) {

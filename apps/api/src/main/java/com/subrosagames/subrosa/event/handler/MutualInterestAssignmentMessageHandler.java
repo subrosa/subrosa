@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.support.assassin.AssignmentType;
 import com.subrosagames.subrosa.domain.game.support.assassin.TargetAssigner;

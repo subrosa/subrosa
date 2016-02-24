@@ -13,7 +13,7 @@ public class Coordinates {
     /**
      * Construct with latitude and longitude.
      *
-     * @param latitude latitude
+     * @param latitude  latitude
      * @param longitude longitude
      */
     public Coordinates(BigDecimal latitude, BigDecimal longitude) {

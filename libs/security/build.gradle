@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: "io.spring.dependency-management"
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:${springPlatformVersion}"
+    }
+}
+
+dependencies {
+    compile "org.springframework.security.oauth:spring-security-oauth2:2.0.8.RELEASE"
+    compile "org.springframework.social:spring-social-security:1.1.0.RELEASE"
+
+    compile "org.projectlombok:lombok:1.16.2"
+}

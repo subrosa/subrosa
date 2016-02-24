@@ -1,0 +1,20 @@
+apply plugin: 'java'
+apply plugin: "io.spring.dependency-management"
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:${springPlatformVersion}"
+    }
+}
+
+dependencies {
+    compile 'com.fasterxml.jackson.core:jackson-core'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+}

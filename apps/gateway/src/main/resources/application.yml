@@ -1,5 +1,15 @@
+security:
+  sessions: ALWAYS
+
+spring:
+  redis:
+    host: redis
+  oauth2:
+    client:
+      client-id: subrosa
+      client-secret: subrosa
+
 zuul:
-  stripPrefix: false
   routes:
     api:
       path: /subrosa/v1/**
@@ -9,3 +19,4 @@ zuul:
       path: /image/**
       url: http://${IMAGE_PORT_8080_TCP_ADDR:image}:${IMAGE_PORT_8080_TCP_PORT:8080}
       stripPrefix: false
+

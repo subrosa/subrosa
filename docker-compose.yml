@@ -6,19 +6,14 @@ config:
   ports:
     - "8888:8888"
 
-#eureka:
-#  build: apps/eureka
-#  ports:
-#    - "8761:8761"
-#  links:
-#    - config
-
 gateway:
   build: apps/gateway
   ports:
     - "8080:8080"
   links:
     - config
+    - db
+    - redis
     - api
     - image
 
@@ -27,18 +22,28 @@ api:
   ports:
     - "8081:8080"
   links:
-    - db
-    - mogilefsd
     - config
+    - db
+    - redis
+#    - mogilefsd
 
 image:
   build: apps/image
   ports:
     - "8082:8080"
   links:
-    - db
-    - mogilefsd
     - config
+    - db
+    - redis
+#    - mogilefsd
+
+redis:
+  image: redis
+  ports:
+    - "6379:6379"
+
+es:
+  image: elasticsearch
 
 db:
 #  image: subrosa/db
@@ -47,43 +52,33 @@ db:
     SEC_POSTGRES_USER:
     SEC_POSTGRES_PASS:
   volumes:
-    - "/var/lib/postgresql"
+    - "/var/lib/postgresql" # TODO volumes_from: data
     - "/var/log/postgresql"
     - "/etc/postgresql"
   ports:
     - "5432:5432"
 
-rabbitmq:
-#  image: subrosa/rabbitmq
-  image: tutum/rabbitmq
-#  build: script/docker/rabbitmq
-  environment:
-    SEC_RABBITMQ_ADMIN_PASS:
-  ports:
-    - "5672:5672"
-    - "15672:15672"
-
-mogstored:
+#mogstored:
 #  image: subrosa/mogstored
-  build: script/docker/mogstored
-  volumes:
-    - "/var/mogdata"
-  ports:
-    - "7500:7500"
-    - "7501:7501"
+#  build: script/docker/mogstored
+#  volumes:
+#    - "/var/mogdata"
+#  ports:
+#    - "7500:7500"
+#    - "7501:7501"
 
-mogilefsd:
+#mogilefsd:
 #  image: subrosa/mogilefsd
-  build: script/docker/mogilefsd
-  environment:
-    MOGILEFS_DB_NAME:
-    SEC_MOGILEFS_DB_USER:
-    SEC_MOGILEFS_DB_PASS:
-  ports:
-    - "7001:7001"
-  links:
-    - db
-    - mogstored
+#  build: script/docker/mogilefsd
+#  environment:
+#    MOGILEFS_DB_NAME:
+#    SEC_MOGILEFS_DB_USER:
+#    SEC_MOGILEFS_DB_PASS:
+#  ports:
+#    - "7001:7001"
+#  links:
+#    - db
+#    - mogstored
 
 migration:
   build: script/docker/migration

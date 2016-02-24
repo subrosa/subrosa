@@ -11,8 +11,6 @@ import com.subrosagames.subrosa.domain.DomainObjectFactory;
 import com.subrosagames.subrosa.domain.file.FileAsset;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
-import com.subrosagames.subrosa.domain.token.TokenFactory;
-import com.subrosagames.subrosa.security.PasswordUtility;
 
 /**
  * Factory for account objects.
@@ -24,10 +22,6 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
     private AccountRepository accountRepository;
     @Autowired
     private ImageRepository imageRepository;
-    @Autowired
-    private TokenFactory tokenFactory;
-    @Autowired
-    private PasswordUtility passwordUtility;
 
     /**
      * Get paginated list of accounts.
@@ -91,8 +85,6 @@ public class AccountFactory extends BaseDomainObjectFactory implements DomainObj
         account.setAccountFactory(this);
         account.setAccountRepository(accountRepository);
         account.setImageRepository(imageRepository);
-        account.setPasswordUtility(passwordUtility);
-        account.setTokenFactory(tokenFactory);
         return account;
     }
 

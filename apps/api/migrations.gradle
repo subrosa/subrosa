@@ -1,4 +1,3 @@
-
 def sqlDir = "${rootDir}/script/docker/migration/sql/"
 
 task newMigration << {

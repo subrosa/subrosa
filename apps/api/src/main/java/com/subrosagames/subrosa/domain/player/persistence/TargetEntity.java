@@ -19,7 +19,6 @@ import javax.persistence.Table;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetType;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

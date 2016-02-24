@@ -5,14 +5,30 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
-import org.springframework.security.web.FilterChainProxy;
+import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
+import org.springframework.security.oauth2.provider.OAuth2Request;
+import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -28,23 +44,30 @@ import com.github.springtestdbunit.annotation.DbUnitConfiguration;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.jayway.jsonpath.JsonPath;
+import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountRepository;
+import com.subrosagames.subrosa.domain.account.AccountRole;
 import com.subrosagames.subrosa.domain.game.GameType;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.test.AbstractContextTest;
 import com.subrosagames.subrosa.test.util.ColumnSensingFlatXmlDataSetLoader;
-import com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.userDetailsService;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Base class for MVC tests.
- * <p/>
+ * <p>
  * Provides scaffolding for performing mock requests, along with helpers for generating domain objects.
  */
 @DbUnitConfiguration(dataSetLoader = ColumnSensingFlatXmlDataSetLoader.class)
-@TestExecutionListeners(DbUnitTestExecutionListener.class)
+@TestExecutionListeners({
+        WithSecurityContextTestExecutionListener.class,
+        DbUnitTestExecutionListener.class,
+})
 public abstract class AbstractApiControllerTest extends AbstractContextTest {
 
     // CHECKSTYLE-OFF: JavadocMethod
@@ -56,15 +79,20 @@ public abstract class AbstractApiControllerTest extends AbstractContextTest {
     protected MockMvc mockMvc; // SUPPRESS CHECKSTYLE VisibilityModifier
 
     @Autowired
-    private FilterChainProxy filterChainProxy;
+    private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private WebApplicationContext webApplicationContext;
+    private AccountRepository accountRepository;
+
+    @Autowired
+    @Qualifier("inMemoryTokenStore")
+    private TokenStore tokenStore;
 
     @Before
     public void setUp() throws Exception {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .addFilter(filterChainProxy)
+        this.mockMvc = MockMvcBuilders
+                .webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
                 .defaultRequest(get("/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -72,8 +100,43 @@ public abstract class AbstractApiControllerTest extends AbstractContextTest {
                 .build();
     }
 
-    protected SecurityRequestPostProcessors.UserDetailsRequestPostProcessor user(String email) {
-        return userDetailsService(email).userDetailsServiceBeanId("userDetailsService");
+    protected MockHttpSession user(String email) {
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, new SecurityContext() {
+            @Override
+            public Authentication getAuthentication() {
+                Account account = accountRepository.findOneByEmail(email).get();
+                return new PreAuthenticatedAuthenticationToken(account, "",
+                        account.getRoles().stream().map(r -> new SimpleGrantedAuthority(r.name())).collect(Collectors.toList()));
+            }
+
+            @Override
+            public void setAuthentication(Authentication authentication) {
+            }
+        });
+        return session;
+    }
+
+    protected String accessTokenForAccountId(int id) {
+        Account account = accountRepository.findOne(id);
+        return accessToken(account);
+    }
+
+    protected String accessTokenForEmail(String email) {
+        Account account = accountRepository.findOneByEmail(email).get();
+        return accessToken(account);
+    }
+
+    protected String accessToken(Account account) {
+        Collection<? extends GrantedAuthority> authorities = account.grantedAuthorities();
+        OAuth2Request oAuth2Request = new OAuth2Request(
+                new HashMap<>(), "subrosa", authorities, true, new HashSet<>(), new HashSet<>(), "", null, null
+        );
+        String token = UUID.randomUUID().toString();
+        Authentication userAuthentication = new PreAuthenticatedAuthenticationToken(new SubrosaUser(account), token, authorities);
+        OAuth2Authentication authentication = new OAuth2Authentication(oAuth2Request, userAuthentication);
+        tokenStore.storeAccessToken(new DefaultOAuth2AccessToken(token), authentication);
+        return token;
     }
 
     protected long timeDaysInFuture(int days) {
@@ -103,7 +166,7 @@ public abstract class AbstractApiControllerTest extends AbstractContextTest {
     protected String newRandomGame(GameType gameType, String userEmail) throws Exception {
         MvcResult result = mockMvc.perform(
                 post("/game")
-                        .with(user(userEmail))
+                        .with(bearer(accessTokenForEmail(userEmail)))
                         .content(jsonBuilder()
                                 .add("name", RandomStringUtils.random(10))
                                 .add("gameType", gameType.name()).build()))

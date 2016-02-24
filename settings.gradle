@@ -1,5 +1,14 @@
 rootProject.name = 'subrosa'
 
+include 'libs/common'
+rootProject.children.find { it.name == 'libs/common' }.name = 'common'
+
+include 'libs/test'
+rootProject.children.find { it.name == 'libs/test' }.name = 'test'
+
+include 'libs/security'
+rootProject.children.find { it.name == 'libs/security' }.name = 'security'
+
 include 'apps/gateway'
 rootProject.children.find { it.name == 'apps/gateway' }.name = 'gateway'
 
@@ -12,8 +21,8 @@ rootProject.children.find { it.name == 'apps/api' }.name = 'api'
 include 'apps/image'
 rootProject.children.find { it.name == 'apps/image' }.name = 'image'
 
-include 'apps/eureka'
-rootProject.children.find { it.name == 'apps/eureka' }.name = 'eureka'
+//include 'apps/eureka'
+//rootProject.children.find { it.name == 'apps/eureka' }.name = 'eureka'
 
 include 'apps/config'
 rootProject.children.find { it.name == 'apps/config' }.name = 'config'

@@ -12,7 +12,7 @@ import lombok.Data;
 
 /**
  * Parent class for persisted entities.
- * <p/>
+ * <p>
  * Provides common elements such as create and update timestamps.
  */
 @Data

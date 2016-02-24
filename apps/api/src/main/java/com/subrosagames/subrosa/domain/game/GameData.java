@@ -23,12 +23,14 @@ public interface GameData {
 
     /**
      * Game id.
+     *
      * @return game id
      */
     Integer getId();
 
     /**
      * Game name.
+     *
      * @return game name
      */
     @NotBlank
@@ -36,6 +38,7 @@ public interface GameData {
 
     /**
      * Game url.
+     *
      * @return game url
      */
     @NotBlank
@@ -43,12 +46,14 @@ public interface GameData {
 
     /**
      * Game description.
+     *
      * @return game description
      */
     String getDescription();
 
     /**
      * Game type.
+     *
      * @return game type
      */
     @NotNull
@@ -56,36 +61,42 @@ public interface GameData {
 
     /**
      * Game price.
+     *
      * @return game price
      */
     BigDecimal getPrice();
 
     /**
      * Timezone in which game runs.
+     *
      * @return game timezone
      */
     String getTimezone();
 
     /**
      * Password to join game.
+     *
      * @return game password
      */
     String getPassword();
 
     /**
      * Image representing game.
+     *
      * @return game image
      */
     Image getImage();
 
     /**
      * Maximum team size for game.
+     *
      * @return maximum team size
      */
     Integer getMaximumTeamSize();
 
     /**
      * Game start time.
+     *
      * @return game start time
      */
     @Future(groups = PublishAction.class)
@@ -94,6 +105,7 @@ public interface GameData {
 
     /**
      * Game end time.
+     *
      * @return game end time
      */
     @Future(groups = PublishAction.class)
@@ -101,6 +113,7 @@ public interface GameData {
 
     /**
      * Registration start time.
+     *
      * @return registration start time
      */
     @Future(groups = PublishAction.class)
@@ -108,6 +121,7 @@ public interface GameData {
 
     /**
      * Registration end time.
+     *
      * @return registration end time
      */
     @Future(groups = PublishAction.class)
@@ -115,6 +129,7 @@ public interface GameData {
 
     /**
      * Status of game.
+     *
      * @return game status
      */
     GameStatus getStatus();

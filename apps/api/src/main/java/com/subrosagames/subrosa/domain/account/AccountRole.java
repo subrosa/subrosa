@@ -5,5 +5,6 @@ package com.subrosagames.subrosa.domain.account;
  * Note that these are different from PlayerRole and GameRole.
  */
 public enum AccountRole {
+    USER,
     ADMIN       // SUPPRESS CHECKSTYLE JavadocVariable
 }

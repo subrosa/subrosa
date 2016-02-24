@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileNotFoundException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileValidationException;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.service.AccountService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
@@ -29,7 +31,7 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  * Controller for {@link PlayerProfile} related CRUD operations.
  */
 @Controller
-public class ApiAccountPlayerController extends BaseApiController {
+public class ApiAccountPlayerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiAccountPlayerController.class);
 
@@ -48,12 +50,13 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/account/{accountId}/player", "/account/{accountId}/player/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<PlayerProfile> listPlayers(@PathVariable("accountId") Integer accountId,
+    public PaginatedList<PlayerProfile> listPlayers(@AuthenticationPrincipal SubrosaUser user,
+                                                    @PathVariable("accountId") Integer accountId,
                                                     @RequestParam(value = "limit", required = false) Integer limitParam,
                                                     @RequestParam(value = "offset", required = false) Integer offsetParam)
             throws NotAuthenticatedException, AccountNotFoundException
     {
-        LOG.debug("{}: listing player profiles for {}", getAuthenticatedUser().getId(), accountId);
+        LOG.debug("{}: listing player profiles for {}", user.getId(), accountId);
         int limit = ObjectUtils.defaultIfNull(limitParam, 10);
         int offset = ObjectUtils.defaultIfNull(offsetParam, 0);
         return accountService.listPlayerProfiles(accountId, limit, offset);
@@ -70,11 +73,12 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/user/player", "/user/player/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<PlayerProfile> listPlayersForAuthenticatedUser(@RequestParam(value = "limit", required = false) Integer limit,
+    public PaginatedList<PlayerProfile> listPlayersForAuthenticatedUser(@AuthenticationPrincipal SubrosaUser user,
+                                                                        @RequestParam(value = "limit", required = false) Integer limit,
                                                                         @RequestParam(value = "offset", required = false) Integer offset)
             throws NotAuthenticatedException, AccountNotFoundException
     {
-        return listPlayers(getAuthenticatedUser().getId(), limit, offset);
+        return listPlayers(user, user.getId(), limit, offset);
     }
 
     /**
@@ -89,11 +93,12 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/account/{accountId}/player/{playerId}", "/account/{accountId}/player/{playerId}/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PlayerProfile getPlayer(@PathVariable("accountId") Integer accountId,
+    public PlayerProfile getPlayer(@AuthenticationPrincipal SubrosaUser user,
+                                   @PathVariable("accountId") Integer accountId,
                                    @PathVariable("playerId") Integer playerId)
             throws NotAuthenticatedException, AccountNotFoundException, PlayerProfileNotFoundException
     {
-        LOG.debug("{}: get player profile {} for {}", getAuthenticatedUser().getId(), playerId, accountId);
+        LOG.debug("{}: get player profile {} for {}", user.getId(), playerId, accountId);
         return accountService.getPlayerProfile(accountId, playerId);
     }
 
@@ -108,10 +113,11 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/user/player/{playerId}", "/user/player/{playerId}/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PlayerProfile getPlayerForAuthenticatedUser(@PathVariable("playerId") Integer playerId)
+    public PlayerProfile getPlayerForAuthenticatedUser(@AuthenticationPrincipal SubrosaUser user,
+                                                       @PathVariable("playerId") Integer playerId)
             throws NotAuthenticatedException, AccountNotFoundException, PlayerProfileNotFoundException
     {
-        return getPlayer(getAuthenticatedUser().getId(), playerId);
+        return getPlayer(user, user.getId(), playerId);
     }
 
     /**
@@ -128,11 +134,12 @@ public class ApiAccountPlayerController extends BaseApiController {
     @RequestMapping(value = { "/account/{accountId}/player", "/account/{accountId}/player/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public PlayerProfile createPlayer(@PathVariable("accountId") Integer accountId,
+    public PlayerProfile createPlayer(@AuthenticationPrincipal SubrosaUser user,
+                                      @PathVariable("accountId") Integer accountId,
                                       @RequestBody PlayerProfileDescriptor playerProfileDescriptor)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerProfileValidationException
     {
-        LOG.debug("{}: creating player profile for {}", getAuthenticatedUser().getId(), accountId);
+        LOG.debug("{}: creating player profile for {}", user.getId(), accountId);
         return accountService.createPlayerProfile(accountId, playerProfileDescriptor);
     }
 
@@ -149,10 +156,11 @@ public class ApiAccountPlayerController extends BaseApiController {
     @RequestMapping(value = { "/user/player", "/user/player/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public PlayerProfile createPlayerForAuthenticatedUser(@RequestBody PlayerProfileDescriptor playerProfileDescriptor)
+    public PlayerProfile createPlayerForAuthenticatedUser(@AuthenticationPrincipal SubrosaUser user,
+                                                          @RequestBody PlayerProfileDescriptor playerProfileDescriptor)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerProfileValidationException
     {
-        return createPlayer(getAuthenticatedUser().getId(), playerProfileDescriptor);
+        return createPlayer(user, user.getId(), playerProfileDescriptor);
     }
 
     /**
@@ -170,12 +178,13 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/account/{accountId}/player/{playerId}", "/account/{accountId}/player/{playerId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    public PlayerProfile updatePlayer(@PathVariable("accountId") Integer accountId,
+    public PlayerProfile updatePlayer(@AuthenticationPrincipal SubrosaUser user,
+                                      @PathVariable("accountId") Integer accountId,
                                       @PathVariable("playerId") Integer playerId,
                                       @RequestBody PlayerProfileDescriptor playerProfileDescriptor)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException, PlayerProfileValidationException
     {
-        LOG.debug("{}: updating player profile {} for account {}", getAuthenticatedUser().getId(), playerId, accountId);
+        LOG.debug("{}: updating player profile {} for account {}", user.getId(), playerId, accountId);
         return accountService.updatePlayerProfile(accountId, playerId, playerProfileDescriptor);
     }
 
@@ -193,11 +202,12 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/user/player/{playerId}", "/user/player/{playerId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    public PlayerProfile updatePlayerForAuthenticatedUser(@PathVariable("playerId") Integer playerId,
+    public PlayerProfile updatePlayerForAuthenticatedUser(@AuthenticationPrincipal SubrosaUser user,
+                                                          @PathVariable("playerId") Integer playerId,
                                                           @RequestBody PlayerProfileDescriptor playerProfileDescriptor)
             throws NotAuthenticatedException, AccountNotFoundException, PlayerProfileNotFoundException, ImageNotFoundException, PlayerProfileValidationException
     {
-        return updatePlayer(getAuthenticatedUser().getId(), playerId, playerProfileDescriptor);
+        return updatePlayer(user, user.getId(), playerId, playerProfileDescriptor);
     }
 
     /**
@@ -213,11 +223,12 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/account/{accountId}/player/{playerId}", "/account/{accountId}/player/{playerId}/" }, method = RequestMethod.DELETE)
     @ResponseBody
-    public PlayerProfile deletePlayer(@PathVariable("accountId") Integer accountId,
+    public PlayerProfile deletePlayer(@AuthenticationPrincipal SubrosaUser user,
+                                      @PathVariable("accountId") Integer accountId,
                                       @PathVariable("playerId") Integer playerId)
             throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException, PlayerProfileInUseException
     {
-        LOG.debug("{}: deleting player profile {} for account {}", getAuthenticatedUser().getId(), playerId, accountId);
+        LOG.debug("{}: deleting player profile {} for account {}", user.getId(), playerId, accountId);
         return accountService.deletePlayerProfile(accountId, playerId);
     }
 
@@ -233,10 +244,11 @@ public class ApiAccountPlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/user/player/{playerId}", "/user/player/{playerId}/" }, method = RequestMethod.DELETE)
     @ResponseBody
-    public PlayerProfile deletePlayerForAuthenticatedUser(@PathVariable("playerId") Integer playerId)
+    public PlayerProfile deletePlayerForAuthenticatedUser(@AuthenticationPrincipal SubrosaUser user,
+                                                          @PathVariable("playerId") Integer playerId)
             throws NotAuthenticatedException, PlayerProfileNotFoundException, AccountNotFoundException, PlayerProfileInUseException
     {
-        return deletePlayer(getAuthenticatedUser().getId(), playerId);
+        return deletePlayer(user, user.getId(), playerId);
     }
 }
 

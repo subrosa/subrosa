@@ -14,7 +14,7 @@ import com.subrosagames.subrosa.api.list.QueryCriteria;
 
 /**
  * Manages the creation of a JPA {@link TypedQuery} from a {@link QueryCriteria}.
- * <p/>
+ * <p>
  * Requires the provision of an {@link EntityManager} instance, as it relies on on the {@link CriteriaBuilder} API
  * to create the query.
  *

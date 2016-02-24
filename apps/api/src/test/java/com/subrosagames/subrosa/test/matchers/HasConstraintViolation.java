@@ -77,7 +77,7 @@ public final class HasConstraintViolation extends TypeSafeDiagnosingMatcher<Doma
          * Factory for matching a constraint violation for a property and violation message.
          *
          * @param property constraint violation property name
-         * @param message constraint violation message
+         * @param message  constraint violation message
          * @return constraint violation matcher
          */
         @Factory

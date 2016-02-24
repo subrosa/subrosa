@@ -26,7 +26,7 @@ public class PlayerProfileInUseException extends ResourceInUseException {
      * Construct with message and cause.
      *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public PlayerProfileInUseException(String message, Throwable cause) {
         super(message, cause);

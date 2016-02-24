@@ -1,8 +1,6 @@
 package com.subrosagames.subrosa.bootstrap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.subrosagames.subrosa.domain.file.FileStorer;
@@ -41,8 +39,8 @@ public class MogileConfiguration {
      * @param springMojiBean spring moji bean
      * @return mogilefs file storer
      */
-    @Bean
-    @Profile("!unit-test")
+//    @Bean
+//    @Profile("!unit-test")
     public FileStorer mogileFileStorer(SpringMojiBean springMojiBean) {
         return new MogileFileStorer(springMojiBean);
     }
@@ -52,8 +50,8 @@ public class MogileConfiguration {
      *
      * @return spring moji bean
      */
-    @Bean
-    @Profile("!unit-test")
+//    @Bean
+//    @Profile("!unit-test")
     public SpringMojiBean springMojiBean() {
         SpringMojiBean mojiBean = new SpringMojiBean();
         mojiBean.setAddressesCsv(getTrackerAddresses());

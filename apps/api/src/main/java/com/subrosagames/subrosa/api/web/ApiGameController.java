@@ -14,6 +14,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.NonTransientDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,8 @@ import com.subrosagames.subrosa.api.dto.target.TargetDtoFactory;
 import com.subrosagames.subrosa.api.dto.target.TargetList;
 import com.subrosagames.subrosa.api.list.QueryCriteria;
 import com.subrosagames.subrosa.domain.account.Account;
+import com.subrosagames.subrosa.domain.account.AccountFactory;
+import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.game.GameFactory;
@@ -50,7 +53,7 @@ import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.Target;
 import com.subrosagames.subrosa.domain.player.TargetNotFoundException;
-import com.subrosagames.subrosa.security.SecurityHelper;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
@@ -61,12 +64,15 @@ import com.subrosagames.subrosa.util.RequestUtils;
  */
 @RestController
 @RequestMapping("/game")
-public class ApiGameController extends BaseApiController {
+public class ApiGameController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiGameController.class);
 
     @Autowired
     private GameFactory gameFactory;
+
+    @Autowired
+    private AccountFactory accountFactory;
 
     @Autowired
     private GameService gameService;
@@ -135,16 +141,17 @@ public class ApiGameController extends BaseApiController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Game createGame(@RequestBody(required = false) GameDescriptor gameDescriptorParam)
-            throws GameValidationException, NotAuthenticatedException, ImageNotFoundException
+    public Game createGame(@AuthenticationPrincipal SubrosaUser user,
+                           @RequestBody(required = false) GameDescriptor gameDescriptorParam)
+            throws GameValidationException, NotAuthenticatedException, ImageNotFoundException, AccountNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a game.");
         }
         GameDescriptor gameDescriptor = ObjectUtils.defaultIfNull(gameDescriptorParam, new GameDescriptor());
-        Account user = getAuthenticatedUser();
-        LOG.debug("Creating new game for user {}: {}", user.getEmail(), gameDescriptor);
-        return gameService.createGame(gameDescriptor, user);
+        LOG.debug("Creating new game for user {}: {}", user.getId(), gameDescriptor);
+        Account account = accountFactory.getAccount(user.getId());
+        return gameService.createGame(gameDescriptor, account);
     }
 
     /**
@@ -160,11 +167,12 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}", method = RequestMethod.PUT)
     @ResponseBody
-    public Game updateGame(@PathVariable("gameUrl") String gameUrl,
+    public Game updateGame(@AuthenticationPrincipal SubrosaUser user,
+                           @PathVariable("gameUrl") String gameUrl,
                            @RequestBody GameDescriptor gameDescriptor)
             throws GameValidationException, GameNotFoundException, NotAuthenticatedException, ImageNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
         try {
@@ -188,10 +196,11 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}/publish", method = RequestMethod.POST)
     @ResponseBody
-    public Game publishGame(@PathVariable("gameUrl") String gameUrl)
+    public Game publishGame(@AuthenticationPrincipal SubrosaUser user,
+                            @PathVariable("gameUrl") String gameUrl)
             throws GameNotFoundException, GameValidationException, NotAuthenticatedException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to publish a game.");
         }
         return gameService.publishGame(gameUrl);
@@ -239,17 +248,18 @@ public class ApiGameController extends BaseApiController {
     @RequestMapping(value = { "/{gameUrl}/post", "/{gameUrl}/post/" }, method = RequestMethod.POST)
     @ResponseBody
     @Transactional
-    public Post createPost(@PathVariable("gameUrl") String gameUrl,
+    public Post createPost(@AuthenticationPrincipal SubrosaUser user,
+                           @PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) PostDescriptor postDescriptorParam)
-            throws GameNotFoundException, NotAuthenticatedException, PostValidationException
+            throws GameNotFoundException, NotAuthenticatedException, PostValidationException, AccountNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to create a post.");
         }
         PostDescriptor postDescriptor = ObjectUtils.defaultIfNull(postDescriptorParam, new PostDescriptor());
         Game game = gameFactory.getGame(gameUrl);
         PostEntity postEntity = gameFactory.forDto(postDescriptor);
-        postEntity.setAccount(SecurityHelper.getAuthenticatedUser());
+        postEntity.setAccount(accountFactory.getAccount(user.getId()));
         return game.addPost(postEntity);
     }
 
@@ -293,8 +303,11 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}/target", method = RequestMethod.GET)
     @ResponseBody
-    public TargetList getTargets(@PathVariable("gameUrl") String gameUrl) throws GameNotFoundException, NotAuthenticatedException, PlayerNotFoundException {
-        int accountId = getAuthenticatedUser().getId();
+    public TargetList getTargets(@AuthenticationPrincipal SubrosaUser user,
+                                 @PathVariable("gameUrl") String gameUrl)
+            throws GameNotFoundException, NotAuthenticatedException, PlayerNotFoundException
+    {
+        int accountId = user.getId();
         LOG.debug("Retrieving targets for game {} and account {}", gameUrl, accountId);
         Game game = gameFactory.getGame(gameUrl);
         Player player = game.getPlayerForUser(accountId);
@@ -330,11 +343,13 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.GET)
     @ResponseBody
-    public TargetDto getTarget(@PathVariable("gameUrl") String gameUrl,
-                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException, PlayerNotFoundException
+    public TargetDto getTarget(@AuthenticationPrincipal SubrosaUser user,
+                               @PathVariable("gameUrl") String gameUrl,
+                               @PathVariable("targetId") Integer targetId) throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException,
+            PlayerNotFoundException
 
     {
-        int accountId = getAuthenticatedUser().getId();
+        int accountId = user.getId();
         Game game = gameFactory.getGame(gameUrl);
         Player player = game.getPlayerForUser(accountId);
         Target target = player.getTarget(targetId);
@@ -353,12 +368,13 @@ public class ApiGameController extends BaseApiController {
      */
     @RequestMapping(value = "/{gameUrl}/target/{targetId}", method = RequestMethod.POST)
     @ResponseBody
-    public void achieveTarget(@PathVariable("gameUrl") String gameUrl,
+    public void achieveTarget(@AuthenticationPrincipal SubrosaUser user,
+                              @PathVariable("gameUrl") String gameUrl,
                               @PathVariable("targetId") Integer targetId,
                               @RequestBody TargetAchievement targetAchievement)
             throws GameNotFoundException, TargetNotFoundException, NotAuthenticatedException, PlayerNotFoundException
     {
-        int accountId = getAuthenticatedUser().getId();
+        int accountId = user.getId();
         Game game = gameFactory.getGame(gameUrl);
         Player player = game.getPlayerForUser(accountId);
         game.achieveTarget(player, targetId, targetAchievement.getCode());

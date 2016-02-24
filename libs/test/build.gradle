@@ -1,0 +1,28 @@
+apply plugin: 'java'
+apply plugin: "io.spring.dependency-management"
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:${springPlatformVersion}"
+    }
+}
+
+dependencies {
+    compile project(':common')
+
+    testCompile "junit:junit"
+    compile "org.hamcrest:hamcrest-all"
+    compile "org.springframework:spring-test"
+    compile "org.springframework.security:spring-security-web"
+    compile "org.springframework.security.oauth:spring-security-oauth2"
+    compile "org.springframework.security:spring-security-test"
+    compile "net.minidev:json-smart:2.2"
+    compile "javax:javaee-api:7.0"
+}

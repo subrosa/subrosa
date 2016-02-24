@@ -16,6 +16,7 @@ public class NotAuthorizedException extends Exception {
 
     /**
      * Construct with message.
+     *
      * @param message message
      */
     public NotAuthorizedException(String message) {
@@ -24,8 +25,9 @@ public class NotAuthorizedException extends Exception {
 
     /**
      * Construct with message and cause.
+     *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public NotAuthorizedException(String message, Throwable cause) {
         super(message, cause);
@@ -33,6 +35,7 @@ public class NotAuthorizedException extends Exception {
 
     /**
      * Construct with cause.
+     *
      * @param cause cause
      */
     public NotAuthorizedException(Throwable cause) {

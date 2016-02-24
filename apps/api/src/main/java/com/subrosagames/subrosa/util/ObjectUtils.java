@@ -5,13 +5,15 @@ package com.subrosagames.subrosa.util;
  */
 public final class ObjectUtils {
 
-    private ObjectUtils() { }
+    private ObjectUtils() {
+    }
 
     /**
      * Returns the given object or, if it is {@code null}, the provided default.
-     * @param object value
+     *
+     * @param object       value
      * @param defaultValue default
-     * @param <T> value type
+     * @param <T>          value type
      * @return {@code value} or, if {@code null}, {@code defaultValue}
      */
     public static <T> T defaultIfNull(T object, T defaultValue) {

@@ -15,6 +15,7 @@ public class EventException extends Exception {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public EventException(String s) {
@@ -23,7 +24,8 @@ public class EventException extends Exception {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     *
+     * @param s         message
      * @param throwable cause
      */
     public EventException(String s, Throwable throwable) {
@@ -32,6 +34,7 @@ public class EventException extends Exception {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public EventException(Throwable throwable) {

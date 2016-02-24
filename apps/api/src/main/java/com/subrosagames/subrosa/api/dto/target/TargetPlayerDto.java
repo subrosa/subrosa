@@ -15,6 +15,7 @@ public class TargetPlayerDto extends TargetDto {
 
     /**
      * Construct with given target player.
+     *
      * @param target target player
      */
     public TargetPlayerDto(TargetPlayer target) {

@@ -17,6 +17,7 @@ public class AccountNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public AccountNotFoundException(String s) {
@@ -25,7 +26,8 @@ public class AccountNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     *
+     * @param s         message
      * @param throwable cause
      */
     public AccountNotFoundException(String s, Throwable throwable) {
@@ -34,6 +36,7 @@ public class AccountNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public AccountNotFoundException(Throwable throwable) {

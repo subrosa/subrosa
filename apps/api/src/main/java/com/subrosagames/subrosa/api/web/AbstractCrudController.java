@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,7 @@ import com.subrosagames.subrosa.api.NotAuthenticatedException;
 import com.subrosagames.subrosa.domain.DomainObject;
 import com.subrosagames.subrosa.domain.DomainObjectDescriptor;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
-import com.subrosagames.subrosa.domain.game.GameNotFoundException;
-import com.subrosagames.subrosa.security.SecurityHelper;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
 
@@ -29,7 +29,7 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  * Created by josiah on 3/3/15.
  */
 @RestController
-public abstract class AbstractCrudController<T extends DomainObject, U extends DomainObjectDescriptor> extends BaseApiController {
+public abstract class AbstractCrudController<T extends DomainObject, U extends DomainObjectDescriptor> {
 
     protected static final String PARENT_ID = "parentId";
     protected static final String CHILD_ID = "childId";
@@ -91,7 +91,8 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
 
     @RequestMapping(value = { "/{childId}", "/{childId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    public T update(@PathVariable(PARENT_ID) String parentId,
+    public T update(@AuthenticationPrincipal SubrosaUser user,
+                    @PathVariable(PARENT_ID) String parentId,
                     @PathVariable(CHILD_ID) String childId,
                     @RequestBody(required = false) U objectDescriptor)
             throws BadRequestException, NotAuthenticatedException, DomainObjectNotFoundException
@@ -99,7 +100,7 @@ public abstract class AbstractCrudController<T extends DomainObject, U extends D
         if (objectDescriptor == null) {
             throw new BadRequestException("No POST body supplied");
         }
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to update a game.");
         }
         return updateObject(parentId, childId, objectDescriptor);

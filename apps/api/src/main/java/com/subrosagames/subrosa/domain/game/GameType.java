@@ -19,6 +19,7 @@ public enum GameType {
     // CHECKSTYLE-ON: JavadocVariable
 
     private static final Map<String, GameType> NAME_TO_GAME_TYPE_MAP = new HashMap<>();
+
     static {
         for (GameType gameType : GameType.values()) {
             NAME_TO_GAME_TYPE_MAP.put(gameType.name(), gameType);

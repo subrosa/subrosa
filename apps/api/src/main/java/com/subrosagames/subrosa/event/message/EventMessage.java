@@ -17,7 +17,7 @@ import com.subrosagames.subrosa.event.handler.RoundRobinAssignmentMessageHandler
 
 /**
  * Enumeration of supported event-based JMS messages.
- * <p/>
+ * <p>
  * Each supported event has an associated message queue name and type of message expected to be sent on it.
  */
 public enum EventMessage implements Event {

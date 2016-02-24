@@ -8,15 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -25,8 +19,6 @@ import com.subrosagames.subrosa.api.list.annotation.FilterGroup;
 import com.subrosagames.subrosa.api.list.annotation.FilterGroups;
 import com.subrosagames.subrosa.api.list.annotation.Filterable;
 import com.subrosagames.subrosa.api.list.annotation.Sortable;
-import com.subrosagames.subrosa.domain.game.BaseGame;
-import com.subrosagames.subrosa.infrastructure.persistence.hibernate.JpaQueryBuilder;
 import lombok.Getter;
 import lombok.Setter;
 

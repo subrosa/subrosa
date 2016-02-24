@@ -12,7 +12,7 @@ import com.subrosagames.subrosa.domain.validation.validators.DateRangeValidator;
 
 /**
  * Class-level constraint defining fields as making a valid date range.
- * <p/>
+ * <p>
  * Both a {@link #start()} and {@link #end()} field must be specified. These fields must be {@code Date}
  * objects. If either is {@code null}, the range is considered valid. Otherwise, the start date must
  * precede the end date. Optionally, equality can be considered valid by setting {@link #allowEmptyRange()}
@@ -32,12 +32,12 @@ public @interface DateRange {
     /**
      * Validation groups.
      */
-    Class<?>[] groups() default { };
+    Class<?>[] groups() default {};
 
     /**
      * Constraint payload.
      */
-    Class<? extends Payload>[] payload() default { };
+    Class<? extends Payload>[] payload() default {};
 
     /**
      * Start date.
@@ -56,6 +56,7 @@ public @interface DateRange {
 
     /**
      * Defines several <code>@DateRange</code> annotations on the same element.
+     *
      * @see DateRange
      */
     @Target({ ElementType.TYPE, ElementType.ANNOTATION_TYPE })

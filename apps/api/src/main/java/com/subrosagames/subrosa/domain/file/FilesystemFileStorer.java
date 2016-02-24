@@ -26,6 +26,7 @@ public class FilesystemFileStorer implements FileStorer {
 
     /**
      * Construct with provided file config.
+     *
      * @param subrosaFiles file config
      */
     public FilesystemFileStorer(SubrosaFiles subrosaFiles) {

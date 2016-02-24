@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.subrosagames.subrosa.domain.game.Game;
 import com.subrosagames.subrosa.domain.notification.NotificationCode;
 import com.subrosagames.subrosa.domain.notification.NotificationDetails;

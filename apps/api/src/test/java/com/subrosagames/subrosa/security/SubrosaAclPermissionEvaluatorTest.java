@@ -1,18 +1,16 @@
 package com.subrosagames.subrosa.security;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountRole;
@@ -51,7 +49,7 @@ public class SubrosaAclPermissionEvaluatorTest extends AbstractContextTest {
     @Test
     public void testAdminHasPermission() throws Exception {
         Object target = new Account();
-        Authentication authentication = authenticationWithAuthorities("ADMIN");
+        Authentication authentication = authenticationWithAuthorities("ROLE_ADMIN");
         Map<String, Permission> permissionMap = permissionEvaluator.getPermissionMap();
         for (Permission permission : permissionMap.values()) {
             assertTrue(permission.isAllowed(authentication, target));
@@ -61,24 +59,19 @@ public class SubrosaAclPermissionEvaluatorTest extends AbstractContextTest {
 
     @Test
     public void testHasUnknownPermissionFails() throws Exception {
-        Authentication authentication = authenticationWithAuthorities("ADMIN");
+        Authentication authentication = authenticationWithAuthorities("ROLE_ADMIN");
         assertFalse(permissionEvaluator.hasPermission(authentication, new Object(), "DOES_NOT_EXIST"));
     }
 
-    private PreAuthenticatedAuthenticationToken authenticationWithAuthorities(String... authorities) {
+    private Authentication authenticationWithAuthorities(String... authorities) {
         Account account = new Account();
         account.setEmail("email");
         account.setPassword("password");
         account.setRoles(Sets.<AccountRole>newHashSet());
-        return new PreAuthenticatedAuthenticationToken(
-                new SubrosaUser(account),
+        return new TestingAuthenticationToken(
+                account,
                 "credentials",
-                Collections2.transform(Sets.newHashSet(authorities), new Function<String, GrantedAuthority>() {
-                    @Override
-                    public GrantedAuthority apply(@Nullable String s) {
-                        return new SimpleGrantedAuthority(s);
-                    }
-                }));
+                Arrays.stream(authorities).map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
     }
 
     // CHECKSTYLE-ON: JavadocMethod

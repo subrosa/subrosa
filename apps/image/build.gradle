@@ -2,6 +2,8 @@ apply plugin: 'java'
 apply plugin: 'spring-boot'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 group = 'subrosa'
 version = '1.0.0-SNAPSHOT'
 
@@ -10,18 +12,21 @@ jar {
     version = project.version
 }
 
-repositories {
-    mavenCentral()
+dependencyManagement {
+    imports {
+        mavenBom "io.spring.platform:platform-bom:${springPlatformVersion}"
+        mavenBom "org.springframework.cloud:spring-cloud-starter-parent:${springCloudVersion}"
+    }
 }
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
 
-    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
-    compile "org.springframework.boot:spring-boot-starter-aop:${springBootVersion}"
-    compile 'org.springframework.cloud:spring-cloud-config-client:1.0.2.RELEASE'
+    compile "org.springframework.boot:spring-boot-starter-web"
     // spring retry for startup
-    compile 'org.springframework.retry:spring-retry:1.1.2.RELEASE'
+    compile 'org.springframework.cloud:spring-cloud-config-client'
+    compile "org.springframework.boot:spring-boot-starter-aop"
+    compile 'org.springframework.retry:spring-retry'
 
     compile 'com.amazonaws:aws-java-sdk:1.9.22'
     compile 'com.google.guava:guava:18.0'

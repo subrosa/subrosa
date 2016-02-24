@@ -34,8 +34,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Where;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.common.collect.Lists;
@@ -55,7 +53,6 @@ import com.subrosagames.subrosa.domain.location.Zone;
 import com.subrosagames.subrosa.domain.location.persistence.LocationEntity;
 import com.subrosagames.subrosa.domain.location.persistence.ZoneEntity;
 import com.subrosagames.subrosa.domain.message.Post;
-import com.subrosagames.subrosa.event.ScheduledEvent;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;

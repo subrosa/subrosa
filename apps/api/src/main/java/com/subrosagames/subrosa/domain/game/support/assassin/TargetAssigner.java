@@ -22,7 +22,8 @@ public final class TargetAssigner {
 
     /**
      * Assign players targets according to the given assignment type.
-     *  @param players        players
+     *
+     * @param players        players
      * @param assignmentType assignment type
      */
     public static void assignTargets(List<? extends Player> players, AssignmentType assignmentType) {
@@ -71,9 +72,9 @@ public final class TargetAssigner {
         for (Player player : players) {
             if (previous == null) {
                 Player last = players.get(players.size() - 1);
-                assignFunction.apply(new Player[]{ player, last });
+                assignFunction.apply(new Player[] { player, last });
             } else {
-                assignFunction.apply(new Player[]{ player, previous });
+                assignFunction.apply(new Player[] { player, previous });
             }
             previous = player;
         }

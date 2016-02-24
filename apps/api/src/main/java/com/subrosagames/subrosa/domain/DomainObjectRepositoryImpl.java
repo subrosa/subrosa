@@ -12,13 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 /**
  * Provides implementation for {@link DomainObjectRepository} by building on top
@@ -29,8 +25,8 @@ public class DomainObjectRepositoryImpl<T, I extends Serializable> extends Simpl
 
     private final EntityManager em;
 
-    public DomainObjectRepositoryImpl(Class<T> domainClass, EntityManager em) {
-        super(domainClass, em);
+    public DomainObjectRepositoryImpl(JpaEntityInformation<T, I> entityInformation, EntityManager em) {
+        super(entityInformation, em);
         this.em = em;
     }
 

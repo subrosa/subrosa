@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.junit.Ignore;
@@ -20,15 +19,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import com.jayway.jsonpath.JsonPath;
-import com.subrosagames.subrosa.api.dto.GameEventDescriptor;
 import com.subrosagames.subrosa.domain.game.BaseGame;
 import com.subrosagames.subrosa.domain.game.GameFactory;
 import com.subrosagames.subrosa.domain.game.GameRepository;
 import com.subrosagames.subrosa.domain.game.GameStatus;
 import com.subrosagames.subrosa.domain.game.GameType;
-import com.subrosagames.subrosa.domain.game.persistence.ScheduledEventEntity;
 import com.subrosagames.subrosa.domain.game.support.assassin.AssassinGame;
-import com.subrosagames.subrosa.event.ScheduledEvent;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -37,7 +33,6 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
-import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -51,6 +46,7 @@ import static com.subrosagames.subrosa.test.matchers.IsSortedList.isSortedAscend
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetailField.withDetailField;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Test {@link com.subrosagames.subrosa.api.web.ApiGameController}.
@@ -202,7 +198,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testGameCreationRequiresNameAndType() throws Exception {
         mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("name", "name of the game").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -210,7 +206,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -218,7 +214,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -227,7 +223,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("name", "name of the game").add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("name of the game"))
@@ -238,7 +234,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testGameCreationSetsDefaultValues() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("name", "name of the game").add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
@@ -246,7 +242,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 get("/game/{url}", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.price").value(0.0))
                 .andExpect(jsonPath("$.maximumTeamSize").value(0));
@@ -256,13 +252,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testGameCreation() throws Exception {
         mockMvc.perform(
                 get("/user/game")
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(hasSize(0)));
 
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("name", "my favorite game").add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("my favorite game"))
@@ -273,13 +269,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 get("/user/game")
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(hasSize(1)));
 
         mockMvc.perform(
                 get("/game/{url}", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("my favorite game"))
                 .andExpect(jsonPath("$.gameType").value("ASSASSIN"))
@@ -288,7 +284,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGameUpdate() throws Exception {
-        String response = mockMvc.perform(post("/game").with(user("new@user.com"))
+        String response = mockMvc.perform(post("/game").with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("name", "game to update").add("gameType", "SCAVENGER").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("game to update"))
@@ -296,19 +292,19 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
-        mockMvc.perform(put("/game/{url}", url).with(user("new@user.com"))
+        mockMvc.perform(put("/game/{url}", url).with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("name", "renamed game").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
 
-        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
+        mockMvc.perform(get("/game/{url}", url).with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("renamed game"));
     }
 
     @Test
     public void testGameUpdateByAdmin() throws Exception {
-        mockMvc.perform(put("/game/{url}", "fun_times").with(user("admin@user.com"))
+        mockMvc.perform(put("/game/{url}", "fun_times").with(bearer(accessTokenForEmail("admin@user.com")))
                 .content(jsonBuilder().add("name", "this is now the name").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("this is now the name"));
@@ -316,7 +312,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGameUpdateWithWrongAccount() throws Exception {
-        mockMvc.perform(put("/game/{url}", "fun_times").with(user("new@user.com"))
+        mockMvc.perform(put("/game/{url}", "fun_times").with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("name", "this is now the name").build()))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$").value(notificationList()));
@@ -324,37 +320,37 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUpdateWithImage() throws Exception {
-        String game = mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+        String game = mockMvc.perform(get("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andReturn().getResponse().getContentAsString();
 
-        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com")).content(game))
+        mockMvc.perform(put("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com"))).content(game))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.image.name").value("pic1.png"));
 
-        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com"))
+        mockMvc.perform(put("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com")))
                 .content(jsonBuilder().add("imageId", 2).build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.image.name").value("pic2.png"));
 
-        mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+        mockMvc.perform(get("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(jsonPath("$.image.name").value("pic2.png"));
     }
 
     @Test
     public void testUpdateRemoveImage() throws Exception {
-        mockMvc.perform(put("/game/{url}", "with_image").with(user("game@owner.com"))
+        mockMvc.perform(put("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com")))
                 .content(jsonBuilder().add("imageId", null).build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.image").doesNotExist());
 
-        mockMvc.perform(get("/game/{url}", "with_image").with(user("game@owner.com")))
+        mockMvc.perform(get("/game/{url}", "with_image").with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.image").doesNotExist());
     }
 
     @Test
     public void testCreateWithImage() throws Exception {
-        mockMvc.perform(post("/game").with(user("game@owner.com"))
+        mockMvc.perform(post("/game").with(bearer(accessTokenForEmail("game@owner.com")))
                 .content(jsonBuilder().add("name", "my favorite game").add("gameType", "ASSASSIN").add("imageId", 1).build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.image.name").value("pic1.png"));
@@ -362,14 +358,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testCreateWithImageNotFound() throws Exception {
-        mockMvc.perform(post("/game").with(user("game@owner.com"))
+        mockMvc.perform(post("/game").with(bearer(accessTokenForEmail("game@owner.com")))
                 .content(jsonBuilder().add("name", "my favorite game").add("gameType", "ASSASSIN").add("imageId", 666).build()))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testCreateWithInvalidGameType() throws Exception {
-        mockMvc.perform(post("/game").with(user("game@owner.com"))
+        mockMvc.perform(post("/game").with(bearer(accessTokenForEmail("game@owner.com")))
                 .content(jsonBuilder().add("name", "my favorite game").add("gameType", "WTF_IS_THIS").build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
@@ -380,9 +376,9 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testCreateAndUpdateGamePlayerInfoRequirements() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder()
-                                .add("name", "Game with Player Info")
+                                .add("name", "Game session Player Info")
                                 .add("gameType", "SCAVENGER")
                                 .addArray("playerInfo",
                                         jsonBuilder().add("name", "Last Wish").add("description", "Your dying request").add("type", "text"),
@@ -399,7 +395,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String lastWishId = JsonPath.compile("$.playerInfo[0].fieldId").read(response);
         String nudePhotoId = JsonPath.compile("$.playerInfo[1].fieldId").read(response);
 
-        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
+        mockMvc.perform(get("/game/{url}", url).with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(jsonPath("$.playerInfo").value(hasSize(2)))
                 .andExpect(jsonPath("$.playerInfo[0].fieldId").value(lastWishId))
                 .andExpect(jsonPath("$.playerInfo[0].name").value("Last Wish"))
@@ -408,9 +404,9 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 put("/game/{url}", url)
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder()
-                                .add("name", "Game with Player Info")
+                                .add("name", "Game session Player Info")
                                 .add("gameType", "SCAVENGER")
                                 .addArray("playerInfo",
                                         jsonBuilder().add("name", "Nude Photo").add("description", "We need more of these").add("type", "image"),
@@ -426,7 +422,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.playerInfo[2].fieldId").exists())
                 .andExpect(jsonPath("$.playerInfo[2].name").value("事務所"));
 
-        mockMvc.perform(get("/game/{url}", url).with(user("new@user.com")))
+        mockMvc.perform(get("/game/{url}", url).with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(jsonPath("$.playerInfo").value(hasSize(3)))
                 .andExpect(jsonPath("$.playerInfo[0].fieldId").exists())
                 .andExpect(jsonPath("$.playerInfo[0].name").value("Nude Photo"))
@@ -440,7 +436,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testCannotUpdateIdOrGameType() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("name", "new game").add("gameType", "ASSASSIN").build()))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.url").exists())
@@ -450,7 +446,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 put("/game/{url}", url)
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("id", 1234).build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id));
@@ -458,7 +454,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(
                 put("/game/{url}", url)
                         .content(jsonBuilder().add("gameType", "SCAVENGER").build())
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameType").value("ASSASSIN"));
     }
@@ -474,7 +470,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         for (String time : times) {
             mockMvc.perform(
                     put("/game/{url}/", url)
-                            .with(user("game@owner.com"))
+                            .with(bearer(accessTokenForEmail("game@owner.com")))
                             .content(jsonBuilder().add(time, yesterday.getTimeInMillis()).build()))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$").value(is(notificationList())))
@@ -491,7 +487,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         nextMonth.add(Calendar.DATE, 30);
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("gameStart", nextMonth.getTimeInMillis())
                                 .add("registrationStart", nextMonth.getTimeInMillis())
@@ -500,7 +496,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder().add("gameEnd", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -508,7 +504,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("gameEnd", "startBeforeEnd"))));
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder().add("registrationEnd", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -525,20 +521,20 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         nextMonth.add(Calendar.DATE, 30);
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder().add("gameStart", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isOk());
 
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder().add("registrationEnd", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isOk());
 
         nextMonth.add(Calendar.DATE, 1);
         mockMvc.perform(
                 put("/game/{url}/", url)
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder().add("registrationEnd", nextMonth.getTimeInMillis()).build()))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
@@ -553,14 +549,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
                         .content(jsonBuilder()
                                 .add("name", "game to publish")
                                 .add("gameType", "ASSASSIN").build())
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         String url = JsonPath.compile("$.url").read(response);
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("gameStart", "required"))))
@@ -589,13 +585,13 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").exists());
 
         mockMvc.perform(
                 get("/game/{url}", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").value(notNullValue()));
     }
@@ -610,7 +606,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         gameRepository.save(gameEntity);
 
         mockMvc.perform(post("/game/{url}/publish", url)
-                .with(user("new@user.com")))
+                .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").value(true))
                 .andExpect(jsonPath("$.registrationStart").value(lessThan(new Date().getTime())));
@@ -620,7 +616,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testPublishGameLocksUrl() throws Exception {
         String gameUrl = newRandomGame(GameType.SCAVENGER, "new@user.com");
         String updateResponse = mockMvc.perform(put("/game/{url}", gameUrl)
-                .with(user("new@user.com"))
+                .with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("url", "new-url").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").value("new-url"))
@@ -636,24 +632,24 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game/{url}/publish", newUrl)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.published").exists());
 
         mockMvc.perform(put("/game/{url}", newUrl)
-                .with(user("new@user.com"))
+                .with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("url", "even-newer-url").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.url").value("new-url"));
-        mockMvc.perform(get("/game/{url}", "new-url").with(user("new@user.com"))).andExpect(status().isOk());
-        mockMvc.perform(get("/game/{url}", "even-newer-url").with(user("new@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/game/{url}", "new-url").with(bearer(accessTokenForEmail("new@user.com")))).andExpect(status().isOk());
+        mockMvc.perform(get("/game/{url}", "even-newer-url").with(bearer(accessTokenForEmail("new@user.com")))).andExpect(status().isNotFound());
     }
 
     @Test
     public void testGameUrlCollisionResultsInConflict() throws Exception {
         String game1 = newRandomGame(GameType.SCAVENGER, "new@user.com");
         String game2 = newRandomGame(GameType.SCAVENGER, "new@user.com");
-        mockMvc.perform(put("/game/{url}", game2).with(user("new@user.com"))
+        mockMvc.perform(put("/game/{url}", game2).with(bearer(accessTokenForEmail("new@user.com")))
                 .content(jsonBuilder().add("url", game1).build()))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value(notificationList()))
@@ -681,7 +677,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         performGameUpdates(url, new HashMap<>())
                 .andExpect(jsonPath("$.price").value(500.0));
 
-        // update with null and see that it sets it successfully
+        // update session null and see that it sets it successfully
         performGameUpdates(url, Collections.singletonMap("price", null))
                 .andExpect(jsonPath("$.price").value(0));
     }
@@ -699,14 +695,14 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testCreatePostMissingFields() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/post", "fun_times")
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
 
         mockMvc.perform(
                 post("/game/{url}/post", "fun_times")
                         .content("{}")
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("content", "required"))));
@@ -716,7 +712,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testCreatePost() throws Exception {
         mockMvc.perform(
                 post("/game/{url}/post", "fun_times")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("content", "new message").build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content").value("new message"));
@@ -732,7 +728,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game/{url}/post", "fun_times")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder().add("content", "new message").build()));
 
         mockMvc.perform(get("/game/{url}/post", "fun_times"))
@@ -746,7 +742,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     public void testGameStatusFlags() throws Exception {
         String response = mockMvc.perform(
                 post("/game")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content(jsonBuilder()
                                 .add("name", "name of the game")
                                 .add("gameType", "ASSASSIN")
@@ -767,7 +763,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game/{url}/publish", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(GameStatus.PREREGISTRATION.name()));
 
@@ -792,7 +788,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
     private void expectGameStatusIs(String url, GameStatus gameStatus) throws Exception {
         mockMvc.perform(
                 get("/game/{url}", url)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(jsonPath("$.status").value(gameStatus.name()));
     }
 
@@ -805,7 +801,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         return mockMvc.perform(
                 post("/game")
                         .content(json)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isCreated());
     }
 
@@ -818,7 +814,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         return mockMvc.perform(
                 put("/game/{url}", url)
                         .content(json)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isOk());
     }
 
@@ -830,7 +826,7 @@ public class ApiGameControllerTest extends AbstractApiControllerTest {
         String response = mockMvc.perform(
                 post("/game")
                         .content(jsonBuilder.build())
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
         return JsonPath.compile("$.url").read(response);

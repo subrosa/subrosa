@@ -27,7 +27,7 @@ public class GameAttributePk implements Serializable {
     /**
      * Construct with game id and attribute type.
      *
-     * @param gameId game id
+     * @param gameId        game id
      * @param attributeType attribute type
      */
     public GameAttributePk(Integer gameId, String attributeType) {

@@ -50,7 +50,7 @@ public class Sort {
 
     /**
      * Creates and returns a sort expression that represents the field and order.
-     * <p/>
+     * <p>
      * For example, a field of "createdDate" in descending order would return "-createdDate".
      *
      * @return sort expression

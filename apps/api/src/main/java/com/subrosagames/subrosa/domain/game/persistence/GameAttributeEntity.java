@@ -36,9 +36,9 @@ public class GameAttributeEntity {
     /**
      * Construct with given game and attribute.
      *
-     * @param gameEntity game
+     * @param gameEntity    game
      * @param attributeType attribute type
-     * @param value attribute value
+     * @param value         attribute value
      */
     public GameAttributeEntity(GameEntity gameEntity, String attributeType, String value) {
         this.primaryKey = new GameAttributePk(gameEntity.getId(), attributeType);
