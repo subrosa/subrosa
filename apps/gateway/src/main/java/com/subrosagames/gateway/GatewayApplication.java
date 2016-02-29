@@ -29,6 +29,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import com.subrosagames.gateway.auth.SubrosaPasswordEncoder;
 import com.subrosagames.gateway.auth.SubrosaUserDetailsService;
@@ -89,6 +92,16 @@ public class GatewayApplication {
                     .formLogin().disable()
                     .csrf().disable()
             ;
+        }
+
+        @Bean
+        public WebMvcConfigurer corsConfigurer() {
+            return new WebMvcConfigurerAdapter() {
+                @Override
+                public void addCorsMappings(CorsRegistry registry) {
+                    registry.addMapping("/**");
+                }
+            };
         }
 
         @Override
