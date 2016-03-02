@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain;
 
 import java.lang.reflect.InvocationTargetException;
+
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 
 /**

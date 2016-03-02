@@ -54,69 +54,60 @@ public class MockGoogleGeocoder extends GoogleGeocoder {
      */
     public static enum Component {
         // CHECKSTYLE-OFF: JavadocVariable
-        FULL_ADDRESS
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.setFormattedAddress(value);
-                    }
-                },
-        NUMBER
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("street_number")));
-                    }
-                },
-        ROUTE
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("route")));
-                    }
-                },
-        CITY
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("locality", "political")));
-                    }
-                },
-        STATE
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("administrative_area_level_1", "political")));
-                    }
-                },
-        COUNTRY
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("country", "political")));
-                    }
-                },
-        POSTAL_CODE
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("postal_code")));
-                    }
-                },
-        LATITUDE
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getGeometry().getLocation().setLat(new BigDecimal(value));
-                    }
-                },
-        LONGITUDE
-                {
-                    @Override
-                    public void registerValueWithResult(String value, GeocoderResult result) {
-                        result.getGeometry().getLocation().setLng(new BigDecimal(value));
-                    }
-                };
+        FULL_ADDRESS {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.setFormattedAddress(value);
+            }
+        },
+        NUMBER {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("street_number")));
+            }
+        },
+        ROUTE {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("route")));
+            }
+        },
+        CITY {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("locality", "political")));
+            }
+        },
+        STATE {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("administrative_area_level_1", "political")));
+            }
+        },
+        COUNTRY {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("country", "political")));
+            }
+        },
+        POSTAL_CODE {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getAddressComponents().add(newAddressComponent(value, Lists.newArrayList("postal_code")));
+            }
+        },
+        LATITUDE {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getGeometry().getLocation().setLat(new BigDecimal(value));
+            }
+        },
+        LONGITUDE {
+            @Override
+            public void registerValueWithResult(String value, GeocoderResult result) {
+                result.getGeometry().getLocation().setLng(new BigDecimal(value));
+            }
+        };
         // CHECKSTYLE-ON: JavadocVariable
 
         private static GeocoderAddressComponent newAddressComponent(String value, List<String> types) {

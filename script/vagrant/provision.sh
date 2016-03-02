@@ -42,7 +42,7 @@ else
   msg "...Docker not found"
 fi
 
-if [ "$VERSION" -lt 18 ]; then
+if [ "$VERSION" -lt 19 ]; then
   msg "Installing latest docker..."
   apt-get update
   apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
@@ -57,7 +57,7 @@ fi
 
 msg "Installing docker-compose and docker utilities..."
 mkdir -p /home/vagrant/bin
-wget -nv -O /home/vagrant/bin/docker-compose https://github.com/docker/compose/releases/download/1.4.2/docker-compose-Linux-x86_64
+wget -nv -O /home/vagrant/bin/docker-compose https://github.com/docker/compose/releases/download/1.5.2/docker-compose-Linux-x86_64
 wget -nv -O /home/vagrant/bin/docker-gc https://raw.githubusercontent.com/spotify/docker-gc/master/docker-gc
 wget -nv -O /home/vagrant/bin/docker-volumes https://github.com/cpuguy83/docker-volumes/releases/download/v1.1.2/docker-volumes-linux-amd64
 chmod +x /home/vagrant/bin/docker-{compose,gc,volumes}

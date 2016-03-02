@@ -35,6 +35,7 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCo
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultsSize.hasResultsSize;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationWithCodeMatcher.withCode;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Test {@link ApiAccountImageControllerTest}.
@@ -64,7 +65,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
         ResultActions resultActions = mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 1)
                         .file(getMock1x1Gif())
-                        .with(user("bob@user.com")));
+                        .with(bearer(accessTokenForEmail("bob@user.com"))));
         checkUploadImageAssertions(resultActions);
     }
 
@@ -84,7 +85,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
         ResultActions resultActions = mockMvc.perform(
                 fileUpload("/user/image", 1)
                         .file(getMock1x1Gif())
-                        .with(user("bob@user.com")));
+                        .with(bearer(accessTokenForEmail("bob@user.com"))));
         checkUploadImageAssertions(resultActions);
     }
 
@@ -101,7 +102,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 666)
                         .file(getMock1x1Gif())
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -110,7 +111,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 2)
                         .file(getMock1x1Gif())
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -118,7 +119,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testListImages() throws Exception {
         ResultActions resultActions = mockMvc.perform(
                 get("/account/{accountId}/image", 3)
-                        .with(user("lotsopics@user.com")));
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))));
         checkListImagesAssertions(resultActions);
     }
 
@@ -134,7 +135,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testListImagesForCurrentUser() throws Exception {
         ResultActions resultActions = mockMvc.perform(
                 get("/user/image", 3)
-                        .with(user("lotsopics@user.com")));
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))));
         checkListImagesAssertions(resultActions);
     }
 
@@ -144,7 +145,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
                 get("/account/{accountId}/image", 3)
                         .param("limit", "1")
                         .param("offset", "1")
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(3)))
@@ -156,7 +157,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testListImagesEmpty() throws Exception {
         mockMvc.perform(
                 get("/account/{accountId}/image", 2)
-                        .with(user("notactive@user.com")))
+                        .with(bearer(accessTokenForEmail("notactive@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
@@ -173,7 +174,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testListImagesForWrongAccountForbidden() throws Exception {
         mockMvc.perform(
                 get("/account/{accountId}/image", 2)
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -181,7 +182,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testRetrieveImage() throws Exception {
         mockMvc.perform(
                 get("/account/{accountId}/image/{imageId}", 3, 1)
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("pic1.png"))
                 .andExpect(jsonPath("$.size").value(100))
@@ -199,7 +200,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testRetrieveImageForWrongAccountForbidden() throws Exception {
         mockMvc.perform(
                 get("/account/{accountId}/image/{imageId}", 3, 1)
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isForbidden());
     }
 
@@ -209,7 +210,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
         mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 1)
                         .file(file)
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isCreated());
     }
 
@@ -217,7 +218,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testUploadWithoutFileIsBadRequest() throws Exception {
         mockMvc.perform(
                 fileUpload("/account/{accountId}/image", 1)
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("invalidRequestEntity"))));
@@ -227,12 +228,12 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDeleteImage() throws Exception {
         mockMvc.perform(
                 delete("/account/{accountId}/image/{imageId}", 3, 3)
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(3));
         mockMvc.perform(
                 get("/account/{accountId}/image/{imageId}", 3, 3)
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -240,12 +241,12 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDeleteImageForAuthenticatedUser() throws Exception {
         mockMvc.perform(
                 delete("/user/image/{imageId}", 3)
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(3));
         mockMvc.perform(
                 get("/user/image/{imageId}", 3)
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -253,7 +254,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDeleteImageNotFound() throws Exception {
         mockMvc.perform(
                 delete("/user/image/15")
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -261,7 +262,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDeleteImageInPlayerProfileFails() throws Exception {
         mockMvc.perform(
                 delete("/user/image/1")
-                        .with(user("lotsopics@user.com")))
+                        .with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("resourceInUse"))));
@@ -269,12 +270,12 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testDeleteImageAfterRemovingFromPlayerProfile() throws Exception {
-        mockMvc.perform(put("/user/player/1").with(user("lotsopics@user.com")).content(jsonBuilder().add("imageId", 2).build()))
+        mockMvc.perform(put("/user/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com"))).content(jsonBuilder().add("imageId", 2).build()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.image.id").value(2));
-        mockMvc.perform(delete("/user/image/1").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/user/image/1").with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/user/image/1").with(user("lotsopics@user.com")))
+        mockMvc.perform(get("/user/image/1").with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isNotFound());
     }
 
@@ -283,7 +284,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDownloadImage() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 get("/account/{accountId}/image/{size}.{format}", 1, "1x1", "gif")
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isOk())
                 .andReturn();
         String gifString = CharStreams.toString(new InputStreamReader(getMock1x1Gif().getInputStream(), "UTF-8"));
@@ -303,7 +304,7 @@ public class ApiAccountImageControllerTest extends AbstractApiControllerTest {
     public void testDownloadImageWrongAccountForbidden() throws Exception {
         mockMvc.perform(
                 get("/account/{accountId}/image/{size}.{format}", 2, "1x1", "gif")
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isForbidden());
     }
 

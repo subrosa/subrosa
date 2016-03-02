@@ -19,6 +19,7 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedList.paginatedLi
 import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCount.hasResultCount;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Test {@link ApiGameController}.
@@ -42,13 +43,13 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testListEventsGameNotFound() throws Exception {
         mockMvc.perform(
                 get("/game/does_not_exist/event")
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value(is(notificationList())));
 
         mockMvc.perform(
                 get("/game/does_not_exist/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
@@ -57,7 +58,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testListEventsEmpty() throws Exception {
         mockMvc.perform(
                 get("/game/fun_times/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
@@ -67,7 +68,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testListEventsWithResults() throws Exception {
         mockMvc.perform(
                 get("/game/with_start/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(1)));
@@ -90,7 +91,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testGetEventForbidden() throws Exception {
         mockMvc.perform(
                 get("/game/with_start/event/{id}", 1)
-                        .with(user("new@user.com")))
+                        .with(bearer(accessTokenForEmail("new@user.com"))))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
@@ -99,7 +100,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testGetEventGameNotFound() throws Exception {
         mockMvc.perform(
                 get("/game/does_not_exist/event/{id}", 1)
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
@@ -108,7 +109,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testGetEventNotFound() throws Exception {
         mockMvc.perform(
                 get("/game/with_start/event/{id}", 666)
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value(is(notificationList())));
     }
@@ -117,7 +118,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testGetEvent() throws Exception {
         mockMvc.perform(
                 get("/game/with_start/event/{id}", 1)
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.event").value("gameStart"));
@@ -136,7 +137,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testCreateEventForbidden() throws Exception {
         mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content("{}"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$").value(is(notificationList())));
@@ -146,20 +147,20 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testCreateEventBadRequest() throws Exception {
         mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
 
         mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content("{}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(is(notificationList())));
 
         mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("event", "gameEnd").build()))
                 .andExpect(status().isBadRequest())
@@ -168,7 +169,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("date", "2016-01-01").build()))
                 .andExpect(status().isBadRequest())
@@ -180,7 +181,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testCreateEvent() throws Exception {
         mockMvc.perform(
                 get("/game/fun_times/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
@@ -188,7 +189,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
         long date = timeDaysInFuture(300);
         String response = mockMvc.perform(
                 post("/game/fun_times/event")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("event", "gameEnd")
                                 .add("date", date)
@@ -200,14 +201,14 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
 
         mockMvc.perform(
                 get("/game/fun_times/event")
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(is(paginatedList())))
                 .andExpect(jsonPath("$").value(hasResultCount(1)));
 
         mockMvc.perform(
                 get("/game/fun_times/event/{id}", id)
-                        .with(user("game@owner.com")))
+                        .with(bearer(accessTokenForEmail("game@owner.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.event").value("gameEnd"))
@@ -226,7 +227,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testUpdateEventForbidden() throws Exception {
         mockMvc.perform(
                 put("/game/with_start/event/1")
-                        .with(user("new@user.com"))
+                        .with(bearer(accessTokenForEmail("new@user.com")))
                         .content("{}"))
                 .andExpect(status().isForbidden());
     }
@@ -235,13 +236,13 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
     public void testUpdateEventBadRequest() throws Exception {
         mockMvc.perform(
                 put("/game/with_start/event/1")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(""))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(
                 put("/game/with_start/event/1")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("event", null)
                                 .build()))
@@ -256,7 +257,7 @@ public class ApiGameEventControllerTest extends AbstractApiControllerTest {
         long newDate = timeDaysInFuture(1);
         mockMvc.perform(
                 put("/game/with_start/event/1")
-                        .with(user("game@owner.com"))
+                        .with(bearer(accessTokenForEmail("game@owner.com")))
                         .content(jsonBuilder()
                                 .add("date", newDate)
                                 .build()))

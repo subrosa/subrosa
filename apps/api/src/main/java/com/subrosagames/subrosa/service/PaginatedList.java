@@ -7,6 +7,7 @@ import lombok.Getter;
 
 /**
  * Wrapper for a paginated list of objects as a result of some query.
+ *
  * @param <T> object type
  */
 @AllArgsConstructor

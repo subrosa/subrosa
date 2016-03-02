@@ -15,7 +15,8 @@ public final class PlayerDescriptor {
     private Map<String, Object> attributes;
     private List<EnrollmentField> enrollmentFields;
 
-    private PlayerDescriptor() { }
+    private PlayerDescriptor() {
+    }
 
     /**
      * Construct with the given list of required enrollment fields.

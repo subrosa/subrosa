@@ -27,7 +27,7 @@ public class WriteGamePermission extends AbstractPermission {
     @Override
     public boolean isAllowed(Authentication authentication, Object target) {
         return isAdmin(authentication) || target instanceof Game
-                && ((Game) target).getOwner().getId().equals(((SubrosaUser) authentication.getPrincipal()).getAccount().getId()
+                && ((Game) target).getOwner().getId().equals(((SubrosaUser) authentication.getPrincipal()).getId()
         );
     }
 

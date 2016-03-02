@@ -16,6 +16,7 @@ public class GameEventNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message.
+     *
      * @param s message
      */
     public GameEventNotFoundException(String s) {
@@ -24,7 +25,8 @@ public class GameEventNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with message and cause.
-     * @param s message
+     *
+     * @param s         message
      * @param throwable cause
      */
     public GameEventNotFoundException(String s, Throwable throwable) {
@@ -33,6 +35,7 @@ public class GameEventNotFoundException extends DomainObjectNotFoundException {
 
     /**
      * Construct with cause.
+     *
      * @param throwable cause
      */
     public GameEventNotFoundException(Throwable throwable) {

@@ -19,6 +19,7 @@ import static com.subrosagames.subrosa.test.matchers.IsPaginatedListWithResultCo
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationDetail.withDetail;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.NotificationWithCodeMatcher.withCode;
 import static com.subrosagames.subrosa.test.matchers.NotificationListHas.hasNotification;
+import static com.subrosagames.subrosa.test.util.SecurityRequestPostProcessors.bearer;
 
 /**
  * Test {@link ApiAccountPlayerController}.
@@ -30,12 +31,12 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testListPlayers() throws Exception {
-        checkListPlayerAssertions(mockMvc.perform(get("/account/3/player").with(user("lotsopics@user.com"))));
+        checkListPlayerAssertions(mockMvc.perform(get("/account/3/player").with(bearer(accessTokenForEmail("lotsopics@user.com")))));
     }
 
     @Test
     public void testListPlayersForAuthenticatedUser() throws Exception {
-        checkListPlayerAssertions(mockMvc.perform(get("/user/player").with(user("lotsopics@user.com"))));
+        checkListPlayerAssertions(mockMvc.perform(get("/user/player").with(bearer(accessTokenForEmail("lotsopics@user.com")))));
     }
 
     private void checkListPlayerAssertions(ResultActions resultActions) throws Exception {
@@ -49,7 +50,7 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
     public void testListPlayersEmpty() throws Exception {
         mockMvc.perform(
                 get("/account/1/player")
-                        .with(user("bob@user.com")))
+                        .with(bearer(accessTokenForEmail("bob@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value(paginatedList()))
                 .andExpect(jsonPath("$").value(hasResultCount(0)));
@@ -57,18 +58,18 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testListPlayersWrongAccount() throws Exception {
-        mockMvc.perform(get("/account/3/player").with(user("bob@user.com"))).andExpect(status().isForbidden());
+        mockMvc.perform(get("/account/3/player").with(bearer(accessTokenForEmail("bob@user.com")))).andExpect(status().isForbidden());
     }
 
     @Test
     public void testGetPlayer() throws Exception {
-        checkGetPlayerAssertions(mockMvc.perform(get("/account/3/player/1").with(user("lotsopics@user.com"))),
+        checkGetPlayerAssertions(mockMvc.perform(get("/account/3/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com")))),
                 "Player One!", "pic1.png");
     }
 
     @Test
     public void testGetPlayerForAuthenticatedUser() throws Exception {
-        checkGetPlayerAssertions(mockMvc.perform(get("/user/player/2").with(user("lotsopics@user.com"))),
+        checkGetPlayerAssertions(mockMvc.perform(get("/user/player/2").with(bearer(accessTokenForEmail("lotsopics@user.com")))),
                 "Secret Santa", "pic2.png");
     }
 
@@ -80,31 +81,31 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testGetPlayerWrongAccount() throws Exception {
-        mockMvc.perform(get("/account/3/player/2").with(user("bob@user.com"))).andExpect(status().isForbidden());
+        mockMvc.perform(get("/account/3/player/2").with(bearer(accessTokenForEmail("bob@user.com")))).andExpect(status().isForbidden());
     }
 
     @Test
     public void getPlayer_whenAvatarIsMissing_stillReturns() throws Exception {
-        mockMvc.perform(get("/account/3/player/3").with(user("lotsopics@user.com"))).andExpect(status().isOk());
+        mockMvc.perform(get("/account/3/player/3").with(bearer(accessTokenForEmail("lotsopics@user.com")))).andExpect(status().isOk());
     }
 
     @Test
     public void testGetPlayerNotFound() throws Exception {
-        mockMvc.perform(get("/account/3/player/5").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/account/3/player/5").with(bearer(accessTokenForEmail("lotsopics@user.com")))).andExpect(status().isNotFound());
 
     }
 
     @Test
     public void testCreatePlayer() throws Exception {
         checkNewPlayerProfileAssertions(
-                mockMvc.perform(post("/account/1/player").with(user("bob@user.com")).content(playerProfileJson("my player", 5))),
+                mockMvc.perform(post("/account/1/player").with(bearer(accessTokenForEmail("bob@user.com"))).content(playerProfileJson("my player", 5))),
                 "my player", "img5.jpg");
     }
 
     @Test
     public void testCreatePlayerForAuthenticatedUser() throws Exception {
         checkNewPlayerProfileAssertions(
-                mockMvc.perform(post("/user/player").with(user("bob@user.com")).content(playerProfileJson("I like games!", 5))),
+                mockMvc.perform(post("/user/player").with(bearer(accessTokenForEmail("bob@user.com"))).content(playerProfileJson("I like games!", 5))),
                 "I like games!", "img5.jpg");
     }
 
@@ -118,18 +119,18 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testCreatePlayerWithWrongAccountForbidden() throws Exception {
-        mockMvc.perform(post("/account/1/player").with(user("lotsopics@user.com")).content(playerProfileJson("name", 3))).andExpect(status().isForbidden());
+        mockMvc.perform(post("/account/1/player").with(bearer(accessTokenForEmail("lotsopics@user.com"))).content(playerProfileJson("name", 3))).andExpect(status().isForbidden());
     }
 
     @Test
     public void testCreatePlayerRequiresNameAndImage() throws Exception {
-        mockMvc.perform(post("/account/3/player").with(user("lotsopics@user.com"))
+        mockMvc.perform(post("/account/3/player").with(bearer(accessTokenForEmail("lotsopics@user.com")))
                 .content(playerProfileJson(null, 1)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withDetail("name", "required"))));
 
-        mockMvc.perform(post("/account/3/player").with(user("lotsopics@user.com"))
+        mockMvc.perform(post("/account/3/player").with(bearer(accessTokenForEmail("lotsopics@user.com")))
                 .content(playerProfileJson("name", null)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value(notificationList()))
@@ -145,14 +146,14 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUpdatePlayer() throws Exception {
-        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/account/3/player/2").with(user("lotsopics@user.com"))
+        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/account/3/player/2").with(bearer(accessTokenForEmail("lotsopics@user.com")))
                         .content(playerProfileJson("new name", 3))),
                 "new name", "pic3.png");
     }
 
     @Test
     public void testUpdatePlayerForAuthenticatedUser() throws Exception {
-        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/user/player/2").with(user("lotsopics@user.com")).content(playerProfileJson("updated", 2))),
+        checkUpdatePlayerProfileAssertions(mockMvc.perform(put("/user/player/2").with(bearer(accessTokenForEmail("lotsopics@user.com"))).content(playerProfileJson("updated", 2))),
                 "updated", "pic2.png");
     }
 
@@ -166,16 +167,16 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testUpdatePlayerImageNotFound() throws Exception {
-        mockMvc.perform(put("/account/3/player/2").with(user("lotsopics@user.com")).content(playerProfileJson("player name", 666)))
+        mockMvc.perform(put("/account/3/player/2").with(bearer(accessTokenForEmail("lotsopics@user.com"))).content(playerProfileJson("player name", 666)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     public void testUpdatePlayerWithCreateResponse() throws Exception {
-        String createdPlayer = mockMvc.perform(post("/user/player").with(user("bob@user.com")).content(playerProfileJson("my player", 5)))
+        String createdPlayer = mockMvc.perform(post("/user/player").with(bearer(accessTokenForEmail("bob@user.com"))).content(playerProfileJson("my player", 5)))
                 .andReturn().getResponse().getContentAsString();
         Integer id = JsonPath.compile("$.id").read(createdPlayer);
-        mockMvc.perform(put("/user/player/{id}", id).with(user("bob@user.com")).content(createdPlayer))
+        mockMvc.perform(put("/user/player/{id}", id).with(bearer(accessTokenForEmail("bob@user.com"))).content(createdPlayer))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value("my player"))
@@ -184,30 +185,30 @@ public class ApiAccountPlayerControllerTest extends AbstractApiControllerTest {
 
     @Test
     public void testDeletePlayer() throws Exception {
-        mockMvc.perform(delete("/account/3/player/1").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/account/3/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        mockMvc.perform(get("/account/3/player/1").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/account/3/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com")))).andExpect(status().isNotFound());
     }
 
     @Test
     public void testDeletePlayerForAuthenticatedUser() throws Exception {
-        mockMvc.perform(delete("/account/3/player/1").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/account/3/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1));
 
-        mockMvc.perform(get("/account/3/player/1").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(get("/account/3/player/1").with(bearer(accessTokenForEmail("lotsopics@user.com")))).andExpect(status().isNotFound());
     }
 
     @Test
     public void testDeletePlayerNotFound() throws Exception {
-        mockMvc.perform(delete("/account/3/player/666").with(user("lotsopics@user.com"))).andExpect(status().isNotFound());
+        mockMvc.perform(delete("/account/3/player/666").with(bearer(accessTokenForEmail("lotsopics@user.com")))).andExpect(status().isNotFound());
     }
 
     @Test
     public void testDeletePlayerInGameFails() throws Exception {
-        mockMvc.perform(delete("/account/3/player/2").with(user("lotsopics@user.com")))
+        mockMvc.perform(delete("/account/3/player/2").with(bearer(accessTokenForEmail("lotsopics@user.com"))))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$").value(notificationList()))
                 .andExpect(jsonPath("$.notifications").value(hasNotification(withCode("resourceInUse"))));

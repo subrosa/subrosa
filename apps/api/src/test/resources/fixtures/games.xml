@@ -65,14 +65,16 @@
     <game game_id="102" owner_id="10001" name="Fun Times!" url="fun_times12" game_type="ASSASSIN"/>
 
     <team team_id="100" game_id="1" name="good team"/>
-    <player player_id="10" game_id="1" team_id="100" account_id="10002" player_profile_id="1" kill_code="12345" game_role="PLAYER"/>
+    <player player_id="10" game_id="1" team_id="100" account_id="10002" player_profile_id="1" kill_code="12345"
+            game_role="PLAYER"/>
     <player_profile player_profile_id="1" account_id="10002" index="0" name="peter" image_id="1"/>
     <player_profile player_profile_id="10" account_id="10002" index="1" name="unused profile" image_id="1"/>
     <image image_id="10" account_id="10002" file_asset_id="10" index="0"/>
     <file_asset file_asset_id="10" name="pic1.png" mime_type="image/png" size="100"/>
 
     <team team_id="101" game_id="1" name="bad team"/>
-    <player player_id="11" game_id="1" team_id="101" account_id="10003" player_profile_id="2" kill_code="12345" game_role="PLAYER"/>
+    <player player_id="11" game_id="1" team_id="101" account_id="10003" player_profile_id="2" kill_code="12345"
+            game_role="PLAYER"/>
     <player_profile player_profile_id="2" account_id="10003" index="0" name="paul" image_id="2"/>
     <image image_id="11" account_id="10003" file_asset_id="11" index="1"/>
     <file_asset file_asset_id="11" name="pic2.png" mime_type="image/png" size="200"/>

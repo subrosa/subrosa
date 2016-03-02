@@ -9,6 +9,7 @@ public interface PermissionTarget {
 
     /**
      * Object id.
+     *
      * @return id
      */
     Serializable getId();

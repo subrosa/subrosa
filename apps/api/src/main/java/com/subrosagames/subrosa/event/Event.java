@@ -7,6 +7,7 @@ public interface Event {
 
     /**
      * Type of event.
+     *
      * @return event type
      */
     String getEvent();

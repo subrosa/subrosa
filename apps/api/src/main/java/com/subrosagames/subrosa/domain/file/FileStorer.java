@@ -11,7 +11,7 @@ public interface FileStorer {
      * Store the given input stream as a file with the given identifier.
      *
      * @param inputStream file data
-     * @param identifier file identifier
+     * @param identifier  file identifier
      * @return size of file in bytes
      * @throws IOException if storage fails
      */

@@ -29,7 +29,7 @@ public class EnrollmentFieldPk implements Serializable {
     /**
      * Construct with game id and field id.
      *
-     * @param gameId game id
+     * @param gameId  game id
      * @param fieldId field id
      */
     public EnrollmentFieldPk(Integer gameId, String fieldId) {

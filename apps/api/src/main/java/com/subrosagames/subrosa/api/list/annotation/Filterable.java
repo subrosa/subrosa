@@ -26,21 +26,21 @@ public @interface Filterable {
 
     /**
      * Specifies how to refer to the element when building the query filter.
-     * <p/>
+     * <p>
      * Defaults to using the name of the annotated field.
      */
     String value() default VALUE_UNSET;
 
     /**
      * Specify a class to translate the value against which to filter into a form suitable for querying.
-     * <p/>
+     * <p>
      * Defaults to a NO-OP translation.
      */
     Class<? extends FilterValueTranslator> translator() default FilterValueTranslator.IdentityValueTranslator.class;
 
     /**
      * Specifies what comparison operators are supported for filtering on this field.
-     * <p/>
+     * <p>
      * Defaults to equal and not equal.
      *
      * @see com.subrosagames.subrosa.api.list.Operator Operator
@@ -49,7 +49,7 @@ public @interface Filterable {
 
     /**
      * Specifies that the operand is in fact a field on an entity rather than the field itself.
-     * <p/>
+     * <p>
      * Defaults to {@code null}, meaning to use the field itself.
      */
     String childOperand() default VALUE_UNSET;

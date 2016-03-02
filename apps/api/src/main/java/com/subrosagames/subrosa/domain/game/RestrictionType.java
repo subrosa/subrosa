@@ -14,30 +14,29 @@ public enum RestrictionType {
     /**
      * Restricts a game to players of a minimum age.
      */
-    AGE
-            {
-                @Override
-                public boolean satisfied(Account account, String value) {
-                    Date dateOfBirth = account.getDateOfBirth();
-                    if (dateOfBirth == null) {
-                        return false;
-                    }
-                    Integer age = Integer.valueOf(value);
-                    long now = new Date().getTime();
-                    Period period = new Period(dateOfBirth.getTime(), now, PeriodType.years());
-                    return period.getYears() >= age;
-                }
+    AGE {
+        @Override
+        public boolean satisfied(Account account, String value) {
+            Date dateOfBirth = account.getDateOfBirth();
+            if (dateOfBirth == null) {
+                return false;
+            }
+            Integer age = Integer.valueOf(value);
+            long now = new Date().getTime();
+            Period period = new Period(dateOfBirth.getTime(), now, PeriodType.years());
+            return period.getYears() >= age;
+        }
 
-                @Override
-                public String message(String value) {
-                    return "atLeast[" + value + "]";
-                }
+        @Override
+        public String message(String value) {
+            return "atLeast[" + value + "]";
+        }
 
-                @Override
-                public String field() {
-                    return "age";
-                }
-            };
+        @Override
+        public String field() {
+            return "age";
+        }
+    };
 
     /**
      * Returns whether the given account satisfies the restriction.

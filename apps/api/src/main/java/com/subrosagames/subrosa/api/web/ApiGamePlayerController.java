@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,7 @@ import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.player.Player;
 import com.subrosagames.subrosa.domain.player.PlayerNotFoundException;
 import com.subrosagames.subrosa.domain.player.PlayerValidationException;
-import com.subrosagames.subrosa.security.SecurityHelper;
+import com.subrosagames.subrosa.security.SubrosaUser;
 import com.subrosagames.subrosa.service.GameService;
 import com.subrosagames.subrosa.service.PaginatedList;
 import com.subrosagames.subrosa.util.ObjectUtils;
@@ -40,7 +41,7 @@ import com.subrosagames.subrosa.util.ObjectUtils;
  */
 @Controller
 @RequestMapping("/game/{gameUrl}/player")
-public class ApiGamePlayerController extends BaseApiController {
+public class ApiGamePlayerController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiGamePlayerController.class);
 
@@ -63,16 +64,17 @@ public class ApiGamePlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "", "/" }, method = RequestMethod.GET)
     @ResponseBody
-    public PaginatedList<Player> listPlayers(@PathVariable("gameUrl") final String gameUrl,
+    public PaginatedList<Player> listPlayers(@AuthenticationPrincipal SubrosaUser user,
+                                             @PathVariable("gameUrl") final String gameUrl,
                                              @RequestParam(value = "limitParam", required = false) Integer limitParam,
                                              @RequestParam(value = "offset", required = false) Integer offsetParam)
             throws GameNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to list game players.");
         }
         final Game game = gameFactory.getGame(gameUrl);
-        if (!SecurityHelper.getAuthenticatedUser().getId().equals(game.getOwner().getId())) {
+        if (!game.getOwner().getId().equals(user.getId())) {
             throw new NotAuthorizedException("Incorrect permissions.");
         }
 
@@ -102,11 +104,12 @@ public class ApiGamePlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "/{playerId}", "/{playerId}/" }, method = RequestMethod.GET)
     @ResponseBody
-    public Player getPlayer(@PathVariable("gameUrl") String gameUrl,
+    public Player getPlayer(@AuthenticationPrincipal SubrosaUser user,
+                            @PathVariable("gameUrl") String gameUrl,
                             @PathVariable("playerId") Integer playerId)
             throws GameNotFoundException, PlayerNotFoundException, NotAuthenticatedException, NotAuthorizedException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to get game player.");
         }
         return gameService.getGamePlayer(gameUrl, playerId);
@@ -132,16 +135,17 @@ public class ApiGamePlayerController extends BaseApiController {
     @RequestMapping(value = { "", "/" }, method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public Player joinGame(@PathVariable("gameUrl") String gameUrl,
+    public Player joinGame(@AuthenticationPrincipal SubrosaUser user,
+                           @PathVariable("gameUrl") String gameUrl,
                            @RequestBody(required = false) JoinGameRequest joinGameRequestParam)
             throws NotAuthenticatedException, NotAuthorizedException, GameNotFoundException, PlayerValidationException, AccountNotFoundException,
             AddressNotFoundException, ImageNotFoundException, PlayerProfileNotFoundException
     {
-        if (!SecurityHelper.isAuthenticated()) {
+        if (user == null) {
             throw new NotAuthenticatedException("Unauthenticated attempt to join game.");
         }
         JoinGameRequest joinGameRequest = ObjectUtils.defaultIfNull(joinGameRequestParam, new JoinGameRequest());
-        return gameService.joinGame(gameUrl, getAuthenticatedUser().getId(), joinGameRequest);
+        return gameService.joinGame(gameUrl, user.getId(), joinGameRequest);
     }
 
     /**
@@ -162,13 +166,14 @@ public class ApiGamePlayerController extends BaseApiController {
      */
     @RequestMapping(value = { "{playerId}", "{playerId}/" }, method = RequestMethod.PUT)
     @ResponseBody
-    public Player updatePlayer(@PathVariable("gameUrl") String gameUrl,
+    public Player updatePlayer(@AuthenticationPrincipal SubrosaUser user,
+                               @PathVariable("gameUrl") String gameUrl,
                                @PathVariable("playerId") Integer playerId,
                                @RequestBody JoinGameRequest joinGameRequest)
             throws NotAuthenticatedException, AccountNotFoundException, ImageNotFoundException, PlayerNotFoundException, PlayerValidationException,
             AddressNotFoundException, GameNotFoundException, PlayerProfileNotFoundException
     {
-        LOG.debug("{}: updating game player {} for game {}", getAuthenticatedUser().getId(), playerId, gameUrl);
+        LOG.debug("{}: updating game player {} for game {}", user.getId(), playerId, gameUrl);
         return gameService.updateGamePlayer(gameUrl, playerId, joinGameRequest);
     }
 

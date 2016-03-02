@@ -51,7 +51,7 @@ public class Filter {
 
     /**
      * Construct with the given key and value.
-     * <p/>
+     * <p>
      * This constructs a filter that has no transformations on either the field or value used in the query.
      *
      * @param filterKey filter key

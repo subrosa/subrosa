@@ -129,7 +129,7 @@ public class DateRangeValidatorTest {
          * Construct with non-emptyable start and end dates.
          *
          * @param start start
-         * @param end end
+         * @param end   end
          */
         public TestMe(Date start, Date end) {
             this(start, end, null, null);
@@ -138,10 +138,10 @@ public class DateRangeValidatorTest {
         /**
          * Construct with non-emptyable and emtpyable ranges.
          *
-         * @param start start
-         * @param end end
+         * @param start           start
+         * @param end             end
          * @param emptyRangeStart emtpyable start
-         * @param emptyRangeEnd emptyable end
+         * @param emptyRangeEnd   emptyable end
          */
         public TestMe(Date start, Date end, Date emptyRangeStart, Date emptyRangeEnd) {
             this.start = start == null ? null : new Date(start.getTime());

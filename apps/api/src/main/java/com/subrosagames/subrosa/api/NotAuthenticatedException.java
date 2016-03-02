@@ -16,6 +16,7 @@ public class NotAuthenticatedException extends Exception {
 
     /**
      * Construct with message.
+     *
      * @param message message
      */
     public NotAuthenticatedException(String message) {
@@ -24,8 +25,9 @@ public class NotAuthenticatedException extends Exception {
 
     /**
      * Construct with message and cause.
+     *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public NotAuthenticatedException(String message, Throwable cause) {
         super(message, cause);
@@ -33,6 +35,7 @@ public class NotAuthenticatedException extends Exception {
 
     /**
      * Construct with cause.
+     *
      * @param cause cause
      */
     public NotAuthenticatedException(Throwable cause) {

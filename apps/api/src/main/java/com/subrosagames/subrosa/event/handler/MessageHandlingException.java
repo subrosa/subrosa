@@ -24,7 +24,7 @@ public class MessageHandlingException extends Exception {
      * Construct with message and cause.
      *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public MessageHandlingException(String message, Throwable cause) {
         super(message, cause);

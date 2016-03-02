@@ -74,7 +74,8 @@ class ImageController {
     @RequestMapping(value = "/{name}.{ext}")
     public ResponseEntity<Resource> get(
             @PathVariable("name") String name,
-            @PathVariable("ext") String ext) {
+            @PathVariable("ext") String ext)
+    {
         return get(name, null, ext);
     }
 
@@ -144,6 +145,7 @@ enum ImageType {
     private final String[] extensions;
 
     private static final Map<String, ImageType> EXTENSION_MAP = new HashMap<>(ImageType.values().length);
+
     static {
         for (ImageType imageType : ImageType.values()) {
             for (String extension : imageType.extensions) {

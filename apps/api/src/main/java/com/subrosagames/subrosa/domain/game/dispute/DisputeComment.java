@@ -1,6 +1,7 @@
 package com.subrosagames.subrosa.domain.game.dispute;
 
 import java.util.Date;
+
 import com.subrosagames.subrosa.domain.player.Player;
 
 /**

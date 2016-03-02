@@ -4,15 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 
 import com.subrosagames.subrosa.domain.DomainObjectRepository;
 import com.subrosagames.subrosa.domain.account.Account;

@@ -27,8 +27,8 @@ import com.subrosagames.subrosa.api.NotAuthorizedException;
 import com.subrosagames.subrosa.api.notification.GeneralCode;
 import com.subrosagames.subrosa.api.notification.Notification;
 import com.subrosagames.subrosa.api.notification.NotificationConstraint;
+import com.subrosagames.subrosa.api.notification.NotificationList;
 import com.subrosagames.subrosa.api.notification.Severity;
-import com.subrosagames.subrosa.api.response.NotificationList;
 import com.subrosagames.subrosa.domain.DomainObjectNotFoundException;
 import com.subrosagames.subrosa.domain.DomainObjectValidationException;
 import com.subrosagames.subrosa.domain.ResourceInUseException;
@@ -36,7 +36,6 @@ import com.subrosagames.subrosa.domain.account.EmailConflictException;
 import com.subrosagames.subrosa.domain.account.ImageInUseException;
 import com.subrosagames.subrosa.domain.account.PlayerProfileInUseException;
 import com.subrosagames.subrosa.domain.game.UrlConflictException;
-import com.subrosagames.subrosa.domain.token.TokenInvalidException;
 
 /**
  * Implements global exception handling.
@@ -256,27 +255,6 @@ public class GlobalExceptionHandlers {
             details.put(Notification.DetailKey.FIELD, "url");
         }
         details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.UNIQUE.getText());
-        notification.setDetails(details);
-        return new NotificationList(notification);
-    }
-
-    /**
-     * Handle {@link TokenInvalidException}.
-     *
-     * @param e exception
-     * @return notification list
-     */
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ResponseBody
-    public NotificationList handleTokenInvalidException(TokenInvalidException e) {
-        LOG.debug("Global exception handler: {}", e.getMessage());
-        Notification notification = new Notification(
-                GeneralCode.BAD_REQUEST, Severity.ERROR,
-                "Token is not valid");
-        EnumMap<Notification.DetailKey, String> details = Maps.newEnumMap(Notification.DetailKey.class);
-        details.put(Notification.DetailKey.FIELD, "token");
-        details.put(Notification.DetailKey.CONSTRAINT, NotificationConstraint.INVALID.getText());
         notification.setDetails(details);
         return new NotificationList(notification);
     }

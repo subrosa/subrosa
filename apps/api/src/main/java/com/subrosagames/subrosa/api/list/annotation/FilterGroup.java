@@ -6,16 +6,16 @@ import com.subrosagames.subrosa.api.list.Operator;
 
 /**
  * Annotation that defines a grouping of fields that can be queried against together.
- * <p/>
+ * <p>
  * This allows for an OR clause across filters to support things like searching for a term
  * that may appear in any of a number of fields.
- * <p/>
+ * <p>
  * This will only occur within a {@link FilterGroups} complex annotation.
  *
  * @see FilterGroups
  * @see com.subrosagames.subrosa.api.list.Operator Operator
  */
-@Target({ }) // SUPPRESS CHECKSTYLE AnnotationUseStyle evidently checkstyle doesn't grok complex annotation type declarations
+@Target({}) // SUPPRESS CHECKSTYLE AnnotationUseStyle evidently checkstyle doesn't grok complex annotation type declarations
 public @interface FilterGroup {
 
     /**

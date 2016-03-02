@@ -25,7 +25,7 @@ public class PlayerProfileNotFoundException extends DomainObjectNotFoundExceptio
     /**
      * Construct with message and cause.
      *
-     * @param s message
+     * @param s         message
      * @param throwable cause
      */
     public PlayerProfileNotFoundException(String s, Throwable throwable) {

@@ -3,7 +3,6 @@ package com.subrosagames.subrosa.domain.account;
 import java.util.Optional;
 
 import com.subrosagames.subrosa.domain.DomainObjectRepository;
-import com.subrosagames.subrosa.domain.account.Account;
 
 /**
  * Provides basic CRUD functionality for accounts.

@@ -2,10 +2,13 @@ package com.subrosagames.subrosa.domain.account;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -40,6 +43,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -51,12 +56,7 @@ import com.subrosagames.subrosa.domain.PermissionTarget;
 import com.subrosagames.subrosa.domain.image.Image;
 import com.subrosagames.subrosa.domain.image.ImageNotFoundException;
 import com.subrosagames.subrosa.domain.image.repository.ImageRepository;
-import com.subrosagames.subrosa.domain.token.Token;
-import com.subrosagames.subrosa.domain.token.TokenFactory;
-import com.subrosagames.subrosa.domain.token.TokenInvalidException;
-import com.subrosagames.subrosa.domain.token.TokenType;
 import com.subrosagames.subrosa.infrastructure.persistence.hibernate.BaseEntity;
-import com.subrosagames.subrosa.security.PasswordUtility;
 import com.subrosagames.subrosa.util.bean.OptionalAwareSimplePropertyCopier;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -78,7 +78,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class Account extends BaseEntity implements PermissionTarget {
+public class Account extends BaseEntity implements PermissionTarget, com.subrosagames.subrosa.security.Account {
 
     public static final String ADDRESSES_GRAPH = "addresses";
     public static final String PLAYERS_GRAPH = "playerProfiles";
@@ -96,15 +96,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     @JsonIgnore
     @Transient
     @Setter
-    private TokenFactory tokenFactory;
-    @JsonIgnore
-    @Transient
-    @Setter
     private ImageRepository imageRepository;
-    @JsonIgnore
-    @Transient
-    @Setter
-    private PasswordUtility passwordUtility;
 
     @Id
     @SequenceGenerator(name = "accountSeq", sequenceName = "account_account_id_seq")
@@ -140,7 +132,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     @Column(name = "cell_phone")
     @Getter
     @Setter
-    private String cellPhone;
+    private String phone;
 
     @Column(name = "dob")
     @Temporal(TemporalType.DATE)
@@ -153,7 +145,7 @@ public class Account extends BaseEntity implements PermissionTarget {
     @Enumerated(EnumType.STRING)
     @Getter
     @Setter
-    private Set<AccountRole> roles;
+    private Set<AccountRole> roles = EnumSet.noneOf(AccountRole.class);
 
     @JsonIgnore
     @Column(length = 256)
@@ -296,21 +288,6 @@ public class Account extends BaseEntity implements PermissionTarget {
         return address;
     }
 
-    /**
-     * Create an account with the specified password.
-     *
-     * @param userPassword password
-     * @return created account
-     * @throws AccountValidationException if account is invalid for creation
-     */
-    public Account create(String userPassword) throws AccountValidationException {
-        setPassword(passwordUtility.encryptPassword(userPassword));
-        assertValid();
-        save();
-        accountFactory.injectDependencies(this);
-        return this;
-    }
-
     private void save() throws EmailConflictException {
         try {
             accountRepository.save(this);
@@ -357,22 +334,6 @@ public class Account extends BaseEntity implements PermissionTarget {
         assertValid();
         save();
         return this;
-    }
-
-    /**
-     * Activates account using the given token.
-     *
-     * @param token activation token
-     * @throws TokenInvalidException      if token is not valid for activation
-     * @throws AccountValidationException if account is not valid for activation
-     */
-    public void activate(String token) throws TokenInvalidException, AccountValidationException {
-        Token retrieved = tokenFactory.findToken(token, TokenType.EMAIL_VALIDATION);
-        if (retrieved == null || !getId().equals(retrieved.getOwner())) {
-            throw new TokenInvalidException("Token does not exist");
-        }
-        setActivated(true);
-        performUpdate();
     }
 
     /**
@@ -520,6 +481,16 @@ public class Account extends BaseEntity implements PermissionTarget {
         if (!violations.isEmpty()) {
             throw new AccountValidationException(violations);
         }
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> grantedAuthorities() {
+        return EnumSet.of(AccountRole.USER, roles.toArray(new AccountRole[roles.size()]))
+                .stream()
+                .map(AccountRole::name)
+                .map(role -> "ROLE_" + role)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toSet());
     }
 
 }

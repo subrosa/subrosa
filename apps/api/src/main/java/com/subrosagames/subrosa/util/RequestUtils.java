@@ -20,10 +20,10 @@ public final class RequestUtils {
 
     /**
      * Creates and populates the criteria for a query based on the request parameters.
-     * <p/>
+     * <p>
      * Any of the valid filter keys supported by the provided type that are encountered in the request
      * parameters will be added to the criteria object.
-     * <p/>
+     * <p>
      * If any of limit, offset, or sort are supplied in the request, they too will be set on the
      * criteria object.
      *

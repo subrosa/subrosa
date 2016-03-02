@@ -11,6 +11,7 @@ public class TargetList {
 
     /**
      * Construct with targets.
+     *
      * @param targets targets
      */
     public TargetList(List<TargetDto> targets) {

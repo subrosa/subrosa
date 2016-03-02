@@ -10,6 +10,7 @@ public interface MessageQueueFactory {
 
     /**
      * Get a queue for a given event identifier.
+     *
      * @param eventClass event identifier
      * @return queue id
      */
@@ -17,6 +18,7 @@ public interface MessageQueueFactory {
 
     /**
      * Get a message for a given event identifier.
+     *
      * @param eventClass event identifier
      * @return message
      */

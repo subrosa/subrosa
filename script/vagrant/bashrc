@@ -12,3 +12,7 @@ rebuild() {
         compose rm --force $1 && \
         cu $1
 }
+
+clean-logs() {
+    sudo rm $(docker inspect $1 | grep -G '"LogPath": "*"' | sed -e 's/.*"LogPath": "//g' | sed -e 's/",//g');
+}

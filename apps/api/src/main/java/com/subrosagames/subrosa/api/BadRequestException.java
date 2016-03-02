@@ -14,6 +14,7 @@ public class BadRequestException extends Exception {
 
     /**
      * Construct with message.
+     *
      * @param message message
      */
     public BadRequestException(String message) {
@@ -22,8 +23,9 @@ public class BadRequestException extends Exception {
 
     /**
      * Construct with message and cause.
+     *
      * @param message message
-     * @param cause cause
+     * @param cause   cause
      */
     public BadRequestException(String message, Throwable cause) {
         super(message, cause);
@@ -31,6 +33,7 @@ public class BadRequestException extends Exception {
 
     /**
      * Construct with cause.
+     *
      * @param cause cause
      */
     public BadRequestException(Throwable cause) {

@@ -6,18 +6,14 @@ import javax.transaction.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.subrosagames.subrosa.api.dto.AddressDescriptor;
 import com.subrosagames.subrosa.api.dto.PlayerProfileDescriptor;
-import com.subrosagames.subrosa.bootstrap.AmqpConfiguration;
 import com.subrosagames.subrosa.domain.account.Account;
 import com.subrosagames.subrosa.domain.account.AccountFactory;
 import com.subrosagames.subrosa.domain.account.AccountNotFoundException;
@@ -44,14 +40,6 @@ public class AccountService {
     @Setter
     private AccountFactory accountFactory;
 
-    @Autowired
-    @Setter
-    private RabbitTemplate rabbitTemplate;
-
-    @Autowired
-    @Setter
-    private ObjectMapper objectMapper;
-
     /**
      * Get specified account.
      *
@@ -73,7 +61,7 @@ public class AccountService {
      * @param expansions field expansions
      * @return list of accounts
      */
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Page<Account> listAccounts(int limit, int offset, String... expansions) {
         return accountFactory.getAccounts(limit, offset, expansions);
     }
@@ -217,7 +205,6 @@ public class AccountService {
      * @throws AccountNotFoundException   if account is not found
      * @throws AddressValidationException if address is invalid
      */
-    @PreAuthorize("hasPermission(#accountId, 'Account', 'WRITE_ACCOUNT')")
     public Address createAddress(int accountId, AddressDescriptor addressDescriptor)
             throws AccountNotFoundException, AddressValidationException
     {
@@ -288,12 +275,12 @@ public class AccountService {
             LOG.error("Attempted to queue user address message with no address id! - account {}: {}", address.getAccount().getId(), address.getFullAddress());
             return;
         }
-        try {
-            rabbitTemplate.convertAndSend(AmqpConfiguration.QueueName.USER_ADDRESS,
-                    objectMapper.writeValueAsString(new UserAddressNotification(address.getId())));
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException("Failed to convert address into JSON. Should never happen.", e);
-        }
+//        try {
+//            rabbitTemplate.convertAndSend(AxonConfiguration.QueueName.USER_ADDRESS,
+//                    objectMapper.writeValueAsString(new UserAddressNotification(address.getId())));
+//        } catch (JsonProcessingException e) {
+//            throw new IllegalStateException("Failed to convert address into JSON. Should never happen.", e);
+//        }
     }
 
 }
