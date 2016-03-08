@@ -3,6 +3,7 @@ package com.subrosagames.subrosa.bootstrap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -24,6 +27,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -79,8 +83,8 @@ public class SubrosaConfiguration {
     @Profile("!unit-test")
     protected static class ResourceServer extends ResourceServerConfigurerAdapter {
 
-        @Autowired
-        private DataSource dataSource;
+        @Resource
+        private RedisConnectionFactory redisConnectionFactory;
 
         @Override
         public void configure(HttpSecurity http) throws Exception {
@@ -92,7 +96,7 @@ public class SubrosaConfiguration {
         @Override
         public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
             resources
-                    .tokenStore(new JdbcTokenStore(dataSource));
+                    .tokenStore(new RedisTokenStore(redisConnectionFactory));
         }
 
     }

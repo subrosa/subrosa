@@ -1,7 +1,6 @@
 package com.subrosagames.gateway;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +10,14 @@ import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.servlet.configuration.EnableWebMvcSecurity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -24,7 +25,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -71,7 +73,12 @@ public class GatewayApplication {
     }
 
     @Configuration
-    @EnableWebMvcSecurity
+    @EnableRedisHttpSession
+    public class RedisHttpSessionConfig {
+    }
+
+    @Configuration
+    @EnableWebSecurity
     public static class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
         @Resource
@@ -133,12 +140,12 @@ public class GatewayApplication {
         private AuthenticationManager authenticationManager;
 
         @Resource
-        private DataSource datastore;
+        private TokenStore tokenStore;
 
         @Override
         public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
             endpoints
-                    .tokenStore(tokenStore())
+                    .tokenStore(tokenStore)
                     .authenticationManager(authenticationManager);
         }
 
@@ -160,8 +167,8 @@ public class GatewayApplication {
         }
 
         @Bean
-        public TokenStore tokenStore() {
-            return new JdbcTokenStore(datastore);
+        public TokenStore tokenStore(RedisConnectionFactory connectionFactory) {
+            return new RedisTokenStore(connectionFactory);
         }
     }
 

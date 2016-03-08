@@ -25,8 +25,12 @@ dependencies {
     compile project(':security')
     testCompile project(':test')
 
+    // TODO get rid of this
+    compile "ch.qos.logback:logback-core:1.1.5"
+    compile "ch.qos.logback:logback-classic:1.1.5"
+
     compile "org.springframework.boot:spring-boot-starter-web"
-    compile "org.springframework.boot:spring-boot-starter-actuator"
+    compile "org.springframework.boot:spring-boot-actuator:1.3.2.RELEASE"
 
     // gateway proxy
     compile 'org.springframework.cloud:spring-cloud-starter-zuul:1.1.0.M5'
@@ -56,7 +60,7 @@ dependencies {
     // util
     compile "org.projectlombok:lombok:1.16.2"
 
-    testCompile(group: 'junit', name: 'junit', version: '4.11') {
+    testCompile(group: 'junit', name: 'junit', version: junitVersion) {
         exclude(module: 'hamcrest-core')
     }
     testCompile(group: 'org.mockito', name: 'mockito-core', version: '1.9.0') {
@@ -66,6 +70,7 @@ dependencies {
     testCompile "info.solidsoft.mockito:mockito-java8:0.3.0"
     testCompile "org.assertj:assertj-core:3.1.0"
     testCompile 'org.springframework:spring-test'
+    testCompile 'org.springframework.boot:spring-boot-test'
     testCompile "com.jayway.jsonpath:json-path:2.1.0"
     testCompile "joda-time:joda-time:2.9"
     testRuntime "org.hsqldb:hsqldb:2.3.2"
