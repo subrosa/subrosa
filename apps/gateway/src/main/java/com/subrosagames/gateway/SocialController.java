@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.security.auth.login.AccountNotFoundException;
+import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +63,7 @@ public class SocialController {
      * @return authentication response
      */
     @RequestMapping(value = { "/session/{provider}", "/session/{provider}/" }, method = RequestMethod.POST)
+    @Transactional
     public OAuth2AccessToken createSession(@PathVariable("provider") String provider,
                                            @RequestBody SessionRequest sessionRequest,
                                            Principal principal) throws AccountNotFoundException
