@@ -20,6 +20,7 @@ subprojects {
         springBootVersion = "1.3.2.RELEASE"
         springDataVersion = "Gosling-RELEASE"
 
+        junitVersion = '4.12'
         jacksonVersion = '2.6.1'
         axonVersion = '2.4.3'
 

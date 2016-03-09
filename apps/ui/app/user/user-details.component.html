@@ -1,0 +1,49 @@
+<section layout="row">
+  <div *ngIf="client" flex>
+    <md-toolbar layout-padding layout="row">
+      <h2>{{ client.clientId }}</h2>
+      <span flex></span>
+      <button md-button aria-label="Change" (click)="logoutClient()">Change Client</button>
+    </md-toolbar>
+  </div>
+
+  <div *ngIf="!client" flex>
+    <form [ngFormModel]="clientForm" (submit)="onClientSubmit($event)">
+      <md-input-container class="md-block">
+        <label>ID</label>
+        <input md-input ngControl="clientId" type="text">
+      </md-input-container>
+      <md-input-container class="md-block">
+        <label>Secret</label>
+        <input md-input ngControl="secret" type="text">
+      </md-input-container>
+      <button md-raised-button class="md-primary" aria-label="Submit">Use Client</button>
+    </form>
+  </div>
+</section>
+
+<section layout="row">
+  <div *ngIf="user" flex>
+    <md-toolbar layout-padding layout="row">
+      <h2>{{ user.username }} (id {{ user.id }}).</h2>
+      <span flex></span>
+      <button md-button aria-label="Logout" (click)="logout()">Change User</button>
+    </md-toolbar>
+  </div>
+
+  <div *ngIf="!user" flex>
+    <md-content layout-padding>
+      <form [ngFormModel]="loginForm" (submit)="onLoginSubmit($event)">
+        <md-input-container class="md-block">
+          <label>Email</label>
+          <input md-input ngControl="email" type="email">
+        </md-input-container>
+        <md-input-container class="md-block">
+          <label>Password</label>
+          <input md-input ngControl="password" type="password">
+        </md-input-container>
+        <button md-raised-button class="md-primary" aria-label="Login">Login</button>
+      </form>
+    </md-content>
+  </div>
+</section>

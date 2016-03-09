@@ -3,11 +3,14 @@ import {Component} from 'angular2/core';
 @Component({
     selector: 'sr-footer',
     template: `
+    <!--
 <footer class="footer">
-  <div class="container-fluid">
-    <span class="text-muted">Place sticky footer content here.</span>
+  <div layout="column">
+    <span flex></span>
+    <span class="md-caption">Your mom is &copy; 2016</span>
   </div>
 </footer>
+-->
     `,
     styles: [`
 .footer {

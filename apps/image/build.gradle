@@ -21,7 +21,11 @@ dependencyManagement {
 }
 
 dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'junit', name: 'junit', version: junitVersion
+
+    // TODO get rid of this
+    compile "ch.qos.logback:logback-core:1.1.5"
+    compile "ch.qos.logback:logback-classic:1.1.5"
 
     compile "org.springframework.boot:spring-boot-starter-web"
     // spring retry for startup
