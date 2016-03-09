@@ -1,0 +1,15 @@
+<md-content flex layout-padding>
+  <div *ngIf="!games" layout="row" layout-align="space-around">
+    <md-progress-circular mode="indeterminate" [diameter]="100">Loading...</md-progress-circular>
+  </div>
+  <md-list *ngIf="games" layout="column" layout-align="space-around">
+    <md-list-item class="md-3-line" *ngFor="#game of games">
+      <img *ngIf="game.image" [src]="game.image.link" class="md-avatar" alt="{{ game.name }}" />
+      <div class="md-list-item-text" layout="column" [class.md-offset]="!game.image">
+        <h3>{{ game.name }}</h3>
+        <h4>{{ game.url }} / {{ game.id }}</h4>
+        <p>{{ game.description }}</p>
+      </div>
+    </md-list-item>
+  </md-list>
+</md-content>

@@ -1,0 +1,21 @@
+<md-sidenav-container layout="row" flex>
+  <md-sidenav [name]="name" [style]="'left'">
+    <md-toolbar class="md-theme-indigo">
+      <div class="md-toolbar-tools">
+        <span flex></span>
+        <button md-button class="md-icon-button" aria-label="Close Side Panel" (click)="close()">
+          <i md-icon>close</i>
+        </button>
+      </div>
+    </md-toolbar>
+    <md-content flex role="navigation" layout-padding>
+      <md-list>
+        <md-subheader>API Resources</md-subheader>
+        <md-list-item md-ink aria-label="List Games" (click)="navigate(['Game'])">
+          <p>game</p>
+        </md-list-item>
+        <md-divider></md-divider>
+      </md-list>
+    </md-content>
+  </md-sidenav>
+</md-sidenav-container>

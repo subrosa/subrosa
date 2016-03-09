@@ -7,6 +7,7 @@ import {DashboardComponent} from "./dashboard.component";
 import {HeaderComponent} from "./header.component";
 import {SidenavComponent} from "./sidenav.component";
 import {FooterComponent} from "./footer.component";
+import {GameComponent} from "./game/game.component";
 
 @Component({
     selector: 'subrosa-app',
@@ -42,6 +43,11 @@ import {FooterComponent} from "./footer.component";
         name: 'Whoami',
         component: UserDetailsComponent
     },
+    {
+        path: '/game/...',
+        name: 'Game',
+        component: GameComponent
+    }
 ])
 export class AppComponent {
 }

@@ -13,7 +13,6 @@ import {Validators} from "angular2/common";
 import {ControlGroup} from "angular2/common";
 
 @Component({
-    providers: [AuthService],
     inputs: ['user'],
 })
 @View({
