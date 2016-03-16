@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: migration
+  labels:
+    name: migration
+    role: tool
+spec:
+  containers:
+  - name: migration
+    image: gcr.io/subrosagames.com/subrosagames/migration
+    args:
+      - "migrate"
+    env:
+      - name: DB_PORT_5432_TCP_ADDR
+        value: postgres
+      - name: DB_PORT_5432_TCP_PORT
+        value: "5432"
+      - name: SEC_ENGINE_DB_USER
+        value: engine
+      - name: SEC_ENGINE_DB_PASS
+        value: engine

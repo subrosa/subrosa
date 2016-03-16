@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: config
+  labels:
+    name: config
+    app: sr
+spec:
+  type: NodePort
+  ports:
+  - port: 8888
+    protocol: TCP
+    name: http
+  selector:
+    name: config
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: config-rc
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: config
+        app: sr
+    spec:
+      containers:
+      - name: config
+        image: java:8
+        command: ['java', '-jar', '/var/code/apps/config/build/libs/subrosa-config-1.0.0-SNAPSHOT.jar']
+        ports:
+        - containerPort: 8888
+        volumeMounts:
+        - name: root
+          mountPath: /var/code
+        env:
+          - name: SEC_CONFIG_REPO_USER
+            value: josiahgore@gmail.com
+          - name: SEC_CONFIG_REPO_PASS
+            value: 3848f6c1fa30b0bc2558238e672b4325ca1aebeb
+      volumes:
+      - name: root
+        hostPath:
+          path: /vagrant

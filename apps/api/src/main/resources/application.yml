@@ -7,7 +7,7 @@ security:
 
 spring:
   redis:
-    host: ${REDIS_PORT_6379_TCP_ADDR}
+    host: redis
 
 logging:
   level:

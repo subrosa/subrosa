@@ -3,7 +3,7 @@ spring:
     name: api
   cloud:
     config:
-      uri: http://${CONFIG_PORT_8888_TCP_ADDR}:${CONFIG_PORT_8888_TCP_PORT}
+      uri: http://config:8888
       failFast: true
   config:
     retry:

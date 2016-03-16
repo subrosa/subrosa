@@ -74,7 +74,7 @@ public class GatewayApplication {
 
     @Configuration
     @EnableRedisHttpSession
-    public class RedisHttpSessionConfig {
+    public static class RedisHttpSessionConfig {
     }
 
     @Configuration
