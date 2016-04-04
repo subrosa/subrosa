@@ -1,11 +1,11 @@
-import {Component} from 'angular2/core';
-import {RouteConfig, RouterOutlet} from 'angular2/router';
+import {Component} from "angular2/core";
+import {RouteConfig, RouterOutlet} from "angular2/router";
 import {GameListComponent} from "./game-list.component";
 import {GameCreateComponent} from "./game-create.component";
 import {GameService} from "./game.service";
 
 @Component({
-    template:  `
+    template: `
     <router-outlet></router-outlet>
   `,
     directives: [RouterOutlet],

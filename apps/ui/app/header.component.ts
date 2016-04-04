@@ -14,11 +14,14 @@ import {Router} from "angular2/router";
       <button md-button class="md-icon-button" aria-label="Menu" (click)="sidenav.open()">
         <i md-icon>menu</i>
       </button>
-      <h2>
-        <span>SR</span>
-      </h2>
+      <a [routerLink]="['Home']">
+        <h2><span>SR</span></h2>
+      </a>
       <span flex></span>
-      <button md-button class="md-icon-button" aria-label="Authentication" (click)="navigate(['Whoami'])">
+      <button md-button class="md-icon-button" aria-label="Settings" [routerLink]="['Settings']">
+        <i md-icon>settings</i>
+      </button>
+      <button md-button class="md-icon-button" aria-label="User Details" [routerLink]="['Whoami']">
         <i md-icon>account_circle</i>
       </button>
     </div>
@@ -27,11 +30,4 @@ import {Router} from "angular2/router";
     directives: [ROUTER_DIRECTIVES, MATERIAL_DIRECTIVES],
 })
 export class HeaderComponent {
-
-    constructor(private _router: Router) {
-    }
-
-    navigate(route) {
-        this._router.navigate(route);
-    }
 }
