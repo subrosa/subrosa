@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: es
+  labels:
+    name: es
+    app: sr
+spec:
+  ports:
+  - port: 9200
+    protocol: TCP
+    name: http
+  - port: 9300
+    protocol: TCP
+    name: transport
+  selector:
+    name: es
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: es-rc
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: es
+        app: sr
+    spec:
+      containers:
+      - name: es
+        image: elasticsearch
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300

@@ -7,6 +7,7 @@ import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 
 @Component({
     templateUrl: 'app/game/game-list.component.html',
+    providers: [GameService],
     directives: [MATERIAL_DIRECTIVES],
 })
 export class GameListComponent implements OnInit {

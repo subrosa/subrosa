@@ -1,23 +1,16 @@
-import {Component} from 'angular2/core';
-import {CORE_DIRECTIVES} from "angular2/common";
-import {Http, Headers} from 'angular2/http';
-import {User} from "app/user/user";
-import {Login} from "app/user/login";
+import {Component, View, OnInit} from "angular2/core";
+import {CORE_DIRECTIVES, FormBuilder, Validators, ControlGroup, FORM_DIRECTIVES} from "angular2/common";
+import {User} from "./user";
 import {AuthService} from "./auth.service";
-import {View} from "angular2/core";
 import {MATERIAL_DIRECTIVES} from "ng2-material/all";
 import {Client} from "./client";
-import {OnInit} from "angular2/core";
-import {FormBuilder} from "angular2/common";
-import {Validators} from "angular2/common";
-import {ControlGroup} from "angular2/common";
 
 @Component({
     inputs: ['user'],
 })
 @View({
     templateUrl: 'app/user/user-details.component.html',
-    directives: [CORE_DIRECTIVES, MATERIAL_DIRECTIVES],
+    directives: [CORE_DIRECTIVES, FORM_DIRECTIVES, MATERIAL_DIRECTIVES],
 })
 export class UserDetailsComponent implements OnInit {
     client: Client;

@@ -1,17 +1,10 @@
 #!/bin/bash
 
-service postgresql start
-
-psql -U postgres -d postgres -c "alter user postgres with password 'postgres';"
-
-createuser engine
-psql -U postgres -d postgres -c "alter user engine with password 'engine';"
-createdb engine -O engine
-psql -d engine -f engine.sql
-
-createuser mogilefs
-psql -U postgres -d postgres -c "alter user mogilefs with password 'mogilefs';"
-createdb mogilefs -O mogilefs;
-
-service postgresql stop
+psql -v ON_ERROR_STOP=1 --username postgres <<-EOSQL
+    CREATE USER engine;
+    ALTER USER engine WITH PASSWORD 'engine';
+    CREATE DATABASE engine;
+    GRANT ALL PRIVILEGES ON DATABASE engine TO engine;
+EOSQL
+psql -U postgres -d engine -f /engine.sql
 

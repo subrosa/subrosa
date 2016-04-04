@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    name: redis
+    app: sr
+    role: storage
+spec:
+  ports:
+  - port: 6379
+    protocol: TCP
+    name: redis
+  selector:
+    name: redis
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: redis-rc
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: redis
+        app: sr
+        role: storage
+    spec:
+      containers:
+      - name: redis
+        image: redis
+        ports:
+        - containerPort: 6379

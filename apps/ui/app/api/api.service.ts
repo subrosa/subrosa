@@ -1,10 +1,8 @@
 import {Injectable} from "angular2/core";
-import {Headers} from "angular2/http";
-import {Http} from "angular2/http";
-import {RequestOptionsArgs} from "angular2/http";
+import {Http, RequestOptionsArgs} from "angular2/http";
 
 @Injectable()
-export class AuthService {
+export class ApiService {
 
     baseUrl: string = "http://sr:8080/";
 
